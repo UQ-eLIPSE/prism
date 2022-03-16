@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "5e4a2b60382fea97985f932e"
+  },
+  "name": "Whole of Building",
+  "description": "Documents relating to the whole of the building",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5e4a2b82382fea97985f932f"
+  },
+  "name": "Environmental",
+  "description": "Documents relating to environmental aspects of the construction",
+  "__v": 0
+}]

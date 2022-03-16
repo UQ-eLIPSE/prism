@@ -1,0 +1,315 @@
+import { Request, Response } from "express";
+import { CommonUtil } from "../utils/CommonUtil";
+import { MantaService } from "../service/MantaService";
+import { Area, Type, Category, Subcategory, Resource, Documentation, IDirectories, Directories, IDocumentation, About } from "../models/ResourceModel";
+import * as multer from "multer";
+import { ResourceService } from "../service/ResourceService";
+
+export class ResourceController {
+  public mantaService: MantaService;
+  public uploadFile: multer.Multer;
+
+  constructor() {
+    const limits = { fileSize: 1024 * 1024 * 1024 };
+
+    this.mantaService = new MantaService();
+    this.uploadFile = multer({ limits: limits, storage: this.mantaService });
+  }
+
+  /**
+   *
+   * @param err - Multer error message
+   * @param req
+   * @param res
+   */
+  public async createNewResource(req: Request, res: Response, err: any) {
+
+    const { file } = req;
+    const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
+
+    if (!file) return CommonUtil.failResponse(res, 'File is not found');
+    if (err.code === 'LIMIT_FILE_SIZE') return CommonUtil.failResponse(res, 'File is too big. Max file size is 1GB');
+
+    const uploadedAt = new Date().getTime();
+    const uploadedBy = res.locals.user._id;
+    const name = file.filename;
+    const contentType = file.mimetype;
+    const url = `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${name}`;
+
+    const newResource = await new Resource({ uploadedAt, uploadedBy, name, contentType, url });
+    await newResource.save();
+
+    return CommonUtil.successResponse(res, '', newResource);
+  }
+
+  /***
+   * Update Resource
+   * @param req
+   * @param res
+   */
+  public async updateResource(req: Request, res: Response) {
+    const { id } = req.params;
+    const isResourceFound = Resource.findById(id);
+    const { description, areaName, category, subcategory, resourceType } = req.body;
+    const modifiedAt = (new Date().getTime()).toString();
+
+
+    if (!isResourceFound) return CommonUtil.failResponse(res, 'Resource is not found');
+    await Resource.findByIdAndUpdate(id, { description, areaName, category, subcategory, resourceType, modifiedBy: res.locals.user._id, modifiedAt });
+
+    return CommonUtil.successResponse(res, 'Resource has been successfully updated');
+  }
+
+  /**
+   * Get all resources
+   * @param req
+   * @param res
+   */
+  public async getAllResources(req: Request, res: Response) {
+    const maxResult = 10;
+    const pageNo = parseInt(req.params.page) || 1;
+    const size = parseInt(req.query.size as any) || maxResult;
+
+    const allResources = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res);
+
+    return CommonUtil.successResponse(res, '', allResources);
+  }
+
+  /**
+   * Search resources by file name, description, area, category, sub-category,
+   * type, modified by, last updated
+   * @param req
+   * @param res
+   */
+  public async searchResources(req: Request, res: Response) {
+    const { query } = req.query;
+
+    const searchRegex = new RegExp(escape(query as string), 'gi');
+
+    const maxResult = 10;
+    const pageNo = parseInt(req.params.page) || 1;
+    const size = parseInt(req.query.size as string) || maxResult;
+
+    const fieldToSearchCount = {
+      fileName: searchRegex,
+      description: searchRegex,
+      areaName: searchRegex,
+      category: searchRegex,
+      subcategory: searchRegex,
+      resourceType: searchRegex,
+      contentType: searchRegex,
+      uploadedAt: searchRegex,
+      uploadedBy: searchRegex,
+      modifiedAt: searchRegex,
+      modifiedBy: searchRegex
+    };
+
+    const results = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res, fieldToSearchCount);
+    return CommonUtil.successResponse(res, '', results);
+  }
+
+  /**
+   * Create new area
+   * @param req
+   * @param res
+   */
+  public async createNewArea(req: Request, res: Response) {
+    const { name, description } = req.body;
+
+    if (!name) return CommonUtil.failResponse(res, 'Area name is required');
+
+    const newArea = await new Area({ name, description });
+    await newArea.save();
+
+    return CommonUtil.successResponse(res, 'New area has been successfully created');
+  }
+
+
+  /**
+   * Get all resource areas
+   * @param req
+   * @param res
+   */
+  public async getAllResourceAreas(req: Request, res: Response) {
+    const allAreas = await Area.find({});
+    return CommonUtil.successResponse(res, '', allAreas);
+  }
+
+
+  /**
+   * Create new type
+   * @param req
+   * @param res
+   */
+  public async createNewType(req: Request, res: Response) {
+    const { name, description } = req.body;
+    if (!name) return CommonUtil.failResponse(res, 'Type name is required');
+
+    const newType = await new Type({ name, description });
+    await newType.save();
+
+    return CommonUtil.successResponse(res, 'New type has been successfully created');
+  }
+
+  /**
+   * Get all resource types
+   * @param req
+   * @param res
+   */
+  public async getAllResourceTypes(req: Request, res: Response) {
+    const allTypes = await Type.find({});
+    return CommonUtil.successResponse(res, '', allTypes);
+  }
+
+
+  /**
+   * Create new category
+   * @param req
+   * @param res
+   */
+  public async createNewCategory(req: Request, res: Response) {
+    const { name, subcategories } = req.body;
+
+    const newCategory = await new Category({ name, subcategories });
+    await newCategory.save();
+
+    return CommonUtil.successResponse(res, 'New category has been successfully created')
+  }
+
+
+  /**
+   * Get all categories
+   * @param req
+   * @param res
+   */
+  public async getAllCategories(req: Request, res: Response) {
+    const allCats = await Category.find();
+    return CommonUtil.successResponse(res, '', allCats)
+  }
+
+  /**
+   * Create new subcategory
+   * @param req
+   * @param res
+   */
+  public async createNewSubcategory(req: Request, res: Response) {
+    const { name, parentCategories } = req.body;
+
+    const newSubcategories = await new Subcategory({ name, parentCategories });
+    await newSubcategories.save();
+
+    if (parentCategories.length) {
+      for (let category of parentCategories) {
+        const parentCategories = await Category.findById(category);
+        if (!parentCategories) return CommonUtil.failResponse(res, 'Parent category is not found');
+
+        parentCategories.subcategories.push(newSubcategories._id);
+        await parentCategories.save();
+      }
+    }
+
+    return CommonUtil.successResponse(res, 'New subcategory has been successfully created');
+  }
+
+  /**
+   * Get all subcategories
+   * @param req
+   * @param res
+   */
+  public async getAllSubcategories(req: Request, res: Response) {
+    const allSubcats = await Subcategory.find();
+    return CommonUtil.successResponse(res, '', allSubcats);
+  }
+
+  /**
+   * Get all documentation
+   * @param req
+   * @param res
+   */
+  public async getAllDocumentation(req: Request, res: Response) {
+    const allDocumentation = await Documentation.find({});
+    return CommonUtil.successResponse(res, '', allDocumentation);
+  }
+
+  /**
+ * Get documentation based on id
+ * @param req
+ * @param res
+ */
+  public async getIndividualDocumentation(req: Request, res: Response) {
+    const { _id } = req.query as any;
+    let docObject: IDocumentation | null = null;
+
+    try {
+      docObject = await Documentation.findOne({ _id }, '-_id');
+      if (!docObject) throw new Error('docObject not found.');
+      return CommonUtil.successResponse(res, '', docObject || []);
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
+    }
+  }
+
+  /**
+   * Query Directory based on id or name
+   * @param req
+   * @param res
+   */
+  public async getIndividualDirectory(req: Request, res: Response) {
+    const { _id, name } = req.query as any;
+    let dirObject: IDirectories | null = null;
+
+    try {
+      if (_id) {
+        dirObject = await Directories.findOne({ _id }, '-_id');
+      } else if (name) {
+        dirObject = await Directories.findOne({ name }, '-_id');
+      }
+      if (!dirObject) throw new Error('dirObject not found.');
+
+      return CommonUtil.successResponse(res, '', dirObject || []);
+
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
+    }
+  }
+
+  /**
+   * Query Directory root directory (with no parent)
+   * @param req
+   * @param res
+   */
+  public async getRootDirectory(req: Request, res: Response) {
+    try {
+      const dirObject = await Directories.findOne({ parent: { $exists: false } });
+
+      if (!dirObject) throw new Error('dirObject not found.');
+
+      return CommonUtil.successResponse(res, '', dirObject || []);
+
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
+    }
+  }
+
+    /**
+   * Query About info
+   * @param req
+   * @param res
+   */
+     public async getAboutInfo(req: Request, res: Response) {
+      try {
+        const aboutInfo = await About.findOne();
+  
+        if (!aboutInfo) throw new Error('About info not found.');
+  
+        return CommonUtil.successResponse(res, '', aboutInfo || []);
+  
+      } catch (e) {
+        console.error(e);
+        return CommonUtil.failResponse(res, e.message || e);
+      }
+    }
+}

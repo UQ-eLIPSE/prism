@@ -1,0 +1,12 @@
+[{
+  "_id": {
+    "$oid": "5e2a6d0544dae857246c5bda"
+  },
+  "firstName": "Ash",
+  "lastName": "O'Neill",
+  "email": "ash@rae.com.au",
+  "role": "projectAdmin",
+  "username": "ash",
+  "password": "$2b$10$x13dGVVSWxwSsz2Mcs8s3uB8A.H43OiJxpfzlKFI1ERh9iw4r28A.",
+  "__v": 0
+}]

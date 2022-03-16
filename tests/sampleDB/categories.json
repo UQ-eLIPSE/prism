@@ -1,0 +1,29 @@
+[{
+  "_id": {
+    "$oid": "5e4a3081382fea97985f977a"
+  },
+  "subcategories": [],
+  "name": "For Construction",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60d2a71118515b42c0494941"
+  },
+  "subcategories": [],
+  "name": "EOI",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60d2a72018515b42c0494942"
+  },
+  "subcategories": [],
+  "name": "As Built",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60d2ad1918515b42c0494943"
+  },
+  "subcategories": [],
+  "name": "Other",
+  "__v": 0
+}]

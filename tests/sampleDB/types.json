@@ -1,0 +1,43 @@
+[{
+  "_id": {
+    "$oid": "5e4a2c14382fea97985f9331"
+  },
+  "name": "Specification",
+  "description": "",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5e4a2c1a382fea97985f9332"
+  },
+  "name": "Plan",
+  "description": "",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5e4a2c22382fea97985f9334"
+  },
+  "name": "Section",
+  "description": "",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5e4a2c2d382fea97985f9335"
+  },
+  "name": "Plan and Elevation",
+  "description": "",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5e4a2c0d382fea97985f9330"
+  },
+  "name": "Cover Sheet",
+  "description": "",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5e4a2c1e382fea97985f9333"
+  },
+  "name": "Detail",
+  "description": "",
+  "__v": 0
+}]
