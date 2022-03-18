@@ -1,6 +1,8 @@
+import { ObjectID } from 'bson';
 import { Schema, Document, Model, model } from 'mongoose';
 
 export interface ISiteSettings extends Document {
+  _id: any;
   //specifies which features are enabled
   enable: {
     timeline: boolean;
@@ -63,6 +65,9 @@ export interface ISiteSettings extends Document {
 }
 
 const SiteSettingSchema: Schema = new Schema({
+  _id: {
+    type: ObjectID,
+  },
   enable: {
     type: {
       timeline: { type: Boolean },
