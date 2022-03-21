@@ -35,6 +35,7 @@ export class App {
   }
 
   private async setUpDatabase() {
+    await mongoose.connect(this.databaseUrl);
     ConsoleUtil.log("Done setting up database functions");
   }
 
