@@ -1,0 +1,51 @@
+{
+  "_id": {
+    "$oid": "6232e0e6727d6e875303446e"
+  },
+  "enable": {
+    "timeline": false,
+    "rotation": true,
+    "media": false,
+    "faq": false,
+    "documentation": false,
+    "floors": false,
+    "about": false,
+    "animations": false
+  },
+  "minimap": {
+    "image_url": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/agco360/boomaroo.seedling-farm.20211116/plan.jpg",
+    "image_large_url": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/agco360/boomaroo.seedling-farm.20211116/plan.jpg",
+    "x_pixel_offset": 0,
+    "y_pixel_offset": 0,
+    "x_scale": 1,
+    "y_scale": 1,
+    "img_width": 1310,
+    "img_height": 1229,
+    "xy_flipped": false
+  },
+  "initial_settings": {
+    "date": "2021-11-16T00:00:00.000+10:00",
+    "floor": 0,
+    "pano_id": "0_entry",
+    "yaw": 0,
+    "pitch": 0,
+    "fov": 0,
+    "rotation_offset": 1.5707963267948966
+  },
+  "animation": {
+    "url": "NA",
+    "title": "NA"
+  },
+  "sidenav": {
+    "logo_url": "https://picsum.photos/20/20",
+    "subtitle_url": "https://picsum.photos/20/20"
+  },
+  "display": {
+    "title": "Boomaroo Nurseries",
+    "subtitle": "Boomaroo Nurseries",
+    "background_image": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/agco360/boomaroo.seedling-farm.20211116/cover.png",
+    "uq_logo": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/urban_water/uq_logo.png"
+  },
+  "marzipano_mouse_view_mode": "drag",
+  "num_floors": 0
+}
