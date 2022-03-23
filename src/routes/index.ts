@@ -5,7 +5,7 @@ import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
-import { SiteSettingsController } from '../controller/SiteSettingsController';
+import { SiteSettingsController } from '../components/SiteSettings/SiteSettingsController';
 
 export class Routes {
   public userController: UserController = new UserController();

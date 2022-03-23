@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { ISiteSettings } from '../models/SiteSettingsModel';
-import { IResponse } from '../utils/CommonUtil';
-import { CommonUtil } from '../utils/CommonUtil';
+import { ISiteSettings } from './SiteSettingsModel';
+import { IResponse } from '../../utils/CommonUtil';
+import { CommonUtil } from '../../utils/CommonUtil';
 
-import { SiteService } from '../service/SiteSettingService';
+import { SiteService } from './SiteSettingsService';
 
 export class SiteSettingsController {
   /**
