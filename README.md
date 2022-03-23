@@ -7,6 +7,7 @@ _Techstack_
 - MongoDB - DB of choice
 - Express - HTTP Router of choice
 - Manta - Object Storage of choice
+- Node 16
 
 ## List of files to configure
 
@@ -37,13 +38,21 @@ _Techstack_
 
 ## Running
 
-cd prism/server
-cp .env.ANLB.sample .env
+cd prism-server
+cp .env.<project-name>.sample .env
 
 ### Running Locally
 
-yarn && yarn watch
+docker-compose up
 
 ### Running on Zone
 
 yarn && yarn build
+
+### Restoring mongobackups
+
+Retrieve the dump files by using the `get_mongodumps.sh` script.
+
+- Run:
+  - `./get_mongodumps.sh <mango username> <output directory>`
+  - In the output directory and the backup folder, run `mongorestore .` and all the data will be restored.
