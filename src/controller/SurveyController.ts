@@ -113,12 +113,9 @@ export class SurveyController {
     let results: IMinimapConversion | any = [];
 
     if (floor) {
-      console.log(floor);
       allSurveys = await MinimapConversion.find({ floor }, '-_id')
         .populate('survey_node', '-_id')
         .populate('minimap_node', '-_id');
-
-      // console.log(allSurveys);
 
       results = allSurveys;
 
@@ -129,7 +126,6 @@ export class SurveyController {
       if (!floor && !allSurveys.length) {
         const surveyNode = await SurveyNode.find({ date: date });
         for (let node of surveyNode) {
-          // console.log(node);
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
               .populate('survey_node', '-_id')
