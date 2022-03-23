@@ -1,10 +1,11 @@
-import {UserController} from "../controller/UserController";
-import {SurveyController} from "../controller/SurveyController";
-import {AuthUtil} from "../utils/AuthUtil";
-import {SurveyService} from "../service/SurveyService";
-import {SettingController} from "../controller/SettingController";
-import {ResourceController} from "../controller/ResourceController";
-import {FAQController} from "../controller/FAQController";
+import { UserController } from '../controller/UserController';
+import { SurveyController } from '../controller/SurveyController';
+import { AuthUtil } from '../utils/AuthUtil';
+import { SurveyService } from '../service/SurveyService';
+import { SettingController } from '../controller/SettingController';
+import { ResourceController } from '../controller/ResourceController';
+import { FAQController } from '../controller/FAQController';
+import { SiteSettingsController } from '../components/SiteSettings/SiteSettingsController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -12,12 +13,18 @@ export class Routes {
   public settingController: SettingController = new SettingController();
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
+  public siteSettingsController = new SiteSettingsController();
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
 
     router.post('/user/create', AuthUtil.authenticateUser, this.userController.createNewUser);
-    router.post('/user/validate/token', AuthUtil.authenticateUser, AuthUtil.validateToken, this.userController.decodeToken);
+    router.post(
+      '/user/validate/token',
+      AuthUtil.authenticateUser,
+      AuthUtil.validateToken,
+      this.userController.decodeToken
+    );
 
     router.post('/login', this.userController.login);
     router.post('/forgot-password', this.userController.sendEmailForgotPassword);
@@ -36,8 +43,13 @@ export class Routes {
 
     router.post('/logout', AuthUtil.verifyCookie, this.userController.logout);
 
-    router.post('/:username/upload/survey', AuthUtil.verifyCookie, this.surveyController.writeLocally.single('surveys'),
-      SurveyService.readZipFile, this.surveyController.uploadSurvey);
+    router.post(
+      '/:username/upload/survey',
+      AuthUtil.verifyCookie,
+      this.surveyController.writeLocally.single('surveys'),
+      SurveyService.readZipFile,
+      this.surveyController.uploadSurvey
+    );
 
     router.get('/:username/surveys/:page', AuthUtil.verifyCookie, this.surveyController.getAllSurveys);
     router.get('/:username/surveys/search', AuthUtil.verifyCookie, this.surveyController.searchSurvey);
@@ -56,14 +68,17 @@ export class Routes {
     router.get('/about', this.resourceController.getAboutInfo);
     router.get('/hotspot/details', this.surveyController.getIndividualHotspotDescription);
     router.get('/minimap/details', this.surveyController.getMinimapImage);
+    router.get('/settings', this.siteSettingsController.getSettings);
 
     /**
      * Admin section APIs
      */
-    router.post('/:username/upload/resource',
+    router.post(
+      '/:username/upload/resource',
       AuthUtil.verifyCookie,
       this.resourceController.uploadFile.single('resource'),
-      this.resourceController.createNewResource);
+      this.resourceController.createNewResource
+    );
 
     router.put('/:username/resource/:id/update', AuthUtil.verifyCookie, this.resourceController.updateResource);
     router.post('/:username/area/create', AuthUtil.verifyCookie, this.resourceController.createNewArea);
