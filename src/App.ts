@@ -35,12 +35,7 @@ export class App {
   }
 
   private async setUpDatabase() {
-    await mongoose.connect(this.databaseUrl, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true
-    });
+    await mongoose.connect(this.databaseUrl);
     ConsoleUtil.log("Done setting up database functions");
   }
 
