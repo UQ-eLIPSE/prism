@@ -6,8 +6,8 @@ export interface ISettings extends Document {
 }
 
 const SettingSchema: Schema = new Schema({
-  mediaPageVisibility: {type: Boolean},
-  faqPageVisibility: {type: Boolean}
+  mediaPageVisibility: { type: Boolean },
+  faqPageVisibility: { type: Boolean },
 });
 
 export const Settings: Model<ISettings> = model<ISettings>('Settings', SettingSchema);

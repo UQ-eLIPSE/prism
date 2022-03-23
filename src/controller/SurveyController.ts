@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { CommonUtil } from "../utils/CommonUtil";
-import { MantaService } from "../service/MantaService";
-import * as multer from "multer";
+import { Request, Response } from 'express';
+import { CommonUtil } from '../utils/CommonUtil';
+import { MantaService } from '../service/MantaService';
+import * as multer from 'multer';
 import * as path from 'path';
-import { SurveyService } from "../service/SurveyService";
+import { SurveyService } from '../service/SurveyService';
 import {
   MinimapConversion,
   Survey,
@@ -14,26 +14,25 @@ import {
   IMinimapNode,
   IMinimapConversion,
   ISurveyNode,
-  IHotspotDescription
-} from "../models/SurveyModel";
+  IHotspotDescription,
+} from '../models/SurveyModel';
 
 const exec = require('child_process').exec;
 const StreamZip = require('node-stream-zip');
 
 interface IMantaOutput {
-  fieldname: string,
-  filename: string
+  fieldname: string;
+  filename: string;
 }
 
 export class SurveyController {
-
   public mantaService: MantaService;
   public writeLocally: multer.Multer;
   private localPath: string | null = null;
 
   constructor() {
     const { TMP_FOLDER } = process.env;
-    this.localPath = path.join((<string>TMP_FOLDER || '~'));
+    this.localPath = path.join(<string>TMP_FOLDER || '~');
     this.mantaService = new MantaService();
     this.writeLocally = multer({ dest: this.localPath });
   }
@@ -51,10 +50,18 @@ export class SurveyController {
 
     if (!file) return CommonUtil.failResponse(res, 'File is not found');
     if (surveyValidationMessage) return CommonUtil.failResponse(res, surveyValidationMessage);
-
     else result = <any>file;
 
-    const { TMP_FOLDER, MANTA_KEY_ID, MANTA_ROOT_FOLDER, MANTA_USER, MANTA_SUB_USER, MANTA_ROLES, MANTA_HOST_NAME, PROJECT_NAME } = process.env;
+    const {
+      TMP_FOLDER,
+      MANTA_KEY_ID,
+      MANTA_ROOT_FOLDER,
+      MANTA_USER,
+      MANTA_SUB_USER,
+      MANTA_ROLES,
+      MANTA_HOST_NAME,
+      PROJECT_NAME,
+    } = process.env;
     const destPath = path.join(<string>TMP_FOLDER);
 
     const zip = new StreamZip({ file: `${file.destination}/${file.filename}`, storeEntries: true });
@@ -64,14 +71,17 @@ export class SurveyController {
       const extractedFolder = file.originalname.split('.')[0];
       SurveyService.extractZip(`${destPath}`, entries, zip).then(() => {
         const muntarcmd = `muntar -f ${destPath}/${extractedFolder}.tar /${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${extractedFolder} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`;
-        exec(`tar -cvf ${destPath}/${extractedFolder}.tar ${destPath}/${extractedFolder} && ${muntarcmd}`, { maxBuffer: 200 * 1024 * 1024 },
+        exec(
+          `tar -cvf ${destPath}/${extractedFolder}.tar ${destPath}/${extractedFolder} && ${muntarcmd}`,
+          { maxBuffer: 200 * 1024 * 1024 },
           (err: any) => {
             if (err !== null) {
               console.error(err);
               return;
             }
             console.log('tarball is created && muntarcmd has been executed');
-          });
+          }
+        );
       });
     });
 
@@ -104,7 +114,8 @@ export class SurveyController {
 
     if (floor) {
       allSurveys = await MinimapConversion.find({ floor }, '-_id')
-        .populate('surveyNode', '-_id').populate('minimapNode', '-_id');
+        .populate('survey_node', '-_id')
+        .populate('minimap_node', '-_id');
 
       results = allSurveys;
 
@@ -113,16 +124,19 @@ export class SurveyController {
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await SurveyNode.find({ date });
+        const surveyNode = await SurveyNode.find({ date: date });
         for (let node of surveyNode) {
-          allSurveys.push(await MinimapConversion.findOne({ surveyNode: node._id }, '-_id')
-            .populate('surveyNode', '-_id').populate('minimapNode', '-_id'));
+          allSurveys.push(
+            await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
+              .populate('survey_node', '-_id')
+              .populate('minimap_node', '-_id')
+          );
         }
       }
 
       results = allSurveys.filter((survey: IMinimapConversion) => {
         const specificDate = date ? new Date(date).getTime() : new Date().getTime();
-        const dbDate = survey.surveyNode.date ? new Date(survey.surveyNode.date).getTime() : new Date().getTime();
+        const dbDate = survey.survey_node.date ? new Date(survey.survey_node.date).getTime() : new Date().getTime();
         return dbDate === specificDate;
       });
     }
@@ -145,56 +159,55 @@ export class SurveyController {
 
     try {
       if (floor) {
-        surveysWithFloor = await MinimapNode.find({ floor }, '-_id').populate('surveyNode', '-_id');
+        surveysWithFloor = await MinimapNode.find({ floor }, '-_id').populate('survey_node', '-_id');
         if (!surveysWithFloor) return CommonUtil.failResponse(res, 'Survey with the floor number is not found');
         surveysWithFloor.map((survey) => {
-          if (!map.has(survey.surveyNode.surveyName) || !map.has(floor)) {
-            map.set(survey.surveyNode.surveyName, true);
+          if (!map.has(survey.survey_node.survey_name) || !map.has(floor)) {
+            map.set(survey.survey_node.survey_name, true);
             map.set(floor, true);
 
             return results.push({
-              surveyName: survey.surveyNode.surveyName,
-              date: survey.surveyNode.date,
-              floor
+              survey_name: survey.survey_node.survey_name,
+              date: survey.survey_node.date,
+              floor,
             });
           }
         });
-      }
-
-      else if (date) {
+      } else if (date) {
         surveyWithDate = await SurveyNode.find({ date });
         if (!surveyWithDate) return CommonUtil.failResponse(res, 'Survey with the date is not found');
 
         for (let survey of surveyWithDate) {
-          surveysWithFloor = await MinimapNode.find({ surveyNode: survey._id }, '-_id').populate('surveyNode', '-_id');
+          surveysWithFloor = await MinimapNode.find({ survey_node: survey._id }, '-_id').populate(
+            'survey_node',
+            '-_id'
+          );
 
           if (!surveysWithFloor || !Array.isArray(surveysWithFloor)) throw new Error('Unable to fetch the data');
           surveysWithFloor.map((surveyData) => {
-
-            if (!map.has(surveyData.surveyNode.surveyName) || !map.has(date) || !map.has(surveyData.floor)) {
-              map.set(surveyData.surveyNode.surveyName, true);
+            if (!map.has(surveyData.survey_node.survey_name) || !map.has(date) || !map.has(surveyData.floor)) {
+              map.set(surveyData.survey_node.survey_name, true);
               map.set(date, true);
               map.set(surveyData.floor, true);
 
               return results.push({
-                surveyName: surveyData.surveyNode.surveyName,
+                survey_name: surveyData.survey_node.survey_name,
                 floor: surveyData.floor,
-                date: date
+                date: date,
               });
             }
           });
         }
-      }
-      else {
-        surveysWithFloor = await MinimapNode.find({}).populate('surveyNode', '-_id');
+      } else {
+        surveysWithFloor = await MinimapNode.find({}).populate('survey_node', '-_id');
         if (!surveysWithFloor) return CommonUtil.failResponse(res, 'Surveys not found');
         surveysWithFloor.map((survey) => {
-          if (!map.has(survey.surveyNode.surveyName)) {
-            map.set(survey.surveyNode.surveyName, true);
+          if (!map.has(survey.survey_node.survey_name)) {
+            map.set(survey.survey_node.survey_name, true);
 
             return results.push({
-              surveyName: survey.surveyNode.surveyName,
-              date: survey.surveyNode.date,
+              survey_name: survey.survey_node.survey_name,
+              date: survey.survey_node.date,
             });
           }
         });
@@ -223,7 +236,7 @@ export class SurveyController {
     const fieldToSearchCount = {
       uploadedAt: searchRegex,
       uploadedBy: searchRegex,
-      surveyName: searchRegex
+      survey_name: searchRegex,
     };
 
     const results = await SurveyService.setSurveyPagination(maxResult, pageNo, size, res, fieldToSearchCount);
@@ -241,19 +254,19 @@ export class SurveyController {
     const surveyToBeDeleted = await Survey.findById(id);
     if (!surveyToBeDeleted) return CommonUtil.failResponse(res, 'Survey is not found');
 
-    const surveyNodes = surveyToBeDeleted.surveyNodes;
+    const surveyNodes = surveyToBeDeleted.survey_nodes;
 
     for (let surveyNode of surveyNodes) {
       await SurveyNode.findByIdAndRemove(id);
-      const relatedMiniMapConversions = await MinimapConversion.findOne({ surveyNode: surveyNode });
-      const relatedMinimapNode = await MinimapNode.findOne({ surveyNode: surveyNode });
+      const relatedMiniMapConversions = await MinimapConversion.findOne({ survey_node: surveyNode });
+      const relatedMinimapNode = await MinimapNode.findOne({ survey_node: surveyNode });
 
       if (relatedMiniMapConversions) {
-        await MinimapConversion.deleteOne({ surveyNode: surveyNode });
+        await MinimapConversion.deleteOne({ survey_node: surveyNode });
       }
 
       if (relatedMinimapNode) {
-        await MinimapNode.deleteOne({ surveyNode: surveyNode });
+        await MinimapNode.deleteOne({ survey_node: surveyNode });
       }
     }
 
@@ -272,13 +285,12 @@ export class SurveyController {
     let results: IHotspotDescription | any = [];
 
     try {
-
       if (!tilesId) throw new Error('TilesId not found.');
-      const hotspotObject = await SurveyNode.findOne({ tilesId }, '-_id');
+      const hotspotObject = await SurveyNode.findOne({ tiles_id: tilesId }, '-_id');
       if (!hotspotObject) throw new Error('hotspotObject not found.');
 
-      const hotspotDescriptionInfoIds = hotspotObject.infoHotspots.map((e) => e.infoId);
-      const hotspotDescs = await HotspotDescription.find({ infoId: { $in: hotspotDescriptionInfoIds } });
+      const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map((e) => e.info_id);
+      const hotspotDescs = await HotspotDescription.find({ info_id: { $in: hotspotDescriptionInfoIds } });
 
       if (hotspotDescs) allHotspotDescriptions = hotspotDescs;
 
@@ -290,7 +302,6 @@ export class SurveyController {
     }
   }
 
-
   /**
    * Get correct minimap based on floor
    * @param req
@@ -300,7 +311,6 @@ export class SurveyController {
     const { floor } = req.query as any;
 
     try {
-
       if (!floor) throw new Error('Floor not found.');
 
       const minimapImageObject = await MinimapImages.findOne({ floor }, '-_id');
@@ -308,7 +318,6 @@ export class SurveyController {
       if (!minimapImageObject) throw new Error('minimapImageObject not found.');
 
       return CommonUtil.successResponse(res, '', minimapImageObject.minimap || []);
-
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);

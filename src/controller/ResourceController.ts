@@ -1,9 +1,20 @@
-import { Request, Response } from "express";
-import { CommonUtil } from "../utils/CommonUtil";
-import { MantaService } from "../service/MantaService";
-import { Area, Type, Category, Subcategory, Resource, Documentation, IDirectories, Directories, IDocumentation, About } from "../models/ResourceModel";
-import * as multer from "multer";
-import { ResourceService } from "../service/ResourceService";
+import { Request, Response } from 'express';
+import { CommonUtil } from '../utils/CommonUtil';
+import { MantaService } from '../service/MantaService';
+import {
+  Area,
+  Type,
+  Category,
+  Subcategory,
+  Resource,
+  Files,
+  IDirectories,
+  Directories,
+  IFiles,
+  About,
+} from '../models/ResourceModel';
+import * as multer from 'multer';
+import { ResourceService } from '../service/ResourceService';
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -23,7 +34,6 @@ export class ResourceController {
    * @param res
    */
   public async createNewResource(req: Request, res: Response, err: any) {
-
     const { file } = req;
     const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
 
@@ -51,11 +61,18 @@ export class ResourceController {
     const { id } = req.params;
     const isResourceFound = Resource.findById(id);
     const { description, areaName, category, subcategory, resourceType } = req.body;
-    const modifiedAt = (new Date().getTime()).toString();
-
+    const modifiedAt = new Date().getTime().toString();
 
     if (!isResourceFound) return CommonUtil.failResponse(res, 'Resource is not found');
-    await Resource.findByIdAndUpdate(id, { description, areaName, category, subcategory, resourceType, modifiedBy: res.locals.user._id, modifiedAt });
+    await Resource.findByIdAndUpdate(id, {
+      description,
+      areaName,
+      category,
+      subcategory,
+      resourceType,
+      modifiedBy: res.locals.user._id,
+      modifiedAt,
+    });
 
     return CommonUtil.successResponse(res, 'Resource has been successfully updated');
   }
@@ -101,7 +118,7 @@ export class ResourceController {
       uploadedAt: searchRegex,
       uploadedBy: searchRegex,
       modifiedAt: searchRegex,
-      modifiedBy: searchRegex
+      modifiedBy: searchRegex,
     };
 
     const results = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res, fieldToSearchCount);
@@ -124,7 +141,6 @@ export class ResourceController {
     return CommonUtil.successResponse(res, 'New area has been successfully created');
   }
 
-
   /**
    * Get all resource areas
    * @param req
@@ -134,7 +150,6 @@ export class ResourceController {
     const allAreas = await Area.find({});
     return CommonUtil.successResponse(res, '', allAreas);
   }
-
 
   /**
    * Create new type
@@ -161,7 +176,6 @@ export class ResourceController {
     return CommonUtil.successResponse(res, '', allTypes);
   }
 
-
   /**
    * Create new category
    * @param req
@@ -173,9 +187,8 @@ export class ResourceController {
     const newCategory = await new Category({ name, subcategories });
     await newCategory.save();
 
-    return CommonUtil.successResponse(res, 'New category has been successfully created')
+    return CommonUtil.successResponse(res, 'New category has been successfully created');
   }
-
 
   /**
    * Get all categories
@@ -184,7 +197,7 @@ export class ResourceController {
    */
   public async getAllCategories(req: Request, res: Response) {
     const allCats = await Category.find();
-    return CommonUtil.successResponse(res, '', allCats)
+    return CommonUtil.successResponse(res, '', allCats);
   }
 
   /**
@@ -227,21 +240,21 @@ export class ResourceController {
    * @param res
    */
   public async getAllDocumentation(req: Request, res: Response) {
-    const allDocumentation = await Documentation.find({});
+    const allDocumentation = await Files.find({});
     return CommonUtil.successResponse(res, '', allDocumentation);
   }
 
   /**
- * Get documentation based on id
- * @param req
- * @param res
- */
+   * Get documentation based on id
+   * @param req
+   * @param res
+   */
   public async getIndividualDocumentation(req: Request, res: Response) {
     const { _id } = req.query as any;
-    let docObject: IDocumentation | null = null;
+    let docObject: IFiles | null = null;
 
     try {
-      docObject = await Documentation.findOne({ _id }, '-_id');
+      docObject = await Files.findOne({ _id }, '-_id');
       if (!docObject) throw new Error('docObject not found.');
       return CommonUtil.successResponse(res, '', docObject || []);
     } catch (e) {
@@ -268,7 +281,6 @@ export class ResourceController {
       if (!dirObject) throw new Error('dirObject not found.');
 
       return CommonUtil.successResponse(res, '', dirObject || []);
-
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
@@ -287,29 +299,27 @@ export class ResourceController {
       if (!dirObject) throw new Error('dirObject not found.');
 
       return CommonUtil.successResponse(res, '', dirObject || []);
-
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
 
-    /**
+  /**
    * Query About info
    * @param req
    * @param res
    */
-     public async getAboutInfo(req: Request, res: Response) {
-      try {
-        const aboutInfo = await About.findOne();
-  
-        if (!aboutInfo) throw new Error('About info not found.');
-  
-        return CommonUtil.successResponse(res, '', aboutInfo || []);
-  
-      } catch (e) {
-        console.error(e);
-        return CommonUtil.failResponse(res, e.message || e);
-      }
+  public async getAboutInfo(req: Request, res: Response) {
+    try {
+      const aboutInfo = await About.findOne();
+
+      if (!aboutInfo) throw new Error('About info not found.');
+
+      return CommonUtil.successResponse(res, '', aboutInfo || []);
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
     }
+  }
 }
