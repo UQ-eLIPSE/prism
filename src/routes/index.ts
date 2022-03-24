@@ -58,8 +58,8 @@ export class Routes {
     /**
      * Client side APIs
      */
-    router.get('/survey/details', this.surveyController.getIndividualSurveysDetails);
-    router.get('/survey/details/compact', this.surveyController.getSurveyCompactVersion);
+    router.get('/survey/:siteId/details/', this.surveyController.getIndividualSurveysDetails);
+    router.get('/survey/:siteId/details/compact', this.surveyController.getSurveyCompactVersion);
     router.get('/resources/:page', this.resourceController.getAllResources);
     router.get('/documentation', this.resourceController.getAllDocumentation);
     router.get('/documentation/details', this.resourceController.getIndividualDocumentation);
@@ -69,6 +69,7 @@ export class Routes {
     router.get('/hotspot/details', this.surveyController.getIndividualHotspotDescription);
     router.get('/minimap/details', this.surveyController.getMinimapImage);
     router.get('/settings', this.siteSettingsController.getSettings);
+    router.get('/sites', this.siteSettingsController.getSites);
 
     /**
      * Admin section APIs

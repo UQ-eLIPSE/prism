@@ -64,6 +64,12 @@ export interface ISiteSettings extends Document {
   num_floors: number;
 }
 
+export interface ISite extends Document {
+  _id: any;
+  site_name: string;
+  tag: string;
+}
+
 const SiteSettingSchema: Schema = new Schema({
   _id: {
     type: ObjectID,
@@ -127,4 +133,13 @@ const SiteSettingSchema: Schema = new Schema({
   num_floors: { type: Number },
 });
 
+const SiteSchema: Schema = new Schema({
+  _id: {
+    type: ObjectID,
+  },
+  site_name: String,
+  tag: String,
+});
+
 export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>('site_settings', SiteSettingSchema);
+export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);

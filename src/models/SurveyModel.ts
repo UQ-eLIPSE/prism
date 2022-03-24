@@ -122,6 +122,7 @@ const MinimapConversionSchema: Schema = new Schema({
   y_scale: { type: Number },
   survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
   minimap_node: { type: Schema.Types.Mixed, ref: 'minimap_nodes' },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const HotspotDescriptionSchema: Schema = new Schema({

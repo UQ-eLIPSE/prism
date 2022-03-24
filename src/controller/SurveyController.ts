@@ -16,6 +16,7 @@ import {
   ISurveyNode,
   IHotspotDescription,
 } from '../models/SurveyModel';
+import { ObjectID } from 'bson';
 
 const exec = require('child_process').exec;
 const StreamZip = require('node-stream-zip');
@@ -108,12 +109,15 @@ export class SurveyController {
    * @param res
    */
   public async getIndividualSurveysDetails(req: Request, res: Response) {
+    const { siteId } = req.params;
     const { floor, date } = req.query as any;
     let allSurveys: IMinimapConversion | any = [];
     let results: IMinimapConversion | any = [];
 
+    if (!siteId) return CommonUtil.failResponse(res, 'Site ID has not been provided');
+
     if (floor) {
-      allSurveys = await MinimapConversion.find({ floor }, '-_id')
+      allSurveys = await MinimapConversion.find({ floor, site: new ObjectID(siteId) }, '-_id')
         .populate('survey_node', '-_id')
         .populate('minimap_node', '-_id');
 
@@ -124,7 +128,7 @@ export class SurveyController {
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await SurveyNode.find({ date: date });
+        const surveyNode = await SurveyNode.find({ date: date, site: new ObjectID(siteId) });
         for (let node of surveyNode) {
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
@@ -151,11 +155,14 @@ export class SurveyController {
    */
   public async getSurveyCompactVersion(req: Request, res: Response) {
     const { floor, date } = req.query as any;
+    const { siteId } = req.params;
 
     let surveysWithFloor: IMinimapNode[] | null = null;
     let surveyWithDate: ISurveyNode[] | null = null;
     let results: any[] = [];
     const map = new Map();
+
+    if (!siteId) return CommonUtil.failResponse(res, 'Site ID has not been provided');
 
     try {
       if (floor) {
@@ -174,7 +181,7 @@ export class SurveyController {
           }
         });
       } else if (date) {
-        surveyWithDate = await SurveyNode.find({ date });
+        surveyWithDate = await SurveyNode.find({ date, site: new ObjectID(siteId) });
         if (!surveyWithDate) return CommonUtil.failResponse(res, 'Survey with the date is not found');
 
         for (let survey of surveyWithDate) {
