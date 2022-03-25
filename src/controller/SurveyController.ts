@@ -166,7 +166,10 @@ export class SurveyController {
 
     try {
       if (floor) {
-        surveysWithFloor = await MinimapNode.find({ floor }, '-_id').populate('survey_node', '-_id');
+        surveysWithFloor = await MinimapNode.find({ floor, site: new ObjectID(siteId) }, '-_id').populate(
+          'survey_node',
+          '-_id'
+        );
         if (!surveysWithFloor) return CommonUtil.failResponse(res, 'Survey with the floor number is not found');
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.survey_name) || !map.has(floor)) {
@@ -185,10 +188,10 @@ export class SurveyController {
         if (!surveyWithDate) return CommonUtil.failResponse(res, 'Survey with the date is not found');
 
         for (let survey of surveyWithDate) {
-          surveysWithFloor = await MinimapNode.find({ survey_node: survey._id }, '-_id').populate(
-            'survey_node',
+          surveysWithFloor = await MinimapNode.find(
+            { survey_node: survey._id, site: new ObjectID(siteId) },
             '-_id'
-          );
+          ).populate('survey_node', '-_id');
 
           if (!surveysWithFloor || !Array.isArray(surveysWithFloor)) throw new Error('Unable to fetch the data');
           surveysWithFloor.map((surveyData) => {
@@ -206,7 +209,7 @@ export class SurveyController {
           });
         }
       } else {
-        surveysWithFloor = await MinimapNode.find({}).populate('survey_node', '-_id');
+        surveysWithFloor = await MinimapNode.find({ site: new ObjectID(siteId) }).populate('survey_node', '-_id');
         if (!surveysWithFloor) return CommonUtil.failResponse(res, 'Surveys not found');
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.survey_name)) {
@@ -288,12 +291,16 @@ export class SurveyController {
    */
   public async getIndividualHotspotDescription(req: Request, res: Response) {
     const { tilesId } = req.query as any;
+    const { siteId } = req.params;
+
     let allHotspotDescriptions: IHotspotDescription | any = [];
     let results: IHotspotDescription | any = [];
 
     try {
       if (!tilesId) throw new Error('TilesId not found.');
-      const hotspotObject = await SurveyNode.findOne({ tiles_id: tilesId }, '-_id');
+      if (!siteId) throw new Error('Site ID has not been provided');
+
+      const hotspotObject = await SurveyNode.findOne({ tiles_id: tilesId, site: new ObjectID(siteId) }, '-_id');
       if (!hotspotObject) throw new Error('hotspotObject not found.');
 
       const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map((e) => e.info_id);
@@ -316,11 +323,12 @@ export class SurveyController {
    */
   public async getMinimapImage(req: Request, res: Response) {
     const { floor } = req.query as any;
+    const { siteId } = req.params;
 
     try {
       if (!floor) throw new Error('Floor not found.');
 
-      const minimapImageObject = await MinimapImages.findOne({ floor }, '-_id');
+      const minimapImageObject = await MinimapImages.findOne({ floor, site: new ObjectID(siteId) }, '-_id');
 
       if (!minimapImageObject) throw new Error('minimapImageObject not found.');
 

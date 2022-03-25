@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ISiteSettings } from './SiteSettingsModel';
+import { ISite, ISiteSettings } from './SiteSettingsModel';
 import { IResponse } from '../../utils/CommonUtil';
 import { CommonUtil } from '../../utils/CommonUtil';
 
@@ -22,5 +22,12 @@ export class SiteSettingsController {
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
 
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.sites[0]);
+  }
+  public async createSite(req: Request, res: Response) {
+    const site: ISite = req.body;
+
+    const createSite = await SiteService.createSite(site);
+    if (!createSite) return CommonUtil.failResponse(res, 'No Setting is found');
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', createSite);
   }
 }

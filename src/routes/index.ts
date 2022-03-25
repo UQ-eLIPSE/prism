@@ -58,18 +58,19 @@ export class Routes {
     /**
      * Client side APIs
      */
-    router.get('/survey/:siteId/details/', this.surveyController.getIndividualSurveysDetails);
-    router.get('/survey/:siteId/details/compact', this.surveyController.getSurveyCompactVersion);
+    router.get('/site/:siteId/survey/details/', this.surveyController.getIndividualSurveysDetails);
+    router.get('/site/:siteId/survey/details/compact', this.surveyController.getSurveyCompactVersion);
     router.get('/resources/:page', this.resourceController.getAllResources);
     router.get('/documentation', this.resourceController.getAllDocumentation);
     router.get('/documentation/details', this.resourceController.getIndividualDocumentation);
     router.get('/directories/details', this.resourceController.getIndividualDirectory);
     router.get('/directories/root', this.resourceController.getRootDirectory);
     router.get('/about', this.resourceController.getAboutInfo);
-    router.get('/hotspot/details', this.surveyController.getIndividualHotspotDescription);
-    router.get('/minimap/details', this.surveyController.getMinimapImage);
+    router.get('/site/:siteId/hotspot/details', this.surveyController.getIndividualHotspotDescription);
+    router.get('/site/:siteId/minimap/details', this.surveyController.getMinimapImage);
     router.get('/settings', this.siteSettingsController.getSettings);
     router.get('/sites', this.siteSettingsController.getSites);
+    router.post('/sites', this.siteSettingsController.createSite);
 
     /**
      * Admin section APIs

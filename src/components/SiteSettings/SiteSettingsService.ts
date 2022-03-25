@@ -1,4 +1,4 @@
-import { Site, SiteSettings } from './SiteSettingsModel';
+import { ISite, Site, SiteSettings } from './SiteSettingsModel';
 import { Response } from 'express-serve-static-core';
 
 export abstract class SiteService {
@@ -11,5 +11,9 @@ export abstract class SiteService {
     return {
       sites: await Site.find(),
     };
+  }
+  static async createSite(site: ISite) {
+    const createSite = await Site.create(site);
+    return createSite;
   }
 }
