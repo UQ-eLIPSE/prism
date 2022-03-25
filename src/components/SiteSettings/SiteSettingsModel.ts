@@ -62,6 +62,8 @@ export interface ISiteSettings extends Document {
 
   //number of floors, used for multi-story buildings generally 0
   num_floors: number;
+
+  site: any;
 }
 
 export interface ISite extends Document {
@@ -131,6 +133,9 @@ const SiteSettingSchema: Schema = new Schema({
   },
   marzipano_mouse_view_mode: { type: String },
   num_floors: { type: Number },
+  site: {
+    type: ObjectID,
+  },
 });
 
 const SiteSchema: Schema = new Schema({

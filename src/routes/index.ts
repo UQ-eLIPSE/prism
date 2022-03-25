@@ -60,15 +60,15 @@ export class Routes {
      */
     router.get('/site/:siteId/survey/details/', this.surveyController.getIndividualSurveysDetails);
     router.get('/site/:siteId/survey/details/compact', this.surveyController.getSurveyCompactVersion);
-    router.get('/resources/:page', this.resourceController.getAllResources);
-    router.get('/documentation', this.resourceController.getAllDocumentation);
+    router.get('/site/:siteId/resources/:page', this.resourceController.getAllResources);
+    router.get('/site/:siteId/documentation', this.resourceController.getAllDocumentation);
     router.get('/documentation/details', this.resourceController.getIndividualDocumentation);
     router.get('/directories/details', this.resourceController.getIndividualDirectory);
-    router.get('/directories/root', this.resourceController.getRootDirectory);
-    router.get('/about', this.resourceController.getAboutInfo);
+    router.get('/site/:siteId/directories/root', this.resourceController.getRootDirectory);
+    router.get('/site/:siteId/about', this.resourceController.getAboutInfo);
     router.get('/site/:siteId/hotspot/details', this.surveyController.getIndividualHotspotDescription);
     router.get('/site/:siteId/minimap/details', this.surveyController.getMinimapImage);
-    router.get('/settings', this.siteSettingsController.getSettings);
+    router.get('/site/:siteId/settings', this.siteSettingsController.getSettings);
     router.get('/sites', this.siteSettingsController.getSites);
     router.post('/sites', this.siteSettingsController.createSite);
 

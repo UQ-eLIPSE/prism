@@ -12,7 +12,9 @@ export class SiteSettingsController {
    * @param res
    */
   public async getSettings(req: Request, res: Response) {
-    const results = await SiteService.getSettings(res);
+    const { siteId } = req.params;
+    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
+    const results = await SiteService.getSettings(siteId);
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
 
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.settings[0]);
