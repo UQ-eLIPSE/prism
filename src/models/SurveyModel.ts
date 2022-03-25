@@ -19,6 +19,7 @@ export interface IMinimapNode extends Document {
   minimap_conversion: IMinimapConversion;
   survey_node: ISurveyNode;
   floor: number;
+  site: any;
 }
 
 export interface IInitialParams extends Document {
@@ -115,6 +116,7 @@ const MinimapNodeSchema: Schema = new Schema({
   tiles_name: { type: String },
   survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
   floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const MinimapConversionSchema: Schema = new Schema({

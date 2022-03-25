@@ -188,10 +188,10 @@ export class SurveyController {
         if (!surveyWithDate) return CommonUtil.failResponse(res, 'Survey with the date is not found');
 
         for (let survey of surveyWithDate) {
-          surveysWithFloor = await MinimapNode.find(
-            { survey_node: survey._id, site: new ObjectID(siteId) },
+          surveysWithFloor = await MinimapNode.find({ survey_node: survey._id }, '-_id').populate(
+            'survey_node',
             '-_id'
-          ).populate('survey_node', '-_id');
+          );
 
           if (!surveysWithFloor || !Array.isArray(surveysWithFloor)) throw new Error('Unable to fetch the data');
           surveysWithFloor.map((surveyData) => {

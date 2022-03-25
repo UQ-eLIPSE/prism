@@ -140,8 +140,8 @@ const SiteSchema: Schema = new Schema({
   _id: {
     type: ObjectID,
   },
-  site_name: String,
-  tag: String,
+  site_name: { type: String },
+  tag: { type: String },
 });
 
 export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>('site_settings', SiteSettingSchema);
