@@ -23,7 +23,7 @@ export class SiteSettingsController {
     const results = await SiteService.getSites();
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
 
-    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.sites[0]);
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.sites);
   }
   public async createSite(req: Request, res: Response) {
     const site: ISite = req.body;
