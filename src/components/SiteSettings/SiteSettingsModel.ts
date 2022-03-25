@@ -133,9 +133,7 @@ const SiteSettingSchema: Schema = new Schema({
   },
   marzipano_mouse_view_mode: { type: String },
   num_floors: { type: Number },
-  site: {
-    type: ObjectID,
-  },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const SiteSchema: Schema = new Schema({
