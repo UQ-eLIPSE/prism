@@ -1,4 +1,4 @@
-import {Response} from "express-serve-static-core";
+import { Response } from 'express-serve-static-core';
 
 export interface IResponse<PayloadType> {
   success: boolean;
@@ -7,11 +7,10 @@ export interface IResponse<PayloadType> {
 }
 
 export abstract class CommonUtil {
-
   public static failResponse<T>(res: Response, message: string): Response {
     return res.status(400).json(<T>(<any>{
       success: false,
-      message: message
+      message: message,
     }));
   }
 
@@ -19,7 +18,7 @@ export abstract class CommonUtil {
     return res.status(200).json(<T>(<any>{
       success: true,
       payload: payload,
-      message: message
+      message: message,
     }));
   }
 
