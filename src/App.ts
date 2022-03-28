@@ -1,19 +1,19 @@
 // Library imports
-import * as express from "express";
-import * as Sentry from "@sentry/node";
+import * as express from 'express';
+import * as Sentry from '@sentry/node';
 import * as mongoose from 'mongoose';
-import * as bodyParser from "body-parser";
-import * as cors from "cors";
-import * as cookieParser from "cookie-parser";
-import {ServeStaticOptions} from "serve-static";
+import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
+import * as cookieParser from 'cookie-parser';
+import { ServeStaticOptions } from 'serve-static';
 import * as nodemailer from 'nodemailer';
-import * as Mail from "nodemailer/lib/mailer";
+import * as Mail from 'nodemailer/lib/mailer';
 
 // Project imports
-import {Routes} from "./routes";
-import {Configuration} from "./Conf";
-import {ConsoleUtil} from "./utils/ConsoleUtil";
-import {MantaService} from "./service/MantaService";
+import { Routes } from './routes';
+import { Configuration } from './Conf';
+import { ConsoleUtil } from './utils/ConsoleUtil';
+import { MantaService } from './service/MantaService';
 
 export class App {
   private express: express.Application;
@@ -36,7 +36,7 @@ export class App {
 
   private async setUpDatabase() {
     await mongoose.connect(this.databaseUrl);
-    ConsoleUtil.log("Done setting up database functions");
+    ConsoleUtil.log('Done setting up database functions');
   }
 
   private async setUpManta() {
@@ -44,31 +44,31 @@ export class App {
       const manta = new MantaService();
       await manta.setupManta();
       ConsoleUtil.log('Done initializing Manta ...');
-    }
-
-    catch(e) {
+    } catch (e) {
       ConsoleUtil.error(e);
     }
   }
 
   private setUpExpress(): void {
     this.express.listen(this.configuration.PORT_NUM);
-    this.express.use(express.static(this.clientPath, this.expressStaticOptions));
+    this.express.use(
+      express.static(this.clientPath, this.expressStaticOptions),
+    );
     this.express.use(cookieParser());
     this.express.use(cors());
-    this.express.use(bodyParser.json({limit: "50mb"}));
+    this.express.use(bodyParser.json({ limit: '50mb' }));
     this.routes.routes(this.express, this.router);
-    ConsoleUtil.log("Done setting up express routes...");
+    ConsoleUtil.log('Done setting up express routes...');
   }
 
   private setupSentry(): void {
     if (this.configuration.USE_SENTRY || this.configuration.USE_SSO) {
-      ConsoleUtil.log("Setting up Sentry...");
-      ConsoleUtil.log("Using SSO...");
-      Sentry.init({dsn: this.configuration.SENTRY_DSN});
+      ConsoleUtil.log('Setting up Sentry...');
+      ConsoleUtil.log('Using SSO...');
+      Sentry.init({ dsn: this.configuration.SENTRY_DSN });
     } else {
-      ConsoleUtil.log("Not using Sentry...");
-      ConsoleUtil.log("Not using SSO...");
+      ConsoleUtil.log('Not using Sentry...');
+      ConsoleUtil.log('Not using SSO...');
     }
   }
 
@@ -78,29 +78,27 @@ export class App {
     if (!this.configuration.USE_SSO) {
       let account = await nodemailer.createTestAccount();
       transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
+        host: 'smtp.ethereal.email',
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
           user: account.user, // generated ethereal user
-          pass: account.pass // generated ethereal password
-        }
+          pass: account.pass, // generated ethereal password
+        },
       });
 
-      ConsoleUtil.log("Setting up Mailer for development...");
-    }
-
-    else {
+      ConsoleUtil.log('Setting up Mailer for development...');
+    } else {
       transporter = nodemailer.createTransport({
         host: this.configuration.MAIL_HOST,
-        port: this.configuration.MAIL_PORT
+        port: this.configuration.MAIL_PORT,
       });
 
-      ConsoleUtil.log("Setting up Mailer for production...");
+      ConsoleUtil.log('Setting up Mailer for production...');
     }
 
-    this.express.set("transporter", transporter);
-    ConsoleUtil.log("Done setting up Mailer...");
+    this.express.set('transporter', transporter);
+    ConsoleUtil.log('Done setting up Mailer...');
   }
 
   public async run() {
@@ -108,9 +106,8 @@ export class App {
       await this.setUpDatabase();
       await this.setupMailer();
       await this.setUpManta();
-
     } catch (e) {
-      console.error("Database connection error: ", e);
+      console.error('Database connection error: ', e);
     }
 
     this.setUpExpress();

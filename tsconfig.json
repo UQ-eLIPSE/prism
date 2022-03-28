@@ -5,9 +5,7 @@
     "module": "commonjs",
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "lib": [
-      "es2015"
-    ],
+    "lib": ["es2015"],
     "outDir": "dist",
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -23,14 +21,7 @@
       "*": ["src/types/*", "node_modules/*"]
     }
   },
-  "files": [
-    "src/main.ts"
-  ],
-  "exclude": [
-    "node_modules/*"
-  ],
-  "include": [
-    "./src/**/*.ts"
-  ]
+  "files": ["src/main.ts"],
+  "exclude": ["node_modules/*"],
+  "include": ["./src/**/*.ts"]
 }
-  

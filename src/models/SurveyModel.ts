@@ -137,15 +137,23 @@ const MinimapImagesSchema: Schema = new Schema({
 });
 
 export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);
-export const SurveyNode: Model<ISurveyNode> = model<ISurveyNode>('survey_nodes', SurveyNodeSchema);
-export const MinimapNode: Model<IMinimapNode> = model<IMinimapNode>('minimap_nodes', MinimapNodeSchema);
-export const MinimapConversion: Model<IMinimapConversion> = model<IMinimapConversion>(
-  'minimap_conversion',
-  MinimapConversionSchema
+export const SurveyNode: Model<ISurveyNode> = model<ISurveyNode>(
+  'survey_nodes',
+  SurveyNodeSchema,
 );
-export const HotspotDescription: Model<IHotspotDescription> = model<IHotspotDescription>(
-  'hotspot_description',
-  HotspotDescriptionSchema,
-  'hotspot_description'
+export const MinimapNode: Model<IMinimapNode> = model<IMinimapNode>(
+  'minimap_nodes',
+  MinimapNodeSchema,
 );
-export const MinimapImages: Model<IMinimapImages> = model<IMinimapImages>('minimap_images', MinimapImagesSchema);
+export const MinimapConversion: Model<IMinimapConversion> =
+  model<IMinimapConversion>('minimap_conversion', MinimapConversionSchema);
+export const HotspotDescription: Model<IHotspotDescription> =
+  model<IHotspotDescription>(
+    'hotspot_description',
+    HotspotDescriptionSchema,
+    'hotspot_description',
+  );
+export const MinimapImages: Model<IMinimapImages> = model<IMinimapImages>(
+  'minimap_images',
+  MinimapImagesSchema,
+);
