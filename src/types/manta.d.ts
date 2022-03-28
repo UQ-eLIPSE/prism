@@ -1,103 +1,96 @@
-declare module "manta" {
-
-  import * as stream from "stream";
+declare module 'manta' {
+  import * as stream from 'stream';
 
   namespace auth {
-
     export function cliSigner(options: any): any;
     export function privateKeySigner(options: any): any;
     export function sshAgentSigner(options: any): any;
     export function loadSSHKey(fp: any, cb: any): void;
-
   }
 
-
   namespace cc {
-
     interface DefaultOptionOneName {
-
-      name: string,
-      type: string,
-      help?: string,
-      helpArg?: string,
-      env?: string,
-      default?: boolean,
-      hidden?: boolean,
+      name: string;
+      type: string;
+      help?: string;
+      helpArg?: string;
+      env?: string;
+      default?: boolean;
+      hidden?: boolean;
     }
-
 
     interface DefaultOptionManyNames {
-
-      names: string[],
-      type: string,
-      help?: string,
-      helpArg?: string,
-      env?: string,
-      default?: boolean,
-      hidden?: boolean,
+      names: string[];
+      type: string;
+      help?: string;
+      helpArg?: string;
+      env?: string;
+      default?: boolean;
+      hidden?: boolean;
     }
-
 
     interface DefaultOptionGroup {
-
-      group: string,
+      group: string;
     }
 
-
-    type DefaultOptions = (DefaultOptionOneName | DefaultOptionManyNames | DefaultOptionGroup)[];
-
+    type DefaultOptions = (
+      | DefaultOptionOneName
+      | DefaultOptionManyNames
+      | DefaultOptionGroup
+    )[];
 
     interface CreateClientOptionsRetry {
-
-      minTimeout: number,
-      maxTimeout: number,
-      retries: number,
+      minTimeout: number;
+      maxTimeout: number;
+      retries: number;
     }
-
 
     interface CreateClientOptions extends manta.ClientOptions {
-
-      agent: any,
-      rejectUnauthorized: any,
-      retry: CreateClientOptionsRetry,
+      agent: any;
+      rejectUnauthorized: any;
+      retry: CreateClientOptionsRetry;
     }
-
 
     const DEFAULTanyOPTIONS: DefaultOptions;
 
-    function createClient(options: Partial<CreateClientOptions>): manta.MantaClient;
-    function createClientFromFileSync(filename: string, log: any): manta.MantaClient;
+    function createClient(
+      options: Partial<CreateClientOptions>,
+    ): manta.MantaClient;
+    function createClientFromFileSync(
+      filename: string,
+      log: any,
+    ): manta.MantaClient;
     function checkBinEnv(opts: any): void;
-    function cloneOptions(options: Partial<CreateClientOptions>): Partial<CreateClientOptions>;
+    function cloneOptions(
+      options: Partial<CreateClientOptions>,
+    ): Partial<CreateClientOptions>;
     function createBinClient(opts: any): any;
     function usage(parser: any, errmsg: any, extra: any): void;
     function setupLogger(opts: any, log: any): any;
     function versionCheckPrintAndExit(opts: any): void;
-    function completionCheckPrintAndExit(opts: any, parser: any, name: string, argtypes?: string[]): void;
-
+    function completionCheckPrintAndExit(
+      opts: any,
+      parser: any,
+      name: string,
+      argtypes?: string[],
+    ): void;
   }
 
-
   namespace manta {
-
     interface ClientOptions {
-
-      connectTimeout: number,
-      headers?: { [key: string]: string },
-      socketPath: string,
-      url: string,
-      user: string,
-      subuser: string | null,
-      role: string[],
-      sign: any,
+      connectTimeout: number;
+      headers?: { [key: string]: string };
+      socketPath: string;
+      url: string;
+      user: string;
+      subuser: string | null;
+      role: string[];
+      sign: any;
     }
-
 
     type JobConfiguration = string | string[] | Object;
 
-
     class MantaClient {
-
       constructor(options: ClientOptions);
 
       close(): void;
@@ -174,9 +167,7 @@ declare module "manta" {
       getUpload(id: string, opts: any, cb: any): void;
       commitUpload(id: string, p: string, cb: any): void;
       commitUpload(id: string, p: string, opts: any, cb: any): void;
-
     }
-
 
     function getPath(p: string, skipEncode: boolean): string;
     function getPath(p: string, user: string, skipEncode: boolean): string;
@@ -184,38 +175,29 @@ declare module "manta" {
 
     const path: typeof getPath;
     const jobPath: typeof getJobPath;
-
   }
 
-
   namespace options {
-
     interface ParseOptionsOptions {
-      name: string,
-      parser: any,
-      argTypes: string[],
-      parseCmdOptions: any,
-      log: any,
+      name: string;
+      parser: any;
+      argTypes: string[];
+      parseCmdOptions: any;
+      log: any;
     }
-
 
     function parseOptions(args: ParseOptionsOptions): any;
   }
 
-
   namespace progbar {}
-
 
   namespace Queue {}
 
-
   namespace StringStream {}
-
 
   namespace utils {
     function escapePath(s: string): string;
   }
-
 
   export const Queue: any;
   export const StringStream: any;
@@ -241,5 +223,4 @@ declare module "manta" {
   export const jobPath: typeof manta.jobPath;
   export const escapePath: typeof utils.escapePath;
   export const parseOptions: typeof options.parseOptions;
-
 }

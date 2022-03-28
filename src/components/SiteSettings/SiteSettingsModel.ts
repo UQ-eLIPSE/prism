@@ -127,4 +127,7 @@ const SiteSettingSchema: Schema = new Schema({
   num_floors: { type: Number },
 });
 
-export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>('site_settings', SiteSettingSchema);
+export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
+  'site_settings',
+  SiteSettingSchema,
+);

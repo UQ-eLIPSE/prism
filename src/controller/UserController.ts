@@ -19,7 +19,9 @@ export class UserController {
    */
   public async createNewUser(req: Request, res: Response) {
     const { email } = res.locals.user;
-    const invitedUser: IUser | null = await InvitedUser.findOne({ email: email });
+    const invitedUser: IUser | null = await InvitedUser.findOne({
+      email: email,
+    });
     const isInternalUser = CommonUtil.isInternalUser(email);
 
     if (!invitedUser && isInternalUser) {
@@ -36,34 +38,56 @@ export class UserController {
       });
       const create = await newUser.save();
 
-      if (!create) return CommonUtil.failResponse(res, 'User is not authorized');
+      if (!create)
+        return CommonUtil.failResponse(res, 'User is not authorized');
 
       await AuthUtil.generateToken(res, newUser.username, newUser._id);
       return CommonUtil.successResponse(res, `${role} user is created`);
     } else {
-      if (!invitedUser && !isInternalUser) return CommonUtil.failResponse(res, 'User is not authorized');
+      if (!invitedUser && !isInternalUser)
+        return CommonUtil.failResponse(res, 'User is not authorized');
 
       const { firstName, lastName, email, role } = <IUser>invitedUser;
       const { user } = res.locals.user;
       // if user is in the invited user table and they login using uq sso.
       if (invitedUser && isInternalUser) {
-        const newUser: IUser = await new User({ firstName, lastName, email, role, username: user });
+        const newUser: IUser = await new User({
+          firstName,
+          lastName,
+          email,
+          role,
+          username: user,
+        });
         await newUser.save();
         await AuthUtil.generateToken(res, newUser.username, newUser._id);
-        return CommonUtil.successResponse<IResponse<string>>(res, 'Guest user is created');
+        return CommonUtil.successResponse<IResponse<string>>(
+          res,
+          'Guest user is created',
+        );
       }
 
       const { username } = res.locals.user || req.body;
       const usernameIsFound = await User.findOne({ username });
 
-      if (usernameIsFound) return CommonUtil.failResponse(res, 'username has already exists');
+      if (usernameIsFound)
+        return CommonUtil.failResponse(res, 'username has already exists');
 
       const password = bcrypt.hashSync(res.locals.user.password, 10) || '';
-      const newUser: IUser = await new User({ firstName, lastName, email, role, username, password });
+      const newUser: IUser = await new User({
+        firstName,
+        lastName,
+        email,
+        role,
+        username,
+        password,
+      });
       await newUser.save();
       await InvitedUser.deleteOne({ email: email });
 
-      return CommonUtil.successResponse<IResponse<string>>(res, 'User has been created');
+      return CommonUtil.successResponse<IResponse<string>>(
+        res,
+        'User has been created',
+      );
     }
   }
 
@@ -86,7 +110,11 @@ export class UserController {
 
     const currentUser: IUser | null = await User.findOne({ username });
 
-    if (!currentUser) return CommonUtil.failResponse(res, 'make sure user email address is correct');
+    if (!currentUser)
+      return CommonUtil.failResponse(
+        res,
+        'make sure user email address is correct',
+      );
 
     return CommonUtil.successResponse(res, '', <IUser>currentUser);
   }
@@ -99,15 +127,23 @@ export class UserController {
   public async updateUserRole(req: Request, res: Response) {
     const { usernameToBeUpdated } = req.params;
 
-    const isUserToBeDeletedFound = await User.findOne({ username: usernameToBeUpdated });
-    if (!isUserToBeDeletedFound) return CommonUtil.failResponse(res, 'user to be deleted is not found');
+    const isUserToBeDeletedFound = await User.findOne({
+      username: usernameToBeUpdated,
+    });
+    if (!isUserToBeDeletedFound)
+      return CommonUtil.failResponse(res, 'user to be deleted is not found');
 
-    const isInternalUser = CommonUtil.isInternalUser(isUserToBeDeletedFound.email);
+    const isInternalUser = CommonUtil.isInternalUser(
+      isUserToBeDeletedFound.email,
+    );
 
     if (!isInternalUser) {
       await User.deleteOne({ username: isUserToBeDeletedFound.username });
     } else {
-      await User.updateOne({ username: isUserToBeDeletedFound.username }, { role: 'guest' });
+      await User.updateOne(
+        { username: isUserToBeDeletedFound.username },
+        { role: 'guest' },
+      );
     }
 
     return CommonUtil.successResponse(res, 'user is successfully deleted');
@@ -125,9 +161,19 @@ export class UserController {
     const size = parseInt(req.query.size as string) || maxResult;
     const fieldToSearch = { role: 'projectAdmin' };
 
-    const results = await UserService.setUserListPagination(maxResult, pageNo, size, fieldToSearch, res);
+    const results = await UserService.setUserListPagination(
+      maxResult,
+      pageNo,
+      size,
+      fieldToSearch,
+      res,
+    );
 
-    return CommonUtil.successResponse<IResponse<IUserList>>(res, '', <IUserList>results);
+    return CommonUtil.successResponse<IResponse<IUserList>>(
+      res,
+      '',
+      <IUserList>results,
+    );
   }
 
   /**
@@ -151,8 +197,18 @@ export class UserController {
       email: searchRegex,
     };
 
-    const results = await UserService.setUserListPagination(maxResult, pageNo, size, fieldToSearchCount, res);
-    return CommonUtil.successResponse(res, `${(<IUserList>results).users.length} users is found`, <IUserList>results);
+    const results = await UserService.setUserListPagination(
+      maxResult,
+      pageNo,
+      size,
+      fieldToSearchCount,
+      res,
+    );
+    return CommonUtil.successResponse(
+      res,
+      `${(<IUserList>results).users.length} users is found`,
+      <IUserList>results,
+    );
   }
 
   /**
@@ -170,9 +226,13 @@ export class UserController {
     const { JWT_Hash } = process.env;
 
     const secureToken = !isInternalUser
-      ? jwt.sign({ firstName, lastName, email, role }, <string>JWT_Hash, { algorithm: 'HS256' })
+      ? jwt.sign({ firstName, lastName, email, role }, <string>JWT_Hash, {
+          algorithm: 'HS256',
+        })
       : '';
-    const loginUrl = isInternalUser ? 'http://localhost:8000/login' : `http://localhost:8000/login/${secureToken}`;
+    const loginUrl = isInternalUser
+      ? 'http://localhost:8000/login'
+      : `http://localhost:8000/login/${secureToken}`;
 
     let mailOption: MailOptions = {
       from: 'admin@uwmt-001.zones.eait.uq.edu.au',
@@ -181,18 +241,31 @@ export class UserController {
     };
 
     if (!invitedUser) {
-      const newInvitedUser = new InvitedUser({ firstName, lastName, email, role });
+      const newInvitedUser = new InvitedUser({
+        firstName,
+        lastName,
+        email,
+        role,
+      });
       await newInvitedUser.save();
 
       mailOption['to'] = newInvitedUser.email;
 
       await MailService.sendMail(mailOption, <Mail>transporter);
-      return CommonUtil.successResponse(res, `An invite email has been sent to ${email}`, newInvitedUser);
+      return CommonUtil.successResponse(
+        res,
+        `An invite email has been sent to ${email}`,
+        newInvitedUser,
+      );
     }
 
     mailOption['to'] = invitedUser.email;
     await MailService.sendMail(mailOption, <Mail>transporter);
-    return CommonUtil.successResponse(res, `An invite email has been sent to ${email}`, invitedUser);
+    return CommonUtil.successResponse(
+      res,
+      `An invite email has been sent to ${email}`,
+      invitedUser,
+    );
   }
 
   /**
@@ -205,13 +278,27 @@ export class UserController {
 
     const isInvitedUserFound = await InvitedUser.findById(_id);
 
-    if (!isInvitedUserFound) return CommonUtil.failResponse(res, 'user is not found');
-    if (firstName && firstName !== '') await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { firstName });
-    if (lastName && lastName !== '') await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { lastName });
-    if (email && email !== '') await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { email });
-    if (role && role !== '') await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { role });
+    if (!isInvitedUserFound)
+      return CommonUtil.failResponse(res, 'user is not found');
+    if (firstName && firstName !== '')
+      await InvitedUser.updateOne(
+        { _id: isInvitedUserFound._id },
+        { firstName },
+      );
+    if (lastName && lastName !== '')
+      await InvitedUser.updateOne(
+        { _id: isInvitedUserFound._id },
+        { lastName },
+      );
+    if (email && email !== '')
+      await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { email });
+    if (role && role !== '')
+      await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { role });
 
-    return CommonUtil.successResponse(res, 'user details is successfully updated');
+    return CommonUtil.successResponse(
+      res,
+      'user details is successfully updated',
+    );
   }
 
   /**
@@ -248,7 +335,11 @@ export class UserController {
     const userFound = await User.findOne({ email });
     const isInternalUser = email.includes('uq.edu.au');
 
-    if (isInternalUser) return CommonUtil.failResponse(res, 'Please change your password from UQ SSO');
+    if (isInternalUser)
+      return CommonUtil.failResponse(
+        res,
+        'Please change your password from UQ SSO',
+      );
     if (!userFound) return;
 
     const { firstName, lastName, role } = <IUser>userFound;
@@ -256,12 +347,18 @@ export class UserController {
 
     const { JWT_Hash } = process.env;
 
-    const secureToken = jwt.sign({ firstName, lastName, email: userFound.email, role }, <string>JWT_Hash, {
-      algorithm: 'HS256',
-      expiresIn: '1d',
-    });
+    const secureToken = jwt.sign(
+      { firstName, lastName, email: userFound.email, role },
+      <string>JWT_Hash,
+      {
+        algorithm: 'HS256',
+        expiresIn: '1d',
+      },
+    );
 
-    const loginUrl = isInternalUser ? 'http://localhost:8000/login' : `http://localhost:8000/login/${secureToken}`;
+    const loginUrl = isInternalUser
+      ? 'http://localhost:8000/login'
+      : `http://localhost:8000/login/${secureToken}`;
 
     const mailOption = {
       from: 'admin@uwmt-001.zones.eait.uq.edu.au',
@@ -271,7 +368,10 @@ export class UserController {
     };
 
     await MailService.sendMail(mailOption, <Mail>transporter);
-    return CommonUtil.successResponse(res, `We will send the email to reset your password if your email is found`);
+    return CommonUtil.successResponse(
+      res,
+      `We will send the email to reset your password if your email is found`,
+    );
   }
 
   /**
@@ -288,7 +388,10 @@ export class UserController {
 
     if (!userFound) return CommonUtil.failResponse(res, 'User is not found');
 
-    await User.findOneAndUpdate({ email }, { password: bcrypt.hashSync(password, 10) });
+    await User.findOneAndUpdate(
+      { email },
+      { password: bcrypt.hashSync(password, 10) },
+    );
     return CommonUtil.successResponse(res, 'Password is updated successfully');
   }
 

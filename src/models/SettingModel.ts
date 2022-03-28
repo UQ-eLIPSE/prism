@@ -10,4 +10,7 @@ const SettingSchema: Schema = new Schema({
   faqPageVisibility: { type: Boolean },
 });
 
-export const Settings: Model<ISettings> = model<ISettings>('Settings', SettingSchema);
+export const Settings: Model<ISettings> = model<ISettings>(
+  'Settings',
+  SettingSchema,
+);

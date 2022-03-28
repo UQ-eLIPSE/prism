@@ -45,7 +45,7 @@ export const TEMPLATE: Configuration = {
   MANTA_ROLES: [],
   MANTA_USER: '',
   MANTA_ROOT_FOLDER: '',
-  TMP_FOLDER: ''
+  TMP_FOLDER: '',
 };
 
 /**
@@ -58,10 +58,16 @@ export function loadConfiguration(): Configuration {
   const dotEnvLoad = dotenv.config();
 
   if (dotEnvLoad.error) {
-    throw Error('Dot env failed to load the environment file. Check the environment file');
+    throw Error(
+      'Dot env failed to load the environment file. Check the environment file',
+    );
   }
 
-  if (!dotEnvLoad || !dotEnvLoad.parsed || Object.keys(dotEnvLoad.parsed).length === 0) {
+  if (
+    !dotEnvLoad ||
+    !dotEnvLoad.parsed ||
+    Object.keys(dotEnvLoad.parsed).length === 0
+  ) {
     throw Error('Empty environment file. Check the environment file.');
   }
 

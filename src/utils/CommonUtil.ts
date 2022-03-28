@@ -14,7 +14,11 @@ export abstract class CommonUtil {
     }));
   }
 
-  public static successResponse<T>(res: Response, message: string, payload?: any): Response {
+  public static successResponse<T>(
+    res: Response,
+    message: string,
+    payload?: any,
+  ): Response {
     return res.status(200).json(<T>(<any>{
       success: true,
       payload: payload,

@@ -15,6 +15,10 @@ export class SiteSettingsController {
     const results = await SiteService.getSettings(res);
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
 
-    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.settings[0]);
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      results.settings[0],
+    );
   }
 }
