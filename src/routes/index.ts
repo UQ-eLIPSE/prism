@@ -5,7 +5,7 @@ import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
-import { SiteSettingsController } from '../components/SiteSettings/SiteSettingsController';
+import { SiteSettingsController } from '../components/Site/SiteController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -113,6 +113,8 @@ export class Routes {
     /**
      * Client side APIs
      */
+
+    //Surveys
     router.get(
       '/site/:siteId/survey/details/',
       this.surveyController.getIndividualSurveysDetails,
@@ -121,10 +123,14 @@ export class Routes {
       '/site/:siteId/survey/details/compact',
       this.surveyController.getSurveyCompactVersion,
     );
+
+    //resources
     router.get(
       '/site/:siteId/resources/:page',
       this.resourceController.getAllResources,
     );
+
+    //documentation
     router.get(
       '/site/:siteId/documentation',
       this.resourceController.getAllDocumentation,
@@ -133,6 +139,8 @@ export class Routes {
       '/documentation/details',
       this.resourceController.getIndividualDocumentation,
     );
+
+    //directores
     router.get(
       '/directories/details',
       this.resourceController.getIndividualDirectory,
@@ -141,21 +149,30 @@ export class Routes {
       '/site/:siteId/directories/root',
       this.resourceController.getRootDirectory,
     );
+
+    //about
     router.get('/site/:siteId/about', this.resourceController.getAboutInfo);
+
+    //hotspot
     router.get(
       '/site/:siteId/hotspot/details',
       this.surveyController.getIndividualHotspotDescription,
     );
+
+    //minimap
     router.get(
       '/site/:siteId/minimap/details',
       this.surveyController.getMinimapImage,
     );
+
+    //settings
     router.get(
       '/site/:siteId/settings',
       this.siteSettingsController.getSettings,
     );
+
+    //sites
     router.get('/sites', this.siteSettingsController.getSites);
-    router.get('/sitemap', this.siteSettingsController.getSiteMap);
     router.post('/sites', this.siteSettingsController.createSite);
 
     /**
