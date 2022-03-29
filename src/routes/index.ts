@@ -6,6 +6,7 @@ import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
 import { SiteController } from '../components/Site/SiteController';
+import MapPinsController from '../components/mapPins/MapPinsController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -14,6 +15,7 @@ export class Routes {
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
   public siteController = new SiteController();
+  public mapPinsController: MapPinsController = new MapPinsController();
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
@@ -172,7 +174,10 @@ export class Routes {
     router.get('/sites', this.siteController.getSites);
     router.post('/sites', this.siteController.createSite);
 
-    router.get('/map_pins');
+    //Map pins
+    router.get('/map-pins', this.mapPinsController.getAllPins);
+    router.get('/map-pins/:id', this.mapPinsController.getPin);
+    router.post('/map-pins', this.mapPinsController.createPin);
 
     /**
      * Admin section APIs
