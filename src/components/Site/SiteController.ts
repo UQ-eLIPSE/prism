@@ -31,7 +31,8 @@ export class SiteSettingsController {
    * Get all sites controller
    * @param req
    * @param res
-   * @returns
+   * @returns success response, array of sites
+   * or fail response
    */
   public async getSites(req: Request, res: Response) {
     const results = await SiteService.getSites();
@@ -43,6 +44,13 @@ export class SiteSettingsController {
       results.sites,
     );
   }
+
+  /**
+   * Create site Controller
+   * @param req
+   * @param res
+   * @returns
+   */
   public async createSite(req: Request, res: Response) {
     const site: ISite = req.body;
 
