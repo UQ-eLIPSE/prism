@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
-import { ISite, ISiteSettings } from './SiteSettingsModel';
+import { ISite, ISiteSettings } from './SiteModel';
 import { IResponse } from '../../utils/CommonUtil';
 import { CommonUtil } from '../../utils/CommonUtil';
 
-import { SiteService } from './SiteSettingsService';
+import { SiteService } from './SiteService';
 
+/**
+ * Controller for getting site specific settings
+ */
 export class SiteSettingsController {
   /**
    * Get settings for the frontend
@@ -23,6 +26,13 @@ export class SiteSettingsController {
       results.settings[0],
     );
   }
+
+  /**
+   * Get all sites controller
+   * @param req
+   * @param res
+   * @returns
+   */
   public async getSites(req: Request, res: Response) {
     const results = await SiteService.getSites();
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');

@@ -1,4 +1,4 @@
-import { ISite, Site, SiteSettings } from './SiteSettingsModel';
+import { ISite, Site, SiteSettings } from './SiteModel';
 import { Response } from 'express-serve-static-core';
 import { ObjectId, ObjectID } from 'bson';
 
