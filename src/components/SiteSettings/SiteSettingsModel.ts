@@ -156,6 +156,12 @@ const SiteMapSchema: Schema = new Schema({
   image: { type: String },
 });
 
-export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>('site_settings', SiteSettingSchema);
+export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
+  'site_settings',
+  SiteSettingSchema,
+);
 export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);
-export const SiteMap: Model<ISiteMap> = model<ISiteMap>('site_map', SiteMapSchema);
+export const SiteMap: Model<ISiteMap> = model<ISiteMap>(
+  'site_map',
+  SiteMapSchema,
+);

@@ -36,10 +36,15 @@ export class ResourceController {
    */
   public async createNewResource(req: Request, res: Response, err: any) {
     const { file } = req;
-    const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
+    const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } =
+      process.env;
 
     if (!file) return CommonUtil.failResponse(res, 'File is not found');
-    if (err.code === 'LIMIT_FILE_SIZE') return CommonUtil.failResponse(res, 'File is too big. Max file size is 1GB');
+    if (err.code === 'LIMIT_FILE_SIZE')
+      return CommonUtil.failResponse(
+        res,
+        'File is too big. Max file size is 1GB',
+      );
 
     const uploadedAt = new Date().getTime();
     const uploadedBy = res.locals.user._id;
@@ -47,7 +52,13 @@ export class ResourceController {
     const contentType = file.mimetype;
     const url = `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${name}`;
 
-    const newResource = await new Resource({ uploadedAt, uploadedBy, name, contentType, url });
+    const newResource = await new Resource({
+      uploadedAt,
+      uploadedBy,
+      name,
+      contentType,
+      url,
+    });
     await newResource.save();
 
     return CommonUtil.successResponse(res, '', newResource);
@@ -61,10 +72,12 @@ export class ResourceController {
   public async updateResource(req: Request, res: Response) {
     const { id } = req.params;
     const isResourceFound = Resource.findById(id);
-    const { description, areaName, category, subcategory, resourceType } = req.body;
+    const { description, areaName, category, subcategory, resourceType } =
+      req.body;
     const modifiedAt = new Date().getTime().toString();
 
-    if (!isResourceFound) return CommonUtil.failResponse(res, 'Resource is not found');
+    if (!isResourceFound)
+      return CommonUtil.failResponse(res, 'Resource is not found');
     await Resource.findByIdAndUpdate(id, {
       description,
       areaName,
@@ -75,7 +88,10 @@ export class ResourceController {
       modifiedAt,
     });
 
-    return CommonUtil.successResponse(res, 'Resource has been successfully updated');
+    return CommonUtil.successResponse(
+      res,
+      'Resource has been successfully updated',
+    );
   }
 
   /**
@@ -90,9 +106,15 @@ export class ResourceController {
     const { siteId } = req.params;
     if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
 
-    const allResources = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res, {
-      site: new ObjectId(siteId),
-    });
+    const allResources = await ResourceService.setResourceListPagination(
+      maxResult,
+      pageNo,
+      size,
+      res,
+      {
+        site: new ObjectId(siteId),
+      },
+    );
 
     return CommonUtil.successResponse(res, '', allResources);
   }
@@ -126,7 +148,13 @@ export class ResourceController {
       modifiedBy: searchRegex,
     };
 
-    const results = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res, fieldToSearchCount);
+    const results = await ResourceService.setResourceListPagination(
+      maxResult,
+      pageNo,
+      size,
+      res,
+      fieldToSearchCount,
+    );
     return CommonUtil.successResponse(res, '', results);
   }
 
@@ -143,7 +171,10 @@ export class ResourceController {
     const newArea = await new Area({ name, description });
     await newArea.save();
 
-    return CommonUtil.successResponse(res, 'New area has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New area has been successfully created',
+    );
   }
 
   /**
@@ -168,7 +199,10 @@ export class ResourceController {
     const newType = await new Type({ name, description });
     await newType.save();
 
-    return CommonUtil.successResponse(res, 'New type has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New type has been successfully created',
+    );
   }
 
   /**
@@ -192,7 +226,10 @@ export class ResourceController {
     const newCategory = await new Category({ name, subcategories });
     await newCategory.save();
 
-    return CommonUtil.successResponse(res, 'New category has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New category has been successfully created',
+    );
   }
 
   /**
@@ -219,14 +256,18 @@ export class ResourceController {
     if (parentCategories.length) {
       for (let category of parentCategories) {
         const parentCategories = await Category.findById(category);
-        if (!parentCategories) return CommonUtil.failResponse(res, 'Parent category is not found');
+        if (!parentCategories)
+          return CommonUtil.failResponse(res, 'Parent category is not found');
 
         parentCategories.subcategories.push(newSubcategories._id);
         await parentCategories.save();
       }
     }
 
-    return CommonUtil.successResponse(res, 'New subcategory has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New subcategory has been successfully created',
+    );
   }
 
   /**
@@ -304,7 +345,10 @@ export class ResourceController {
     try {
       if (!siteId) throw new Error('Site Id is not provided');
 
-      const dirObject = await Directories.findOne({ parent: { $exists: false }, site: new ObjectId(siteId) });
+      const dirObject = await Directories.findOne({
+        parent: { $exists: false },
+        site: new ObjectId(siteId),
+      });
 
       if (!dirObject) throw new Error('dirObject not found.');
 

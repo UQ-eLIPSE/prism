@@ -50,7 +50,8 @@ export class SurveyController {
     const { surveyValidationMessage } = res.locals;
 
     if (!file) return CommonUtil.failResponse(res, 'File is not found');
-    if (surveyValidationMessage) return CommonUtil.failResponse(res, surveyValidationMessage);
+    if (surveyValidationMessage)
+      return CommonUtil.failResponse(res, surveyValidationMessage);
     else result = <any>file;
 
     const {
@@ -65,7 +66,10 @@ export class SurveyController {
     } = process.env;
     const destPath = path.join(<string>TMP_FOLDER);
 
-    const zip = new StreamZip({ file: `${file.destination}/${file.filename}`, storeEntries: true });
+    const zip = new StreamZip({
+      file: `${file.destination}/${file.filename}`,
+      storeEntries: true,
+    });
 
     zip.on('ready', async () => {
       const entries = Object.values(zip.entries());
@@ -81,7 +85,7 @@ export class SurveyController {
               return;
             }
             console.log('tarball is created && muntarcmd has been executed');
-          }
+          },
         );
       });
     });
@@ -99,7 +103,12 @@ export class SurveyController {
     const pageNo = parseInt(req.params.page) || 1;
     const size = parseInt(req.query.size as string) || maxResult;
 
-    const allSurveys = await SurveyService.setSurveyPagination(maxResult, pageNo, size, res);
+    const allSurveys = await SurveyService.setSurveyPagination(
+      maxResult,
+      pageNo,
+      size,
+      res,
+    );
     return CommonUtil.successResponse(res, '', allSurveys);
   }
 
@@ -114,33 +123,48 @@ export class SurveyController {
     let allSurveys: IMinimapConversion | any = [];
     let results: IMinimapConversion | any = [];
 
-    if (!siteId) return CommonUtil.failResponse(res, 'Site ID has not been provided');
+    if (!siteId)
+      return CommonUtil.failResponse(res, 'Site ID has not been provided');
 
     if (floor) {
-      allSurveys = await MinimapConversion.find({ floor, site: new ObjectID(siteId) }, '-_id')
+      allSurveys = await MinimapConversion.find(
+        { floor, site: new ObjectID(siteId) },
+        '-_id',
+      )
         .populate('survey_node', '-_id')
         .populate('minimap_node', '-_id');
 
       results = allSurveys;
 
-      if (!results) return CommonUtil.failResponse(res, 'Surveys with the floor number is not found');
+      if (!results)
+        return CommonUtil.failResponse(
+          res,
+          'Surveys with the floor number is not found',
+        );
     }
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await SurveyNode.find({ date: date, site: new ObjectID(siteId) });
+        const surveyNode = await SurveyNode.find({
+          date: date,
+          site: new ObjectID(siteId),
+        });
         for (let node of surveyNode) {
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
               .populate('survey_node', '-_id')
-              .populate('minimap_node', '-_id')
+              .populate('minimap_node', '-_id'),
           );
         }
       }
 
       results = allSurveys.filter((survey: IMinimapConversion) => {
-        const specificDate = date ? new Date(date).getTime() : new Date().getTime();
-        const dbDate = survey.survey_node.date ? new Date(survey.survey_node.date).getTime() : new Date().getTime();
+        const specificDate = date
+          ? new Date(date).getTime()
+          : new Date().getTime();
+        const dbDate = survey.survey_node.date
+          ? new Date(survey.survey_node.date).getTime()
+          : new Date().getTime();
         return dbDate === specificDate;
       });
     }
@@ -162,15 +186,20 @@ export class SurveyController {
     let results: any[] = [];
     const map = new Map();
 
-    if (!siteId) return CommonUtil.failResponse(res, 'Site ID has not been provided');
+    if (!siteId)
+      return CommonUtil.failResponse(res, 'Site ID has not been provided');
 
     try {
       if (floor) {
-        surveysWithFloor = await MinimapNode.find({ floor, site: new ObjectID(siteId) }, '-_id').populate(
-          'survey_node',
-          '-_id'
-        );
-        if (!surveysWithFloor) return CommonUtil.failResponse(res, 'Survey with the floor number is not found');
+        surveysWithFloor = await MinimapNode.find(
+          { floor, site: new ObjectID(siteId) },
+          '-_id',
+        ).populate('survey_node', '-_id');
+        if (!surveysWithFloor)
+          return CommonUtil.failResponse(
+            res,
+            'Survey with the floor number is not found',
+          );
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.survey_name) || !map.has(floor)) {
             map.set(survey.survey_node.survey_name, true);
@@ -184,18 +213,30 @@ export class SurveyController {
           }
         });
       } else if (date) {
-        surveyWithDate = await SurveyNode.find({ date, site: new ObjectID(siteId) });
-        if (!surveyWithDate) return CommonUtil.failResponse(res, 'Survey with the date is not found');
-
-        for (let survey of surveyWithDate) {
-          surveysWithFloor = await MinimapNode.find({ survey_node: survey._id }, '-_id').populate(
-            'survey_node',
-            '-_id'
+        surveyWithDate = await SurveyNode.find({
+          date,
+          site: new ObjectID(siteId),
+        });
+        if (!surveyWithDate)
+          return CommonUtil.failResponse(
+            res,
+            'Survey with the date is not found',
           );
 
-          if (!surveysWithFloor || !Array.isArray(surveysWithFloor)) throw new Error('Unable to fetch the data');
+        for (let survey of surveyWithDate) {
+          surveysWithFloor = await MinimapNode.find(
+            { survey_node: survey._id },
+            '-_id',
+          ).populate('survey_node', '-_id');
+
+          if (!surveysWithFloor || !Array.isArray(surveysWithFloor))
+            throw new Error('Unable to fetch the data');
           surveysWithFloor.map((surveyData) => {
-            if (!map.has(surveyData.survey_node.survey_name) || !map.has(date) || !map.has(surveyData.floor)) {
+            if (
+              !map.has(surveyData.survey_node.survey_name) ||
+              !map.has(date) ||
+              !map.has(surveyData.floor)
+            ) {
               map.set(surveyData.survey_node.survey_name, true);
               map.set(date, true);
               map.set(surveyData.floor, true);
@@ -209,8 +250,11 @@ export class SurveyController {
           });
         }
       } else {
-        surveysWithFloor = await MinimapNode.find({ site: new ObjectID(siteId) }).populate('survey_node', '-_id');
-        if (!surveysWithFloor) return CommonUtil.failResponse(res, 'Surveys not found');
+        surveysWithFloor = await MinimapNode.find({
+          site: new ObjectID(siteId),
+        }).populate('survey_node', '-_id');
+        if (!surveysWithFloor)
+          return CommonUtil.failResponse(res, 'Surveys not found');
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.survey_name)) {
             map.set(survey.survey_node.survey_name, true);
@@ -249,7 +293,13 @@ export class SurveyController {
       survey_name: searchRegex,
     };
 
-    const results = await SurveyService.setSurveyPagination(maxResult, pageNo, size, res, fieldToSearchCount);
+    const results = await SurveyService.setSurveyPagination(
+      maxResult,
+      pageNo,
+      size,
+      res,
+      fieldToSearchCount,
+    );
     return CommonUtil.successResponse(res, '', results);
   }
 
@@ -262,14 +312,19 @@ export class SurveyController {
     const { id } = req.params;
 
     const surveyToBeDeleted = await Survey.findById(id);
-    if (!surveyToBeDeleted) return CommonUtil.failResponse(res, 'Survey is not found');
+    if (!surveyToBeDeleted)
+      return CommonUtil.failResponse(res, 'Survey is not found');
 
     const surveyNodes = surveyToBeDeleted.survey_nodes;
 
     for (let surveyNode of surveyNodes) {
       await SurveyNode.findByIdAndRemove(id);
-      const relatedMiniMapConversions = await MinimapConversion.findOne({ survey_node: surveyNode });
-      const relatedMinimapNode = await MinimapNode.findOne({ survey_node: surveyNode });
+      const relatedMiniMapConversions = await MinimapConversion.findOne({
+        survey_node: surveyNode,
+      });
+      const relatedMinimapNode = await MinimapNode.findOne({
+        survey_node: surveyNode,
+      });
 
       if (relatedMiniMapConversions) {
         await MinimapConversion.deleteOne({ survey_node: surveyNode });
@@ -281,7 +336,10 @@ export class SurveyController {
     }
 
     await Survey.findByIdAndDelete(id);
-    return CommonUtil.successResponse(res, 'Survey has been successfully deleted');
+    return CommonUtil.successResponse(
+      res,
+      'Survey has been successfully deleted',
+    );
   }
 
   /**
@@ -300,11 +358,18 @@ export class SurveyController {
       if (!tilesId) throw new Error('TilesId not found.');
       if (!siteId) throw new Error('Site ID has not been provided');
 
-      const hotspotObject = await SurveyNode.findOne({ tiles_id: tilesId, site: new ObjectID(siteId) }, '-_id');
+      const hotspotObject = await SurveyNode.findOne(
+        { tiles_id: tilesId, site: new ObjectID(siteId) },
+        '-_id',
+      );
       if (!hotspotObject) throw new Error('hotspotObject not found.');
 
-      const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map((e) => e.info_id);
-      const hotspotDescs = await HotspotDescription.find({ info_id: { $in: hotspotDescriptionInfoIds } });
+      const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map(
+        (e) => e.info_id,
+      );
+      const hotspotDescs = await HotspotDescription.find({
+        info_id: { $in: hotspotDescriptionInfoIds },
+      });
 
       if (hotspotDescs) allHotspotDescriptions = hotspotDescs;
 
@@ -328,11 +393,18 @@ export class SurveyController {
     try {
       if (!floor) throw new Error('Floor not found.');
 
-      const minimapImageObject = await MinimapImages.findOne({ floor, site: new ObjectID(siteId) }, '-_id');
+      const minimapImageObject = await MinimapImages.findOne(
+        { floor, site: new ObjectID(siteId) },
+        '-_id',
+      );
 
       if (!minimapImageObject) throw new Error('minimapImageObject not found.');
 
-      return CommonUtil.successResponse(res, '', minimapImageObject.minimap || []);
+      return CommonUtil.successResponse(
+        res,
+        '',
+        minimapImageObject.minimap || [],
+      );
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);

@@ -1,65 +1,71 @@
-[{
-  "_id": {
-    "$oid": "5e4a31a0382fea97985f977f"
-  },
-  "parentCategories": [
-    {
-      "$oid": "5e4a3081382fea97985f977a"
+[
+  {
+    "_id": {
+      "$oid": "5e4a31a0382fea97985f977f"
     },
-    {
-      "$oid": "60d2a71118515b42c0494941"
+    "parentCategories": [
+      {
+        "$oid": "5e4a3081382fea97985f977a"
+      },
+      {
+        "$oid": "60d2a71118515b42c0494941"
+      },
+      {
+        "$oid": "60d2a72018515b42c0494942"
+      },
+      {
+        "$oid": "60d2ad1918515b42c0494943"
+      }
+    ],
+    "name": "Structural and Civil",
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5e4a31d4382fea97985f9781"
     },
-    {
-      "$oid": "60d2a72018515b42c0494942"
+    "parentCategories": [
+      {
+        "$oid": "5e4a3081382fea97985f977a"
+      }
+    ],
+    "name": "Architectural",
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5e4a3198382fea97985f977e"
     },
-    {
-      "$oid": "60d2ad1918515b42c0494943"
-    }
-  ],
-  "name": "Structural and Civil",
-  "__v": 0
-},{
-  "_id": {
-    "$oid": "5e4a31d4382fea97985f9781"
+    "parentCategories": [
+      {
+        "$oid": "5e4a3081382fea97985f977a"
+      }
+    ],
+    "name": "Facade",
+    "__v": 0
   },
-  "parentCategories": [
-    {
-      "$oid": "5e4a3081382fea97985f977a"
-    }
-  ],
-  "name": "Architectural",
-  "__v": 0
-},{
-  "_id": {
-    "$oid": "5e4a3198382fea97985f977e"
+  {
+    "_id": {
+      "$oid": "5e4a31ac382fea97985f9780"
+    },
+    "parentCategories": [
+      {
+        "$oid": "5e4a3081382fea97985f977a"
+      }
+    ],
+    "name": "Wayfinding",
+    "__v": 0
   },
-  "parentCategories": [
-    {
-      "$oid": "5e4a3081382fea97985f977a"
-    }
-  ],
-  "name": "Facade",
-  "__v": 0
-},{
-  "_id": {
-    "$oid": "5e4a31ac382fea97985f9780"
-  },
-  "parentCategories": [
-    {
-      "$oid": "5e4a3081382fea97985f977a"
-    }
-  ],
-  "name": "Wayfinding",
-  "__v": 0
-},{
-  "_id": {
-    "$oid": "5e4a3183382fea97985f977d"
-  },
-  "parentCategories": [
-    {
-      "$oid": "5e4a3081382fea97985f977a"
-    }
-  ],
-  "name": "Acoustic",
-  "__v": 0
-}]
+  {
+    "_id": {
+      "$oid": "5e4a3183382fea97985f977d"
+    },
+    "parentCategories": [
+      {
+        "$oid": "5e4a3081382fea97985f977a"
+      }
+    ],
+    "name": "Acoustic",
+    "__v": 0
+  }
+]

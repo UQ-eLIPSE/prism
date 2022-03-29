@@ -112,10 +112,31 @@ const AboutSchema: Schema = new Schema({
 });
 
 export const Area: Model<IArea> = model<IArea>('Area', AreaSchema);
-export const Category: Model<ICategory> = model<ICategory>('Category', CategorySchema);
-export const Subcategory: Model<ISubcategory> = model<ISubcategory>('Subcategory', SubcategorySchema);
+export const Category: Model<ICategory> = model<ICategory>(
+  'Category',
+  CategorySchema,
+);
+export const Subcategory: Model<ISubcategory> = model<ISubcategory>(
+  'Subcategory',
+  SubcategorySchema,
+);
 export const Type: Model<IType> = model<IType>('Type', TypeSchema);
-export const Resource: Model<IResource> = model<IResource>('Resource', ResourceSchema);
-export const Files: Model<IFiles> = model<IFiles>('files', FilesSchema, 'files');
-export const Directories: Model<IDirectories> = model<IDirectories>('Directories', DirectoriesSchema, 'directories');
-export const About: Model<IAbout> = model<IAbout>('About', AboutSchema, 'about');
+export const Resource: Model<IResource> = model<IResource>(
+  'Resource',
+  ResourceSchema,
+);
+export const Files: Model<IFiles> = model<IFiles>(
+  'files',
+  FilesSchema,
+  'files',
+);
+export const Directories: Model<IDirectories> = model<IDirectories>(
+  'Directories',
+  DirectoriesSchema,
+  'directories',
+);
+export const About: Model<IAbout> = model<IAbout>(
+  'About',
+  AboutSchema,
+  'about',
+);

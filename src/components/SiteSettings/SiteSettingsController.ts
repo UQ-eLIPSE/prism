@@ -17,24 +17,40 @@ export class SiteSettingsController {
     const results = await SiteService.getSettings(siteId);
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
 
-    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.settings[0]);
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      results.settings[0],
+    );
   }
   public async getSites(req: Request, res: Response) {
     const results = await SiteService.getSites();
     if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
 
-    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.sites);
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      results.sites,
+    );
   }
   public async getSiteMap(req: Request, res: Response) {
     const results = await SiteService.getSiteMap();
     if (!results) return CommonUtil.failResponse(res, 'No Site Map is found');
-    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.siteMap);
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      results.siteMap,
+    );
   }
   public async createSite(req: Request, res: Response) {
     const site: ISite = req.body;
 
     const createSite = await SiteService.createSite(site);
     if (!createSite) return CommonUtil.failResponse(res, 'No Setting is found');
-    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', createSite);
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      createSite,
+    );
   }
 }
