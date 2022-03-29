@@ -5,7 +5,7 @@ import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
-import { SiteSettingsController } from '../components/Site/SiteController';
+import { SiteController } from '../components/Site/SiteController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -13,7 +13,7 @@ export class Routes {
   public settingController: SettingController = new SettingController();
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
-  public siteSettingsController = new SiteSettingsController();
+  public siteController = new SiteController();
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
@@ -166,14 +166,13 @@ export class Routes {
     );
 
     //settings
-    router.get(
-      '/site/:siteId/settings',
-      this.siteSettingsController.getSettings,
-    );
+    router.get('/site/:siteId/settings', this.siteController.getSettings);
 
     //sites
-    router.get('/sites', this.siteSettingsController.getSites);
-    router.post('/sites', this.siteSettingsController.createSite);
+    router.get('/sites', this.siteController.getSites);
+    router.post('/sites', this.siteController.createSite);
+
+    router.get('/map_pins');
 
     /**
      * Admin section APIs

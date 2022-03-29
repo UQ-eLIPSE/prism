@@ -8,7 +8,7 @@ import { SiteService } from './SiteService';
 /**
  * Controller for getting site specific settings
  */
-export class SiteSettingsController {
+export class SiteController {
   /**
    * Get settings for the frontend
    * @param req
