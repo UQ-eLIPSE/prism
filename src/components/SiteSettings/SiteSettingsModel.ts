@@ -72,6 +72,11 @@ export interface ISite extends Document {
   tag: string;
 }
 
+export interface ISiteMap extends Document {
+  _id: any;
+  image: string;
+}
+
 const SiteSettingSchema: Schema = new Schema({
   _id: {
     type: ObjectID,
@@ -144,5 +149,13 @@ const SiteSchema: Schema = new Schema({
   tag: { type: String },
 });
 
+const SiteMapSchema: Schema = new Schema({
+  _id: {
+    type: ObjectID,
+  },
+  image: { type: String },
+});
+
 export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>('site_settings', SiteSettingSchema);
 export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);
+export const SiteMap: Model<ISiteMap> = model<ISiteMap>('site_map', SiteMapSchema);

@@ -25,6 +25,11 @@ export class SiteSettingsController {
 
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.sites);
   }
+  public async getSiteMap(req: Request, res: Response) {
+    const results = await SiteService.getSiteMap();
+    if (!results) return CommonUtil.failResponse(res, 'No Site Map is found');
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(res, '', results.siteMap);
+  }
   public async createSite(req: Request, res: Response) {
     const site: ISite = req.body;
 

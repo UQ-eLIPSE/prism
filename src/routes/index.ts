@@ -70,6 +70,7 @@ export class Routes {
     router.get('/site/:siteId/minimap/details', this.surveyController.getMinimapImage);
     router.get('/site/:siteId/settings', this.siteSettingsController.getSettings);
     router.get('/sites', this.siteSettingsController.getSites);
+    router.get('/sitemap', this.siteSettingsController.getSiteMap);
     router.post('/sites', this.siteSettingsController.createSite);
 
     /**
