@@ -13,7 +13,7 @@ export abstract class AuthUtil {
 
   static async generateToken(res: Response, username: string, id: string) {
     const { JWT_Hash, ENVIRONMENT } = process.env;
-    const expiration = ENVIRONMENT === 'development' ? 100 : 2592000;
+    const expiration = 2592000;
     const token = jwt.sign({ id, username }, <string>JWT_Hash, {
       expiresIn: ENVIRONMENT === 'development' ? '1d' : '7d',
     });

@@ -25,18 +25,24 @@ export class UserController {
     const isInternalUser = CommonUtil.isInternalUser(email);
 
     if (!invitedUser && isInternalUser) {
-      const { firstname, lastname, user } = res.locals.user;
+      const { firstName, lastName, username, password, role } = res.locals.user;
 
       //if user is not invited but they are logged in using their uq sso.
       const newUser: IUser | null = await new User({
-        firstName: firstname,
-        lastName: lastname,
+        firstName,
+        lastName,
         email,
-        role: 'guest',
-        username: user,
+        role: role,
+        username: username,
+        password: bcrypt.hashSync(password, 10),
       });
-      await newUser.save();
-      return CommonUtil.successResponse(res, 'Guest user is created');
+      const create = await newUser.save();
+
+      if (!create)
+        return CommonUtil.failResponse(res, 'User is not authorized');
+
+      await AuthUtil.generateToken(res, newUser.username, newUser._id);
+      return CommonUtil.successResponse(res, `${role} user is created`);
     } else {
       if (!invitedUser && !isInternalUser)
         return CommonUtil.failResponse(res, 'User is not authorized');
