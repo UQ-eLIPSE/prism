@@ -1,9 +1,9 @@
-import * as stream from "stream";
-import * as multer from "multer";
-import * as manta from "manta";
-import * as fs from "fs";
-import { Request } from "express-serve-static-core";
-import { ConsoleUtil } from "../utils/ConsoleUtil";
+import * as stream from 'stream';
+import * as multer from 'multer';
+import * as manta from 'manta';
+import * as fs from 'fs';
+import { Request } from 'express-serve-static-core';
+import { ConsoleUtil } from '../utils/ConsoleUtil';
 
 export class MantaService implements multer.StorageEngine {
   private manta: manta.manta.MantaClient | null = null;
@@ -21,7 +21,7 @@ export class MantaService implements multer.StorageEngine {
 
       this.manta = await manta.createClient({
         sign: manta.privateKeySigner({
-          key: fs.readFileSync(MANTA_KEY_FILE as any, "utf-8"),
+          key: fs.readFileSync(MANTA_KEY_FILE as any, 'utf-8'),
           keyId: MANTA_KEY_ID,
           user: MANTA_USER,
           subuser: MANTA_SUB_USER,
@@ -45,14 +45,14 @@ export class MantaService implements multer.StorageEngine {
         (err: any, res: any) => {
           if (err) return reject(err);
           return resolve(res);
-        }
+        },
       );
     });
   }
 
   private async uploadFileToManta(
     destPath: string,
-    fileStream: stream.Readable
+    fileStream: stream.Readable,
   ) {
     return new Promise<any>((resolve, reject) => {
       (<manta.manta.MantaClient>this.manta).put(
@@ -60,15 +60,15 @@ export class MantaService implements multer.StorageEngine {
         fileStream,
         {
           headers: {
-            "access-control-allow-origin": "*",
-            "access-control-allow-methods": "GET",
+            'access-control-allow-origin': '*',
+            'access-control-allow-methods': 'GET',
           },
         },
 
         (err: any, res: any) => {
           if (err) return reject(err);
           return resolve(res);
-        }
+        },
       );
     });
   }
@@ -76,21 +76,21 @@ export class MantaService implements multer.StorageEngine {
   public async _handleFile(
     req: Request,
     file: Express.Multer.File,
-    cb: (error: any, info?: Partial<Express.Multer.File>) => void
+    cb: (error: any, info?: Partial<Express.Multer.File>) => void,
   ) {
     try {
       const fileStream: stream.Readable = (file as any).stream;
       const { MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
       const destPath = `~~/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${file.originalname}`;
 
-      if (file.fieldname === "resource") {
+      if (file.fieldname === 'resource') {
         if (!this.manta) {
           await this.setupManta();
         }
 
         await this.mkdirInManta(
           <string>MANTA_ROOT_FOLDER,
-          <string>PROJECT_NAME
+          <string>PROJECT_NAME,
         );
         await this.uploadFileToManta(<string>destPath, fileStream);
       }
@@ -108,7 +108,7 @@ export class MantaService implements multer.StorageEngine {
   public async _removeFile(
     req: Request,
     file: Express.Multer.File,
-    cb: (error: any, info?: Partial<Express.Multer.File>) => void
+    cb: (error: any, info?: Partial<Express.Multer.File>) => void,
   ) {
     try {
       if (this.manta) {
@@ -120,7 +120,7 @@ export class MantaService implements multer.StorageEngine {
             (err: any, res: any) => {
               if (err) return reject(err);
               return resolve(res);
-            }
+            },
           );
         });
 

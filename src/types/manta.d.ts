@@ -1,5 +1,5 @@
-declare module "manta" {
-  import * as stream from "stream";
+declare module 'manta' {
+  import * as stream from 'stream';
 
   namespace auth {
     export function cliSigner(options: any): any;
@@ -54,15 +54,15 @@ declare module "manta" {
     const DEFAULTanyOPTIONS: DefaultOptions;
 
     function createClient(
-      options: Partial<CreateClientOptions>
+      options: Partial<CreateClientOptions>,
     ): manta.MantaClient;
     function createClientFromFileSync(
       filename: string,
-      log: any
+      log: any,
     ): manta.MantaClient;
     function checkBinEnv(opts: any): void;
     function cloneOptions(
-      options: Partial<CreateClientOptions>
+      options: Partial<CreateClientOptions>,
     ): Partial<CreateClientOptions>;
     function createBinClient(opts: any): any;
     function usage(parser: any, errmsg: any, extra: any): void;
@@ -72,7 +72,7 @@ declare module "manta" {
       opts: any,
       parser: any,
       name: string,
-      argtypes?: string[]
+      argtypes?: string[],
     ): void;
   }
 

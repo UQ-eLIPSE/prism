@@ -1,6 +1,6 @@
-import { ISite, Site, SiteSettings } from "./SiteSettingsModel";
-import { Response } from "express-serve-static-core";
-import { ObjectId, ObjectID } from "bson";
+import { ISite, Site, SiteSettings } from './SiteSettingsModel';
+import { Response } from 'express-serve-static-core';
+import { ObjectId, ObjectID } from 'bson';
 
 export abstract class SiteService {
   static async getSettings(siteId: string) {

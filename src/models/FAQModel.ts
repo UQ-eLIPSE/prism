@@ -1,4 +1,4 @@
-import { Schema, Document, Model, model } from "mongoose";
+import { Schema, Document, Model, model } from 'mongoose';
 
 export interface IQuestionAnswer extends Document {
   idx: number;
@@ -13,6 +13,6 @@ const FAQSchema: Schema = new Schema({
 });
 
 export const FAQ: Model<IQuestionAnswer> = model<IQuestionAnswer>(
-  "FAQ",
-  FAQSchema
+  'FAQ',
+  FAQSchema,
 );

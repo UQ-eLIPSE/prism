@@ -1,11 +1,11 @@
-import { UserController } from "../controller/UserController";
-import { SurveyController } from "../controller/SurveyController";
-import { AuthUtil } from "../utils/AuthUtil";
-import { SurveyService } from "../service/SurveyService";
-import { SettingController } from "../controller/SettingController";
-import { ResourceController } from "../controller/ResourceController";
-import { FAQController } from "../controller/FAQController";
-import { SiteSettingsController } from "../components/SiteSettings/SiteSettingsController";
+import { UserController } from '../controller/UserController';
+import { SurveyController } from '../controller/SurveyController';
+import { AuthUtil } from '../utils/AuthUtil';
+import { SurveyService } from '../service/SurveyService';
+import { SettingController } from '../controller/SettingController';
+import { ResourceController } from '../controller/ResourceController';
+import { FAQController } from '../controller/FAQController';
+import { SiteSettingsController } from '../components/SiteSettings/SiteSettingsController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -16,236 +16,236 @@ export class Routes {
   public siteSettingsController = new SiteSettingsController();
 
   public routes(app: any, router: any): void {
-    app.use("/api", router);
+    app.use('/api', router);
 
     router.post(
-      "/user/create",
+      '/user/create',
       AuthUtil.authenticateUser,
-      this.userController.createNewUser
+      this.userController.createNewUser,
     );
     router.post(
-      "/user/validate/token",
+      '/user/validate/token',
       AuthUtil.authenticateUser,
       AuthUtil.validateToken,
-      this.userController.decodeToken
+      this.userController.decodeToken,
     );
 
-    router.post("/login", this.userController.login);
+    router.post('/login', this.userController.login);
     router.post(
-      "/forgot-password",
-      this.userController.sendEmailForgotPassword
+      '/forgot-password',
+      this.userController.sendEmailForgotPassword,
     );
     router.post(
-      "/update-password",
+      '/update-password',
       AuthUtil.verifyCookie,
-      this.userController.updateUserPassword
+      this.userController.updateUserPassword,
     );
 
     router.get(
-      "/user/:username",
+      '/user/:username',
       AuthUtil.verifyCookie,
-      this.userController.getCurrentUserDetails
+      this.userController.getCurrentUserDetails,
     );
     router.post(
-      "/user/:username/invite",
+      '/user/:username/invite',
       AuthUtil.verifyCookie,
-      this.userController.inviteUser
+      this.userController.inviteUser,
     );
     router.get(
-      "/user/:username/invite/users",
+      '/user/:username/invite/users',
       AuthUtil.verifyCookie,
-      this.userController.getInvitedUser
+      this.userController.getInvitedUser,
     );
     router.put(
-      "/user/:username/invite/update",
+      '/user/:username/invite/update',
       AuthUtil.verifyCookie,
-      this.userController.updateInvitedUser
+      this.userController.updateInvitedUser,
     );
     router.delete(
-      "/user/:username/invite/delete",
+      '/user/:username/invite/delete',
       AuthUtil.verifyCookie,
-      this.userController.deleteInvitedUser
+      this.userController.deleteInvitedUser,
     );
 
     router.get(
-      "/users/:username/:page",
+      '/users/:username/:page',
       AuthUtil.verifyCookie,
-      this.userController.getUserList
+      this.userController.getUserList,
     );
     router.get(
-      "/users/:username/search",
+      '/users/:username/search',
       AuthUtil.verifyCookie,
-      this.userController.searchUser
+      this.userController.searchUser,
     );
 
     router.put(
-      "/user/:username/:usernameToBeUpdated",
+      '/user/:username/:usernameToBeUpdated',
       AuthUtil.verifyCookie,
-      this.userController.updateUserRole
+      this.userController.updateUserRole,
     );
 
-    router.post("/logout", AuthUtil.verifyCookie, this.userController.logout);
+    router.post('/logout', AuthUtil.verifyCookie, this.userController.logout);
 
     router.post(
-      "/:username/upload/survey",
+      '/:username/upload/survey',
       AuthUtil.verifyCookie,
-      this.surveyController.writeLocally.single("surveys"),
+      this.surveyController.writeLocally.single('surveys'),
       SurveyService.readZipFile,
-      this.surveyController.uploadSurvey
+      this.surveyController.uploadSurvey,
     );
 
     router.get(
-      "/:username/surveys/:page",
+      '/:username/surveys/:page',
       AuthUtil.verifyCookie,
-      this.surveyController.getAllSurveys
+      this.surveyController.getAllSurveys,
     );
     router.get(
-      "/:username/surveys/search",
+      '/:username/surveys/search',
       AuthUtil.verifyCookie,
-      this.surveyController.searchSurvey
+      this.surveyController.searchSurvey,
     );
     router.delete(
-      "/:username/survey/:id/delete",
+      '/:username/survey/:id/delete',
       AuthUtil.verifyCookie,
-      this.surveyController.deleteSurvey
+      this.surveyController.deleteSurvey,
     );
 
     /**
      * Client side APIs
      */
     router.get(
-      "/site/:siteId/survey/details/",
-      this.surveyController.getIndividualSurveysDetails
+      '/site/:siteId/survey/details/',
+      this.surveyController.getIndividualSurveysDetails,
     );
     router.get(
-      "/site/:siteId/survey/details/compact",
-      this.surveyController.getSurveyCompactVersion
+      '/site/:siteId/survey/details/compact',
+      this.surveyController.getSurveyCompactVersion,
     );
     router.get(
-      "/site/:siteId/resources/:page",
-      this.resourceController.getAllResources
+      '/site/:siteId/resources/:page',
+      this.resourceController.getAllResources,
     );
     router.get(
-      "/site/:siteId/documentation",
-      this.resourceController.getAllDocumentation
+      '/site/:siteId/documentation',
+      this.resourceController.getAllDocumentation,
     );
     router.get(
-      "/documentation/details",
-      this.resourceController.getIndividualDocumentation
+      '/documentation/details',
+      this.resourceController.getIndividualDocumentation,
     );
     router.get(
-      "/directories/details",
-      this.resourceController.getIndividualDirectory
+      '/directories/details',
+      this.resourceController.getIndividualDirectory,
     );
     router.get(
-      "/site/:siteId/directories/root",
-      this.resourceController.getRootDirectory
+      '/site/:siteId/directories/root',
+      this.resourceController.getRootDirectory,
     );
-    router.get("/site/:siteId/about", this.resourceController.getAboutInfo);
+    router.get('/site/:siteId/about', this.resourceController.getAboutInfo);
     router.get(
-      "/site/:siteId/hotspot/details",
-      this.surveyController.getIndividualHotspotDescription
-    );
-    router.get(
-      "/site/:siteId/minimap/details",
-      this.surveyController.getMinimapImage
+      '/site/:siteId/hotspot/details',
+      this.surveyController.getIndividualHotspotDescription,
     );
     router.get(
-      "/site/:siteId/settings",
-      this.siteSettingsController.getSettings
+      '/site/:siteId/minimap/details',
+      this.surveyController.getMinimapImage,
     );
-    router.get("/sites", this.siteSettingsController.getSites);
-    router.post("/sites", this.siteSettingsController.createSite);
+    router.get(
+      '/site/:siteId/settings',
+      this.siteSettingsController.getSettings,
+    );
+    router.get('/sites', this.siteSettingsController.getSites);
+    router.post('/sites', this.siteSettingsController.createSite);
 
     /**
      * Admin section APIs
      */
     router.post(
-      "/:username/upload/resource",
+      '/:username/upload/resource',
       AuthUtil.verifyCookie,
-      this.resourceController.uploadFile.single("resource"),
-      this.resourceController.createNewResource
+      this.resourceController.uploadFile.single('resource'),
+      this.resourceController.createNewResource,
     );
 
     router.put(
-      "/:username/resource/:id/update",
+      '/:username/resource/:id/update',
       AuthUtil.verifyCookie,
-      this.resourceController.updateResource
+      this.resourceController.updateResource,
     );
     router.post(
-      "/:username/area/create",
+      '/:username/area/create',
       AuthUtil.verifyCookie,
-      this.resourceController.createNewArea
+      this.resourceController.createNewArea,
     );
     router.post(
-      "/:username/type/create",
+      '/:username/type/create',
       AuthUtil.verifyCookie,
-      this.resourceController.createNewType
+      this.resourceController.createNewType,
     );
     router.post(
-      "/:username/category/create",
+      '/:username/category/create',
       AuthUtil.verifyCookie,
-      this.resourceController.createNewCategory
+      this.resourceController.createNewCategory,
     );
     router.post(
-      "/:username/subcategory/create",
+      '/:username/subcategory/create',
       AuthUtil.verifyCookie,
-      this.resourceController.createNewSubcategory
+      this.resourceController.createNewSubcategory,
     );
 
     router.get(
-      "/:username/resources/search",
+      '/:username/resources/search',
       AuthUtil.verifyCookie,
-      this.resourceController.searchResources
+      this.resourceController.searchResources,
     );
 
     router.get(
-      "/:username/areas/get",
+      '/:username/areas/get',
       AuthUtil.verifyCookie,
-      this.resourceController.getAllResourceAreas
+      this.resourceController.getAllResourceAreas,
     );
     router.get(
-      "/:username/types/get",
+      '/:username/types/get',
       AuthUtil.verifyCookie,
-      this.resourceController.getAllResourceTypes
+      this.resourceController.getAllResourceTypes,
     );
     router.get(
-      "/:username/categories/get",
+      '/:username/categories/get',
       AuthUtil.verifyCookie,
-      this.resourceController.getAllCategories
+      this.resourceController.getAllCategories,
     );
     router.get(
-      "/:username/subcategories/get",
+      '/:username/subcategories/get',
       AuthUtil.verifyCookie,
-      this.resourceController.getAllSubcategories
+      this.resourceController.getAllSubcategories,
     );
 
     router.get(
-      "/:username/visibility/settings",
+      '/:username/visibility/settings',
       AuthUtil.verifyCookie,
-      this.settingController.getSettings
+      this.settingController.getSettings,
     );
     router.put(
-      "/:username/visibility/settings",
+      '/:username/visibility/settings',
       AuthUtil.verifyCookie,
-      this.settingController.togglePagesVisibility
+      this.settingController.togglePagesVisibility,
     );
 
-    router.get("/faq/get", this.faqController.getFAQ);
+    router.get('/faq/get', this.faqController.getFAQ);
     router.post(
-      "/:username/faq/post",
+      '/:username/faq/post',
       AuthUtil.verifyCookie,
-      this.faqController.createQuestionAnswer
+      this.faqController.createQuestionAnswer,
     );
     router.put(
-      "/:username/faq/put/:idx",
+      '/:username/faq/put/:idx',
       AuthUtil.verifyCookie,
-      this.faqController.editQuestionAnswer
+      this.faqController.editQuestionAnswer,
     );
     router.delete(
-      "/:username/faq/delete",
+      '/:username/faq/delete',
       AuthUtil.verifyCookie,
-      this.faqController.deleteQuestionAnswer
+      this.faqController.deleteQuestionAnswer,
     );
   }
 }

@@ -1,8 +1,8 @@
-import { SettingController } from "../src/controller/SettingController";
-import * as httpMocks from "node-mocks-http";
-import * as mongoose from "mongoose";
+import { SettingController } from '../src/controller/SettingController';
+import * as httpMocks from 'node-mocks-http';
+import * as mongoose from 'mongoose';
 
-const dbName = "test";
+const dbName = 'test';
 const settingController = new SettingController();
 
 beforeAll(async () => {
@@ -23,11 +23,11 @@ async function removeAllCollections() {
     } catch (error) {
       // This error happens when you try to drop a collection that's already dropped. Happens infrequently.
       // Safe to ignore.
-      if (error.message === "ns not found") return;
+      if (error.message === 'ns not found') return;
 
       // This error happens when you use it.
       // Safe to ignore.
-      if (error.message.includes("a background operation is currently running"))
+      if (error.message.includes('a background operation is currently running'))
         return;
 
       console.log(error.message);
@@ -40,17 +40,17 @@ afterAll(async (done) => {
   done();
 }, 6000);
 
-test("Should get the settings table", async (done) => {
+test('Should get the settings table', async (done) => {
   const request = httpMocks.createRequest({
-    method: "GET",
-    url: "/api/:username/visibility/settings",
+    method: 'GET',
+    url: '/api/:username/visibility/settings',
     params: {
-      username: "Tester",
+      username: 'Tester',
     },
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = { user: { username: "Tester" } };
+  resp.locals = { user: { username: 'Tester' } };
 
   await settingController.getSettings(request, resp);
   const data = resp._getJSONData();
@@ -59,12 +59,12 @@ test("Should get the settings table", async (done) => {
   done();
 });
 
-test("Should toggle object in the settings table", async (done) => {
+test('Should toggle object in the settings table', async (done) => {
   const request = httpMocks.createRequest({
-    method: "PUT",
-    url: "/api/:username/visibility/settings",
+    method: 'PUT',
+    url: '/api/:username/visibility/settings',
     params: {
-      username: "Tester",
+      username: 'Tester',
     },
     body: {
       mediaPageVisibility: true,
@@ -72,7 +72,7 @@ test("Should toggle object in the settings table", async (done) => {
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = { user: { username: "Tester" } };
+  resp.locals = { user: { username: 'Tester' } };
 
   await settingController.togglePagesVisibility(request, resp);
   const data = resp._getJSONData();

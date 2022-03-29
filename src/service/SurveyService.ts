@@ -1,14 +1,14 @@
-import { Request, Response, NextFunction } from "express-serve-static-core";
+import { Request, Response, NextFunction } from 'express-serve-static-core';
 import {
   SurveyNode,
   MinimapConversion,
   MinimapNode,
   Survey,
   IMinimapNode,
-} from "../models/SurveyModel";
-import { CommonUtil } from "../utils/CommonUtil";
+} from '../models/SurveyModel';
+import { CommonUtil } from '../utils/CommonUtil';
 
-const StreamZip = require("node-stream-zip");
+const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
   static async readZipFile(req: Request, res: Response, next: NextFunction) {
@@ -21,29 +21,30 @@ export abstract class SurveyService {
       });
       let message: string;
 
-      zip.on("ready", async () => {
+      zip.on('ready', async () => {
         const entries = Object.values(zip.entries());
         const appFilesExist = entries.some(
-          (entry: any) => entry.name.endsWith("app-files/") && entry.isDirectory
+          (entry: any) =>
+            entry.name.endsWith('app-files/') && entry.isDirectory,
         );
         const surveyJsonExist = entries.some((entry: any) =>
-          entry.name.endsWith("survey.json")
+          entry.name.endsWith('survey.json'),
         );
         const dataJsExist = entries.some((entry: any) =>
-          entry.name.includes("app-files/data.js")
+          entry.name.includes('app-files/data.js'),
         );
 
         if (surveyJsonExist && appFilesExist && dataJsExist) {
           let surveyJson: any[] = [];
 
           SurveyService.readSurveyJson(entries, zip).then((data: any[]) =>
-            data.map((survey) => surveyJson.push(survey))
+            data.map((survey) => surveyJson.push(survey)),
           );
 
           let surveyIds: any = await SurveyService.readFileData(
             user,
             entries,
-            zip
+            zip,
           );
           const surveyIdsArr = Array.from(surveyIds);
 
@@ -68,7 +69,7 @@ export abstract class SurveyService {
             }
 
             message =
-              "Number of scenes in survey.json does not match number of scenes from marzipano";
+              'Number of scenes in survey.json does not match number of scenes from marzipano';
             res.locals.surveyValidationMessage = message;
             next();
           } else {
@@ -80,7 +81,7 @@ export abstract class SurveyService {
 
               if (surveyNode) {
                 await SurveyNode.findByIdAndUpdate(surveyIdsArr[idx], {
-                  date: surveyJson[idx]["date"],
+                  date: surveyJson[idx]['date'],
                 });
               }
 
@@ -91,28 +92,28 @@ export abstract class SurveyService {
                 await MinimapConversion.findOneAndUpdate(
                   { surveyNode: surveyIdsArr[idx] as any },
                   {
-                    floor: surveyJson[idx]["floor"],
-                    xPixelOffset: surveyJson[idx]["x_pixel_offset"],
-                    yPixelOffset: surveyJson[idx]["y_pixel_offset"],
-                    xPixelPerMeter: surveyJson[idx]["x_pixel_per_meter"],
-                    yPixelPerMeter: surveyJson[idx]["y_pixel_per_meter"],
+                    floor: surveyJson[idx]['floor'],
+                    xPixelOffset: surveyJson[idx]['x_pixel_offset'],
+                    yPixelOffset: surveyJson[idx]['y_pixel_offset'],
+                    xPixelPerMeter: surveyJson[idx]['x_pixel_per_meter'],
+                    yPixelPerMeter: surveyJson[idx]['y_pixel_per_meter'],
                     minimapNode: (<IMinimapNode>minimapNode)._id || null,
-                  }
+                  },
                 );
 
                 await MinimapNode.findOneAndUpdate(
                   { surveyNode: surveyIdsArr[idx] as any },
                   {
-                    floor: surveyJson[idx]["floor"],
-                  }
+                    floor: surveyJson[idx]['floor'],
+                  },
                 );
               }
             }
           }
         } else {
-          if (!surveyJsonExist) message = "survey.json is missing";
-          if (!appFilesExist) message = "app-files folder is missing";
-          if (!dataJsExist) message = "data.js is missing";
+          if (!surveyJsonExist) message = 'survey.json is missing';
+          if (!appFilesExist) message = 'app-files folder is missing';
+          if (!dataJsExist) message = 'data.js is missing';
           zip.close();
         }
 
@@ -124,7 +125,7 @@ export abstract class SurveyService {
 
   static async readFileData(userDetails: any, entries: any, zip: any) {
     const dataJs = entries.filter((entry: any) =>
-      entry.name.endsWith("/data.js")
+      entry.name.endsWith('/data.js'),
     );
     let marzipanoData: any;
     let surveyNodeIds = new Set();
@@ -135,14 +136,14 @@ export abstract class SurveyService {
     return new Promise((resolve, reject) => {
       for (let data of dataJs) {
         zip.stream((<any>data).name, (err: any, stream: any) => {
-          stream.on("data", (chunk: any) => {
+          stream.on('data', (chunk: any) => {
             outputFile.push(chunk);
           });
 
-          stream.on("end", async () => {
-            marzipanoData = Buffer.concat(outputFile).toString("utf8");
+          stream.on('end', async () => {
+            marzipanoData = Buffer.concat(outputFile).toString('utf8');
             if (marzipanoData) {
-              marzipanoData = marzipanoData.split("=")[1].replace(";", "");
+              marzipanoData = marzipanoData.split('=')[1].replace(';', '');
               marzipanoData = JSON.parse(marzipanoData);
 
               const newSurvey = new Survey({ surveyName: marzipanoData.name });
@@ -153,7 +154,7 @@ export abstract class SurveyService {
                 const newSurveyNode = new SurveyNode({
                   surveyName: marzipanoData.name,
                   uploadedAt: date,
-                  uploadedBy: userDetails["username"],
+                  uploadedBy: userDetails['username'],
                   mantaLink: `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${entries[0].name}`,
                   nodeNumber: idx,
                   tilesId: marzipanoData.scenes[idx].id,
@@ -171,7 +172,7 @@ export abstract class SurveyService {
 
                 await Survey.findOneAndUpdate(
                   { _id: newSurvey._id },
-                  { $push: { surveyNodes: newSurveyNode._id } }
+                  { $push: { surveyNodes: newSurveyNode._id } },
                 );
 
                 const newMinimapCoversion = new MinimapConversion({
@@ -194,7 +195,7 @@ export abstract class SurveyService {
 
             zip.close();
           });
-          stream.on("error", reject);
+          stream.on('error', reject);
         });
       }
     });
@@ -202,22 +203,22 @@ export abstract class SurveyService {
 
   static async readSurveyJson(entries: any, zip: any) {
     const surveyJson = entries.filter((entry: any) =>
-      entry.name.endsWith("survey.json")
+      entry.name.endsWith('survey.json'),
     );
     let minimapData: any;
 
     return new Promise((resolve, reject) => {
       zip.stream((<any>surveyJson)[0].name, (err: any, stream: any) => {
-        stream.on("data", async (chunk: any) => {
-          minimapData = chunk.toString("utf8");
+        stream.on('data', async (chunk: any) => {
+          minimapData = chunk.toString('utf8');
           if (minimapData) {
             minimapData = JSON.parse(minimapData);
             resolve(minimapData);
           }
         });
 
-        stream.on("end", () => zip.close());
-        stream.on("error", reject);
+        stream.on('end', () => zip.close());
+        stream.on('error', reject);
       });
     });
   }
@@ -227,7 +228,7 @@ export abstract class SurveyService {
     pageNo: number,
     size: number,
     res: Response,
-    fieldToSearch?: object
+    fieldToSearch?: object,
   ) {
     let mongoQuery: any = {};
 
@@ -235,7 +236,7 @@ export abstract class SurveyService {
     mongoQuery.skip = size * pageNo - size;
 
     const allSurveys = await Survey.find(fieldToSearch as any, {}, mongoQuery);
-    if (!allSurveys) return CommonUtil.failResponse(res, "No survey is found");
+    if (!allSurveys) return CommonUtil.failResponse(res, 'No survey is found');
 
     const totalCount = await Survey.countDocuments(fieldToSearch as any);
     const nextPage =
@@ -253,9 +254,9 @@ export abstract class SurveyService {
   public static extractZip(destPath: string, entries: any, zip: any) {
     return new Promise(async (resolve) => {
       zip.extract(null, destPath, (err: any) => {
-        console.log(err ? "Extract error" : `Extracted entries`);
+        console.log(err ? 'Extract error' : `Extracted entries`);
         zip.close();
-        resolve("");
+        resolve('');
       });
     });
   }
