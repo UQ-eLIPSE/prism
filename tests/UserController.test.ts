@@ -1,14 +1,18 @@
-import * as mongoose from 'mongoose';
-import {User} from "../src/models/UserModel";
-import {UserController} from "../src/controller/UserController";
-import * as httpMocks from 'node-mocks-http';
+import * as mongoose from "mongoose";
+import { User } from "../src/models/UserModel";
+import { UserController } from "../src/controller/UserController";
+import * as httpMocks from "node-mocks-http";
 
 const dbName = "test";
 const userController = new UserController();
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${dbName}`;
-  await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  });
 });
 
 async function removeAllCollections() {
@@ -20,13 +24,14 @@ async function removeAllCollections() {
     } catch (error) {
       // This error happens when you try to drop a collection that's already dropped. Happens infrequently.
       // Safe to ignore.
-      if (error.message === 'ns not found') return;
+      if (error.message === "ns not found") return;
 
       // This error happens when you use it.
       // Safe to ignore.
-      if (error.message.includes('a background operation is currently running')) return;
+      if (error.message.includes("a background operation is currently running"))
+        return;
 
-      console.log(error.message)
+      console.log(error.message);
     }
   }
 }
@@ -36,15 +41,32 @@ afterAll(async (done) => {
   done();
 }, 6000);
 
-
-test('Should save user to database', async (done) => {
+test("Should save user to database", async (done) => {
   const users = [
-    {email: `testing0@test.com`, firstName: 'Ratata', lastName: 'Tester', role: 'projectAdmin', username: 'Tester'},
-    {email: `testing1@uq.edu.au`, firstName: 'Ratata', lastName: 'Tester2', role: 'projectAdmin', username: 'uqTester2'},
-    {email: `testing2@test.com`, firstName: 'Ratata', lastName: 'Tester3', role: 'projectAdmin', username: 'Tester3'}
+    {
+      email: `testing0@test.com`,
+      firstName: "Ratata",
+      lastName: "Tester",
+      role: "projectAdmin",
+      username: "Tester",
+    },
+    {
+      email: `testing1@uq.edu.au`,
+      firstName: "Ratata",
+      lastName: "Tester2",
+      role: "projectAdmin",
+      username: "uqTester2",
+    },
+    {
+      email: `testing2@test.com`,
+      firstName: "Ratata",
+      lastName: "Tester3",
+      role: "projectAdmin",
+      username: "Tester3",
+    },
   ];
 
-  for(let user of users) {
+  for (let user of users) {
     const newUser = await new User(user);
     await newUser.save();
   }
@@ -52,14 +74,20 @@ test('Should save user to database', async (done) => {
   done();
 });
 
-test('get user using api', async (done)=> {
-  const expectedResult = {email: `testing0@test.com`, firstName: 'Ratata', lastName: 'Tester', role: 'projectAdmin', username: 'Tester'};
+test("get user using api", async (done) => {
+  const expectedResult = {
+    email: `testing0@test.com`,
+    firstName: "Ratata",
+    lastName: "Tester",
+    role: "projectAdmin",
+    username: "Tester",
+  };
   const request = httpMocks.createRequest({
-    method: 'GET',
-    url: '/api/user',
+    method: "GET",
+    url: "/api/user",
     params: {
-      username: 'Tester'
-    }
+      username: "Tester",
+    },
   });
 
   const resp = httpMocks.createResponse();
@@ -75,64 +103,74 @@ test('get user using api', async (done)=> {
   done();
 });
 
-test('Should get User list from database', async (done)=> {
+test("Should get User list from database", async (done) => {
   const expectedResult = {
-    "currentPage": 1,
-    "pageSize": 10,
-    "totalPages": 1,
-    "nextPage": 1,
-    "users": [
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 1,
+    nextPage: 1,
+    users: [
       {
-        "firstName": "Ratata",
-        "lastName": "Tester",
-        "email": "testing0@test.com",
-        "role": "projectAdmin",
-        "username": "Tester",
-        "__v": 0
-      }
-    ]
+        firstName: "Ratata",
+        lastName: "Tester",
+        email: "testing0@test.com",
+        role: "projectAdmin",
+        username: "Tester",
+        __v: 0,
+      },
+    ],
   };
 
   const request = httpMocks.createRequest({
-    method: 'GET',
-    url: '/api/users',
+    method: "GET",
+    url: "/api/users",
     params: {
-      username: 'Tester'
-    }
+      username: "Tester",
+    },
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
   await userController.getUserList(request, resp);
   const data = resp._getJSONData();
 
   expect(data.success).toBeTruthy();
   expect(data.payload.users[0].email).toEqual(expectedResult.users[0].email);
-  expect(data.payload.users[0].firstName).toEqual(expectedResult.users[0].firstName);
-  expect(data.payload.users[0].lastName).toEqual(expectedResult.users[0].lastName);
+  expect(data.payload.users[0].firstName).toEqual(
+    expectedResult.users[0].firstName
+  );
+  expect(data.payload.users[0].lastName).toEqual(
+    expectedResult.users[0].lastName
+  );
   expect(data.payload.users[0].role).toEqual(expectedResult.users[0].role);
   done();
 });
 
+test("Should be able to invite user", async (done) => {
+  process.env.JWT_Hash = "supersecret";
 
-test('Should be able to invite user', async(done)=> {
-  process.env.JWT_Hash = 'supersecret';
-
-  const newInvitedUser = {email: `testing1@test.com`, firstName: 'User2', lastName: 'Tester', role: 'projectAdmin'};
+  const newInvitedUser = {
+    email: `testing1@test.com`,
+    firstName: "User2",
+    lastName: "Tester",
+    role: "projectAdmin",
+  };
   const req = httpMocks.createRequest({
-    method: 'POST',
-    url: '/api/user/:username/invite',
+    method: "POST",
+    url: "/api/user/:username/invite",
     params: {
-      username: 'Tester'
+      username: "Tester",
     },
     app: {
-      get: jest.fn(()=> {return {"sendMail": jest.fn()}})
+      get: jest.fn(() => {
+        return { sendMail: jest.fn() };
+      }),
     },
-    body: newInvitedUser
+    body: newInvitedUser,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await userController.inviteUser(req, resp);
 
@@ -142,20 +180,20 @@ test('Should be able to invite user', async(done)=> {
   done();
 });
 
-test('Should return false when updating invited user without id', async (done)=> {
-  const invitedUserTobeUpdated = {firstName: 'Userupdated2'};
+test("Should return false when updating invited user without id", async (done) => {
+  const invitedUserTobeUpdated = { firstName: "Userupdated2" };
 
   const req = httpMocks.createRequest({
-    method: 'GET',
+    method: "GET",
     url: `/api/users/:username/:usernameToBeUpdated`,
     params: {
-      username: 'Tester'
+      username: "Tester",
     },
-    body: invitedUserTobeUpdated
+    body: invitedUserTobeUpdated,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await userController.updateInvitedUser(req, resp);
   const data = resp._getJSONData();
@@ -164,20 +202,20 @@ test('Should return false when updating invited user without id', async (done)=>
   done();
 });
 
-test('Should delete invited user', async (done)=> {
-  const invitedUserTobeDeleted = {email: `testing1@test.com`};
+test("Should delete invited user", async (done) => {
+  const invitedUserTobeDeleted = { email: `testing1@test.com` };
 
   const req = httpMocks.createRequest({
-    method: 'GET',
+    method: "GET",
     url: `/api/users/:username/:usernameToBeUpdated`,
     params: {
-      username: 'Tester'
+      username: "Tester",
     },
-    body: invitedUserTobeDeleted
+    body: invitedUserTobeDeleted,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await userController.deleteInvitedUser(req, resp);
   const data = resp._getJSONData();
@@ -186,17 +224,19 @@ test('Should delete invited user', async (done)=> {
   done();
 });
 
-test('Should be able to send forgot password email', async (done)=> {
-  process.env.JWT_Hash = 'supersecret';
+test("Should be able to send forgot password email", async (done) => {
+  process.env.JWT_Hash = "supersecret";
 
-  const userEmail = {email: `testing0@test.com`};
+  const userEmail = { email: `testing0@test.com` };
   const req = httpMocks.createRequest({
-    method: 'POST',
-    url: '/api/forgot-password',
+    method: "POST",
+    url: "/api/forgot-password",
     app: {
-      get: jest.fn(()=> {return {"sendMail": jest.fn()}})
+      get: jest.fn(() => {
+        return { sendMail: jest.fn() };
+      }),
     },
-    body: userEmail
+    body: userEmail,
   });
 
   const resp = httpMocks.createResponse();
@@ -208,58 +248,58 @@ test('Should be able to send forgot password email', async (done)=> {
   done();
 });
 
-test('Should update user password', async (done)=> {
-  const bodyPayload = {email: `testing0@test.com`, password: `password123`};
+test("Should update user password", async (done) => {
+  const bodyPayload = { email: `testing0@test.com`, password: `password123` };
 
   const req = httpMocks.createRequest({
-    method: 'POST',
-    url: '/api/update-password',
-    body: bodyPayload
+    method: "POST",
+    url: "/api/update-password",
+    body: bodyPayload,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
   await userController.updateUserPassword(req, resp);
 
   const data = resp._getJSONData();
-  const successMessage = 'Password is updated successfully';
+  const successMessage = "Password is updated successfully";
 
   expect(data.message).toEqual(successMessage);
   done();
 });
 
-test('Should return search result', async (done)=> {
+test("Should return search result", async (done) => {
   const req = httpMocks.createRequest({
-    method: 'GET',
+    method: "GET",
     url: `/api/users/:username/search`,
     params: {
-      username: 'Tester'
+      username: "Tester",
     },
     query: {
-      query: 'User2'
-    }
+      query: "User2",
+    },
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
   await userController.searchUser(req, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
   done();
 });
 
-test('Should change UQ user role to guest', async (done)=> {
+test("Should change UQ user role to guest", async (done) => {
   const req = httpMocks.createRequest({
-    method: 'GET',
+    method: "GET",
     url: `/api/users/:username/:usernameToBeUpdated`,
     params: {
-      username: 'Tester',
-      usernameToBeUpdated: 'uqTester2'
-    }
+      username: "Tester",
+      usernameToBeUpdated: "uqTester2",
+    },
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await userController.updateUserRole(req, resp);
   const data = resp._getJSONData();

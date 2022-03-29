@@ -1,5 +1,5 @@
-import {FAQController} from "../src/controller/FAQController";
-import * as httpMocks from 'node-mocks-http';
+import { FAQController } from "../src/controller/FAQController";
+import * as httpMocks from "node-mocks-http";
 import * as mongoose from "mongoose";
 
 const dbName = "test";
@@ -7,7 +7,11 @@ const faqController = new FAQController();
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${dbName}`;
-  await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  });
 });
 
 async function removeAllCollections() {
@@ -19,13 +23,14 @@ async function removeAllCollections() {
     } catch (error) {
       // This error happens when you try to drop a collection that's already dropped. Happens infrequently.
       // Safe to ignore.
-      if (error.message === 'ns not found') return;
+      if (error.message === "ns not found") return;
 
       // This error happens when you use it.
       // Safe to ignore.
-      if (error.message.includes('a background operation is currently running')) return;
+      if (error.message.includes("a background operation is currently running"))
+        return;
 
-      console.log(error.message)
+      console.log(error.message);
     }
   }
 }
@@ -35,23 +40,25 @@ afterAll(async (done) => {
   done();
 }, 6000);
 
-test('Should create question and answer', async (done)=> {
-  const payload = [{
-    "question": "hello?",
-    "answer": "yes?"
-  }];
+test("Should create question and answer", async (done) => {
+  const payload = [
+    {
+      question: "hello?",
+      answer: "yes?",
+    },
+  ];
 
   const request = httpMocks.createRequest({
-    method: 'GET',
-    url: '/api/:username/faq/post',
+    method: "GET",
+    url: "/api/:username/faq/post",
     params: {
-      username: 'Tester'
+      username: "Tester",
     },
-    body: payload
+    body: payload,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await faqController.createQuestionAnswer(request, resp);
 
@@ -61,13 +68,13 @@ test('Should create question and answer', async (done)=> {
   done();
 });
 
-test('Should be able to get faq', async (done)=> {
+test("Should be able to get faq", async (done) => {
   const request = httpMocks.createRequest({
-    method: 'POST',
-    url: '/api/:username/faq/post',
+    method: "POST",
+    url: "/api/:username/faq/post",
     params: {
-      username: 'Tester'
-    }
+      username: "Tester",
+    },
   });
 
   const resp = httpMocks.createResponse();
@@ -79,23 +86,23 @@ test('Should be able to get faq', async (done)=> {
   done();
 });
 
-test('Should be able to edit faq', async (done)=> {
+test("Should be able to edit faq", async (done) => {
   const payload = {
-    "question": "updated question?"
+    question: "updated question?",
   };
 
   const request = httpMocks.createRequest({
-    method: 'PUT',
-    url: '/api/:username/faq/put/:idx',
+    method: "PUT",
+    url: "/api/:username/faq/put/:idx",
     params: {
-      username: 'Tester',
-      idx: 0
+      username: "Tester",
+      idx: 0,
     },
-    body: payload
+    body: payload,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await faqController.editQuestionAnswer(request, resp);
   const data = resp._getJSONData();
@@ -104,22 +111,22 @@ test('Should be able to edit faq', async (done)=> {
   done();
 });
 
-test('Should be able to delete faq', async (done)=> {
+test("Should be able to delete faq", async (done) => {
   const payload = {
-    "idx": 0
+    idx: 0,
   };
 
   const request = httpMocks.createRequest({
-    method: 'DELETE',
-    url: '/api/:username/faq/delete',
+    method: "DELETE",
+    url: "/api/:username/faq/delete",
     params: {
-      username: 'Tester'
+      username: "Tester",
     },
-    body: payload
+    body: payload,
   });
 
   const resp = httpMocks.createResponse();
-  resp.locals = {user: {username: 'Tester'}};
+  resp.locals = { user: { username: "Tester" } };
 
   await faqController.deleteQuestionAnswer(request, resp);
   const data = resp._getJSONData();

@@ -1,19 +1,19 @@
 // Library imports
 import * as express from "express";
 import * as Sentry from "@sentry/node";
-import * as mongoose from 'mongoose';
+import * as mongoose from "mongoose";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as cookieParser from "cookie-parser";
-import {ServeStaticOptions} from "serve-static";
-import * as nodemailer from 'nodemailer';
+import { ServeStaticOptions } from "serve-static";
+import * as nodemailer from "nodemailer";
 import * as Mail from "nodemailer/lib/mailer";
 
 // Project imports
-import {Routes} from "./routes";
-import {Configuration} from "./Conf";
-import {ConsoleUtil} from "./utils/ConsoleUtil";
-import {MantaService} from "./service/MantaService";
+import { Routes } from "./routes";
+import { Configuration } from "./Conf";
+import { ConsoleUtil } from "./utils/ConsoleUtil";
+import { MantaService } from "./service/MantaService";
 
 export class App {
   private express: express.Application;
@@ -43,20 +43,20 @@ export class App {
     try {
       const manta = new MantaService();
       await manta.setupManta();
-      ConsoleUtil.log('Done initializing Manta ...');
-    }
-
-    catch(e) {
+      ConsoleUtil.log("Done initializing Manta ...");
+    } catch (e) {
       ConsoleUtil.error(e);
     }
   }
 
   private setUpExpress(): void {
     this.express.listen(this.configuration.PORT_NUM);
-    this.express.use(express.static(this.clientPath, this.expressStaticOptions));
+    this.express.use(
+      express.static(this.clientPath, this.expressStaticOptions)
+    );
     this.express.use(cookieParser());
     this.express.use(cors());
-    this.express.use(bodyParser.json({limit: "50mb"}));
+    this.express.use(bodyParser.json({ limit: "50mb" }));
     this.routes.routes(this.express, this.router);
     ConsoleUtil.log("Done setting up express routes...");
   }
@@ -65,7 +65,7 @@ export class App {
     if (this.configuration.USE_SENTRY || this.configuration.USE_SSO) {
       ConsoleUtil.log("Setting up Sentry...");
       ConsoleUtil.log("Using SSO...");
-      Sentry.init({dsn: this.configuration.SENTRY_DSN});
+      Sentry.init({ dsn: this.configuration.SENTRY_DSN });
     } else {
       ConsoleUtil.log("Not using Sentry...");
       ConsoleUtil.log("Not using SSO...");
@@ -83,17 +83,15 @@ export class App {
         secure: false, // true for 465, false for other ports
         auth: {
           user: account.user, // generated ethereal user
-          pass: account.pass // generated ethereal password
-        }
+          pass: account.pass, // generated ethereal password
+        },
       });
 
       ConsoleUtil.log("Setting up Mailer for development...");
-    }
-
-    else {
+    } else {
       transporter = nodemailer.createTransport({
         host: this.configuration.MAIL_HOST,
-        port: this.configuration.MAIL_PORT
+        port: this.configuration.MAIL_PORT,
       });
 
       ConsoleUtil.log("Setting up Mailer for production...");
@@ -108,7 +106,6 @@ export class App {
       await this.setUpDatabase();
       await this.setupMailer();
       await this.setUpManta();
-
     } catch (e) {
       console.error("Database connection error: ", e);
     }

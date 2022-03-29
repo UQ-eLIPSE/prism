@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   server:
     container_name: prism_server
@@ -10,7 +10,7 @@ services:
       - ./:/var/www/server
       - /var/www/server/node_modules
     ports:
-      - '8000:8000'
+      - "8000:8000"
     working_dir: /var/www/server
     environment:
       - PORT=8000
@@ -27,4 +27,4 @@ services:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
     ports:
-      - '27017:27017'
+      - "27017:27017"

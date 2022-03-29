@@ -1,5 +1,5 @@
-import { ObjectID } from 'bson';
-import { Schema, Document, Model, model } from 'mongoose';
+import { ObjectID } from "bson";
+import { Schema, Document, Model, model } from "mongoose";
 
 export interface ISiteSettings extends Document {
   _id: any;
@@ -133,7 +133,7 @@ const SiteSettingSchema: Schema = new Schema({
   },
   marzipano_mouse_view_mode: { type: String },
   num_floors: { type: Number },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
 });
 
 const SiteSchema: Schema = new Schema({
@@ -144,5 +144,8 @@ const SiteSchema: Schema = new Schema({
   tag: { type: String },
 });
 
-export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>('site_settings', SiteSettingSchema);
-export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);
+export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
+  "site_settings",
+  SiteSettingSchema
+);
+export const Site: Model<ISite> = model<ISite>("sites", SiteSchema);

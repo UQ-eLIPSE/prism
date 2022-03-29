@@ -1,4 +1,4 @@
-import { Schema, Document, Model, model } from 'mongoose';
+import { Schema, Document, Model, model } from "mongoose";
 
 export interface ISettings extends Document {
   mediaPageVisibility: boolean;
@@ -10,4 +10,7 @@ const SettingSchema: Schema = new Schema({
   faqPageVisibility: { type: Boolean },
 });
 
-export const Settings: Model<ISettings> = model<ISettings>('Settings', SettingSchema);
+export const Settings: Model<ISettings> = model<ISettings>(
+  "Settings",
+  SettingSchema
+);
