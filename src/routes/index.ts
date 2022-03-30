@@ -175,9 +175,12 @@ export class Routes {
     router.post('/sites', this.siteController.createSite);
 
     //Map pins
+
+    router.post('/map-pins', this.mapPinsController.createPin);
     router.get('/map-pins', this.mapPinsController.getAllPins);
     router.get('/map-pins/:id', this.mapPinsController.getPin);
-    router.post('/map-pins', this.mapPinsController.createPin);
+    router.patch('/map-pins/:id', this.mapPinsController.updatePin);
+    router.delete('/map-pins/:id', this.mapPinsController.deletePin);
 
     /**
      * Admin section APIs

@@ -3,8 +3,7 @@ import { IResponse } from '../../utils/CommonUtil';
 import { CommonUtil } from '../../utils/CommonUtil';
 
 import mapPinsService from './MapPinsService';
-import { IMapPins, MapPins } from './MapPinsModel';
-import { json } from 'body-parser';
+import { IMapPins } from './MapPinsModel';
 
 /**
  * Controller for getting site specific settings
@@ -46,18 +45,6 @@ class MapPinsController {
     return CommonUtil.successResponse<IResponse<IMapPins>>(res, '', {});
   }
 
-  public async deletePin(req: Request, res: Response) {
-    const { id } = req.params;
-    if (!id) return CommonUtil.failResponse(res, 'id is a required parameter');
-    // const result = await mapPinsService.getMapPin(id); @TODO update pin
-    if (!result) return CommonUtil.failResponse(res, 'Map pins found');
-    return CommonUtil.successResponse<IResponse<IMapPins>>(
-      res,
-      '',
-      result.mapPin,
-    );
-  }
-
   public async updatePin(req: Request, res: Response) {
     try {
       console.log(req.body);
@@ -69,6 +56,18 @@ class MapPinsController {
     }
 
     return CommonUtil.successResponse<IResponse<IMapPins>>(res, '', {});
+  }
+
+  public async deletePin(req: Request, res: Response) {
+    const { id } = req.params;
+    if (!id) return CommonUtil.failResponse(res, 'id is a required parameter');
+    // const result = await mapPinsService.getMapPin(id); @TODO update pin
+    if (!result) return CommonUtil.failResponse(res, 'Map pins found');
+    return CommonUtil.successResponse<IResponse<IMapPins>>(
+      res,
+      '',
+      result.mapPin,
+    );
   }
 }
 
