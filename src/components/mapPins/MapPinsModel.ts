@@ -1,8 +1,7 @@
-import { ObjectID } from 'bson';
+import { ObjectId, ObjectID } from 'bson';
 import { Schema, Document, Model, model } from 'mongoose';
-
 export interface IMapPins extends Document {
-  _id: any;
+  _id?: any;
   x: number;
   y: number;
   icon: string;
@@ -14,6 +13,7 @@ export interface IMapPins extends Document {
 const MapPinsSchema: Schema = new Schema({
   _id: {
     type: ObjectID,
+    auto: true
   },
   site: { type: ObjectID },
   x: { type: Number },
