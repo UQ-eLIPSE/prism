@@ -14,7 +14,6 @@ export abstract class SiteService {
     };
   }
   static async getSiteMap() {
-    console.log(await SiteMap.find());
     return {
       siteMap: await SiteMap.find(),
     };

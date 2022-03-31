@@ -173,6 +173,7 @@ export class Routes {
     //sites
     router.get('/sites', this.siteController.getSites);
     router.post('/sites', this.siteController.createSite);
+    router.get('/site-map', this.siteController.getSiteMap);
 
     //Map pins
 
