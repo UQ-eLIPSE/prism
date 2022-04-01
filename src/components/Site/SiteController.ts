@@ -44,6 +44,15 @@ class SiteController {
       results.sites,
     );
   }
+  public async getSiteMap(req: Request, res: Response) {
+    const results = await SiteService.getSiteMap();
+    if (!results) return CommonUtil.failResponse(res, 'No Site Map is found');
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      results.siteMap,
+    );
+  }
 
   /**
    * Create site Controller
@@ -64,5 +73,4 @@ class SiteController {
   }
 }
 
-
-export default SiteController
+export default SiteController;

@@ -1,4 +1,4 @@
-import { ISite, Site, SiteSettings } from './SiteModel';
+import { ISite, Site, SiteMap, SiteSettings } from './SiteModel';
 import { Response } from 'express-serve-static-core';
 import { ObjectId, ObjectID } from 'bson';
 
@@ -11,6 +11,11 @@ abstract class SiteService {
   static async getSites() {
     return {
       sites: await Site.find(),
+    };
+  }
+  static async getSiteMap() {
+    return {
+      siteMap: await SiteMap.find(),
     };
   }
   static async createSite(site: ISite) {
