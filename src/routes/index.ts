@@ -5,7 +5,7 @@ import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
-import { SiteSettingsController } from '../components/SiteSettings/SiteSettingsController';
+import SiteController  from '../components/Site/SiteController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -13,7 +13,7 @@ export class Routes {
   public settingController: SettingController = new SettingController();
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
-  public siteSettingsController = new SiteSettingsController();
+  public siteController: SiteController = new SiteController();
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
@@ -113,32 +113,67 @@ export class Routes {
     /**
      * Client side APIs
      */
+
+    //Surveys
     router.get(
-      '/survey/details',
+      '/site/:siteId/survey/details/',
       this.surveyController.getIndividualSurveysDetails,
     );
     router.get(
-      '/survey/details/compact',
+      '/site/:siteId/survey/details/compact',
       this.surveyController.getSurveyCompactVersion,
     );
-    router.get('/resources/:page', this.resourceController.getAllResources);
-    router.get('/documentation', this.resourceController.getAllDocumentation);
+
+    //resources
+    router.get(
+      '/site/:siteId/resources/:page',
+      this.resourceController.getAllResources,
+    );
+
+    //documentation
+    router.get(
+      '/site/:siteId/documentation',
+      this.resourceController.getAllDocumentation,
+    );
     router.get(
       '/documentation/details',
       this.resourceController.getIndividualDocumentation,
     );
+
+    //directores
     router.get(
       '/directories/details',
       this.resourceController.getIndividualDirectory,
     );
-    router.get('/directories/root', this.resourceController.getRootDirectory);
-    router.get('/about', this.resourceController.getAboutInfo);
     router.get(
-      '/hotspot/details',
+      '/site/:siteId/directories/root',
+      this.resourceController.getRootDirectory,
+    );
+
+    //about
+    router.get('/site/:siteId/about', this.resourceController.getAboutInfo);
+
+    //hotspot
+    router.get(
+      '/site/:siteId/hotspot/details',
       this.surveyController.getIndividualHotspotDescription,
     );
-    router.get('/minimap/details', this.surveyController.getMinimapImage);
-    router.get('/settings', this.siteSettingsController.getSettings);
+
+    //minimap
+    router.get(
+      '/site/:siteId/minimap/details',
+      this.surveyController.getMinimapImage,
+    );
+
+    //settings
+    router.get(
+      '/site/:siteId/settings',
+      this.siteController.getSettings,
+    );
+
+    //sites
+    router.get('/sites', this.siteController.getSites);
+    router.post('/sites', this.siteController.createSite);
 
     /**
      * Admin section APIs

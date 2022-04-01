@@ -9,6 +9,7 @@ export interface IMinimapConversion extends Document {
   y_scale: number;
   survey_node: ISurveyNode;
   minimap_node: IMinimapNode;
+  site: any;
 }
 
 export interface IMinimapNode extends Document {
@@ -18,6 +19,7 @@ export interface IMinimapNode extends Document {
   minimap_conversion: IMinimapConversion;
   survey_node: ISurveyNode;
   floor: number;
+  site: any;
 }
 
 export interface IInitialParams extends Document {
@@ -56,6 +58,7 @@ export interface ISurveyNode extends Document {
   info_hotspots: IInfoHotspot[];
   levels: any[]; // Cannot be mapped because of how Marzipano export the data for levels,
   face_size: number;
+  site: any;
 }
 
 export interface ISurvey extends Document {
@@ -104,6 +107,7 @@ const SurveyNodeSchema: Schema = new Schema({
   info_hotspots: [Schema.Types.Mixed],
   levels: [Schema.Types.Mixed],
   face_size: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const MinimapNodeSchema: Schema = new Schema({
@@ -112,6 +116,7 @@ const MinimapNodeSchema: Schema = new Schema({
   tiles_name: { type: String },
   survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
   floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const MinimapConversionSchema: Schema = new Schema({
@@ -122,6 +127,7 @@ const MinimapConversionSchema: Schema = new Schema({
   y_scale: { type: Number },
   survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
   minimap_node: { type: Schema.Types.Mixed, ref: 'minimap_nodes' },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const HotspotDescriptionSchema: Schema = new Schema({
@@ -134,6 +140,7 @@ const HotspotDescriptionSchema: Schema = new Schema({
 const MinimapImagesSchema: Schema = new Schema({
   minimap: { type: String },
   floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);

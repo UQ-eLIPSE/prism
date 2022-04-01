@@ -62,6 +62,14 @@ export interface ISiteSettings extends Document {
 
   //number of floors, used for multi-story buildings generally 0
   num_floors: number;
+
+  site: any;
+}
+
+export interface ISite extends Document {
+  _id: any;
+  site_name: string;
+  tag: string;
 }
 
 const SiteSettingSchema: Schema = new Schema({
@@ -125,9 +133,19 @@ const SiteSettingSchema: Schema = new Schema({
   },
   marzipano_mouse_view_mode: { type: String },
   num_floors: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+});
+
+const SiteSchema: Schema = new Schema({
+  _id: {
+    type: ObjectID,
+  },
+  site_name: { type: String },
+  tag: { type: String },
 });
 
 export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
   'site_settings',
   SiteSettingSchema,
 );
+export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);

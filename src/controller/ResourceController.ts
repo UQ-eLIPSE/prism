@@ -15,6 +15,7 @@ import {
 } from '../models/ResourceModel';
 import * as multer from 'multer';
 import { ResourceService } from '../service/ResourceService';
+import { ObjectId } from 'bson';
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -102,12 +103,17 @@ export class ResourceController {
     const maxResult = 10;
     const pageNo = parseInt(req.params.page) || 1;
     const size = parseInt(req.query.size as any) || maxResult;
+    const { siteId } = req.params;
+    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
 
     const allResources = await ResourceService.setResourceListPagination(
       maxResult,
       pageNo,
       size,
       res,
+      {
+        site: new ObjectId(siteId),
+      },
     );
 
     return CommonUtil.successResponse(res, '', allResources);
@@ -280,7 +286,9 @@ export class ResourceController {
    * @param res
    */
   public async getAllDocumentation(req: Request, res: Response) {
-    const allDocumentation = await Files.find({});
+    const { siteId } = req.params;
+    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
+    const allDocumentation = await Files.find({ site: new ObjectId(siteId) });
     return CommonUtil.successResponse(res, '', allDocumentation);
   }
 
@@ -333,9 +341,13 @@ export class ResourceController {
    * @param res
    */
   public async getRootDirectory(req: Request, res: Response) {
+    const { siteId } = req.params;
     try {
+      if (!siteId) throw new Error('Site Id is not provided');
+
       const dirObject = await Directories.findOne({
         parent: { $exists: false },
+        site: new ObjectId(siteId),
       });
 
       if (!dirObject) throw new Error('dirObject not found.');
@@ -353,8 +365,10 @@ export class ResourceController {
    * @param res
    */
   public async getAboutInfo(req: Request, res: Response) {
+    const { siteId } = req.params;
     try {
-      const aboutInfo = await About.findOne();
+      if (!siteId) throw new Error('Site Id is not provided');
+      const aboutInfo = await About.findOne({ site: new ObjectId(siteId) });
 
       if (!aboutInfo) throw new Error('About info not found.');
 
