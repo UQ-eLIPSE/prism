@@ -6,7 +6,7 @@ import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
 import { SiteController } from '../components/Site/SiteController';
-import MapPinsController from '../components/mapPins/MapPinsController';
+import MapPinsController from '../components/MapPins/MapPinsController';
 
 export class Routes {
   public userController: UserController = new UserController();

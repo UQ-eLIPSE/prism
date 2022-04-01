@@ -9,6 +9,13 @@ import { IMapPins, MapPins } from './MapPinsModel';
  * Controller for getting site specific settings
  */
 class MapPinsController {
+  /**
+   * getAllPins
+   * Gets all the map pin points
+   * @param req 
+   * @param res 
+   * @returns Success response of all map pins
+   */
   public async getAllPins(req: Request, res: Response) {
     try {
       const results = await mapPinsService.getMapPins();
@@ -24,6 +31,13 @@ class MapPinsController {
     }
   }
 
+  /**
+   * getPin
+   * Gets a specific map point pin
+   * @param req - Used to retrieve the Id from the params
+   * @param res 
+   * @returns Success response containing a Map pin.
+   */
   public async getPin(req: Request, res: Response) {
     try {
       const { id } = req.params;
@@ -42,6 +56,13 @@ class MapPinsController {
     }
   }
 
+  /**
+   * createPin
+   * Creates a Map pin with the required fields
+   * @param req - Used to get the body that contains the required fields
+   * @param res 
+   * @returns Success response if DB entry has been made.
+   */
   public async createPin(req: Request, res: Response) {
     try {
       const body: IMapPins = new MapPins(req.body);
@@ -59,6 +80,13 @@ class MapPinsController {
     }
   }
 
+  /**
+   * updatePin
+   * Updates a map pin using an attached Id.
+   * @param req - Used to retrieve the Id from the params and the changes in the body
+   * @param res 
+   * @returns Boolean response if update has been successful.
+   */
   public async updatePin(req: Request, res: Response) {
     try {
       const { id } = req.params
@@ -76,6 +104,13 @@ class MapPinsController {
     }
   }
 
+  /**
+   * deletePin
+   * Delete a Map Pin with a provided ID
+   * @param req - Used to retrieve the ID from the params.
+   * @param res 
+   * @returns Boolean response if a Map Pin has been deleted.
+   */
   public async deletePin(req: Request, res: Response) {
     try {
       const { id } = req.params;
