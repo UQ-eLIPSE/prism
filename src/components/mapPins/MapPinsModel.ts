@@ -13,7 +13,7 @@ export interface IMapPins extends Document {
 const MapPinsSchema: Schema = new Schema({
   _id: {
     type: ObjectID,
-    auto: true
+    auto: true,
   },
   site: { type: ObjectID },
   x: { type: Number },

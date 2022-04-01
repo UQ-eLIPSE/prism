@@ -17,8 +17,8 @@ class SiteService {
 
   static async createMapPin(mapPin: IMapPins) {
     return {
-      mapPin: await mapPin.save()
-    }
+      mapPin: await mapPin.save(),
+    };
   }
 
   static async updateMapPin(id: string, mapPin: IMapPins) {
