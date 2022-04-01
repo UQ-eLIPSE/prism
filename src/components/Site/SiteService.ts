@@ -2,7 +2,7 @@ import { ISite, Site, SiteMap, SiteSettings } from './SiteModel';
 import { Response } from 'express-serve-static-core';
 import { ObjectId, ObjectID } from 'bson';
 
-export abstract class SiteService {
+abstract class SiteService {
   static async getSettings(siteId: string) {
     return {
       settings: await SiteSettings.find({ site: new ObjectId(siteId) }),
@@ -23,3 +23,5 @@ export abstract class SiteService {
     return createSite;
   }
 }
+
+export default SiteService

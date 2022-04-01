@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import { ISite, ISiteSettings } from './SiteModel';
+import { ISite, ISiteSettings, Site } from './SiteModel';
 import { IResponse } from '../../utils/CommonUtil';
 import { CommonUtil } from '../../utils/CommonUtil';
 
-import { SiteService } from './SiteService';
+import SiteService from './SiteService';
 
 /**
  * Controller for getting site specific settings
  */
-export class SiteController {
+class SiteController {
   /**
    * Get settings for the frontend
    * @param req
@@ -72,3 +72,5 @@ export class SiteController {
     );
   }
 }
+
+export default SiteController;

@@ -5,7 +5,7 @@ import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
-import { SiteController } from '../components/Site/SiteController';
+import SiteController from '../components/Site/SiteController';
 import MapPinsController from '../components/MapPins/MapPinsController';
 
 export class Routes {
@@ -14,7 +14,7 @@ export class Routes {
   public settingController: SettingController = new SettingController();
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
-  public siteController = new SiteController();
+  public siteController: SiteController = new SiteController();
   public mapPinsController: MapPinsController = new MapPinsController();
 
   public routes(app: any, router: any): void {
