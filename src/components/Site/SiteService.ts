@@ -24,4 +24,4 @@ abstract class SiteService {
   }
 }
 
-export default SiteService
+export default SiteService;
