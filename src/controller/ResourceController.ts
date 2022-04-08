@@ -1,9 +1,21 @@
-import { Request, Response } from "express";
-import { CommonUtil } from "../utils/CommonUtil";
-import { MantaService } from "../service/MantaService";
-import { Area, Type, Category, Subcategory, Resource, Documentation, IDirectories, Directories, IDocumentation, About } from "../models/ResourceModel";
-import * as multer from "multer";
-import { ResourceService } from "../service/ResourceService";
+import { Request, Response } from 'express';
+import { CommonUtil } from '../utils/CommonUtil';
+import { MantaService } from '../service/MantaService';
+import {
+  Area,
+  Type,
+  Category,
+  Subcategory,
+  Resource,
+  Files,
+  IDirectories,
+  Directories,
+  IFiles,
+  About,
+} from '../models/ResourceModel';
+import * as multer from 'multer';
+import { ResourceService } from '../service/ResourceService';
+import { ObjectId } from 'bson';
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -23,12 +35,16 @@ export class ResourceController {
    * @param res
    */
   public async createNewResource(req: Request, res: Response, err: any) {
-
     const { file } = req;
-    const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
+    const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } =
+      process.env;
 
     if (!file) return CommonUtil.failResponse(res, 'File is not found');
-    if (err.code === 'LIMIT_FILE_SIZE') return CommonUtil.failResponse(res, 'File is too big. Max file size is 1GB');
+    if (err.code === 'LIMIT_FILE_SIZE')
+      return CommonUtil.failResponse(
+        res,
+        'File is too big. Max file size is 1GB',
+      );
 
     const uploadedAt = new Date().getTime();
     const uploadedBy = res.locals.user._id;
@@ -36,7 +52,13 @@ export class ResourceController {
     const contentType = file.mimetype;
     const url = `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${name}`;
 
-    const newResource = await new Resource({ uploadedAt, uploadedBy, name, contentType, url });
+    const newResource = await new Resource({
+      uploadedAt,
+      uploadedBy,
+      name,
+      contentType,
+      url,
+    });
     await newResource.save();
 
     return CommonUtil.successResponse(res, '', newResource);
@@ -50,14 +72,26 @@ export class ResourceController {
   public async updateResource(req: Request, res: Response) {
     const { id } = req.params;
     const isResourceFound = Resource.findById(id);
-    const { description, areaName, category, subcategory, resourceType } = req.body;
-    const modifiedAt = (new Date().getTime()).toString();
+    const { description, areaName, category, subcategory, resourceType } =
+      req.body;
+    const modifiedAt = new Date().getTime().toString();
 
+    if (!isResourceFound)
+      return CommonUtil.failResponse(res, 'Resource is not found');
+    await Resource.findByIdAndUpdate(id, {
+      description,
+      areaName,
+      category,
+      subcategory,
+      resourceType,
+      modifiedBy: res.locals.user._id,
+      modifiedAt,
+    });
 
-    if (!isResourceFound) return CommonUtil.failResponse(res, 'Resource is not found');
-    await Resource.findByIdAndUpdate(id, { description, areaName, category, subcategory, resourceType, modifiedBy: res.locals.user._id, modifiedAt });
-
-    return CommonUtil.successResponse(res, 'Resource has been successfully updated');
+    return CommonUtil.successResponse(
+      res,
+      'Resource has been successfully updated',
+    );
   }
 
   /**
@@ -69,8 +103,18 @@ export class ResourceController {
     const maxResult = 10;
     const pageNo = parseInt(req.params.page) || 1;
     const size = parseInt(req.query.size as any) || maxResult;
+    const { siteId } = req.params;
+    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
 
-    const allResources = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res);
+    const allResources = await ResourceService.setResourceListPagination(
+      maxResult,
+      pageNo,
+      size,
+      res,
+      {
+        site: new ObjectId(siteId),
+      },
+    );
 
     return CommonUtil.successResponse(res, '', allResources);
   }
@@ -101,10 +145,16 @@ export class ResourceController {
       uploadedAt: searchRegex,
       uploadedBy: searchRegex,
       modifiedAt: searchRegex,
-      modifiedBy: searchRegex
+      modifiedBy: searchRegex,
     };
 
-    const results = await ResourceService.setResourceListPagination(maxResult, pageNo, size, res, fieldToSearchCount);
+    const results = await ResourceService.setResourceListPagination(
+      maxResult,
+      pageNo,
+      size,
+      res,
+      fieldToSearchCount,
+    );
     return CommonUtil.successResponse(res, '', results);
   }
 
@@ -121,9 +171,11 @@ export class ResourceController {
     const newArea = await new Area({ name, description });
     await newArea.save();
 
-    return CommonUtil.successResponse(res, 'New area has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New area has been successfully created',
+    );
   }
-
 
   /**
    * Get all resource areas
@@ -134,7 +186,6 @@ export class ResourceController {
     const allAreas = await Area.find({});
     return CommonUtil.successResponse(res, '', allAreas);
   }
-
 
   /**
    * Create new type
@@ -148,7 +199,10 @@ export class ResourceController {
     const newType = await new Type({ name, description });
     await newType.save();
 
-    return CommonUtil.successResponse(res, 'New type has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New type has been successfully created',
+    );
   }
 
   /**
@@ -161,7 +215,6 @@ export class ResourceController {
     return CommonUtil.successResponse(res, '', allTypes);
   }
 
-
   /**
    * Create new category
    * @param req
@@ -173,9 +226,11 @@ export class ResourceController {
     const newCategory = await new Category({ name, subcategories });
     await newCategory.save();
 
-    return CommonUtil.successResponse(res, 'New category has been successfully created')
+    return CommonUtil.successResponse(
+      res,
+      'New category has been successfully created',
+    );
   }
-
 
   /**
    * Get all categories
@@ -184,7 +239,7 @@ export class ResourceController {
    */
   public async getAllCategories(req: Request, res: Response) {
     const allCats = await Category.find();
-    return CommonUtil.successResponse(res, '', allCats)
+    return CommonUtil.successResponse(res, '', allCats);
   }
 
   /**
@@ -201,14 +256,18 @@ export class ResourceController {
     if (parentCategories.length) {
       for (let category of parentCategories) {
         const parentCategories = await Category.findById(category);
-        if (!parentCategories) return CommonUtil.failResponse(res, 'Parent category is not found');
+        if (!parentCategories)
+          return CommonUtil.failResponse(res, 'Parent category is not found');
 
         parentCategories.subcategories.push(newSubcategories._id);
         await parentCategories.save();
       }
     }
 
-    return CommonUtil.successResponse(res, 'New subcategory has been successfully created');
+    return CommonUtil.successResponse(
+      res,
+      'New subcategory has been successfully created',
+    );
   }
 
   /**
@@ -227,21 +286,23 @@ export class ResourceController {
    * @param res
    */
   public async getAllDocumentation(req: Request, res: Response) {
-    const allDocumentation = await Documentation.find({});
+    const { siteId } = req.params;
+    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
+    const allDocumentation = await Files.find({ site: new ObjectId(siteId) });
     return CommonUtil.successResponse(res, '', allDocumentation);
   }
 
   /**
- * Get documentation based on id
- * @param req
- * @param res
- */
+   * Get documentation based on id
+   * @param req
+   * @param res
+   */
   public async getIndividualDocumentation(req: Request, res: Response) {
     const { _id } = req.query as any;
-    let docObject: IDocumentation | null = null;
+    let docObject: IFiles | null = null;
 
     try {
-      docObject = await Documentation.findOne({ _id }, '-_id');
+      docObject = await Files.findOne({ _id }, '-_id');
       if (!docObject) throw new Error('docObject not found.');
       return CommonUtil.successResponse(res, '', docObject || []);
     } catch (e) {
@@ -268,7 +329,6 @@ export class ResourceController {
       if (!dirObject) throw new Error('dirObject not found.');
 
       return CommonUtil.successResponse(res, '', dirObject || []);
-
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
@@ -281,35 +341,41 @@ export class ResourceController {
    * @param res
    */
   public async getRootDirectory(req: Request, res: Response) {
+    const { siteId } = req.params;
     try {
-      const dirObject = await Directories.findOne({ parent: { $exists: false } });
+      if (!siteId) throw new Error('Site Id is not provided');
+
+      const dirObject = await Directories.findOne({
+        parent: { $exists: false },
+        site: new ObjectId(siteId),
+      });
 
       if (!dirObject) throw new Error('dirObject not found.');
 
       return CommonUtil.successResponse(res, '', dirObject || []);
-
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
 
-    /**
+  /**
    * Query About info
    * @param req
    * @param res
    */
-     public async getAboutInfo(req: Request, res: Response) {
-      try {
-        const aboutInfo = await About.findOne();
-  
-        if (!aboutInfo) throw new Error('About info not found.');
-  
-        return CommonUtil.successResponse(res, '', aboutInfo || []);
-  
-      } catch (e) {
-        console.error(e);
-        return CommonUtil.failResponse(res, e.message || e);
-      }
+  public async getAboutInfo(req: Request, res: Response) {
+    const { siteId } = req.params;
+    try {
+      if (!siteId) throw new Error('Site Id is not provided');
+      const aboutInfo = await About.findOne({ site: new ObjectId(siteId) });
+
+      if (!aboutInfo) throw new Error('About info not found.');
+
+      return CommonUtil.successResponse(res, '', aboutInfo || []);
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
     }
+  }
 }

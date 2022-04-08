@@ -1,73 +1,86 @@
-[{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc8279"
+[
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc8279"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-01.png",
+    "floor": 0
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-01.png",
-  "floor": 0
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc827a"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc827a"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-02.png",
+    "floor": 1
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-02.png",
-  "floor": 1
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc827b"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc827b"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-03.png",
+    "floor": 2
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-03.png",
-  "floor": 2
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc827c"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc827c"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-04.png",
+    "floor": 3
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-04.png",
-  "floor": 3
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc827d"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc827d"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-05.png",
+    "floor": 4
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-05.png",
-  "floor": 4
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc827e"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc827e"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-06.png",
+    "floor": 5
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-06.png",
-  "floor": 5
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc827f"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc827f"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-07.png",
+    "floor": 6
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-07.png",
-  "floor": 6
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc8280"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc8280"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-08.png",
+    "floor": 7
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-08.png",
-  "floor": 7
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc8281"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc8281"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-09.png",
+    "floor": 8
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-09.png",
-  "floor": 8
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc8282"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc8282"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-10.png",
+    "floor": 9
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-10.png",
-  "floor": 9
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc8283"
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc8283"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-11.png",
+    "floor": 10
   },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-11.png",
-  "floor": 10
-},{
-  "_id": {
-    "$oid": "6098a4a384c4673d88dc8284"
-  },
-  "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-12.png",
-  "floor": 11
-}]
+  {
+    "_id": {
+      "$oid": "6098a4a384c4673d88dc8284"
+    },
+    "minimap": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-12.png",
+    "floor": 11
+  }
+]

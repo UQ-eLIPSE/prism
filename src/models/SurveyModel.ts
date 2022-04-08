@@ -1,24 +1,25 @@
-import {Schema, Document, Model, model, Types} from 'mongoose';
+import { Schema, Document, Model, model, Types } from 'mongoose';
 var uuidv4 = require('uuidv4');
-
 
 export interface IMinimapConversion extends Document {
   floor: number;
-  xPixelOffset: number;
-  yPixelOffset: number;
-  xPixelPerMeter: number;
-  yPixelPerMeter: number;
-  surveyNode: ISurveyNode;
-  minimapNode: IMinimapNode;
+  x: number;
+  y: number;
+  x_scale: number;
+  y_scale: number;
+  survey_node: ISurveyNode;
+  minimap_node: IMinimapNode;
+  site: any;
 }
 
 export interface IMinimapNode extends Document {
-  nodeNumber: number;
+  node_number: number;
   title: string;
   description: string;
-  minimapConversion: IMinimapConversion;
-  surveyNode: ISurveyNode;
+  minimap_conversion: IMinimapConversion;
+  survey_node: ISurveyNode;
   floor: number;
+  site: any;
 }
 
 export interface IInitialParams extends Document {
@@ -28,16 +29,16 @@ export interface IInitialParams extends Document {
 }
 
 export interface IInfoHotspot extends Document {
-  surveyNode: ISurveyNode;
+  survey_node: ISurveyNode;
   yaw: number;
   pitch: number;
   rotation: number;
   target: string;
-  infoId: string;
+  info_id: string;
 }
 
 export interface ILinkHotspot extends Document {
-  surveyNode: ISurveyNode;
+  survey_node: ISurveyNode;
   yaw: number;
   pitch: number;
   rotation: number;
@@ -45,40 +46,41 @@ export interface ILinkHotspot extends Document {
 }
 
 export interface ISurveyNode extends Document {
-  uploadedAt: string;
-  uploadedBy: string;
+  uploaded_at: string;
+  uploaded_by: string;
   date: string;
-  nodeNumber: number;
-  surveyName: string;
-  tilesId: string;
-  tilesName: string;
-  initialParameters: IInitialParams;
-  linkHotspots: ILinkHotspot[];
-  infoHotspots: IInfoHotspot[];
+  node_number: number;
+  survey_name: string;
+  tiles_id: string;
+  tiles_name: string;
+  initial_parameters: IInitialParams;
+  link_hotspots: ILinkHotspot[];
+  info_hotspots: IInfoHotspot[];
   levels: any[]; // Cannot be mapped because of how Marzipano export the data for levels,
-  faceSize: number;
+  face_size: number;
+  site: any;
 }
 
-export interface ISurvey extends Document{
-  surveyName: string;
-  surveyNodes: ISurveyNode[];
+export interface ISurvey extends Document {
+  survey_name: string;
+  survey_nodes: ISurveyNode[];
 }
 
-export interface IHeaderInfo extends Document{
-  mainImgUrl: string;
-  labelTitle: string;
+export interface IHeaderInfo extends Document {
+  main_img_url: string;
+  label_title: string;
 }
 
-export interface IContentSection extends Document{
+export interface IContentSection extends Document {
   title: string;
   content: string;
 }
 
-export interface IHotspotDescription extends Document{
+export interface IHotspotDescription extends Document {
   header: IHeaderInfo;
   contents: IContentSection[];
-  tilesId: string;
-  infoId: string;
+  tiles_id: string;
+  info_id: string;
 }
 
 export interface IMinimapImages extends Document {
@@ -87,59 +89,78 @@ export interface IMinimapImages extends Document {
 }
 
 const SurveySchema: Schema = new Schema({
-  surveyName: {type: String},
-  surveyNodes: [{type: Schema.Types.Mixed, ref: 'SurveyNode'}]
+  survey_name: { type: String },
+  survey_nodes: [{ type: Schema.Types.Mixed, ref: 'survey_nodes' }],
 });
 
 const SurveyNodeSchema: Schema = new Schema({
-  surveyName: {type: String},
-  uploadedAt: {type: Date},
-  uploadedBy: {type: String, ref: "User"},
-  mantaLink: {type: String},
-  date: {type: Date},
-  nodeNumber: {type: Number},
-  tilesId: {type: String},
-  tilesName: {type: String},
-  initialParameters: {type: Schema.Types.Mixed},
-  linkHotspots: [Schema.Types.Mixed],
-  infoHotspots: [Schema.Types.Mixed],
+  survey_name: { type: String },
+  uploaded_at: { type: Date },
+  uploaded_by: { type: String, ref: 'User' },
+  manta_link: { type: String },
+  date: { type: Date },
+  node_number: { type: Number },
+  tiles_id: { type: String },
+  tiles_name: { type: String },
+  initial_parameters: { type: Schema.Types.Mixed },
+  link_hotspots: [Schema.Types.Mixed],
+  info_hotspots: [Schema.Types.Mixed],
   levels: [Schema.Types.Mixed],
-  faceSize: {type: Number}
+  face_size: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const MinimapNodeSchema: Schema = new Schema({
-  nodeNumber: {type: Number},
-  tilesId:{type: String},
-  tilesName: {type: String},
-  surveyNode: {type: Schema.Types.Mixed, ref: "SurveyNode"},
-  floor: {type: Number}
+  node_number: { type: Number },
+  tiles_id: { type: String },
+  tiles_name: { type: String },
+  survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
+  floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const MinimapConversionSchema: Schema = new Schema({
-  floor: {type: Number},
-  xPixelOffset: {type: Number},
-  yPixelOffset: {type: Number},
-  xPixelPerMeter: {type: Number},
-  yPixelPerMeter: {type: Number},
-  surveyNode: {type: Schema.Types.Mixed, ref: "SurveyNode"},
-  minimapNode: {type: Schema.Types.Mixed, ref: "MinimapNode"}
+  floor: { type: Number },
+  x: { type: Number },
+  y: { type: Number },
+  x_scale: { type: Number },
+  y_scale: { type: Number },
+  survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
+  minimap_node: { type: Schema.Types.Mixed, ref: 'minimap_nodes' },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 const HotspotDescriptionSchema: Schema = new Schema({
-  header: {type: Schema.Types.Mixed},
+  header: { type: Schema.Types.Mixed },
   contents: [Schema.Types.Mixed],
-  tilesId: {type: String, ref: "SurveyNode"},
-  infoId: {type: String, default: uuidv4}
+  tiles_id: { type: String, ref: 'survey_node' },
+  info_id: { type: String, default: uuidv4 },
 });
 
 const MinimapImagesSchema: Schema = new Schema({
-  minimap: {type: String},
-  floor: {type: Number}
+  minimap: { type: String },
+  floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
 });
 
 export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);
-export const SurveyNode: Model<ISurveyNode> = model<ISurveyNode>('SurveyNode', SurveyNodeSchema);
-export const MinimapNode: Model<IMinimapNode> = model<IMinimapNode>('MinimapNode', MinimapNodeSchema);
-export const MinimapConversion: Model<IMinimapConversion> = model<IMinimapConversion>('MinimapConversion', MinimapConversionSchema);
-export const HotspotDescription: Model<IHotspotDescription> = model<IHotspotDescription>('HotspotDescription', HotspotDescriptionSchema, 'hotspotdescription');
-export const MinimapImages: Model<IMinimapImages> = model<IMinimapImages>('MinimapImages', MinimapImagesSchema);
+export const SurveyNode: Model<ISurveyNode> = model<ISurveyNode>(
+  'survey_nodes',
+  SurveyNodeSchema,
+);
+export const MinimapNode: Model<IMinimapNode> = model<IMinimapNode>(
+  'minimap_nodes',
+  MinimapNodeSchema,
+);
+export const MinimapConversion: Model<IMinimapConversion> =
+  model<IMinimapConversion>('minimap_conversion', MinimapConversionSchema);
+export const HotspotDescription: Model<IHotspotDescription> =
+  model<IHotspotDescription>(
+    'hotspot_description',
+    HotspotDescriptionSchema,
+    'hotspot_description',
+  );
+export const MinimapImages: Model<IMinimapImages> = model<IMinimapImages>(
+  'minimap_images',
+  MinimapImagesSchema,
+);

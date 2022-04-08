@@ -1,6 +1,8 @@
-[{
-  "_id": {
-    "$oid": "60ef845c6ae8e5c9556ee650"
-  },
-  "info": "          <div><h1>About</h1>\n          <h2>The Prism Learning Environment</h2>\n          <p>Prism is a 360 degree panoramic image viewer that allows the users \n            to navigate through a 3-dimensional environment. The architecture \n            showcases the construction process of a facility over a period of \n            time, allowing its users to travel through the process over time.</p>\n          <h3>Project Leader</h3>\n          <p>Dr Chris Landorf, School of Architecture, The University of Queensland</p>\n          <h3>Application Development</h3>\n          <p>eLIPSE</p> </div>"
-}]
+[
+  {
+    "_id": {
+      "$oid": "60ef845c6ae8e5c9556ee650"
+    },
+    "info": "          <div><h1>About</h1>\n          <h2>The Prism Learning Environment</h2>\n          <p>Prism is a 360 degree panoramic image viewer that allows the users \n            to navigate through a 3-dimensional environment. The architecture \n            showcases the construction process of a facility over a period of \n            time, allowing its users to travel through the process over time.</p>\n          <h3>Project Leader</h3>\n          <p>Dr Chris Landorf, School of Architecture, The University of Queensland</p>\n          <h3>Application Development</h3>\n          <p>eLIPSE</p> </div>"
+  }
+]
