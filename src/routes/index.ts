@@ -5,7 +5,8 @@ import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
-import SiteController  from '../components/Site/SiteController';
+import SiteController from '../components/Site/SiteController';
+import MapPinsController from '../components/MapPins/MapPinsController';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -14,6 +15,7 @@ export class Routes {
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
   public siteController: SiteController = new SiteController();
+  public mapPinsController: MapPinsController = new MapPinsController();
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
@@ -166,14 +168,20 @@ export class Routes {
     );
 
     //settings
-    router.get(
-      '/site/:siteId/settings',
-      this.siteController.getSettings,
-    );
+    router.get('/site/:siteId/settings', this.siteController.getSettings);
 
     //sites
     router.get('/sites', this.siteController.getSites);
     router.post('/sites', this.siteController.createSite);
+    router.get('/site-map', this.siteController.getSiteMap);
+
+    //Map pins
+
+    router.post('/map-pins', this.mapPinsController.createPin);
+    router.get('/map-pins', this.mapPinsController.getAllPins);
+    router.get('/map-pins/:id', this.mapPinsController.getPin);
+    router.patch('/map-pins/:id', this.mapPinsController.updatePin);
+    router.delete('/map-pins/:id', this.mapPinsController.deletePin);
 
     /**
      * Admin section APIs
