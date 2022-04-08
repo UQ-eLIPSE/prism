@@ -55,4 +55,14 @@ Retrieve the dump files by using the `get_mongodumps.sh` script.
 
 - Run:
   - `./get_mongodumps.sh <mango username> <output directory>`
-  - In the output directory and the backup folder, run `mongorestore .` and all the data will be restored.
+  - navigate to `<outupt directory>` from here you can run `monogorestore <chooose a directory to restore>`
+
+  example
+    - prism_mongodumps
+      - anlb_dump
+      - agco360_dump
+  - run `mongorestore anlb_dump` to restore the anlb backup
+
+Download mongo database tools from this link if you do not have mongorestore
+
+https://www.mongodb.com/try/download/database-tools
