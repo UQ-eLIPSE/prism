@@ -23,7 +23,7 @@ Type=simple
 User=root
 Environment=PORT=8000
 # Replace with the actual directory
-WorkingDirectory=/var/www/prism/server
+WorkingDirectory=/var/www/prism-server
 ExecStart=/usr/local/bin/node ./dist/main.js 
 # Theoretically keeps trying indefinitely
 Restart=always
