@@ -23,7 +23,7 @@
     "@types/nodemailer": "^6.4.0",
     "@types/uuid": "^8.3.0",
     "@uq-elipse/uq-eait-sso": "^0.0.5",
-    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bson": "^4.6.1",
     "cookie-parser": "^1.4.5",
