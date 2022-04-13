@@ -53,14 +53,14 @@ echo "location /ping {
 
 location / {
         # kill cache
-        add_header Last-Modified $date_gmt;
+        add_header Last-Modified \$date_gmt;
         add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
         add_header Access-Control-Allow-Origin *;
         if_modified_since off;
         expires off;
         etag off;
 
-        try_files $uri $uri/ @dflapp;
+        try_files \$uri \$uri/ @dflapp;
 }
 
 location @dflapp {
