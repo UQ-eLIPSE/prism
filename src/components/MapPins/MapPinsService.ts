@@ -1,17 +1,41 @@
 import { IMapPins, MapPins } from './MapPinsModel';
-import { Response } from 'express-serve-static-core';
-import { ObjectId, ObjectID } from 'bson';
+import { ObjectId } from 'bson';
+import { Site } from '../Site/SiteModel';
 
 class SiteService {
   static async getMapPins() {
+    const mapPins = await MapPins.find();
+    const mapPinsWithSite = await Promise.all(
+      mapPins.map(async (mapPin) => {
+        const site = await Site.findById(mapPin.site);
+        if (site === null) return mapPin;
+
+        const site_name = site.site_name;
+        const mapPinJson = mapPin.toJSON();
+
+        return {
+          ...mapPinJson,
+          site_name,
+        };
+      }),
+    );
     return {
-      mapPins: await MapPins.find(),
+      mapPins: mapPinsWithSite,
     };
   }
 
   static async getMapPin(id: string) {
+    const mapPin = await MapPins.findOne({ _id: new ObjectId(id) });
+    if (mapPin === null) throw new Error('Map Pin not found');
+
+    const site = await Site.findById(mapPin.site);
+    if (site === null) return mapPin;
+
+    const mapPinJSON = mapPin.toJSON();
+
     return {
-      mapPin: await MapPins.find({ _id: new ObjectId(id) }),
+      ...mapPinJSON,
+      site_name: site.site_name,
     };
   }
 
