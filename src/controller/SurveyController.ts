@@ -410,4 +410,8 @@ export class SurveyController {
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
+
+  public async createMinimapImage(req: Request, res: Response) {
+    const file = req.file;
+  }
 }
