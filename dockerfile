@@ -13,13 +13,14 @@ RUN mkdir /root/.ssh/
 
 ADD package.json /tmp/server/
 
+# Use the key used for Manta
 ADD ./tmp/id_rsa /root/.ssh/
 
 RUN cd /tmp/server && yarn
 
 RUN cd /var/www/server && ln -s /tmp/server/node_modules
 
-RUN npm i -g manta-sync
+RUN npm i -g manta
 
 CMD /bin/bash -c "source /root/.bashrc"
 
