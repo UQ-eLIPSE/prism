@@ -184,6 +184,12 @@ export class Routes {
       this.surveyController.getMinimapImage,
     );
 
+    router.post(
+      '/site/:siteId/minimap/details',
+      upload.single('file'),
+      this.surveyController.createSiteMap,
+    );
+
     //settings
     router.get('/site/:siteId/settings', this.siteController.getSettings);
 

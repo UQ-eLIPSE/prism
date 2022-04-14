@@ -411,7 +411,7 @@ export class SurveyController {
     }
   }
 
-  public async createMinimapImage(req: Request, res: Response) {
+  public async createSiteMap(req: Request, res: Response) {
     const file = req.file;
   }
 }
