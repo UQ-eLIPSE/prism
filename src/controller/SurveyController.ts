@@ -415,15 +415,24 @@ export class SurveyController {
   public async createSiteMap(req: Request, res: Response) {
     const { file } = req;
     const { siteId } = req.params;
-    if (file === undefined)
-      return CommonUtil.failResponse(res, 'File is undefined');
+    try {
+      if (file === undefined)
+        return CommonUtil.failResponse(res, 'File is undefined');
 
-    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
+      if (!siteId)
+        return CommonUtil.failResponse(res, 'Site Id is not provided');
 
-    //Get site
-    const site = await Site.findById({ _id: new ObjectID(siteId) });
-    if (!site) return CommonUtil.failResponse(res, 'Invalid Site Id');
+      //Get site
+      const site = await Site.findById({ _id: new ObjectID(siteId) });
+      if (!site) return CommonUtil.failResponse(res, 'Invalid Site Id');
 
-    const uploadSiteMap = await SurveyService.createSiteMap(file, site);
+      const uploadSiteMap = await SurveyService.createSiteMap(file, site);
+      if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
+
+      return CommonUtil.successResponse(res, uploadSiteMap.message);
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
   }
 }

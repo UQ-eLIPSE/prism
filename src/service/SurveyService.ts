@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express-serve-static-core';
-import { ISite } from '../components/Site/SiteModel';
+import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
@@ -9,7 +9,7 @@ import {
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
@@ -263,43 +263,46 @@ export abstract class SurveyService {
     });
   }
 
-  public static async createSiteMap(file: Express.Multer.File, site: ISite) {
+  public static async createSiteMap(
+    file: Express.Multer.File,
+    site: ISite,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
     try {
       const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME } = process.env;
       if (file === undefined) throw new Error('File is undefined');
 
       // Upload on to Manta
-      const upload = await exec(
+      const upload = execSync(
         `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --url=${MANTA_HOST_NAME}`,
-        {},
-        async (err: any) => {
-          if (err !== null) {
-            console.error(err);
-            return;
-          }
-          await fs.unlink(file.path);
-          console.log('Uploaded');
+      );
+
+      if (!upload) throw new Error("Site map couldn't be uploaded.");
+
+      const saveSiteMap = await SiteSettings.updateOne(
+        { site: site._id },
+        {
+          $set: {
+            minimap: {
+              image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+              image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+            },
+          },
         },
       );
 
-      // Open config file which maps the settings that includes tilesId/name and floor numbers to the data.json
+      if (saveSiteMap.modifiedCount !== 1)
+        throw new Error('Site Map Cannot Be Saved');
 
-      // Get the data.json file and make all the fields in snake_case fields and match with them model.
-
-      // Insert in to database
-
-      // Create hotspot descriptions out of it if it exists
-
-      // Attach site to the model
-
-      // Upload files to Manta
-
-      // Add minimap conversions?
-
-      // Add minimap nodes
+      return {
+        success: true,
+        message: 'Site Map has been saved',
+      };
     } catch (e) {
       console.error(e);
+      return { success: false, message: e.message };
     }
-    if (file === undefined) return;
   }
 }
