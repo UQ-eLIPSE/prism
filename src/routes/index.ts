@@ -185,7 +185,7 @@ export class Routes {
     );
 
     router.post(
-      '/site/:siteId/minimap/details',
+      '/site/:siteId/sitemap',
       upload.single('file'),
       this.surveyController.createSiteMap,
     );

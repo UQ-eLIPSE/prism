@@ -8,7 +8,8 @@ import {
   IMinimapNode,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
-
+import * as fs from 'fs/promises';
+import { exec } from 'child_process';
 const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
@@ -262,5 +263,47 @@ export abstract class SurveyService {
     });
   }
 
-  public static async createSiteMap(file: Express.Multer.File, site: ISite) {}
+  public static async createSiteMap(file: Express.Multer.File, site: ISite) {
+    try {
+      const { TMP_FOLDER, MANTA_ROOT_FOLDER, MANTA_HOST_NAME, PROJECT_NAME } =
+        process.env;
+      // console.log('reaching');
+      if (file === undefined) throw new Error('File is undefined');
+
+      // Upload on to Manta and create a job of extracting
+      const upload = await exec(
+        `manta-sync -f ${file.path} ${MANTA_ROOT_FOLDER} --url=${MANTA_HOST_NAME}`,
+        {},
+        async (err: any) => {
+          if (err !== null) {
+            console.error(err);
+            return;
+          }
+          await fs.unlink(file.path);
+          console.log('Uploaded');
+        },
+      );
+
+      console.log(upload.stdout, upload.stderr);
+
+      // Open config file which maps the settings that includes tilesId/name and floor numbers to the data.json
+
+      // Get the data.json file and make all the fields in snake_case fields and match with them model.
+
+      // Insert in to database
+
+      // Create hotspot descriptions out of it if it exists
+
+      // Attach site to the model
+
+      // Upload files to Manta
+
+      // Add minimap conversions?
+
+      // Add minimap nodes
+    } catch (e) {
+      console.error(e);
+    }
+    if (file === undefined) return;
+  }
 }
