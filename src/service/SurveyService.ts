@@ -263,6 +263,13 @@ export abstract class SurveyService {
     });
   }
 
+  /**
+   * createSiteMap - - Inserts Site Map in to site Settings and upload
+   * to Manta.
+   * @param file - Uploaded file
+   * @param site - Provided Site
+   * @returns
+   */
   public static async createSiteMap(
     file: Express.Multer.File,
     site: ISite,
@@ -281,6 +288,7 @@ export abstract class SurveyService {
 
       if (!upload) throw new Error("Site map couldn't be uploaded.");
 
+      // Edit in Site Settings.
       const saveSiteMap = await SiteSettings.updateOne(
         { site: site._id },
         {

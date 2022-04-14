@@ -412,19 +412,28 @@ export class SurveyController {
     }
   }
 
+  /**
+   * createSiteMap - Inserts Site Map in to site Settings and upload
+   * to Manta.
+   * @param req
+   * @param res
+   * @returns Success Response if the upload/DB update has been successful
+   */
   public async createSiteMap(req: Request, res: Response) {
     const { file } = req;
     const { siteId } = req.params;
     try {
-      if (file === undefined)
-        return CommonUtil.failResponse(res, 'File is undefined');
+      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
 
-      if (!siteId)
-        return CommonUtil.failResponse(res, 'Site Id is not provided');
+      if (!extNames.includes(path.extname(file?.path as string)))
+        throw new Error('File is undefined');
+      if (file === undefined) throw new Error('File is undefined');
+
+      if (!siteId) throw new Error('Site Id is not provided');
 
       //Get site
       const site = await Site.findById({ _id: new ObjectID(siteId) });
-      if (!site) return CommonUtil.failResponse(res, 'Invalid Site Id');
+      if (!site) throw new Error('Invalid Site Id');
 
       const uploadSiteMap = await SurveyService.createSiteMap(file, site);
       if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
