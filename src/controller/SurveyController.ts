@@ -17,6 +17,7 @@ import {
   IHotspotDescription,
 } from '../models/SurveyModel';
 import { ObjectID } from 'bson';
+import { Site } from '../components/Site/SiteModel';
 
 const exec = require('child_process').exec;
 const StreamZip = require('node-stream-zip');
@@ -412,6 +413,17 @@ export class SurveyController {
   }
 
   public async createSiteMap(req: Request, res: Response) {
-    const file = req.file;
+    const { file } = req;
+    const { siteId } = req.params;
+    if (file === undefined)
+      return CommonUtil.failResponse(res, 'File is undefined');
+
+    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
+
+    //Get site
+    const site = await Site.findById({ _id: new ObjectID(siteId) });
+    if (!site) return CommonUtil.failResponse(res, 'Invalid Site Id');
+
+    const uploadSiteMap = await SurveyService.createSiteMap(file, site);
   }
 }

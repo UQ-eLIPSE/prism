@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express-serve-static-core';
+import { ISite } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
@@ -260,4 +261,6 @@ export abstract class SurveyService {
       });
     });
   }
+
+  public static async createSiteMap(file: Express.Multer.File, site: ISite) {}
 }
