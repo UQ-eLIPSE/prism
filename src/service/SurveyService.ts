@@ -304,6 +304,9 @@ export abstract class SurveyService {
       if (saveSiteMap.modifiedCount !== 1)
         throw new Error('Site Map Cannot Be Saved');
 
+      // Delete file from local tmp.
+      await fs.unlink(file.path);
+
       return {
         success: true,
         message: 'Site Map has been saved',
