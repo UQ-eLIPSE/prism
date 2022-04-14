@@ -265,14 +265,12 @@ export abstract class SurveyService {
 
   public static async createSiteMap(file: Express.Multer.File, site: ISite) {
     try {
-      const { TMP_FOLDER, MANTA_ROOT_FOLDER, MANTA_HOST_NAME, PROJECT_NAME } =
-        process.env;
-      // console.log('reaching');
+      const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME } = process.env;
       if (file === undefined) throw new Error('File is undefined');
 
-      // Upload on to Manta and create a job of extracting
+      // Upload on to Manta
       const upload = await exec(
-        `manta-sync -f ${file.path} ${MANTA_ROOT_FOLDER} --url=${MANTA_HOST_NAME}`,
+        `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --url=${MANTA_HOST_NAME}`,
         {},
         async (err: any) => {
           if (err !== null) {
@@ -283,8 +281,6 @@ export abstract class SurveyService {
           console.log('Uploaded');
         },
       );
-
-      console.log(upload.stdout, upload.stderr);
 
       // Open config file which maps the settings that includes tilesId/name and floor numbers to the data.json
 

@@ -26,12 +26,7 @@ export class Routes {
     const storage = multer.diskStorage({
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
       filename: (req: Request, file: any, cb: any) => {
-        cb(
-          null,
-          `${Math.random().toString(36).substring(7)}${path.extname(
-            file.originalname,
-          )}`,
-        );
+        cb(null, file.originalname);
       },
     });
 
