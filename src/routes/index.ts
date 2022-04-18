@@ -7,6 +7,9 @@ import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
 import SiteController from '../components/Site/SiteController';
 import MapPinsController from '../components/MapPins/MapPinsController';
+import multer = require('multer');
+import { Request } from 'express';
+import path = require('path');
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -19,6 +22,18 @@ export class Routes {
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
+
+    const storage = multer.diskStorage({
+      destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
+      filename: (req: Request, file: any, cb: any) => {
+        cb(
+          null,
+          `${Math.random().toString(36).substring(7)}${path.extname(
+            file.originalname,
+          )}`,
+        );
+      },
+    });
 
     router.post(
       '/user/create',

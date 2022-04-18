@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express-serve-static-core';
+import { ISite } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
@@ -11,6 +12,114 @@ import { CommonUtil } from '../utils/CommonUtil';
 const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
+  static async unzipValidateFile(file: Express.Multer.File, site: ISite) {
+    const zip = new StreamZip({
+      file: `${file.path}`,
+      storeEntries: true,
+    });
+
+    let message: string;
+
+    zip.on('ready', async () => {
+      const entries = Object.values(zip.entries());
+      const appFilesExist = entries.some(
+        (entry: any) => entry.name.endsWith('app-files/') && entry.isDirectory,
+      );
+      // const surveyJsonExist = entries.some((entry: any) =>
+      //   entry.name.endsWith('survey.json'),
+      // );
+      const dataJsExist = entries.some((entry: any) =>
+        entry.name.includes('app-files/data.js'),
+      );
+
+      console.log(entries);
+
+      if (appFilesExist && dataJsExist) {
+        let surveyJson: any[] = [];
+      }
+
+      // SurveyService.readSurveyJson(entries, zip).then((data: any[]) =>
+      //   data.map((survey) => surveyJson.push(survey)),
+      // );
+
+      // let surveyIds: any = await SurveyService.readFileData(
+      //   user,
+      //   entries,
+      //   zip,
+      // );
+      //   const surveyIdsArr = Array.from(surveyIds);
+
+      //   if (surveyIdsArr.length !== surveyJson.length) {
+      //     // Delete the record from database
+      //     for (let idx = 0; idx < surveyIdsArr.length; idx++) {
+      //       const surveysTable = await Survey.findOne({
+      //         surveyNodes: surveyIdsArr[idx] as any,
+      //       });
+
+      //       await SurveyNode.findByIdAndDelete(surveyIdsArr[idx]);
+      //       await MinimapConversion.findOneAndDelete({
+      //         surveyNode: surveyIdsArr[idx] as any,
+      //       });
+      //       await MinimapNode.findOneAndDelete({
+      //         surveyNode: surveyIdsArr[idx] as any,
+      //       });
+
+      //       if (surveysTable) {
+      //         await Survey.findByIdAndDelete(surveysTable._id);
+      //       }
+      //     }
+
+      //     message =
+      //       'Number of scenes in survey.json does not match number of scenes from marzipano';
+
+      //   } else {
+      //     for (let idx = 0; idx < surveyIdsArr.length; idx++) {
+      //       const minimapConversion = await MinimapConversion.findOne({
+      //         surveyNode: surveyIdsArr[idx] as any,
+      //       });
+      //       const surveyNode = await SurveyNode.findById(surveyIdsArr[idx]);
+
+      //       if (surveyNode) {
+      //         await SurveyNode.findByIdAndUpdate(surveyIdsArr[idx], {
+      //           date: surveyJson[idx]['date'],
+      //         });
+      //       }
+
+      //       if (minimapConversion) {
+      //         const minimapNode = await MinimapNode.findOne({
+      //           surveyNode: surveyIdsArr[idx] as any,
+      //         });
+      //         await MinimapConversion.findOneAndUpdate(
+      //           { surveyNode: surveyIdsArr[idx] as any },
+      //           {
+      //             floor: surveyJson[idx]['floor'],
+      //             xPixelOffset: surveyJson[idx]['x_pixel_offset'],
+      //             yPixelOffset: surveyJson[idx]['y_pixel_offset'],
+      //             xPixelPerMeter: surveyJson[idx]['x_pixel_per_meter'],
+      //             yPixelPerMeter: surveyJson[idx]['y_pixel_per_meter'],
+      //             minimapNode: (<IMinimapNode>minimapNode)._id || null,
+      //           },
+      //         );
+
+      //         await MinimapNode.findOneAndUpdate(
+      //           { surveyNode: surveyIdsArr[idx] as any },
+      //           {
+      //             floor: surveyJson[idx]['floor'],
+      //           },
+      //         );
+      //       }
+      //     }
+      //   }
+      // } else {
+      //   if (!surveyJsonExist) message = 'survey.json is missing';
+      //   if (!appFilesExist) message = 'app-files folder is missing';
+      //   if (!dataJsExist) message = 'data.js is missing';
+      //   zip.close();
+      // }
+      zip.close();
+    });
+  }
+
   static async readZipFile(req: Request, res: Response, next: NextFunction) {
     const { file } = req;
     const { user } = res.locals;

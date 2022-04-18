@@ -38,6 +38,11 @@ export class SurveyController {
     this.writeLocally = multer({ dest: this.localPath });
   }
 
+  public async uploadScenes(req: Request, res: Response) {
+    const { file } = req;
+    const { siteId } = req.params;
+  }
+
   /**
    * Upload survey and validate the files inside .zip
    * @param req
