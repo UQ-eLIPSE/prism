@@ -35,6 +35,8 @@ export class Routes {
       },
     });
 
+    const upload = multer({ storage: storage });
+
     router.post(
       '/user/create',
       AuthUtil.authenticateUser,
@@ -138,6 +140,11 @@ export class Routes {
     );
     router.get(
       '/site/:siteId/survey/details/compact',
+      this.surveyController.getSurveyCompactVersion,
+    );
+
+    router.post(
+      '/site/:siteId/addScenes',
       this.surveyController.getSurveyCompactVersion,
     );
 
