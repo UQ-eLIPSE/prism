@@ -145,7 +145,8 @@ export class Routes {
 
     router.post(
       '/site/:siteId/addScenes',
-      this.surveyController.getSurveyCompactVersion,
+      upload.single('file'),
+      this.surveyController.uploadScenes,
     );
 
     //resources
