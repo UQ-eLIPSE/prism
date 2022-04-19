@@ -299,8 +299,6 @@ export abstract class SurveyService {
         site: site._id,
       });
 
-      console.log(saveSiteMap);
-
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
       // Delete file from local tmp.
