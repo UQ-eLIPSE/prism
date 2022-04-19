@@ -292,17 +292,12 @@ export abstract class SurveyService {
       if (!upload) throw new Error("Site map couldn't be uploaded.");
 
       // Save in minimap Images
-      const saveSiteMap = await MinimapImages.create(
-        {},
-        {
-          $set: {
-            _id: new ObjectId(),
-            minimap: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
-            floor: floor,
-            site: site._id,
-          },
-        },
-      );
+      const saveSiteMap = await MinimapImages.create({
+        _id: new ObjectId(),
+        minimap: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+        floor: floor,
+        site: site._id,
+      });
 
       console.log(saveSiteMap);
 
