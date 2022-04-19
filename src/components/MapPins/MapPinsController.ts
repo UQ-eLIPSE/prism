@@ -100,10 +100,23 @@ class MapPinsController {
   public async updatePin(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const body: IMapPins = req.body;
+      const { site_name } = req.body;
+      const body: IMapPins = { ...req.body };
+
+      if (site_name) {
+        console.log('Reaching');
+        const updateSiteName = await Site.findByIdAndUpdate(
+          new ObjectId(body.site),
+          {
+            site_name: site_name,
+          },
+        );
+
+        if (!updateSiteName) throw new Error('Site name could not be updated.');
+      }
 
       const update = await mapPinsService.updateMapPin(id, body);
-      if (!update) 'MapPin cannot be updated';
+      if (!update) throw new Error('MapPin cannot be updated');
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
