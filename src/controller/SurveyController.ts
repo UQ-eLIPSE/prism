@@ -40,6 +40,7 @@ export class SurveyController {
   }
 
   public async uploadScenes(req: Request, res: Response) {
+    console.log(req.files);
     const { file } = req;
     const { siteId } = req.params;
     if (file === undefined)

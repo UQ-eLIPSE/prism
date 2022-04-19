@@ -145,7 +145,7 @@ export class Routes {
 
     router.post(
       '/site/:siteId/addScenes',
-      upload.single('file'),
+      upload.fields([{ name: 'file' }, { name: 'properties' }]),
       this.surveyController.uploadScenes,
     );
 
