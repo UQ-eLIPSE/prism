@@ -422,6 +422,8 @@ export class SurveyController {
   public async createSiteMap(req: Request, res: Response) {
     const { file } = req;
     const { siteId } = req.params;
+    const { floor } = req.query;
+
     try {
       const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
 
@@ -435,7 +437,11 @@ export class SurveyController {
       const site = await Site.findById({ _id: new ObjectID(siteId) });
       if (!site) throw new Error('Invalid Site Id');
 
-      const uploadSiteMap = await SurveyService.createSiteMap(file, site);
+      const uploadSiteMap = await SurveyService.createSiteMap(
+        file,
+        parseInt(floor as string),
+        site,
+      );
       if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
 
       return CommonUtil.successResponse(res, uploadSiteMap.message);

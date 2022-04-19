@@ -6,10 +6,12 @@ import {
   MinimapNode,
   Survey,
   IMinimapNode,
+  MinimapImages,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
 import { execSync } from 'child_process';
+import { ObjectId } from 'bson';
 const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
@@ -272,6 +274,7 @@ export abstract class SurveyService {
    */
   public static async createSiteMap(
     file: Express.Multer.File,
+    floor: Number,
     site: ISite,
   ): Promise<{
     success: boolean;
@@ -288,21 +291,22 @@ export abstract class SurveyService {
 
       if (!upload) throw new Error("Site map couldn't be uploaded.");
 
-      // Edit in Site Settings.
-      const saveSiteMap = await SiteSettings.updateOne(
-        { site: site._id },
+      // Save in minimap Images
+      const saveSiteMap = await MinimapImages.create(
+        {},
         {
           $set: {
-            minimap: {
-              image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
-              image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
-            },
+            _id: new ObjectId(),
+            minimap: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+            floor: floor,
+            site: site._id,
           },
         },
       );
 
-      if (saveSiteMap.modifiedCount !== 1)
-        throw new Error('Site Map Cannot Be Saved');
+      console.log(saveSiteMap);
+
+      if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
       // Delete file from local tmp.
       await fs.unlink(file.path);
