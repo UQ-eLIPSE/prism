@@ -57,7 +57,7 @@ class MapPinsController {
 
   /**
    * createPin
-   * Creates a Map pin and site with the required fields
+   * Creates a Map pin and site with the required body fields of MapPins
    * @param req - Used to get the body that contains the required fields
    * @param res
    * @returns Success response if DB entry has been made.
@@ -71,7 +71,8 @@ class MapPinsController {
       if (!site) return CommonUtil.failResponse(res, 'Site name is incorrect');
 
       const body: IMapPins = new MapPins({ _id: new ObjectId(), ...req.body });
-      if (!body) return CommonUtil.failResponse(res, 'Body is incorrect');
+      if (!body)
+        return CommonUtil.failResponse(res, `Body is incorrect: ${body}`);
 
       const createSite = await SiteService.createSite(site);
       if (!createSite) throw new Error('Site could not be created');
