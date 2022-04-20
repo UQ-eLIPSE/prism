@@ -40,11 +40,10 @@ export class SurveyController {
   }
 
   public async uploadScenes(req: Request, res: Response) {
-    console.log(req.files);
-    const { file } = req;
+    const { files } = req;
+
     const { siteId } = req.params;
-    if (file === undefined)
-      return CommonUtil.failResponse(res, 'File is undefined');
+    if (!files) return CommonUtil.failResponse(res, 'File is undefined');
 
     if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
 
@@ -52,7 +51,12 @@ export class SurveyController {
     const site = await Site.findById({ _id: new ObjectID(siteId) });
     if (!site) return CommonUtil.failResponse(res, 'Invalid Site Id');
 
-    const upload = await SurveyService.unzipValidateFile(file, site);
+    const upload = await SurveyService.unzipValidateFile(
+      files as {
+        [fieldname: string]: Express.Multer.File[];
+      },
+      site,
+    );
   }
 
   /**

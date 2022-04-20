@@ -8,20 +8,47 @@ import {
   IMinimapNode,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
-
+import csv = require('csvtojson');
 const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
-  static async unzipValidateFile(file: Express.Multer.File, site: ISite) {
+  static async unzipValidateFile(
+    files: {
+      [fieldname: string]: Express.Multer.File[];
+    },
+    site: ISite,
+  ) {
+    const { zipFile, properties } = files;
+
+    if (
+      zipFile[0].mimetype !== 'application/zip' &&
+      properties[0].mimetype !== 'text/csv'
+    )
+      throw new Error('Invalid file types');
+
     const zip = new StreamZip({
-      file: `${file.path}`,
+      file: `${zipFile[0].path}`,
       storeEntries: true,
     });
 
     let message: string;
 
     zip.on('ready', async () => {
+      const csvJSON = await csv().fromFile(properties[0].path);
       const entries = Object.values(zip.entries());
+
+      // Check if the images exist
+      for (const field of csvJSON) {
+        const checkImageExist = entries.some((entry: any) =>
+          entry.name.includes(`${field.fileName}`),
+        );
+        if (!checkImageExist) {
+          throw new Error(
+            'Image does not exist, please upload your CSV file again with the correct file name.',
+          );
+        }
+      }
+
       const appFilesExist = entries.some(
         (entry: any) => entry.name.endsWith('app-files/') && entry.isDirectory,
       );
@@ -32,7 +59,7 @@ export abstract class SurveyService {
         entry.name.includes('app-files/data.js'),
       );
 
-      console.log(entries);
+      // console.log(entries);
 
       if (appFilesExist && dataJsExist) {
         let surveyJson: any[] = [];

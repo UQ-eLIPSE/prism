@@ -26,12 +26,7 @@ export class Routes {
     const storage = multer.diskStorage({
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
       filename: (req: Request, file: any, cb: any) => {
-        cb(
-          null,
-          `${Math.random().toString(36).substring(7)}${path.extname(
-            file.originalname,
-          )}`,
-        );
+        cb(null, file.originalname);
       },
     });
 
@@ -145,7 +140,7 @@ export class Routes {
 
     router.post(
       '/site/:siteId/addScenes',
-      upload.fields([{ name: 'file' }, { name: 'properties' }]),
+      upload.fields([{ name: 'zipFile' }, { name: 'properties' }]),
       this.surveyController.uploadScenes,
     );
 
