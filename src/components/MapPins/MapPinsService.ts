@@ -3,6 +3,11 @@ import { ObjectId } from 'bson';
 import { Site } from '../Site/SiteModel';
 
 class SiteService {
+  /**
+   * getMapPins
+   * Retrieves all entries of map_pins collection.
+   * @returns Success response of an array of map_pins
+   */
   static async getMapPins() {
     const mapPins = await MapPins.find();
     const mapPinsWithSite = await Promise.all(
@@ -23,7 +28,12 @@ class SiteService {
       mapPins: mapPinsWithSite,
     };
   }
-
+  /**
+   * getMapPin
+   * Returns a map_pin with the given Id.
+   * @param id - used as a primary key to retrieve the document
+   * @returns Success response of a map_pin.
+   */
   static async getMapPin(id: string) {
     const mapPin = await MapPins.findOne({ _id: new ObjectId(id) });
     if (mapPin === null) throw new Error('Map Pin not found');
