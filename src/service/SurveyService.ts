@@ -35,12 +35,16 @@ export abstract class SurveyService {
     )
       throw new Error('Invalid file types');
 
-    const zip = new StreamZip.async({
+    const zip = new StreamZip({
       file: `${zipFile[0].path}`,
       storeEntries: true,
     });
 
     let message: string;
+
+    zip.on('error', (err: any) => {
+      console.error(err);
+    });
 
     await zip.on('ready', async () => {
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
@@ -76,11 +80,11 @@ export abstract class SurveyService {
       const zipExtract = await zip.extract(
         null,
         `tmp/${zipFile[0].filename.replace('.zip', '')}`,
+        (err: any) => {
+          console.log(err ? 'Extract error' : 'Extracted');
+          zip.close();
+        },
       );
-
-      console.log('Zip extract', zipExtract);
-
-      await zip.close();
     });
 
     // Check data.js and match the
