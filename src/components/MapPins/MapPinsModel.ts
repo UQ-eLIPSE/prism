@@ -8,8 +8,7 @@ export interface IMapPins extends Document {
   cover_image: string;
   site: any;
   external_link?: string;
-  enabled?: boolean;
-  hidden?: boolean;
+  enabled: boolean;
 }
 
 const MapPinsSchema: Schema = new Schema({
@@ -23,8 +22,7 @@ const MapPinsSchema: Schema = new Schema({
   icon: { type: String },
   cover_image: { type: String },
   external_link: { type: String, required: false },
-  enabled: { type: Boolean, required: false },
-  hidden: { type: Boolean, required: false },
+  enabled: { type: Boolean, required: true },
 });
 
 export const MapPins: Model<IMapPins> = model<IMapPins>(

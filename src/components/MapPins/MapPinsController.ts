@@ -104,7 +104,6 @@ class MapPinsController {
       const body: IMapPins = { ...req.body };
 
       if (site_name) {
-        console.log('Reaching');
         const updateSiteName = await Site.findByIdAndUpdate(
           new ObjectId(body.site),
           {
