@@ -7,6 +7,7 @@ export interface IMapPins extends Document {
   icon: string;
   cover_image: string;
   site: any;
+  name: string;
   external_link?: string;
   enabled?: boolean;
   hidden?: boolean;
@@ -25,6 +26,7 @@ const MapPinsSchema: Schema = new Schema({
   external_link: { type: String, required: false },
   enabled: { type: Boolean, required: false },
   hidden: { type: Boolean, required: false },
+  name: { type: String, required: true },
 });
 
 export const MapPins: Model<IMapPins> = model<IMapPins>(

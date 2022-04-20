@@ -100,15 +100,13 @@ class MapPinsController {
   public async updatePin(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { site_name } = req.body;
+      const { name } = req.body;
       const body: IMapPins = { ...req.body };
-
-      if (site_name) {
-        console.log('Reaching');
+      if (name) {
         const updateSiteName = await Site.findByIdAndUpdate(
           new ObjectId(body.site),
           {
-            site_name: site_name,
+            site_name: name,
           },
         );
 
