@@ -8,9 +8,18 @@ import {
   IMinimapNode,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
+import * as fs from 'fs/promises';
 import csv = require('csvtojson');
+import process = require('process');
 const StreamZip = require('node-stream-zip');
 
+interface CSVProperties {
+  nodeNumber: string;
+  lever: string;
+  fileName: string;
+  x: string;
+  y: string;
+}
 export abstract class SurveyService {
   static async unzipValidateFile(
     files: {
@@ -26,15 +35,17 @@ export abstract class SurveyService {
     )
       throw new Error('Invalid file types');
 
-    const zip = new StreamZip({
+    const zip = new StreamZip.async({
       file: `${zipFile[0].path}`,
       storeEntries: true,
     });
 
     let message: string;
 
-    zip.on('ready', async () => {
-      const csvJSON = await csv().fromFile(properties[0].path);
+    await zip.on('ready', async () => {
+      const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
+      if (!csvJSON) throw new Error('Incorrect CSV format');
+
       const entries = Object.values(zip.entries());
 
       // Check if the images exist
@@ -42,11 +53,10 @@ export abstract class SurveyService {
         const checkImageExist = entries.some((entry: any) =>
           entry.name.includes(`${field.fileName}`),
         );
-        if (!checkImageExist) {
+        if (!checkImageExist)
           throw new Error(
             'Image does not exist, please upload your CSV file again with the correct file name.',
           );
-        }
       }
 
       const appFilesExist = entries.some(
@@ -59,92 +69,21 @@ export abstract class SurveyService {
         entry.name.includes('app-files/data.js'),
       );
 
-      // console.log(entries);
+      if (!appFilesExist || !dataJsExist)
+        throw new Error('Marzipano folder structure is not correct');
 
-      if (appFilesExist && dataJsExist) {
-        let surveyJson: any[] = [];
-      }
+      // Extract zip
+      const zipExtract = await zip.extract(
+        null,
+        `tmp/${zipFile[0].filename.replace('.zip', '')}`,
+      );
 
-      // SurveyService.readSurveyJson(entries, zip).then((data: any[]) =>
-      //   data.map((survey) => surveyJson.push(survey)),
-      // );
+      console.log('Zip extract', zipExtract);
 
-      // let surveyIds: any = await SurveyService.readFileData(
-      //   user,
-      //   entries,
-      //   zip,
-      // );
-      //   const surveyIdsArr = Array.from(surveyIds);
-
-      //   if (surveyIdsArr.length !== surveyJson.length) {
-      //     // Delete the record from database
-      //     for (let idx = 0; idx < surveyIdsArr.length; idx++) {
-      //       const surveysTable = await Survey.findOne({
-      //         surveyNodes: surveyIdsArr[idx] as any,
-      //       });
-
-      //       await SurveyNode.findByIdAndDelete(surveyIdsArr[idx]);
-      //       await MinimapConversion.findOneAndDelete({
-      //         surveyNode: surveyIdsArr[idx] as any,
-      //       });
-      //       await MinimapNode.findOneAndDelete({
-      //         surveyNode: surveyIdsArr[idx] as any,
-      //       });
-
-      //       if (surveysTable) {
-      //         await Survey.findByIdAndDelete(surveysTable._id);
-      //       }
-      //     }
-
-      //     message =
-      //       'Number of scenes in survey.json does not match number of scenes from marzipano';
-
-      //   } else {
-      //     for (let idx = 0; idx < surveyIdsArr.length; idx++) {
-      //       const minimapConversion = await MinimapConversion.findOne({
-      //         surveyNode: surveyIdsArr[idx] as any,
-      //       });
-      //       const surveyNode = await SurveyNode.findById(surveyIdsArr[idx]);
-
-      //       if (surveyNode) {
-      //         await SurveyNode.findByIdAndUpdate(surveyIdsArr[idx], {
-      //           date: surveyJson[idx]['date'],
-      //         });
-      //       }
-
-      //       if (minimapConversion) {
-      //         const minimapNode = await MinimapNode.findOne({
-      //           surveyNode: surveyIdsArr[idx] as any,
-      //         });
-      //         await MinimapConversion.findOneAndUpdate(
-      //           { surveyNode: surveyIdsArr[idx] as any },
-      //           {
-      //             floor: surveyJson[idx]['floor'],
-      //             xPixelOffset: surveyJson[idx]['x_pixel_offset'],
-      //             yPixelOffset: surveyJson[idx]['y_pixel_offset'],
-      //             xPixelPerMeter: surveyJson[idx]['x_pixel_per_meter'],
-      //             yPixelPerMeter: surveyJson[idx]['y_pixel_per_meter'],
-      //             minimapNode: (<IMinimapNode>minimapNode)._id || null,
-      //           },
-      //         );
-
-      //         await MinimapNode.findOneAndUpdate(
-      //           { surveyNode: surveyIdsArr[idx] as any },
-      //           {
-      //             floor: surveyJson[idx]['floor'],
-      //           },
-      //         );
-      //       }
-      //     }
-      //   }
-      // } else {
-      //   if (!surveyJsonExist) message = 'survey.json is missing';
-      //   if (!appFilesExist) message = 'app-files folder is missing';
-      //   if (!dataJsExist) message = 'data.js is missing';
-      //   zip.close();
-      // }
-      zip.close();
+      await zip.close();
     });
+
+    // Check data.js and match the
   }
 
   static async readZipFile(req: Request, res: Response, next: NextFunction) {
