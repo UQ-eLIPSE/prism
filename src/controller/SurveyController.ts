@@ -57,6 +57,8 @@ export class SurveyController {
       },
       site,
     );
+
+    return CommonUtil.successResponse(res, 'Successfully uploaded');
   }
 
   /**
