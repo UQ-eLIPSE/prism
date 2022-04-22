@@ -66,6 +66,7 @@ export class MantaService implements multer.StorageEngine {
         },
 
         (err: any, res: any) => {
+          console.log(err, res);
           if (err) return reject(err);
           return resolve(res);
         },
@@ -81,7 +82,7 @@ export class MantaService implements multer.StorageEngine {
     try {
       const fileStream: stream.Readable = (file as any).stream;
       const { MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
-      const destPath = `~~/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${file.originalname}`;
+      const destPath = `~~/${MANTA_ROOT_FOLDER}/`;
 
       if (file.fieldname === 'resource') {
         if (!this.manta) {

@@ -11,6 +11,8 @@ import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
 import csv = require('csvtojson');
 import process = require('process');
+import { MantaService } from './MantaService';
+import { execSync } from 'child_process';
 const StreamZip = require('node-stream-zip');
 
 interface CSVProperties {
@@ -27,67 +29,105 @@ export abstract class SurveyService {
     },
     site: ISite,
   ) {
-    const { zipFile, properties } = files;
+    try {
+      const { zipFile, properties } = files;
 
-    if (
-      zipFile[0].mimetype !== 'application/zip' &&
-      properties[0].mimetype !== 'text/csv'
-    )
-      throw new Error('Invalid file types');
+      if (
+        zipFile[0].mimetype !== 'application/zip' &&
+        properties[0].mimetype !== 'text/csv'
+      )
+        throw new Error('Invalid file types');
 
-    const zip = new StreamZip({
-      file: `${zipFile[0].path}`,
-      storeEntries: true,
-    });
+      const zip = new StreamZip({
+        file: `${zipFile[0].path}`,
+        storeEntries: true,
+      });
 
-    let message: string;
+      const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
-    zip.on('error', (err: any) => {
-      console.error(err);
-    });
+      let message: string;
 
-    await zip.on('ready', async () => {
+      zip.on('error', (err: any) => {
+        console.error(err);
+      });
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
       if (!csvJSON) throw new Error('Incorrect CSV format');
 
-      const entries = Object.values(zip.entries());
+      const zipOp = await new Promise(async (resolve, reject) => {
+        await zip.on('ready', async () => {
+          const entries = Object.values(zip.entries());
 
-      // Check if the images exist
-      for (const field of csvJSON) {
-        const checkImageExist = entries.some((entry: any) =>
-          entry.name.includes(`${field.fileName}`),
-        );
-        if (!checkImageExist)
-          throw new Error(
-            'Image does not exist, please upload your CSV file again with the correct file name.',
+          // Check if the images exist
+          for (const field of csvJSON) {
+            const checkImageExist = entries.some((entry: any) =>
+              entry.name.includes(`${field.fileName}`),
+            );
+            if (!checkImageExist)
+              reject(
+                'Image does not exist, please upload your CSV file again with the correct file name.',
+              );
+          }
+
+          const appFilesExist = entries.some(
+            (entry: any) =>
+              entry.name.endsWith('app-files/') && entry.isDirectory,
           );
+          // const surveyJsonExist = entries.some((entry: any) =>
+          //   entry.name.endsWith('survey.json'),
+          // );
+          const dataJsExist = entries.some((entry: any) =>
+            entry.name.includes('app-files/data.js'),
+          );
+
+          if (!appFilesExist || !dataJsExist)
+            reject('Marzipano folder structure is not correct');
+
+          // Extract zip
+          await zip.extract(
+            null,
+            `tmp/${zipFile[0].filename.replace('.zip', '')}`,
+            (err: any) => {
+              console.log(err ? 'Extract error' : 'Extracted');
+              zip.close();
+
+              err ? reject() : resolve('Extracted');
+            },
+          );
+        });
+      });
+
+      if (!zipOp) throw new Error('Zip op failed');
+
+      // Check data.js and match the tile names
+      const readData = await fs.readFile(
+        `tmp/${zipFile[0].filename.replace('.zip', '')}/app-files/data.js`,
+        'utf-8',
+      );
+
+      for (const field of csvJSON) {
+        if (!readData.includes(field.fileName))
+          throw new Error('Image does not exist in the Marzipano zip file.');
       }
 
-      const appFilesExist = entries.some(
-        (entry: any) => entry.name.endsWith('app-files/') && entry.isDirectory,
-      );
-      // const surveyJsonExist = entries.some((entry: any) =>
-      //   entry.name.endsWith('survey.json'),
-      // );
-      const dataJsExist = entries.some((entry: any) =>
-        entry.name.includes('app-files/data.js'),
-      );
+      const { MANTA_ROOT_FOLDER, MANTA_USER, MANTA_KEY_ID, MANTA_HOST_NAME } =
+        process.env;
 
-      if (!appFilesExist || !dataJsExist)
-        throw new Error('Marzipano folder structure is not correct');
+      console.log(extractedFolder);
 
-      // Extract zip
-      const zipExtract = await zip.extract(
-        null,
-        `tmp/${zipFile[0].filename.replace('.zip', '')}`,
-        (err: any) => {
-          console.log(err ? 'Extract error' : 'Extracted');
-          zip.close();
-        },
+      const mputCmd = `mput -f tmp/${extractedFolder}.tar.gz ${MANTA_ROOT_FOLDER}/${extractedFolder}.tar.gz --url=${MANTA_HOST_NAME}`;
+      const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${extractedFolder}.tar.gz | \
+                  mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${extractedFolder}' --url=${MANTA_HOST_NAME}`;
+
+      const upload = execSync(
+        `tar -czvf tmp/${extractedFolder}.tar.gz tmp/${extractedFolder} && ${mputCmd} && ${extractCmd}`,
       );
-    });
+      console.log(upload);
 
-    // Check data.js and match the
+      return true;
+    } catch (e) {
+      console.log(e.message);
+      return false;
+    }
   }
 
   static async readZipFile(req: Request, res: Response, next: NextFunction) {
