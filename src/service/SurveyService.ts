@@ -114,12 +114,12 @@ export abstract class SurveyService {
 
       console.log(extractedFolder);
 
-      const mputCmd = `mput -f tmp/${extractedFolder}.tar.gz ${MANTA_ROOT_FOLDER}/${extractedFolder}.tar.gz --url=${MANTA_HOST_NAME}`;
+      const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --url=${MANTA_HOST_NAME}`;
       const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${extractedFolder}.tar.gz | \
-                  mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${extractedFolder}' --url=${MANTA_HOST_NAME}`;
+                  mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --url=${MANTA_HOST_NAME}`;
 
       const upload = execSync(
-        `tar -czvf tmp/${extractedFolder}.tar.gz tmp/${extractedFolder} && ${mputCmd} && ${extractCmd}`,
+        `cd tmp/${extractedFolder}/app-files/tiles && tar -czvf ${site.tag}.tar.gz . && ${mputCmd} && ${extractCmd}`,
       );
       console.log(upload);
 
