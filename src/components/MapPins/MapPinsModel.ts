@@ -12,7 +12,7 @@ export interface IMapPins extends Document {
     name: string;
     enabled: boolean;
     site_name?: string;
-    external_link?: string;
+    external_url?: string;
 }
 
 const MapPinsSchema: Schema = new Schema({
@@ -25,7 +25,7 @@ const MapPinsSchema: Schema = new Schema({
     name: { type: String, required: true },
     enabled: { type: Boolean, required: true },
     site_name: {type: String, required: false },
-    external_link: { type: String, required: false }
+    external_url: { type: String, required: false }
 });
 
 export const MapPins: Model<IMapPins> = model<IMapPins>(
