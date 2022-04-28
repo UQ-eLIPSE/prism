@@ -114,9 +114,34 @@ export abstract class SurveyService {
       const upload = execSync(
         `cd tmp/${extractedFolder}/app-files/tiles && tar -czvf ${site.tag}.tar.gz . && ${mputCmd} && ${extractCmd}`,
       );
-      console.log(upload);
+      if (!upload) return false;
 
       return true;
+    } catch (e) {
+      console.log(e.message);
+      return false;
+    }
+  }
+
+  static async uploadToDB(
+    files: {
+      [fieldname: string]: Express.Multer.File[];
+    },
+    site: ISite,
+  ) {
+    try {
+      const { zipFile, properties } = files;
+
+      if (
+        zipFile[0].mimetype !== 'application/zip' &&
+        properties[0].mimetype !== 'text/csv'
+      )
+        throw new Error('Invalid file types');
+
+      // Upload Survey Nodes from DataJS
+      // Upload to minimap nodes
+      // Upload Minimap conversions with the provided x/y coords from the CSV
+      //Link/Info Hotspots if included
     } catch (e) {
       console.log(e.message);
       return false;
