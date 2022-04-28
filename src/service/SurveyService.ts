@@ -11,13 +11,12 @@ import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
 import csv = require('csvtojson');
 import process = require('process');
-import { MantaService } from './MantaService';
 import { execSync } from 'child_process';
 const StreamZip = require('node-stream-zip');
 
 interface CSVProperties {
-  nodeNumber: string;
-  lever: string;
+  nodeNumber?: string;
+  level?: string;
   fileName: string;
   x: string;
   y: string;
@@ -45,8 +44,6 @@ export abstract class SurveyService {
 
       const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
-      let message: string;
-
       zip.on('error', (err: any) => {
         console.error(err);
       });
@@ -72,9 +69,7 @@ export abstract class SurveyService {
             (entry: any) =>
               entry.name.endsWith('app-files/') && entry.isDirectory,
           );
-          // const surveyJsonExist = entries.some((entry: any) =>
-          //   entry.name.endsWith('survey.json'),
-          // );
+
           const dataJsExist = entries.some((entry: any) =>
             entry.name.includes('app-files/data.js'),
           );
@@ -112,10 +107,8 @@ export abstract class SurveyService {
       const { MANTA_ROOT_FOLDER, MANTA_USER, MANTA_KEY_ID, MANTA_HOST_NAME } =
         process.env;
 
-      console.log(extractedFolder);
-
       const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --url=${MANTA_HOST_NAME}`;
-      const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${extractedFolder}.tar.gz | \
+      const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz | \
                   mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --url=${MANTA_HOST_NAME}`;
 
       const upload = execSync(
