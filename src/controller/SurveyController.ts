@@ -53,30 +53,16 @@ export class SurveyController {
     const site = await Site.findById({ _id: new ObjectID(siteId) });
     if (!site) return CommonUtil.failResponse(res, 'Invalid Site Id');
 
-    const validate = await SurveyService.unzipValidateFile(
-      files as {
-        [fieldname: string]: Express.Multer.File[];
-      },
-      site,
-    );
+    // const validate = await SurveyService.unzipValidateFile(
+    //   files as {
+    //     [fieldname: string]: Express.Multer.File[];
+    //   },
+    //   site,
+    // );
 
-    if (!validate) return CommonUtil.failResponse(res, 'Validation failed');
+    // if (!validate) return CommonUtil.failResponse(res, 'Validation failed');
 
-    //Upload via manta
-
-    const manta = new MantaService();
-    await manta.setupManta();
-
-    const uploadToServer = await manta._handleFile(
-      req,
-      files.zipFile[0],
-      (
-        err: any,
-        info: Partial<Express.Multer.File> | undefined = undefined,
-      ) => {},
-    );
-
-    console.log(uploadToServer);
+    const dataToDB = await SurveyService.uploadToDB(files, site);
 
     return CommonUtil.successResponse(res, 'Successfully uploaded');
   }

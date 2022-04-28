@@ -12,11 +12,15 @@ import * as fs from 'fs/promises';
 import csv = require('csvtojson');
 import process = require('process');
 import { execSync } from 'child_process';
+import { ObjectId } from 'bson';
 const StreamZip = require('node-stream-zip');
+
+import { startSession } from 'mongoose';
 
 interface CSVProperties {
   nodeNumber?: string;
   level?: string;
+  title?: string;
   fileName: string;
   x: string;
   y: string;
@@ -138,10 +142,103 @@ export abstract class SurveyService {
       )
         throw new Error('Invalid file types');
 
-      // Upload Survey Nodes from DataJS
-      // Upload to minimap nodes
-      // Upload Minimap conversions with the provided x/y coords from the CSV
-      //Link/Info Hotspots if included
+      const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
+      if (!csvJSON) throw new Error('Incorrect CSV format');
+
+      const extractedFolder = zipFile[0].filename.replace('.zip', '');
+
+      const dataJS = await fs.readFile(
+        `tmp/${extractedFolder}/app-files/data.js`,
+        'utf8',
+      );
+
+      const stringedJSONData = dataJS
+        .replace('var APP_DATA = ', '')
+        .replace(/;/g, '');
+
+      const data = JSON.parse(stringedJSONData);
+
+      if (!data.scenes) throw new Error('Scenes are not available');
+
+      const { MANTA_HOST_NAME, MANTA_ROOT_FOLDER } = process.env;
+
+      const { scenes } = data;
+
+      // Create Session and start a transaction.
+      const session = await startSession();
+      session.startTransaction();
+
+      console.log(scenes);
+
+      for (const [i, scene] of scenes as any[]) {
+        // Get CSV Element using the scene ID.
+        const specElem = csvJSON.find((el) => el.fileName === scene.id);
+
+        // Upload Survey Nodes from DataJS
+
+        const survey = await SurveyNode.create(
+          [
+            {
+              _id: new ObjectId(),
+              info_hotspots: scene.infoHotspots,
+              link_hotspots: scene.linkHotspots,
+              levels: scene.levels,
+              face_size: scene.face_size,
+              initial_parameters: scene.initialViewParameters,
+              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag}`,
+              node_number: i,
+              survey_name: scene.name,
+              tiles_id: scene.id,
+              tiles_name: specElem?.title ? specElem?.title : scene.name,
+              site: new ObjectId(site._id),
+            },
+          ],
+          { session: session },
+        );
+
+        // Upload to minimap nodes
+        const minimapNode = await MinimapNode.create(
+          [
+            {
+              _id: new ObjectId(),
+              floor: specElem?.level ? specElem.level : 0,
+              node_number: i,
+              survey_node: new ObjectId(survey[0]._id),
+              tiles_id: scene.id,
+              tiles_name: specElem?.title ? specElem?.title : scene.name,
+              site: new ObjectId(site._id),
+            },
+          ],
+          { session: session },
+        );
+
+        // Upload Minimap conversions with the provided x/y coords from the CSV
+
+        const minimapConversion = await MinimapConversion.create(
+          [
+            {
+              _id: new ObjectId(),
+              floor: specElem?.level ? specElem.level : 0,
+              minimap_node: new ObjectId(minimapNode[0]._id),
+              survey_node: new ObjectId(survey[0]._id),
+              x: specElem?.x,
+              x_scale: 1,
+              y: specElem?.y,
+              y_scale: 1,
+              site: new ObjectId(site._id),
+            },
+          ],
+          { session: session },
+        );
+
+        //Link/Info Hotspots if included
+      }
+
+      // Commit Transaction and end session.
+      await session.commitTransaction();
+      await session.endSession();
+
+      return true;
     } catch (e) {
       console.log(e.message);
       return false;
