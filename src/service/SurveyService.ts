@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from 'express-serve-static-core';
+import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
   MinimapNode,
   Survey,
   IMinimapNode,
+  MinimapImages,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
-
+import * as fs from 'fs/promises';
+import { execSync } from 'child_process';
+import { ObjectId } from 'bson';
 const StreamZip = require('node-stream-zip');
 
 export abstract class SurveyService {
@@ -259,5 +263,54 @@ export abstract class SurveyService {
         resolve('');
       });
     });
+  }
+
+  /**
+   * createSiteMap - - Inserts Site Map in to site Settings and upload
+   * to Manta.
+   * @param file - Uploaded file
+   * @param site - Provided Site
+   * @returns
+   */
+  public static async createSiteMap(
+    file: Express.Multer.File,
+    floor: Number,
+    site: ISite,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME } = process.env;
+      if (file === undefined) throw new Error('File is undefined');
+
+      // Upload on to Manta
+      const upload = execSync(
+        `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --url=${MANTA_HOST_NAME}`,
+      );
+
+      if (!upload) throw new Error("Site map couldn't be uploaded.");
+
+      // Save in minimap Images
+      const saveSiteMap = await MinimapImages.create({
+        _id: new ObjectId(),
+        minimap: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+        floor: floor,
+        site: site._id,
+      });
+
+      if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
+
+      // Delete file from local tmp.
+      await fs.unlink(file.path);
+
+      return {
+        success: true,
+        message: 'Site Map has been saved',
+      };
+    } catch (e) {
+      console.error(e);
+      return { success: false, message: e.message };
+    }
   }
 }
