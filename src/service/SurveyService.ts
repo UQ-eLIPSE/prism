@@ -18,7 +18,6 @@ const StreamZip = require('node-stream-zip');
 import { startSession } from 'mongoose';
 
 interface CSVProperties {
-  nodeNumber?: string;
   level?: string;
   title?: string;
   fileName: string;
@@ -162,22 +161,16 @@ export abstract class SurveyService {
 
       const { MANTA_HOST_NAME, MANTA_ROOT_FOLDER } = process.env;
 
-      const { scenes } = data;
+      const scenes: any[] = data.scenes;
 
-      // Create Session and start a transaction.
-      const session = await startSession();
-      session.startTransaction();
+      await new Promise((resolve, reject) => {
+        scenes.forEach(async (scene, i) => {
+          // Get CSV Element using the scene ID.
+          const specElem = csvJSON.find((el) => el.fileName === scene.id);
 
-      console.log(scenes);
+          // Upload Survey Nodes from DataJS
 
-      for (const [i, scene] of scenes as any[]) {
-        // Get CSV Element using the scene ID.
-        const specElem = csvJSON.find((el) => el.fileName === scene.id);
-
-        // Upload Survey Nodes from DataJS
-
-        const survey = await SurveyNode.create(
-          [
+          const survey = await SurveyNode.create([
             {
               _id: new ObjectId(),
               info_hotspots: scene.infoHotspots,
@@ -192,13 +185,10 @@ export abstract class SurveyService {
               tiles_name: specElem?.title ? specElem?.title : scene.name,
               site: new ObjectId(site._id),
             },
-          ],
-          { session: session },
-        );
+          ]);
 
-        // Upload to minimap nodes
-        const minimapNode = await MinimapNode.create(
-          [
+          // Upload to minimap nodes
+          const minimapNode = await MinimapNode.create([
             {
               _id: new ObjectId(),
               floor: specElem?.level ? specElem.level : 0,
@@ -208,14 +198,11 @@ export abstract class SurveyService {
               tiles_name: specElem?.title ? specElem?.title : scene.name,
               site: new ObjectId(site._id),
             },
-          ],
-          { session: session },
-        );
+          ]);
 
-        // Upload Minimap conversions with the provided x/y coords from the CSV
+          // Upload Minimap conversions with the provided x/y coords from the CSV
 
-        const minimapConversion = await MinimapConversion.create(
-          [
+          const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
               floor: specElem?.level ? specElem.level : 0,
@@ -227,16 +214,12 @@ export abstract class SurveyService {
               y_scale: 1,
               site: new ObjectId(site._id),
             },
-          ],
-          { session: session },
-        );
+          ]);
 
-        //Link/Info Hotspots if included
-      }
-
-      // Commit Transaction and end session.
-      await session.commitTransaction();
-      await session.endSession();
+          //Link/Info Hotspots if included
+        });
+        resolve('Data Uploaded');
+      });
 
       return true;
     } catch (e) {
