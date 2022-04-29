@@ -4,6 +4,9 @@ import { CommonUtil } from '../../utils/CommonUtil';
 
 import mapPinsService from './MapPinsService';
 import { IMapPins, MapPins } from './MapPinsModel';
+import SiteService from '../Site/SiteService';
+import { Site } from '../Site/SiteModel';
+import { ObjectId } from 'mongodb';
 
 /**
  * Controller for getting site specific settings
@@ -46,11 +49,7 @@ class MapPinsController {
       const result = await mapPinsService.getMapPin(id);
       if (!result) throw new Error('Map pins found');
 
-      return CommonUtil.successResponse<IResponse<IMapPins>>(
-        res,
-        '',
-        result.mapPin,
-      );
+      return CommonUtil.successResponse<IResponse<IMapPins>>(res, '', result);
     } catch (e) {
       return CommonUtil.failResponse;
     }
@@ -58,15 +57,27 @@ class MapPinsController {
 
   /**
    * createPin
-   * Creates a Map pin with the required fields
+   * Creates a Map pin and site with the required body fields of MapPins
    * @param req - Used to get the body that contains the required fields
    * @param res
    * @returns Success response if DB entry has been made.
    */
   public async createPin(req: Request, res: Response) {
     try {
-      const body: IMapPins = new MapPins(req.body);
-      if (!body) return CommonUtil.failResponse(res, 'Body is incorrect');
+      const site = new Site({
+        _id: new ObjectId(),
+        site_name: req.body.site_name,
+      });
+      if (!site) return CommonUtil.failResponse(res, 'Site name is incorrect');
+
+      const body: IMapPins = new MapPins({ _id: new ObjectId(), ...req.body });
+      if (!body)
+        return CommonUtil.failResponse(res, `Body is incorrect: ${body}`);
+
+      const createSite = await SiteService.createSite(site);
+      if (!createSite) throw new Error('Site could not be created');
+
+      body.site = new ObjectId(createSite._id);
 
       const result = await mapPinsService.createMapPin(body);
       if (!result) throw new Error('Map pin could not be created');
@@ -90,10 +101,21 @@ class MapPinsController {
   public async updatePin(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const body: IMapPins = req.body;
+      const { name } = req.body;
+      const body: IMapPins = { ...req.body };
+      if (name) {
+        const updateSiteName = await Site.findByIdAndUpdate(
+          new ObjectId(body.site),
+          {
+            site_name: name,
+          },
+        );
+
+        if (!updateSiteName) throw new Error('Site name could not be updated.');
+      }
 
       const update = await mapPinsService.updateMapPin(id, body);
-      if (!update) 'MapPin cannot be updated';
+      if (!update) throw new Error('MapPin cannot be updated');
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
