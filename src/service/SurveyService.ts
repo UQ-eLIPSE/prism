@@ -178,11 +178,12 @@ export abstract class SurveyService {
               levels: scene.levels,
               face_size: scene.face_size,
               initial_parameters: scene.initialViewParameters,
-              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag}`,
+              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag}/`,
               node_number: i,
               survey_name: scene.name,
               tiles_id: scene.id,
               tiles_name: specElem?.title ? specElem?.title : scene.name,
+              date: '2021-11-16T00:00:00.000+10:00',
               site: new ObjectId(site._id),
             },
           ]);
