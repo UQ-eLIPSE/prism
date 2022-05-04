@@ -101,6 +101,16 @@ export class UserController {
   }
 
   /**
+  * Gets the current logged in user
+  * @param req
+  * @param res (logged in user details)
+  */
+  public async getLoggedInUser(req: Request, res: Response) {
+      var user = req.header('x-kvd-payload');
+      res.send(user);
+  }
+
+  /**
    * Get current user details req.body should have email
    * @param req (current user's username)
    * @param res
