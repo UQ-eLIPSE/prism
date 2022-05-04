@@ -26,6 +26,12 @@ interface CSVProperties {
   y: string;
 }
 export abstract class SurveyService {
+  /**
+   * unzipValidateFile
+   * @param files
+   * @param site
+   * @returns
+   */
   static async unzipValidateFile(
     files: {
       [fieldname: string]: Express.Multer.File[];
@@ -35,22 +41,27 @@ export abstract class SurveyService {
     try {
       const { zipFile, properties } = files;
 
+      // Check if the files are zip and csv.
       if (
         zipFile[0].mimetype !== 'application/zip' &&
         properties[0].mimetype !== 'text/csv'
       )
         throw new Error('Invalid file types');
 
+      // Create a zip stream for the zip file.
       const zip = new StreamZip({
         file: `${zipFile[0].path}`,
         storeEntries: true,
       });
 
+      // Folder without .zip ext
       const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
       zip.on('error', (err: any) => {
         console.error(err);
       });
+
+      // Get Open CSV and convert to JSON.
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
       if (!csvJSON) throw new Error('Incorrect CSV format');
 
@@ -69,11 +80,13 @@ export abstract class SurveyService {
               );
           }
 
+          // Check Marzipano app files exist
           const appFilesExist = entries.some(
             (entry: any) =>
               entry.name.endsWith('app-files/') && entry.isDirectory,
           );
 
+          // Check Data.js exists as part of the Marzipano zip.
           const dataJsExist = entries.some((entry: any) =>
             entry.name.includes('app-files/data.js'),
           );
@@ -103,6 +116,7 @@ export abstract class SurveyService {
         'utf-8',
       );
 
+      // Check file name against the tiles.
       for (const field of csvJSON) {
         if (!readData.includes(field.fileName))
           throw new Error('Image does not exist in the Marzipano zip file.');
@@ -117,6 +131,8 @@ export abstract class SurveyService {
         MANTA_KEY_ID,
       } = process.env;
 
+      // Compress the tiles folder to .tar.gz and then upload to manta.
+      // Extract the tar file using an mjob (This can take some time).
       const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
       const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz | \
                   mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --url=${MANTA_HOST_NAME}`;
