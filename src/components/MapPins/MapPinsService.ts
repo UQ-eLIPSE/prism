@@ -77,8 +77,8 @@ class SiteService {
   ): Promise<{
     success: boolean;
     message: string;
+    data: {};
   }> {
-    console.log("NEW FILE UPLOADED", file);
     try {
       const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME, MANTA_USER, MANTA_SUB_USER, MANTA_ROLES, MANTA_KEY_ID } = process.env;
       if (file === undefined) throw new Error('File is undefined');
@@ -96,10 +96,13 @@ class SiteService {
       return {
         success: true,
         message: 'Preview image has been uploaded',
+        data: {
+            url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+        }
       };
     } catch (e) {
       console.error(e);
-      return { success: false, message: e.message };
+      return { success: false, message: e.message, data: {} };
     }
   }
 }

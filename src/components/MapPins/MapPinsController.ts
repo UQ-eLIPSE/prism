@@ -165,7 +165,7 @@ class MapPinsController {
         const uploadPreview = await mapPinsService.uploadPreview(file);
           if (!uploadPreview.success) throw new Error(uploadPreview.message);
     
-          return CommonUtil.successResponse(res, uploadPreview.message);
+          return CommonUtil.successResponse(res, uploadPreview.message, uploadPreview.data);
         } catch (e) {
           console.error(e);
           return CommonUtil.failResponse(res, e.message);
@@ -174,11 +174,3 @@ class MapPinsController {
 }
 
 export default MapPinsController;
-
-
-    // const uploadSiteMap = await SurveyService.createSiteMap(
-    //     file,
-    //     parseInt(floor as string),
-    //     site,
-    //   );
-    //   if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
