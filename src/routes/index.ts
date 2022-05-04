@@ -55,6 +55,8 @@ export class Routes {
       this.userController.updateUserPassword,
     );
 
+    router.get('/logged-in-user', this.userController.getLoggedInUser);
+
     router.get(
       '/user/:username',
       AuthUtil.verifyCookie,
@@ -183,6 +185,12 @@ export class Routes {
     router.get(
       '/site/:siteId/minimap/details',
       this.surveyController.getMinimapImage,
+    );
+
+    router.post(
+      '/site/:siteId/sitemap',
+      upload.single('file'),
+      this.surveyController.createSiteMap,
     );
 
     //settings

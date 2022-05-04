@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express-serve-static-core';
-import { ISite } from '../components/Site/SiteModel';
+import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
   MinimapNode,
   Survey,
   IMinimapNode,
+  MinimapImages,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
@@ -107,10 +108,16 @@ export abstract class SurveyService {
           throw new Error('Image does not exist in the Marzipano zip file.');
       }
 
-      const { MANTA_ROOT_FOLDER, MANTA_USER, MANTA_KEY_ID, MANTA_HOST_NAME } =
-        process.env;
+      const {
+        MANTA_ROOT_FOLDER,
+        MANTA_HOST_NAME,
+        MANTA_SUB_USER,
+        MANTA_ROLES,
+        MANTA_USER,
+        MANTA_KEY_ID,
+      } = process.env;
 
-      const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --url=${MANTA_HOST_NAME}`;
+      const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
       const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz | \
                   mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --url=${MANTA_HOST_NAME}`;
 
@@ -477,5 +484,61 @@ export abstract class SurveyService {
         resolve('');
       });
     });
+  }
+
+  /**
+   * createSiteMap - - Inserts Site Map in to site Settings and upload
+   * to Manta.
+   * @param file - Uploaded file
+   * @param site - Provided Site
+   * @returns
+   */
+  public static async createSiteMap(
+    file: Express.Multer.File,
+    floor: Number,
+    site: ISite,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const {
+        MANTA_ROOT_FOLDER,
+        MANTA_HOST_NAME,
+        MANTA_SUB_USER,
+        MANTA_ROLES,
+        MANTA_USER,
+        MANTA_KEY_ID,
+      } = process.env;
+      if (file === undefined) throw new Error('File is undefined');
+
+      // Upload on to Manta
+      const upload = execSync(
+        `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`,
+      );
+
+      if (!upload) throw new Error("Site map couldn't be uploaded.");
+
+      // Save in minimap Images
+      const saveSiteMap = await MinimapImages.create({
+        _id: new ObjectId(),
+        minimap: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+        floor: floor,
+        site: site._id,
+      });
+
+      if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
+
+      // Delete file from local tmp.
+      await fs.unlink(file.path);
+
+      return {
+        success: true,
+        message: 'Site Map has been saved',
+      };
+    } catch (e) {
+      console.error(e);
+      return { success: false, message: e.message };
+    }
   }
 }

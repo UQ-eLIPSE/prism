@@ -439,4 +439,43 @@ export class SurveyController {
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
+
+  /**
+   * createSiteMap - Inserts Site Map in to site Settings and upload
+   * to Manta.
+   * @param req
+   * @param res
+   * @returns Success Response if the upload/DB update has been successful
+   */
+  public async createSiteMap(req: Request, res: Response) {
+    const { file } = req;
+    const { siteId } = req.params;
+    const { floor } = req.query;
+
+    try {
+      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
+
+      if (!extNames.includes(path.extname(file?.path as string)))
+        throw new Error('File is undefined');
+      if (file === undefined) throw new Error('File is undefined');
+
+      if (!siteId) throw new Error('Site Id is not provided');
+
+      //Get site
+      const site = await Site.findById({ _id: new ObjectID(siteId) });
+      if (!site) throw new Error('Invalid Site Id');
+
+      const uploadSiteMap = await SurveyService.createSiteMap(
+        file,
+        parseInt(floor as string),
+        site,
+      );
+      if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
+
+      return CommonUtil.successResponse(res, uploadSiteMap.message);
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
 }
