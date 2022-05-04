@@ -36,6 +36,8 @@ _Techstack_
   - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
   - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
 
+Make sure before running this server, you have the `prism-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
+
 ## Running
 
 cd prism-server
@@ -54,13 +56,15 @@ yarn && yarn build
 Retrieve the dump files by using the `get_mongodumps.sh` script.
 
 - Run:
+
   - `./get_mongodumps.sh <mango username> <output directory>`
   - navigate to `<outupt directory>` from here you can run `monogorestore <chooose a directory to restore>`
 
   example
-    - prism_mongodumps
-      - anlb_dump
-      - agco360_dump
+
+  - prism_mongodumps
+    - anlb_dump
+    - agco360_dump
   - run `mongorestore anlb_dump` to restore the anlb backup
 
 Download mongo database tools from this link if you do not have mongorestore

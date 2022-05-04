@@ -14,7 +14,7 @@ RUN mkdir /root/.ssh/
 ADD package.json /tmp/server/
 
 # Use the key used for Manta
-ADD ./tmp/id_rsa /root/.ssh/
+ADD ./tmp/prism-id_rsa /root/.ssh/
 
 RUN cd /tmp/server && yarn
 
