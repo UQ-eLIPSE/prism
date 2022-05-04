@@ -200,6 +200,15 @@ export class Routes {
     router.get('/map-pins/:id', this.mapPinsController.getPin);
     router.patch('/map-pins/:id', this.mapPinsController.updatePin);
     router.delete('/map-pins/:id', this.mapPinsController.deletePin);
+    
+    /**
+     * API to upload site pin preview image
+     */
+    router.post(
+        '/map-pins/preview',
+        upload.single('file'),
+        this.mapPinsController.uploadPreview
+    )
 
     /**
      * Admin section APIs

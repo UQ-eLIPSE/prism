@@ -7,6 +7,7 @@ import { IMapPins, MapPins } from './MapPinsModel';
 import SiteService from '../Site/SiteService';
 import { Site } from '../Site/SiteModel';
 import { ObjectId } from 'mongodb';
+import { SurveyService } from '../../service/SurveyService';
 
 /**
  * Controller for getting site specific settings
@@ -149,6 +150,35 @@ class MapPinsController {
       return CommonUtil.failResponse(res, e.message);
     }
   }
+
+  /**
+   * uploadPreview - Uploads preview image to Manta
+   * @param req
+   * @param res
+   * @returns Success Response if the upload has been successful
+   */
+  public async uploadPreview(req: Request, res: Response) {
+    const { file } = req;
+    if (file === undefined) throw new Error('File is undefined');
+
+    try {
+        const uploadPreview = await mapPinsService.uploadPreview(file);
+          if (!uploadPreview.success) throw new Error(uploadPreview.message);
+    
+          return CommonUtil.successResponse(res, uploadPreview.message);
+        } catch (e) {
+          console.error(e);
+          return CommonUtil.failResponse(res, e.message);
+    }
+  }
 }
 
 export default MapPinsController;
+
+
+    // const uploadSiteMap = await SurveyService.createSiteMap(
+    //     file,
+    //     parseInt(floor as string),
+    //     site,
+    //   );
+    //   if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
