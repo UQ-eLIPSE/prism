@@ -55,6 +55,8 @@ export class Routes {
       this.userController.updateUserPassword,
     );
 
+    router.get('/logged-in-user', this.userController.getLoggedInUser);
+
     router.get(
       '/user/:username',
       AuthUtil.verifyCookie,
