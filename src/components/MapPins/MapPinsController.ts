@@ -84,7 +84,6 @@ class MapPinsController {
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
-        createSite._id,
         'Map Pin has been created',
       );
     } catch (e) {
