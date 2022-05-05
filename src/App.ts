@@ -6,8 +6,6 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as cookieParser from 'cookie-parser';
 import { ServeStaticOptions } from 'serve-static';
-import * as nodemailer from 'nodemailer';
-import * as Mail from 'nodemailer/lib/mailer';
 
 // Project imports
 import { Routes } from './routes';
@@ -72,39 +70,9 @@ export class App {
     }
   }
 
-  private async setupMailer() {
-    let transporter: Mail;
-
-    if (!this.configuration.USE_SSO) {
-      let account = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: account.user, // generated ethereal user
-          pass: account.pass, // generated ethereal password
-        },
-      });
-
-      ConsoleUtil.log('Setting up Mailer for development...');
-    } else {
-      transporter = nodemailer.createTransport({
-        host: this.configuration.MAIL_HOST,
-        port: this.configuration.MAIL_PORT,
-      });
-
-      ConsoleUtil.log('Setting up Mailer for production...');
-    }
-
-    this.express.set('transporter', transporter);
-    ConsoleUtil.log('Done setting up Mailer...');
-  }
-
   public async run() {
     try {
       await this.setUpDatabase();
-      await this.setupMailer();
       await this.setUpManta();
     } catch (e) {
       console.error('Database connection error: ', e);
