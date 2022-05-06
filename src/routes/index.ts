@@ -7,6 +7,9 @@ import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
 import SiteController from '../components/Site/SiteController';
 import MapPinsController from '../components/MapPins/MapPinsController';
+import multer = require('multer');
+import { Request } from 'express';
+import path = require('path');
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -19,6 +22,15 @@ export class Routes {
 
   public routes(app: any, router: any): void {
     app.use('/api', router);
+
+    const storage = multer.diskStorage({
+      destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
+      filename: (req: Request, file: any, cb: any) => {
+        cb(null, file.originalname);
+      },
+    });
+
+    const upload = multer({ storage: storage });
 
     router.post(
       '/user/create',
@@ -42,6 +54,8 @@ export class Routes {
       AuthUtil.verifyCookie,
       this.userController.updateUserPassword,
     );
+
+    router.get('/logged-in-user', this.userController.getLoggedInUser);
 
     router.get(
       '/user/:username',
@@ -145,6 +159,12 @@ export class Routes {
     router.get(
       '/site/:siteId/minimap/details',
       this.surveyController.getMinimapImage,
+    );
+
+    router.post(
+      '/site/:siteId/sitemap',
+      upload.single('file'),
+      this.surveyController.createSiteMap,
     );
 
     //settings
