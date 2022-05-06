@@ -12,7 +12,7 @@ import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
 import csv = require('csvtojson');
 import process = require('process');
-import { execSync } from 'child_process';
+import { exec, execSync } from 'child_process';
 import { ObjectId } from 'bson';
 const StreamZip = require('node-stream-zip');
 
@@ -135,11 +135,15 @@ export abstract class SurveyService {
       // Extract the tar file using an mjob (This can take some time).
       const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
       const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz | \
-                  mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --url=${MANTA_HOST_NAME}`;
+        mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
 
       const upload = execSync(
         `cd tmp/${extractedFolder}/app-files/tiles && tar -czvf ${site.tag}.tar.gz . && ${mputCmd} && ${extractCmd}`,
+        {
+          encoding: 'utf-8',
+        },
       );
+      console.log(upload);
       if (!upload) return false;
 
       return true;
