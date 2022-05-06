@@ -36,7 +36,7 @@ _Techstack_
   - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
   - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
 
-Make sure before running this server, you have the `prism-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
+Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
 
 ## Running
 

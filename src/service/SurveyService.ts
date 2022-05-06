@@ -12,11 +12,9 @@ import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
 import csv = require('csvtojson');
 import process = require('process');
-import { exec, execSync } from 'child_process';
+import { execSync } from 'child_process';
 import { ObjectId } from 'bson';
 const StreamZip = require('node-stream-zip');
-
-import { startSession } from 'mongoose';
 
 interface CSVProperties {
   level?: string;
@@ -30,7 +28,7 @@ export abstract class SurveyService {
    * unzipValidateFile
    * @param files
    * @param site
-   * @returns
+   * @returns Boolean response of true or false of success
    */
   static async unzipValidateFile(
     files: {
@@ -131,19 +129,19 @@ export abstract class SurveyService {
         MANTA_KEY_ID,
       } = process.env;
 
-      // Compress the tiles folder to .tar.gz and then upload to manta.
+      // Compress the tiles folder to .tar and then upload to manta.
       // Extract the tar file using an mjob (This can take some time).
-      const mputCmd = `mput -f ${site.tag}.tar.gz ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
-      const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar.gz | \
-        mjob create -o -m gzcat -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}' --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
+      const mputCmd = `mput -f ${site.tag}.tar ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
+      const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar | \
+        mjob create -o -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}-2' --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
 
       const upload = execSync(
-        `cd tmp/${extractedFolder}/app-files/tiles && tar -czvf ${site.tag}.tar.gz . && ${mputCmd} && ${extractCmd}`,
+        `cd tmp/${extractedFolder}/app-files/tiles && tar -cvf ${site.tag}.tar . && ${mputCmd} && ${extractCmd}`,
         {
           encoding: 'utf-8',
         },
       );
-      console.log(upload);
+
       if (!upload) return false;
 
       return true;
@@ -153,6 +151,13 @@ export abstract class SurveyService {
     }
   }
 
+  /**
+   * Upload to DB
+   * This function uploads data from the provided CSV and data.js
+   * @param files
+   * @param site
+   * @returns Boolean response of true or false of success
+   */
   static async uploadToDB(
     files: {
       [fieldname: string]: Express.Multer.File[];
@@ -161,18 +166,13 @@ export abstract class SurveyService {
   ) {
     try {
       const { zipFile, properties } = files;
-
-      if (
-        zipFile[0].mimetype !== 'application/zip' &&
-        properties[0].mimetype !== 'text/csv'
-      )
-        throw new Error('Invalid file types');
-
+      // Convert CSV to JSON
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
       if (!csvJSON) throw new Error('Incorrect CSV format');
 
       const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
+      // Read from data.js
       const dataJS = await fs.readFile(
         `tmp/${extractedFolder}/app-files/data.js`,
         'utf8',
@@ -190,6 +190,7 @@ export abstract class SurveyService {
 
       const scenes: any[] = data.scenes;
 
+      // Upload data to DB
       await new Promise((resolve, reject) => {
         scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
@@ -230,7 +231,7 @@ export abstract class SurveyService {
 
           // Upload Minimap conversions with the provided x/y coords from the CSV
 
-          const minimapConversion = await MinimapConversion.create([
+          await MinimapConversion.create([
             {
               _id: new ObjectId(),
               floor: specElem?.level ? specElem.level : 0,
@@ -244,10 +245,15 @@ export abstract class SurveyService {
             },
           ]);
 
-          //Link/Info Hotspots if included
+          //Link/Info Hotspots if included *TODO in different ticket*
         });
         resolve('Data Uploaded');
       });
+
+      //Delete files and folder
+      await fs.unlink(properties[0].path);
+      await fs.unlink(zipFile[0].path);
+      await fs.rmdir(extractedFolder);
 
       return true;
     } catch (e) {
