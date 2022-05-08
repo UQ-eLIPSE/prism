@@ -281,12 +281,19 @@ export abstract class SurveyService {
     message: string;
   }> {
     try {
-      const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME } = process.env;
+      const {
+        MANTA_ROOT_FOLDER,
+        MANTA_HOST_NAME,
+        MANTA_SUB_USER,
+        MANTA_ROLES,
+        MANTA_USER,
+        MANTA_KEY_ID,
+      } = process.env;
       if (file === undefined) throw new Error('File is undefined');
 
       // Upload on to Manta
       const upload = execSync(
-        `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --url=${MANTA_HOST_NAME}`,
+        `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`,
       );
 
       if (!upload) throw new Error("Site map couldn't be uploaded.");
