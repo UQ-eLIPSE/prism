@@ -404,7 +404,7 @@ export class SurveyController {
       return CommonUtil.successResponse(
         res,
         '',
-        minimapImageObject.minimap || [],
+        minimapImageObject.image_url || [],
       );
     } catch (e) {
       console.error(e);
