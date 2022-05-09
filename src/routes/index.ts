@@ -26,7 +26,7 @@ export class Routes {
     const storage = multer.diskStorage({
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
       filename: (req: Request, file: any, cb: any) => {
-        cb(null, Date.now().toString());
+        cb(null, Date.now().toString() + '.webp');
       },
     });
 
