@@ -7,7 +7,6 @@ import { IMapPins, MapPins } from './MapPinsModel';
 import SiteService from '../Site/SiteService';
 import { Site } from '../Site/SiteModel';
 import { ObjectId } from 'mongodb';
-import { SurveyService } from '../../service/SurveyService';
 
 /**
  * Controller for getting site specific settings
