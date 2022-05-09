@@ -72,8 +72,6 @@ class SiteService {
 
   public static async uploadPreview(
     file: Express.Multer.File,
-    // floor: Number,
-    // site: ISite,
   ): Promise<{
     success: boolean;
     message: string;
