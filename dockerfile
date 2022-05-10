@@ -25,6 +25,8 @@ RUN cd /var/www/server && ln -s /tmp/server/node_modules
 
 RUN npm i -g manta
 
+RUN npm i -g manta-sync
+
 CMD /bin/bash -c "source /root/.bashrc"
 
 RUN eval $(ssh-agent -s)

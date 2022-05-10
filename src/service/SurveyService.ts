@@ -14,6 +14,7 @@ import csv = require('csvtojson');
 import process = require('process');
 import { execSync } from 'child_process';
 import { ObjectId } from 'bson';
+import { uploadZipManta } from '../utils/mantaUtil';
 const StreamZip = require('node-stream-zip');
 
 interface CSVProperties {
@@ -120,29 +121,9 @@ export abstract class SurveyService {
           throw new Error('Image does not exist in the Marzipano zip file.');
       }
 
-      const {
-        MANTA_ROOT_FOLDER,
-        MANTA_HOST_NAME,
-        MANTA_SUB_USER,
-        MANTA_ROLES,
-        MANTA_USER,
-        MANTA_KEY_ID,
-      } = process.env;
-
-      // Compress the tiles folder to .tar and then upload to manta.
-      // Extract the tar file using an mjob (This can take some time).
-      const mputCmd = `mput -f ${site.tag}.tar ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
-      const extractCmd = `echo ${MANTA_ROOT_FOLDER}/${site.tag}.tar | \
-        mjob create -o -m 'muntar -f $MANTA_INPUT_FILE ${MANTA_ROOT_FOLDER}/${site.tag}-2' --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`;
-
-      const upload = execSync(
-        `cd tmp/${extractedFolder}/app-files/tiles && tar -cvf ${site.tag}.tar . && ${mputCmd} && ${extractCmd}`,
-        {
-          encoding: 'utf-8',
-        },
-      );
-
-      if (!upload) return false;
+      // Upload tiles to Manta using Manta-Sync
+      const uploadZip = await uploadZipManta(extractedFolder, site.tag );
+      if (!uploadZip) return false;
 
       return true;
     } catch (e) {
@@ -253,7 +234,7 @@ export abstract class SurveyService {
       //Delete files and folder
       await fs.unlink(properties[0].path);
       await fs.unlink(zipFile[0].path);
-      await fs.rmdir(extractedFolder);
+      await fs.rmdir(`tmp/extractedFolder`);
 
       return true;
     } catch (e) {
@@ -568,3 +549,4 @@ export abstract class SurveyService {
     }
   }
 }
+
