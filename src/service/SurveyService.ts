@@ -233,7 +233,7 @@ export abstract class SurveyService {
       //Delete files and folder
       await fs.unlink(properties[0].path);
       await fs.unlink(zipFile[0].path);
-      await fs.rmdir(`${TMP_FOLDER}/${extractedFolder}`);
+      await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
 
       return true;
     } catch (e) {
