@@ -45,6 +45,14 @@ cp .env.<project-name>.sample .env
 
 ### Running Locally
 
+before running locally you need to get the manta keys run
+
+```
+./get_mantakey.sh
+```
+
+and this should put the key in the correct directory
+
 docker-compose up
 
 ### Running on Zone
