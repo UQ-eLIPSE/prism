@@ -2,6 +2,9 @@ import { IMapPins, MapPins } from './MapPinsModel';
 import { ObjectId } from 'bson';
 import { Site } from '../Site/SiteModel';
 
+import * as fs from 'fs/promises';
+import { execSync } from 'child_process';
+
 class SiteService {
   /**
    * getMapPins
@@ -65,6 +68,40 @@ class SiteService {
     const deletePin = await MapPins.findByIdAndDelete(id);
     if (!deletePin) return false;
     return true;
+  }
+
+  public static async uploadPreview(
+    file: Express.Multer.File,
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data: {};
+  }> {
+    try {
+      const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME, MANTA_USER, MANTA_SUB_USER, MANTA_ROLES, MANTA_KEY_ID } = process.env;
+      if (file === undefined) throw new Error('File is undefined');
+
+      // Upload on to Manta
+      const upload = execSync(
+        `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
+      );
+
+      if (!upload) throw new Error("Preview image couldn't be uploaded.");
+
+      // Delete file from local tmp.
+      await fs.unlink(file.path);
+
+      return {
+        success: true,
+        message: 'Preview image has been uploaded',
+        data: {
+            url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+        }
+      };
+    } catch (e) {
+      console.error(e);
+      return { success: false, message: e.message, data: {} };
+    }
   }
 }
 
