@@ -425,9 +425,6 @@ export class SurveyController {
     const { floor } = req.query;
 
     try {
-
-    console.log(file);
-
       const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp'];
 
       if (!extNames.includes(path.extname(file?.path as string)))
