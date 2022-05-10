@@ -53,7 +53,7 @@ before running locally you need to get the manta keys run
 
 and this should put the key in the correct directory
 
-docker-compose up
+docker-compose up --build
 
 ### Running on Zone
 
