@@ -308,15 +308,15 @@ export abstract class SurveyService {
         saveSiteMap = await MinimapImages.findOneAndUpdate(
             { site: site._id },
             {
-                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
-                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             }
         );
       } else {
         saveSiteMap = await MinimapImages.create({
             _id: new ObjectId(),
-            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
-            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.originalname}`,
+            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             floor: floor,
             site: site._id,
             x_pixel_offset: 0,

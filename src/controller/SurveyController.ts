@@ -425,7 +425,10 @@ export class SurveyController {
     const { floor } = req.query;
 
     try {
-      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
+
+    console.log(file);
+
+      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp'];
 
       if (!extNames.includes(path.extname(file?.path as string)))
         throw new Error('File is undefined');
