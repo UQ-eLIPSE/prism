@@ -149,6 +149,27 @@ class MapPinsController {
       return CommonUtil.failResponse(res, e.message);
     }
   }
+
+  /**
+   * uploadPreview - Uploads preview image to Manta
+   * @param req
+   * @param res
+   * @returns Success Response if the upload has been successful
+   */
+  public async uploadPreview(req: Request, res: Response) {
+    const { file } = req;
+    if (file === undefined) throw new Error('File is undefined');
+
+    try {
+        const uploadPreview = await mapPinsService.uploadPreview(file);
+          if (!uploadPreview.success) throw new Error(uploadPreview.message);
+    
+          return CommonUtil.successResponse(res, uploadPreview.message, uploadPreview.data);
+        } catch (e) {
+          console.error(e);
+          return CommonUtil.failResponse(res, e.message);
+    }
+  }
 }
 
 export default MapPinsController;

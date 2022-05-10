@@ -26,7 +26,7 @@ export class Routes {
     const storage = multer.diskStorage({
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
       filename: (req: Request, file: any, cb: any) => {
-        cb(null, file.originalname);
+        cb(null, Date.now().toString() + '.webp');
       },
     });
 
@@ -202,6 +202,15 @@ export class Routes {
     router.get('/map-pins/:id', this.mapPinsController.getPin);
     router.patch('/map-pins/:id', this.mapPinsController.updatePin);
     router.delete('/map-pins/:id', this.mapPinsController.deletePin);
+    
+    /**
+     * API to upload site pin preview image
+     */
+    router.post(
+        '/map-pins/preview',
+        upload.single('file'),
+        this.mapPinsController.uploadPreview
+    )
 
     /**
      * Admin section APIs
