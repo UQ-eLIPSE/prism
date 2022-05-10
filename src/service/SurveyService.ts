@@ -122,7 +122,7 @@ export abstract class SurveyService {
       }
 
       // Upload tiles to Manta using Manta-Sync
-      const uploadZip = await uploadZipManta(extractedFolder, site.tag );
+      const uploadZip = await uploadZipManta(extractedFolder, site.tag);
       if (!uploadZip) return false;
 
       return true;
@@ -150,12 +150,13 @@ export abstract class SurveyService {
       // Convert CSV to JSON
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
       if (!csvJSON) throw new Error('Incorrect CSV format');
+      const { MANTA_HOST_NAME, MANTA_ROOT_FOLDER, TMP_FOLDER } = process.env;
 
       const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
       // Read from data.js
       const dataJS = await fs.readFile(
-        `tmp/${extractedFolder}/app-files/data.js`,
+        `${TMP_FOLDER}/${extractedFolder}/app-files/data.js`,
         'utf8',
       );
 
@@ -166,8 +167,6 @@ export abstract class SurveyService {
       const data = JSON.parse(stringedJSONData);
 
       if (!data.scenes) throw new Error('Scenes are not available');
-
-      const { MANTA_HOST_NAME, MANTA_ROOT_FOLDER } = process.env;
 
       const scenes: any[] = data.scenes;
 
@@ -234,7 +233,7 @@ export abstract class SurveyService {
       //Delete files and folder
       await fs.unlink(properties[0].path);
       await fs.unlink(zipFile[0].path);
-      await fs.rmdir(`tmp/${extractedFolder}`);
+      await fs.rmdir(`${TMP_FOLDER}/${extractedFolder}`);
 
       return true;
     } catch (e) {
@@ -549,4 +548,3 @@ export abstract class SurveyService {
     }
   }
 }
-
