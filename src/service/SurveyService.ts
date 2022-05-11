@@ -237,9 +237,10 @@ export abstract class SurveyService {
           if (!minimapConversion)
             reject('Minimap conversion cannot be uploaded.');
 
+          if (i === scenes.length - 1) resolve('Data Uploaded');
+
           //Link/Info Hotspots if included *TODO in different ticket*
         });
-        resolve('Data Uploaded');
       });
 
       if (!uploadData) throw new Error('Data could not be uploaded.');
