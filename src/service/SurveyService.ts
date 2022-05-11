@@ -303,31 +303,30 @@ export abstract class SurveyService {
         '-_id',
       );
 
-      let saveSiteMap: any = null;
-      if (getCurrentSiteMap) {
-        saveSiteMap = await MinimapImages.findOneAndUpdate(
+      const saveSiteMap = getCurrentSiteMap ?
+        await MinimapImages.findOneAndUpdate(
             { site: site._id },
             {
                 image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
                 image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             }
+        ) :
+        await MinimapImages.create(
+            {
+                _id: new ObjectId(),
+                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+                floor: floor,
+                site: site._id,
+                x_pixel_offset: 0,
+                y_pixel_offset: 0,
+                x_scale: 1,
+                y_scale: 1,
+                img_width: 1000,
+                img_height: 1000,
+                xy_flipped: false,
+            }
         );
-      } else {
-        saveSiteMap = await MinimapImages.create({
-            _id: new ObjectId(),
-            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            floor: floor,
-            site: site._id,
-            x_pixel_offset: 0,
-            y_pixel_offset: 0,
-            x_scale: 1,
-            y_scale: 1,
-            img_width: 1000,
-            img_height: 1000,
-            xy_flipped: false,
-          });
-      }
 
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
