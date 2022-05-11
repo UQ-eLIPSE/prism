@@ -84,8 +84,16 @@ export interface IHotspotDescription extends Document {
 }
 
 export interface IMinimapImages extends Document {
-  minimap: string;
   floor: number;
+  image_url: string;
+  image_large_url: string;
+  x_pixel_offset: number;
+  y_pixel_offset: number;
+  x_scale: number;
+  y_scale: number;
+  img_width: number;
+  img_height: number;
+  xy_flipped: boolean;
 }
 
 const SurveySchema: Schema = new Schema({
@@ -138,9 +146,17 @@ const HotspotDescriptionSchema: Schema = new Schema({
 });
 
 const MinimapImagesSchema: Schema = new Schema({
-  minimap: { type: String },
-  floor: { type: Number },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+    image_url: { type: String },
+    floor: { type: Number },
+    site: { type: Schema.Types.ObjectId, ref: 'sites' },
+    image_large_url: { type: String },
+    x_pixel_offset: { type: Number },
+    y_pixel_offset: { type: Number },
+    x_scale: { type: Number },
+    y_scale: { type: Number },
+    img_width: { type: Number },
+    img_height: { type: Number },
+    xy_flipped: { type: Boolean },
 });
 
 export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);

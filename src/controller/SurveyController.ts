@@ -443,7 +443,7 @@ export class SurveyController {
       return CommonUtil.successResponse(
         res,
         '',
-        minimapImageObject.minimap || [],
+        minimapImageObject.image_url || [],
       );
     } catch (e) {
       console.error(e);
@@ -464,7 +464,7 @@ export class SurveyController {
     const { floor } = req.query;
 
     try {
-      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
+      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp'];
 
       if (!extNames.includes(path.extname(file?.path as string)))
         throw new Error('File is undefined');
