@@ -100,7 +100,7 @@ export abstract class SurveyService {
             null,
             `tmp/${zipFile[0].filename.replace('.zip', '')}`,
             (err: any) => {
-              console.log(err ? 'Extract error' : 'Extracted');
+              ConsoleUtil.error(err ? 'Extract error' : 'Extracted');
               zip.close();
 
               err ? reject() : resolve('Extracted');
