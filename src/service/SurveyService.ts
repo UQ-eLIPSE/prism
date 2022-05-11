@@ -163,6 +163,8 @@ export abstract class SurveyService {
         'utf8',
       );
 
+      if (!dataJS) throw new Error('Cannot read data.js');
+
       const stringedJSONData = dataJS
         .replace('var APP_DATA = ', '')
         .replace(/;/g, '');
@@ -174,8 +176,8 @@ export abstract class SurveyService {
       const scenes: any[] = data.scenes;
 
       // Upload data to DB
-      await new Promise((resolve, reject) => {
-        scenes.forEach(async (scene, i) => {
+      const uploadData = await new Promise(async (resolve, reject) => {
+        await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
           const specElem = csvJSON.find((el) => el.fileName === scene.id);
 
@@ -199,6 +201,8 @@ export abstract class SurveyService {
             },
           ]);
 
+          if (!survey) reject("Survey couldn't be uploaded");
+
           // Upload to minimap nodes
           const minimapNode = await MinimapNode.create([
             {
@@ -212,9 +216,11 @@ export abstract class SurveyService {
             },
           ]);
 
+          if (!minimapNode) reject('Minimap Node cannot be uploaded');
+
           // Upload Minimap conversions with the provided x/y coords from the CSV
 
-          await MinimapConversion.create([
+          const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
               floor: specElem?.level ? specElem.level : 0,
@@ -228,10 +234,15 @@ export abstract class SurveyService {
             },
           ]);
 
+          if (!minimapConversion)
+            reject('Minimap conversion cannot be uploaded.');
+
           //Link/Info Hotspots if included *TODO in different ticket*
         });
         resolve('Data Uploaded');
       });
+
+      if (!uploadData) throw new Error('Data could not be uploaded.');
 
       //Delete files and folder
       await fs.unlink(properties[0].path);
@@ -421,30 +432,28 @@ export abstract class SurveyService {
         '-_id',
       );
 
-      const saveSiteMap = getCurrentSiteMap ?
-        await MinimapImages.findOneAndUpdate(
+      const saveSiteMap = getCurrentSiteMap
+        ? await MinimapImages.findOneAndUpdate(
             { site: site._id },
             {
-                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            }
-        ) :
-        await MinimapImages.create(
-            {
-                _id: new ObjectId(),
-                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-                floor: floor,
-                site: site._id,
-                x_pixel_offset: 0,
-                y_pixel_offset: 0,
-                x_scale: 1,
-                y_scale: 1,
-                img_width: 1000,
-                img_height: 1000,
-                xy_flipped: false,
-            }
-        );
+              image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+              image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            },
+          )
+        : await MinimapImages.create({
+            _id: new ObjectId(),
+            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            floor: floor,
+            site: site._id,
+            x_pixel_offset: 0,
+            y_pixel_offset: 0,
+            x_scale: 1,
+            y_scale: 1,
+            img_width: 1000,
+            img_height: 1000,
+            xy_flipped: false,
+          });
 
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
