@@ -1,11 +1,10 @@
-import { Request, Response, NextFunction } from 'express-serve-static-core';
-import { ISite, SiteSettings } from '../components/Site/SiteModel';
+import { Response } from 'express-serve-static-core';
+import { ISite } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
   MinimapNode,
   Survey,
-  IMinimapNode,
   MinimapImages,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
@@ -15,6 +14,7 @@ import process = require('process');
 import { execSync } from 'child_process';
 import { ObjectId } from 'bson';
 import { uploadZipManta } from '../utils/mantaUtil';
+import { ConsoleUtil } from '../utils/ConsoleUtil';
 const StreamZip = require('node-stream-zip');
 
 interface CSVProperties {
@@ -27,9 +27,11 @@ interface CSVProperties {
 export abstract class SurveyService {
   /**
    * unzipValidateFile
-   * @param files
-   * @param site
-   * @returns Boolean response of true or false of success
+   * Unzip the provided Marzipano file and validate against the CSV and structure
+   * Upload the files to Manta once validation is successful
+   * @param files - Request Files that contains the CSV and .ZIP
+   * @param site - The associated site with the provided Id
+   * @returns Boolean response of true if validation and upload is successful or false
    */
   static async unzipValidateFile(
     files: {
@@ -127,17 +129,18 @@ export abstract class SurveyService {
 
       return true;
     } catch (e) {
-      console.log(e.message);
+      ConsoleUtil.error(e.message);
       return false;
     }
   }
 
   /**
    * Upload to DB
-   * This function uploads data from the provided CSV and data.js
-   * @param files
-   * @param site
-   * @returns Boolean response of true or false of success
+   * This function uploads properties from the CSV files containing filename and minimap coordinates (As the minimum)
+   * along with combining that data with the provided marzipano data.js for the survey_nodes.
+   * @param files - Request Files that contains the CSV and .ZIP
+   * @param site - The associated site with the provided Id
+   * @returns Boolean response of true if the data is uploaded to db else false.
    */
   static async uploadToDB(
     files: {
@@ -237,120 +240,8 @@ export abstract class SurveyService {
 
       return true;
     } catch (e) {
-      console.log(e.message);
+      ConsoleUtil.error(e.message);
       return false;
-    }
-  }
-
-  static async readZipFile(req: Request, res: Response, next: NextFunction) {
-    const { file } = req;
-    const { user } = res.locals;
-    if (file !== undefined) {
-      const zip = new StreamZip({
-        file: `${file.destination}/${file.filename}`,
-        storeEntries: true,
-      });
-      let message: string;
-
-      zip.on('ready', async () => {
-        const entries = Object.values(zip.entries());
-        const appFilesExist = entries.some(
-          (entry: any) =>
-            entry.name.endsWith('app-files/') && entry.isDirectory,
-        );
-        const surveyJsonExist = entries.some((entry: any) =>
-          entry.name.endsWith('survey.json'),
-        );
-        const dataJsExist = entries.some((entry: any) =>
-          entry.name.includes('app-files/data.js'),
-        );
-
-        if (surveyJsonExist && appFilesExist && dataJsExist) {
-          let surveyJson: any[] = [];
-
-          SurveyService.readSurveyJson(entries, zip).then((data: any[]) =>
-            data.map((survey) => surveyJson.push(survey)),
-          );
-
-          let surveyIds: any = await SurveyService.readFileData(
-            user,
-            entries,
-            zip,
-          );
-          const surveyIdsArr = Array.from(surveyIds);
-
-          if (surveyIdsArr.length !== surveyJson.length) {
-            // Delete the record from database
-            for (let idx = 0; idx < surveyIdsArr.length; idx++) {
-              const surveysTable = await Survey.findOne({
-                surveyNodes: surveyIdsArr[idx] as any,
-              });
-
-              await SurveyNode.findByIdAndDelete(surveyIdsArr[idx]);
-              await MinimapConversion.findOneAndDelete({
-                surveyNode: surveyIdsArr[idx] as any,
-              });
-              await MinimapNode.findOneAndDelete({
-                surveyNode: surveyIdsArr[idx] as any,
-              });
-
-              if (surveysTable) {
-                await Survey.findByIdAndDelete(surveysTable._id);
-              }
-            }
-
-            message =
-              'Number of scenes in survey.json does not match number of scenes from marzipano';
-            res.locals.surveyValidationMessage = message;
-            next();
-          } else {
-            for (let idx = 0; idx < surveyIdsArr.length; idx++) {
-              const minimapConversion = await MinimapConversion.findOne({
-                surveyNode: surveyIdsArr[idx] as any,
-              });
-              const surveyNode = await SurveyNode.findById(surveyIdsArr[idx]);
-
-              if (surveyNode) {
-                await SurveyNode.findByIdAndUpdate(surveyIdsArr[idx], {
-                  date: surveyJson[idx]['date'],
-                });
-              }
-
-              if (minimapConversion) {
-                const minimapNode = await MinimapNode.findOne({
-                  surveyNode: surveyIdsArr[idx] as any,
-                });
-                await MinimapConversion.findOneAndUpdate(
-                  { surveyNode: surveyIdsArr[idx] as any },
-                  {
-                    floor: surveyJson[idx]['floor'],
-                    xPixelOffset: surveyJson[idx]['x_pixel_offset'],
-                    yPixelOffset: surveyJson[idx]['y_pixel_offset'],
-                    xPixelPerMeter: surveyJson[idx]['x_pixel_per_meter'],
-                    yPixelPerMeter: surveyJson[idx]['y_pixel_per_meter'],
-                    minimapNode: (<IMinimapNode>minimapNode)._id || null,
-                  },
-                );
-
-                await MinimapNode.findOneAndUpdate(
-                  { surveyNode: surveyIdsArr[idx] as any },
-                  {
-                    floor: surveyJson[idx]['floor'],
-                  },
-                );
-              }
-            }
-          }
-        } else {
-          if (!surveyJsonExist) message = 'survey.json is missing';
-          if (!appFilesExist) message = 'app-files folder is missing';
-          if (!dataJsExist) message = 'data.js is missing';
-          zip.close();
-        }
-
-        res.locals.surveyValidationMessage = message;
-        next();
-      });
     }
   }
 

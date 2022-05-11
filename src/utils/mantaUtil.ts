@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import { ConsoleUtil } from './ConsoleUtil';
 
 /**
  * uploadZipManta
@@ -22,16 +23,15 @@ export const uploadZipManta = async (extractedFolder: string, tag: string) => {
     MANTA_HOST_NAME,
   } = process.env;
 
-
   const upload = exec(
     `manta-sync ${TMP_FOLDER}/${extractedFolder}/app-files/tiles /${MANTA_ROOT_FOLDER}/${tag} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
-    { maxBuffer: 200 * 1024 * 1024 },
+    // Allow maximum amount of buffer as Manta sync will contain lines of upload
+    { maxBuffer: 1024 * 1024 },
     (err: any) => {
       if (err !== null) {
-        console.error(err);
+        ConsoleUtil.error(err);
         return false;
       }
-      console.log('Files have been synced');
     },
   );
 

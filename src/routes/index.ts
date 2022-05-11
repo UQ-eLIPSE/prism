@@ -102,14 +102,6 @@ export class Routes {
 
     router.post('/logout', AuthUtil.verifyCookie, this.userController.logout);
 
-    router.post(
-      '/:username/upload/survey',
-      AuthUtil.verifyCookie,
-      this.surveyController.writeLocally.single('surveys'),
-      SurveyService.readZipFile,
-      this.surveyController.uploadSurvey,
-    );
-
     router.get(
       '/:username/surveys/:page',
       AuthUtil.verifyCookie,
