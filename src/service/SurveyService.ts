@@ -237,21 +237,17 @@ export abstract class SurveyService {
           if (!minimapConversion)
             reject('Minimap conversion cannot be uploaded.');
 
-          if (i === scenes.length - 1) {
-            //Delete files and folder
-            await fs.unlink(properties[0].path);
-            await fs.unlink(zipFile[0].path);
-            await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, {
-              recursive: true,
-            });
-
-            resolve('Data Uploaded');
-          }
           //Link/Info Hotspots if included *TODO in different ticket*
         });
+        resolve('Data Uploaded');
       });
 
       if (!uploadData) throw new Error('Data could not be uploaded.');
+
+      //Delete files and folder
+      await fs.unlink(properties[0].path);
+      await fs.unlink(zipFile[0].path);
+      await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
 
       return true;
     } catch (e) {
