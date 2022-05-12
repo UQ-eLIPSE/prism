@@ -182,14 +182,13 @@ export abstract class SurveyService {
           const specElem = csvJSON.find((el) => el.fileName === scene.id);
 
           // Upload Survey Nodes from DataJS
-
           const survey = await SurveyNode.create([
             {
               _id: new ObjectId(),
               info_hotspots: scene.infoHotspots,
               link_hotspots: scene.linkHotspots,
               levels: scene.levels,
-              face_size: scene.face_size,
+              face_size: scene.faceSize,
               initial_parameters: scene.initialViewParameters,
               manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag}/`,
               node_number: i,

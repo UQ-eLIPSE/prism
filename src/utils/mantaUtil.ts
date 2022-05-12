@@ -27,7 +27,6 @@ export const uploadZipManta = async (extractedFolder: string, tag: string) => {
     `manta-sync ${TMP_FOLDER}/${extractedFolder}/app-files/tiles /${MANTA_ROOT_FOLDER}/${tag} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
     { encoding: 'utf-8' },
   );
-  console.log(upload);
   if (!upload) return false;
 
   return true;
