@@ -187,6 +187,12 @@ export class Routes {
       this.surveyController.createSiteMap,
     );
 
+    /**
+     * Routes for editing the coordinates and fov of minimap nodes
+     */
+    router.patch('/node/coords/:nodeId', this.surveyController.updateNodeCoordinates);
+    router.patch('/node/fov/:nodeId', this.surveyController.updateNodeFov);
+
     //settings
     router.get('/site/:siteId/settings', this.siteController.getSettings);
 

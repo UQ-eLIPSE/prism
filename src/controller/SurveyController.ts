@@ -450,4 +450,58 @@ export class SurveyController {
       return CommonUtil.failResponse(res, e.message);
     }
   }
+
+  /**
+   * Updates the x and y coordinates of the selected node.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  public async updateNodeCoordinates(req: Request, res: Response) {
+    try {
+        const { nodeId } = req.params;
+        const { x, y } = req.body;
+
+        const findNodeId = await MinimapConversion.find({survey_node: new ObjectID(nodeId)})
+        if (!findNodeId) throw new Error('Node does not exist in database');
+
+        const updateCoords = await SurveyService.updateNodeCoordinates(nodeId, x, y);
+        if (!updateCoords) throw new Error('Node coordinates cannot be updated');
+
+        return CommonUtil.successResponse(
+            res,
+            'Minimap node coordinates have been updated',
+        );
+    } catch (e) {
+        console.log(e);
+        return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
+   * Updates the field of view of the selected node.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  public async updateNodeFov(req: Request, res: Response) {
+      try {
+          const { nodeId } = req.params;
+          const { fov } = req.body;
+
+          const findNodeId = await SurveyNode.find({site: new Object(nodeId)});
+          if (!findNodeId) throw new Error('Node does not exist in databae');
+
+          const updateCoords = await SurveyService.updateNodeFov(nodeId, fov);
+          if (!updateCoords) throw new Error('Node fov cannot be updated');
+
+          return CommonUtil.successResponse(
+              res,
+              'Minimap node fov has been updated',
+          )
+      } catch (e) {
+          console.log(e);
+          return CommonUtil.failResponse(res, e.message);
+      }
+  }
 }

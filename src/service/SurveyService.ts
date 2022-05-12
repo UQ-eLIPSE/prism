@@ -265,6 +265,38 @@ export abstract class SurveyService {
     });
   }
 
+  public static async updateNodeCoordinates(
+      nodeId: string,
+      x: Number,
+      y: Number
+    ) {
+        const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
+            { survey_node: new ObjectId(nodeId) },
+            {
+                x: x,
+                y: y,
+            },
+        );
+
+        return (updateNodeCoords ? true : false);
+    }
+
+    public static async updateNodeFov(
+        nodeId: string,
+        fov: Number
+    ) {
+        const updateNodeFov = await SurveyNode.findOneAndUpdate(
+            { site: new ObjectId(nodeId) },
+            {
+                initial_parameters: {
+                    fov: fov,
+                }
+            }
+        )
+
+        return (updateNodeFov ? true : false);
+    }
+
   /**
    * createSiteMap - - Inserts Site Map in to site Settings and upload
    * to Manta.
