@@ -263,6 +263,14 @@ export abstract class SurveyService {
             // Half of Pi
             rotation_offset: 1.5707963267948966,
           },
+          animation: {
+            url: 'NA',
+            title: 'NA',
+          },
+          sidenav: {
+            logo_url: 'https://picsum.photos/20/20',
+            subtitle_url: 'https://picsum.photos/20/20',
+          },
           display: {
             title: site.site_name,
             subtitle: site.site_name,
