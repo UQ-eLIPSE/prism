@@ -263,6 +263,10 @@ export abstract class SurveyService {
             // Half of Pi
             rotation_offset: 1.5707963267948966,
           },
+          display: {
+            title: site.site_name,
+            subtitle: site.site_name,
+          },
           marzipano_mouse_view_mode: 'drag',
           num_floors: 0,
           site: new ObjectId(site._id),
