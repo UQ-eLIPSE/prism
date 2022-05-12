@@ -1,5 +1,5 @@
 import { Response } from 'express-serve-static-core';
-import { ISite } from '../components/Site/SiteModel';
+import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
@@ -98,7 +98,10 @@ export abstract class SurveyService {
           // Extract zip
           await zip.extract(
             null,
-            `tmp/${zipFile[0].filename.replace('.zip', '')}`,
+            `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
+              '.zip',
+              '',
+            )}`,
             (err: any) => {
               ConsoleUtil.error(err ? 'Extract error' : 'Extracted');
               zip.close();
@@ -113,7 +116,10 @@ export abstract class SurveyService {
 
       // Check data.js and match the tile names
       const readData = await fs.readFile(
-        `tmp/${zipFile[0].filename.replace('.zip', '')}/app-files/data.js`,
+        `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
+          '.zip',
+          '',
+        )}/app-files/data.js`,
         'utf-8',
       );
 
@@ -238,6 +244,59 @@ export abstract class SurveyService {
 
           //Link/Info Hotspots if included *TODO in different ticket*
         });
+
+        // Add Site Settings
+        // NOTE: These values need to be created as part of sceen process.
+        await SiteSettings.create({
+          _id: new ObjectId(),
+          enable: {
+            timeline: false,
+            rotation: true,
+            media: false,
+            faq: false,
+            documentation: false,
+            floors: false,
+            about: false,
+            animations: false,
+          },
+          initial_settings: {
+            date: '2021-11-16T00:00:00.000+10:00',
+            floor: 0,
+            pano_id: '',
+            yaw: 0,
+            pitch: 0,
+            fov: 0,
+            // Half of Pi
+            rotation_offset: 1.5707963267948966,
+          },
+          minimap: {
+            image_url: '',
+            image_large_url: '',
+            x_pixel_offset: 0,
+            y_pixel_offset: 0,
+            x_scale: 1,
+            y_scale: 1,
+            img_width: 0,
+            img_height: 0,
+            xy_flipped: false,
+          },
+          animation: {
+            url: 'NA',
+            title: 'NA',
+          },
+          sidenav: {
+            logo_url: 'https://picsum.photos/20/20',
+            subtitle_url: 'https://picsum.photos/20/20',
+          },
+          display: {
+            title: site.site_name,
+            subtitle: site.site_name,
+          },
+          marzipano_mouse_view_mode: 'drag',
+          num_floors: 0,
+          site: new ObjectId(site._id),
+        });
+
         resolve('Data Uploaded');
       });
 
