@@ -64,10 +64,13 @@ class MapPinsController {
    */
   public async createPin(req: Request, res: Response) {
     try {
+      const siteName: string = req.body.site_name;
       const site = new Site({
         _id: new ObjectId(),
-        site_name: req.body.site_name,
+        site_name: siteName,
+        tag: siteName.substring(0, 4).toUpperCase(),
       });
+
       if (!site) return CommonUtil.failResponse(res, 'Site name is incorrect');
 
       const body: IMapPins = new MapPins({ _id: new ObjectId(), ...req.body });
@@ -161,13 +164,17 @@ class MapPinsController {
     if (file === undefined) throw new Error('File is undefined');
 
     try {
-        const uploadPreview = await mapPinsService.uploadPreview(file);
-          if (!uploadPreview.success) throw new Error(uploadPreview.message);
-    
-          return CommonUtil.successResponse(res, uploadPreview.message, uploadPreview.data);
-        } catch (e) {
-          console.error(e);
-          return CommonUtil.failResponse(res, e.message);
+      const uploadPreview = await mapPinsService.uploadPreview(file);
+      if (!uploadPreview.success) throw new Error(uploadPreview.message);
+
+      return CommonUtil.successResponse(
+        res,
+        uploadPreview.message,
+        uploadPreview.data,
+      );
+    } catch (e) {
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message);
     }
   }
 }

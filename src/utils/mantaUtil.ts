@@ -1,5 +1,4 @@
-import { exec, execSync } from 'child_process';
-import { ConsoleUtil } from './ConsoleUtil';
+import { execSync } from 'child_process';
 
 /**
  * uploadZipManta

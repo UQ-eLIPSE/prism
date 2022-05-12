@@ -1,5 +1,5 @@
 import { Response } from 'express-serve-static-core';
-import { ISite } from '../components/Site/SiteModel';
+import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
@@ -13,7 +13,7 @@ import csv = require('csvtojson');
 import process = require('process');
 import { execSync } from 'child_process';
 import { ObjectId } from 'bson';
-import { uploadZipManta } from '../utils/mantaUtil';
+import { uploadZipManta } from '../utils/MantaUtil';
 import { ConsoleUtil } from '../utils/ConsoleUtil';
 const StreamZip = require('node-stream-zip');
 
@@ -238,6 +238,36 @@ export abstract class SurveyService {
 
           //Link/Info Hotspots if included *TODO in different ticket*
         });
+
+        // Add Site Settings
+        // NOTE: These values need to be created as part of sceen process.
+        await SiteSettings.create({
+          _id: new ObjectId(),
+          enable: {
+            timeline: false,
+            rotation: true,
+            media: false,
+            faq: false,
+            documentation: false,
+            floors: false,
+            about: false,
+            animations: false,
+          },
+          initial_settings: {
+            date: '2021-11-16T00:00:00.000+10:00',
+            floor: 0,
+            pano_id: '',
+            yaw: 0,
+            pitch: 0,
+            fov: 0,
+            // Half of Pi
+            rotation_offset: 1.5707963267948966,
+          },
+          marzipano_mouse_view_mode: 'drag',
+          num_floors: 0,
+          site: new ObjectId(site._id),
+        });
+
         resolve('Data Uploaded');
       });
 
