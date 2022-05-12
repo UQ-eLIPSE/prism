@@ -13,7 +13,7 @@ import csv = require('csvtojson');
 import process = require('process');
 import { execSync } from 'child_process';
 import { ObjectId } from 'bson';
-import { uploadZipManta } from '../utils/MantaUtil';
+import { uploadZipManta } from '../utils/mantaUtil';
 import { ConsoleUtil } from '../utils/ConsoleUtil';
 const StreamZip = require('node-stream-zip');
 
