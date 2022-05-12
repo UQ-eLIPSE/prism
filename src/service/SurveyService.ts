@@ -98,7 +98,10 @@ export abstract class SurveyService {
           // Extract zip
           await zip.extract(
             null,
-            `tmp/${zipFile[0].filename.replace('.zip', '')}`,
+            `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
+              '.zip',
+              '',
+            )}`,
             (err: any) => {
               ConsoleUtil.error(err ? 'Extract error' : 'Extracted');
               zip.close();
@@ -113,7 +116,10 @@ export abstract class SurveyService {
 
       // Check data.js and match the tile names
       const readData = await fs.readFile(
-        `tmp/${zipFile[0].filename.replace('.zip', '')}/app-files/data.js`,
+        `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
+          '.zip',
+          '',
+        )}/app-files/data.js`,
         'utf-8',
       );
 
