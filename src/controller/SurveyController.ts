@@ -213,6 +213,62 @@ export class SurveyController {
   }
 
   /**
+   * Return only node data for a given site.
+   * @param req
+   * @param res
+   */
+  public async getSingleSiteNodeData(req: Request, res: Response) {
+    const { siteId } = req.params;
+    let allSurveys: IMinimapConversion | any = [];
+    let results: IMinimapConversion | any = {};
+
+    if (!siteId)
+      return CommonUtil.failResponse(res, 'Site ID has not been provided');
+
+     if (!allSurveys.length) {
+        const surveyNode = await SurveyNode.find({
+          site: new ObjectID(siteId),
+        });
+        for (let node of surveyNode) {
+          allSurveys.push(
+            await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
+              .populate('minimap_node', '-_id'),
+          );
+        }
+      }
+
+      results = allSurveys
+        .map((s: { 
+          floor: any; 
+          minimap_node: { 
+            name: any; 
+            tiles_id: any; 
+            tiles_name: any; 
+          }; 
+          survey_node: any; 
+          x: any; 
+          x_scale: any; 
+          y: any; 
+          y_scale: any; 
+          site: any; }) => { 
+        return {
+          floor: s.floor,
+          node_number: s.minimap_node.name,
+          tiles_id: s.minimap_node.tiles_id,
+          tiles_name: s.minimap_node.tiles_name,
+          survey_node: s.survey_node,
+          x: s.x,
+          x_scale: s.x_scale,
+          y: s.y,
+          y_scale: s.y_scale,
+          site: s.site
+        };
+      })
+
+    return CommonUtil.successResponse(res, '', results);
+  }
+
+  /**
    * Get all surveys name, date, and floor only based on floor or date
    * @param req
    * @param res
