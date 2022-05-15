@@ -219,8 +219,8 @@ export class SurveyController {
    */
   public async getSingleSiteNodeData(req: Request, res: Response) {
     const { siteId } = req.params;
-    let allSurveys: IMinimapConversion | any = [];
-    let results: IMinimapConversion | any = {};
+    let allSurveys: IMinimapConversion[] = [];
+    let results: any;
 
     if (!siteId)
       return CommonUtil.failResponse(res, 'Site ID has not been provided');
@@ -232,25 +232,13 @@ export class SurveyController {
         for (let node of surveyNode) {
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
-              .populate('minimap_node', '-_id'),
+            .populate('minimap_node', '-_id'),
           );
         }
       }
 
       results = allSurveys
-        .map((s: { 
-          floor: any; 
-          minimap_node: { 
-            name: any; 
-            tiles_id: any; 
-            tiles_name: any; 
-          }; 
-          survey_node: any; 
-          x: any; 
-          x_scale: any; 
-          y: any; 
-          y_scale: any; 
-          site: any; }) => { 
+        .map((s: any) => { 
         return {
           floor: s.floor,
           node_number: s.minimap_node.name,
