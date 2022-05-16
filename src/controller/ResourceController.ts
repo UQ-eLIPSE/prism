@@ -254,7 +254,7 @@ export class ResourceController {
     await newSubcategories.save();
 
     if (parentCategories.length) {
-      for (let category of parentCategories) {
+      for (const category of parentCategories) {
         const parentCategories = await Category.findById(category);
         if (!parentCategories)
           return CommonUtil.failResponse(res, 'Parent category is not found');

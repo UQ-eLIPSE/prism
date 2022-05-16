@@ -66,6 +66,7 @@ export abstract class SurveyService {
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
       if (!csvJSON) throw new Error('Incorrect CSV format');
 
+      // eslint-disable-next-line no-async-promise-executor
       const zipOp = await new Promise(async (resolve, reject) => {
         await zip.on('ready', async () => {
           const entries = Object.values(zip.entries());
@@ -182,6 +183,7 @@ export abstract class SurveyService {
       const scenes: any[] = data.scenes;
 
       // Upload data to DB
+      // eslint-disable-next-line no-async-promise-executor
       const uploadData = await new Promise(async (resolve, reject) => {
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
@@ -319,13 +321,13 @@ export abstract class SurveyService {
       entry.name.endsWith('/data.js'),
     );
     let marzipanoData: any;
-    let surveyNodeIds = new Set();
-    let outputFile: any = [];
+    const surveyNodeIds = new Set();
+    const outputFile: any = [];
 
     const { MANTA_ROOT_FOLDER, PROJECT_NAME, MANTA_USER, MANTA_HOST_NAME } =
       process.env;
     return new Promise((resolve, reject) => {
-      for (let data of dataJs) {
+      for (const data of dataJs) {
         zip.stream((<any>data).name, (err: any, stream: any) => {
           stream.on('data', (chunk: any) => {
             outputFile.push(chunk);
@@ -421,7 +423,7 @@ export abstract class SurveyService {
     res: Response,
     fieldToSearch?: object,
   ) {
-    let mongoQuery: any = {};
+    const mongoQuery: any = {};
 
     mongoQuery.limit = size;
     mongoQuery.skip = size * pageNo - size;
@@ -443,6 +445,7 @@ export abstract class SurveyService {
   }
 
   public static extractZip(destPath: string, entries: any, zip: any) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       zip.extract(null, destPath, (err: any) => {
         console.log(err ? 'Extract error' : `Extracted entries`);
@@ -461,7 +464,7 @@ export abstract class SurveyService {
    */
   public static async createSiteMap(
     file: Express.Multer.File,
-    floor: Number,
+    floor: number,
     site: ISite,
   ): Promise<{
     success: boolean;
@@ -492,26 +495,26 @@ export abstract class SurveyService {
 
       const saveSiteMap = getCurrentSiteMap
         ? await MinimapImages.findOneAndUpdate(
-            { site: site._id },
-            {
-              image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-              image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            },
-          )
-        : await MinimapImages.create({
-            _id: new ObjectId(),
+          { site: site._id },
+          {
             image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            floor: floor,
-            site: site._id,
-            x_pixel_offset: 0,
-            y_pixel_offset: 0,
-            x_scale: 1,
-            y_scale: 1,
-            img_width: 1000,
-            img_height: 1000,
-            xy_flipped: false,
-          });
+          },
+        )
+        : await MinimapImages.create({
+          _id: new ObjectId(),
+          image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+          image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+          floor: floor,
+          site: site._id,
+          x_pixel_offset: 0,
+          y_pixel_offset: 0,
+          x_scale: 1,
+          y_scale: 1,
+          img_width: 1000,
+          img_height: 1000,
+          xy_flipped: false,
+        });
 
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 

@@ -1,7 +1,6 @@
 import { UserController } from '../controller/UserController';
 import { SurveyController } from '../controller/SurveyController';
 import { AuthUtil } from '../utils/AuthUtil';
-import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
@@ -9,8 +8,6 @@ import SiteController from '../components/Site/SiteController';
 import MapPinsController from '../components/MapPins/MapPinsController';
 import multer = require('multer');
 import { Request } from 'express';
-import path = require('path');
-import { cliVersionCheckPrintAndExit } from 'manta';
 
 export class Routes {
   public userController: UserController = new UserController();

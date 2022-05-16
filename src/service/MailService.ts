@@ -5,7 +5,7 @@ import * as nodemailer from 'nodemailer';
 export abstract class MailService {
   static async sendMail(mailOptions: MailOptions, transporter: Mail) {
     if (mailOptions) {
-      let info = await transporter.sendMail(mailOptions);
+      const info = await transporter.sendMail(mailOptions);
       if (info) {
         console.log('Message sent: %s', info.messageId);
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));

@@ -106,8 +106,8 @@ export class UserController {
   * @param res (logged in user details)
   */
   public async getLoggedInUser(req: Request, res: Response) {
-      var user = req.header('x-kvd-payload');
-      res.send(user);
+    const user = req.header('x-kvd-payload');
+    res.send(user);
   }
 
   /**
@@ -230,21 +230,21 @@ export class UserController {
     const { firstName, lastName, email, role } = req.body;
 
     const invitedUser: IUser | null = await InvitedUser.findOne({ email });
-    let transporter: Mail = req.app.get('transporter');
+    const transporter: Mail = req.app.get('transporter');
 
     const isInternalUser = email.includes('uq.edu.au');
     const { JWT_Hash } = process.env;
 
     const secureToken = !isInternalUser
       ? jwt.sign({ firstName, lastName, email, role }, <string>JWT_Hash, {
-          algorithm: 'HS256',
-        })
+        algorithm: 'HS256',
+      })
       : '';
     const loginUrl = isInternalUser
       ? 'http://localhost:8000/login'
       : `http://localhost:8000/login/${secureToken}`;
 
-    let mailOption: MailOptions = {
+    const mailOption: MailOptions = {
       from: 'admin@uwmt-001.zones.eait.uq.edu.au',
       subject: 'You are invited to Urban Water',
       html: `You have been invited to Urban Water please login: ${loginUrl}`,
@@ -353,7 +353,7 @@ export class UserController {
     if (!userFound) return;
 
     const { firstName, lastName, role } = <IUser>userFound;
-    let transporter: Mail = req.app.get('transporter');
+    const transporter: Mail = req.app.get('transporter');
 
     const { JWT_Hash } = process.env;
 
