@@ -232,7 +232,8 @@ export class SurveyController {
           for (let node of surveyNode) {
             allSurveys.push(
               await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
-              .populate('survey_node', '-_id'),
+              .populate('survey_node', '-_id')
+              .populate('minimap_node', '-_id'),
             );
           }
         }
@@ -244,6 +245,7 @@ export class SurveyController {
             node_number: s.survey_node.node_number,
             tiles_id: s.survey_node.tiles_id,
             tiles_name: s.survey_node.tiles_name,
+            survey_node: s.minimap_node.survey_node,
             x: s.x,
             x_scale: s.x_scale,
             y: s.y,
