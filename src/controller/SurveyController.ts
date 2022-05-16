@@ -218,42 +218,44 @@ export class SurveyController {
    * @param res
    */
   public async getSingleSiteNodeData(req: Request, res: Response) {
-    const { siteId } = req.params;
-    let allSurveys: IMinimapConversion[] = [];
-    let results: any;
+    try{
+      const { siteId } = req.params;
+      const allSurveys: IMinimapConversion[] = [];
 
-    if (!siteId)
-      return CommonUtil.failResponse(res, 'Site ID has not been provided');
+      if (!siteId)
+        return CommonUtil.failResponse(res, 'Site ID has not been provided');
 
-     if (!allSurveys.length) {
-        const surveyNode = await SurveyNode.find({
-          site: new ObjectID(siteId),
-        });
-        for (let node of surveyNode) {
-          allSurveys.push(
-            await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
-            .populate('minimap_node', '-_id'),
-          );
+      if (!allSurveys.length) {
+          const surveyNode = await SurveyNode.find({
+            site: new ObjectID(siteId),
+          });
+          for (let node of surveyNode) {
+            allSurveys.push(
+              await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
+              .populate('survey_node', '-_id'),
+            );
+          }
         }
-      }
 
-      results = allSurveys
-        .map((s: any) => { 
-        return {
-          floor: s.floor,
-          node_number: s.minimap_node.name,
-          tiles_id: s.minimap_node.tiles_id,
-          tiles_name: s.minimap_node.tiles_name,
-          survey_node: s.survey_node,
-          x: s.x,
-          x_scale: s.x_scale,
-          y: s.y,
-          y_scale: s.y_scale,
-          site: s.site
-        };
-      })
+        const results = allSurveys
+          .map((s: IMinimapConversion) => { 
+          return {
+            floor: s.floor,
+            node_number: s.survey_node.node_number,
+            tiles_id: s.survey_node.tiles_id,
+            tiles_name: s.survey_node.tiles_name,
+            x: s.x,
+            x_scale: s.x_scale,
+            y: s.y,
+            y_scale: s.y_scale,
+            site: s.site
+          };
+        })
 
-    return CommonUtil.successResponse(res, '', results);
+      return CommonUtil.successResponse(res, '', results);
+    } catch (e) {
+      return CommonUtil.failResponse(res, e.message);
+    }
   }
 
   /**
