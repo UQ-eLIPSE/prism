@@ -472,16 +472,23 @@ export abstract class SurveyService {
         nodeId: string,
         fov: Number
     ) {
-        const updateNodeFov = await SurveyNode.findOneAndUpdate(
-            { site: new ObjectId(nodeId) },
-            {
-                initial_parameters: {
-                    fov: fov,
-                }
-            }
-        )
+        const existingNode = await SurveyNode.findOne({ _id: new ObjectId(nodeId) });
 
-        return (updateNodeFov ? true : false);
+        if (existingNode) {
+            const updateNodeFov = await SurveyNode.findOneAndUpdate(
+                { _id: new ObjectId(nodeId) },
+                {
+                    initial_parameters: {
+                        ...existingNode.toObject().initial_parameters,
+                        fov: fov,
+                    }
+                }
+            );
+
+            return (updateNodeFov ? true : false);
+        } else {
+            throw new Error("Node does not exist in database.");
+        }
     }
 
   /**
