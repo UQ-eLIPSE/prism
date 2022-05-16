@@ -40,6 +40,45 @@ export class SurveyController {
   }
 
   /**
+   * uploadScenes
+   * Uploads scenes with the provided zip and csv files on to Manta and DB
+   * @param req
+   * @param res
+   * @returns
+   */
+  public async uploadScenes(req: Request, res: Response) {
+    try {
+      const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+      };
+
+      const { siteId } = req.params;
+      if (!files) throw new Error('File is undefined');
+
+      if (!siteId) throw new Error('Site Id is not provided');
+
+      //Get site
+      const site = await Site.findById({ _id: new ObjectID(siteId) });
+      if (!site) throw new Error('Invalid Site Id');
+
+      const validate = await SurveyService.unzipValidateFile(
+        files as {
+          [fieldname: string]: Express.Multer.File[];
+        },
+        site,
+      );
+
+      if (!validate) throw new Error('Validation failed');
+
+      await SurveyService.uploadToDB(files, site);
+
+      return CommonUtil.successResponse(res, 'Successfully uploaded');
+    } catch (e) {
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
    * Upload survey and validate the files inside .zip
    * @param req
    * @param res
@@ -171,6 +210,54 @@ export class SurveyController {
     }
 
     return CommonUtil.successResponse(res, '', results);
+  }
+
+  /**
+   * Return only node data for a given site.
+   * @param req
+   * @param res
+   */
+  public async getSingleSiteNodeData(req: Request, res: Response) {
+    try{
+      const { siteId } = req.params;
+      const allSurveys: IMinimapConversion[] = [];
+
+      if (!siteId)
+        return CommonUtil.failResponse(res, 'Site ID has not been provided');
+
+      if (!allSurveys.length) {
+          const surveyNode = await SurveyNode.find({
+            site: new ObjectID(siteId),
+          });
+          for (let node of surveyNode) {
+            allSurveys.push(
+              await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
+              .populate('survey_node', '-_id')
+              .populate('minimap_node', '-_id'),
+            );
+          }
+        }
+
+        const results = allSurveys
+          .map((s: IMinimapConversion) => { 
+          return {
+            floor: s.floor,
+            node_number: s.survey_node.node_number,
+            tiles_id: s.survey_node.tiles_id,
+            tiles_name: s.survey_node.tiles_name,
+            survey_node: s.minimap_node.survey_node,
+            x: s.x,
+            x_scale: s.x_scale,
+            y: s.y,
+            y_scale: s.y_scale,
+            site: s.site
+          };
+        })
+
+      return CommonUtil.successResponse(res, '', results);
+    } catch (e) {
+      return CommonUtil.failResponse(res, e.message);
+    }
   }
 
   /**

@@ -1,129 +1,316 @@
-import { Request, Response, NextFunction } from 'express-serve-static-core';
+import { Response } from 'express-serve-static-core';
 import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
   SurveyNode,
   MinimapConversion,
   MinimapNode,
   Survey,
-  IMinimapNode,
   MinimapImages,
 } from '../models/SurveyModel';
 import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
+import csv = require('csvtojson');
+import process = require('process');
 import { execSync } from 'child_process';
 import { ObjectId } from 'bson';
+import { uploadZipManta } from '../utils/mantaUtil';
+import { ConsoleUtil } from '../utils/ConsoleUtil';
 const StreamZip = require('node-stream-zip');
 
+interface CSVProperties {
+  level?: string;
+  title?: string;
+  fileName: string;
+  x: string;
+  y: string;
+}
 export abstract class SurveyService {
-  static async readZipFile(req: Request, res: Response, next: NextFunction) {
-    const { file } = req;
-    const { user } = res.locals;
-    if (file !== undefined) {
+  /**
+   * unzipValidateFile
+   * Unzip the provided Marzipano file and validate against the CSV and structure
+   * Upload the files to Manta once validation is successful
+   * @param files - Request Files that contains the CSV and .ZIP
+   * @param site - The associated site with the provided Id
+   * @returns Boolean response of true if validation and upload is successful or false
+   */
+  static async unzipValidateFile(
+    files: {
+      [fieldname: string]: Express.Multer.File[];
+    },
+    site: ISite,
+  ) {
+    try {
+      const { zipFile, properties } = files;
+
+      // Check if the files are zip and csv.
+      if (
+        zipFile[0].mimetype !== 'application/zip' &&
+        properties[0].mimetype !== 'text/csv'
+      )
+        throw new Error('Invalid file types');
+
+      // Create a zip stream for the zip file.
       const zip = new StreamZip({
-        file: `${file.destination}/${file.filename}`,
+        file: `${zipFile[0].path}`,
         storeEntries: true,
       });
-      let message: string;
 
-      zip.on('ready', async () => {
-        const entries = Object.values(zip.entries());
-        const appFilesExist = entries.some(
-          (entry: any) =>
-            entry.name.endsWith('app-files/') && entry.isDirectory,
-        );
-        const surveyJsonExist = entries.some((entry: any) =>
-          entry.name.endsWith('survey.json'),
-        );
-        const dataJsExist = entries.some((entry: any) =>
-          entry.name.includes('app-files/data.js'),
-        );
+      // Folder without .zip ext
+      const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
-        if (surveyJsonExist && appFilesExist && dataJsExist) {
-          let surveyJson: any[] = [];
-
-          SurveyService.readSurveyJson(entries, zip).then((data: any[]) =>
-            data.map((survey) => surveyJson.push(survey)),
-          );
-
-          let surveyIds: any = await SurveyService.readFileData(
-            user,
-            entries,
-            zip,
-          );
-          const surveyIdsArr = Array.from(surveyIds);
-
-          if (surveyIdsArr.length !== surveyJson.length) {
-            // Delete the record from database
-            for (let idx = 0; idx < surveyIdsArr.length; idx++) {
-              const surveysTable = await Survey.findOne({
-                surveyNodes: surveyIdsArr[idx] as any,
-              });
-
-              await SurveyNode.findByIdAndDelete(surveyIdsArr[idx]);
-              await MinimapConversion.findOneAndDelete({
-                surveyNode: surveyIdsArr[idx] as any,
-              });
-              await MinimapNode.findOneAndDelete({
-                surveyNode: surveyIdsArr[idx] as any,
-              });
-
-              if (surveysTable) {
-                await Survey.findByIdAndDelete(surveysTable._id);
-              }
-            }
-
-            message =
-              'Number of scenes in survey.json does not match number of scenes from marzipano';
-            res.locals.surveyValidationMessage = message;
-            next();
-          } else {
-            for (let idx = 0; idx < surveyIdsArr.length; idx++) {
-              const minimapConversion = await MinimapConversion.findOne({
-                surveyNode: surveyIdsArr[idx] as any,
-              });
-              const surveyNode = await SurveyNode.findById(surveyIdsArr[idx]);
-
-              if (surveyNode) {
-                await SurveyNode.findByIdAndUpdate(surveyIdsArr[idx], {
-                  date: surveyJson[idx]['date'],
-                });
-              }
-
-              if (minimapConversion) {
-                const minimapNode = await MinimapNode.findOne({
-                  surveyNode: surveyIdsArr[idx] as any,
-                });
-                await MinimapConversion.findOneAndUpdate(
-                  { surveyNode: surveyIdsArr[idx] as any },
-                  {
-                    floor: surveyJson[idx]['floor'],
-                    xPixelOffset: surveyJson[idx]['x_pixel_offset'],
-                    yPixelOffset: surveyJson[idx]['y_pixel_offset'],
-                    xPixelPerMeter: surveyJson[idx]['x_pixel_per_meter'],
-                    yPixelPerMeter: surveyJson[idx]['y_pixel_per_meter'],
-                    minimapNode: (<IMinimapNode>minimapNode)._id || null,
-                  },
-                );
-
-                await MinimapNode.findOneAndUpdate(
-                  { surveyNode: surveyIdsArr[idx] as any },
-                  {
-                    floor: surveyJson[idx]['floor'],
-                  },
-                );
-              }
-            }
-          }
-        } else {
-          if (!surveyJsonExist) message = 'survey.json is missing';
-          if (!appFilesExist) message = 'app-files folder is missing';
-          if (!dataJsExist) message = 'data.js is missing';
-          zip.close();
-        }
-
-        res.locals.surveyValidationMessage = message;
-        next();
+      zip.on('error', (err: any) => {
+        console.error(err);
       });
+
+      // Get Open CSV and convert to JSON.
+      const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
+      if (!csvJSON) throw new Error('Incorrect CSV format');
+
+      const zipOp = await new Promise(async (resolve, reject) => {
+        await zip.on('ready', async () => {
+          const entries = Object.values(zip.entries());
+
+          // Check if the images exist
+          for (const field of csvJSON) {
+            const checkImageExist = entries.some((entry: any) =>
+              entry.name.includes(`${field.fileName}`),
+            );
+            if (!checkImageExist)
+              reject(
+                'Image does not exist, please upload your CSV file again with the correct file name.',
+              );
+          }
+
+          // Check Marzipano app files exist
+          const appFilesExist = entries.some(
+            (entry: any) =>
+              entry.name.endsWith('app-files/') && entry.isDirectory,
+          );
+
+          // Check Data.js exists as part of the Marzipano zip.
+          const dataJsExist = entries.some((entry: any) =>
+            entry.name.includes('app-files/data.js'),
+          );
+
+          if (!appFilesExist || !dataJsExist)
+            reject('Marzipano folder structure is not correct');
+
+          // Extract zip
+          await zip.extract(
+            null,
+            `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
+              '.zip',
+              '',
+            )}`,
+            (err: any) => {
+              ConsoleUtil.error(err ? 'Extract error' : 'Extracted');
+              zip.close();
+
+              err ? reject() : resolve('Extracted');
+            },
+          );
+        });
+      });
+
+      if (!zipOp) throw new Error('Zip op failed');
+
+      // Check data.js and match the tile names
+      const readData = await fs.readFile(
+        `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
+          '.zip',
+          '',
+        )}/app-files/data.js`,
+        'utf-8',
+      );
+
+      // Check file name against the tiles.
+      for (const field of csvJSON) {
+        if (!readData.includes(field.fileName))
+          throw new Error('Image does not exist in the Marzipano zip file.');
+      }
+
+      // Upload tiles to Manta using Manta-Sync
+      const uploadZip = await uploadZipManta(extractedFolder, site.tag);
+      if (!uploadZip) return false;
+
+      return true;
+    } catch (e) {
+      ConsoleUtil.error(e.message);
+      return false;
+    }
+  }
+
+  /**
+   * Upload to DB
+   * This function uploads properties from the CSV files containing filename and minimap coordinates (As the minimum)
+   * along with combining that data with the provided marzipano data.js for the survey_nodes.
+   * @param files - Request Files that contains the CSV and .ZIP
+   * @param site - The associated site with the provided Id
+   * @returns Boolean response of true if the data is uploaded to db else false.
+   */
+  static async uploadToDB(
+    files: {
+      [fieldname: string]: Express.Multer.File[];
+    },
+    site: ISite,
+  ) {
+    try {
+      const { zipFile, properties } = files;
+      // Convert CSV to JSON
+      const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
+      if (!csvJSON) throw new Error('Incorrect CSV format');
+      const { MANTA_HOST_NAME, MANTA_ROOT_FOLDER, TMP_FOLDER } = process.env;
+
+      const extractedFolder = zipFile[0].filename.replace('.zip', '');
+
+      // Read from data.js
+      const dataJS = await fs.readFile(
+        `${TMP_FOLDER}/${extractedFolder}/app-files/data.js`,
+        'utf8',
+      );
+
+      if (!dataJS) throw new Error('Cannot read data.js');
+
+      const stringedJSONData = dataJS
+        .replace('var APP_DATA = ', '')
+        .replace(/;/g, '');
+
+      const data = JSON.parse(stringedJSONData);
+
+      if (!data.scenes) throw new Error('Scenes are not available');
+
+      const scenes: any[] = data.scenes;
+
+      // Upload data to DB
+      const uploadData = await new Promise(async (resolve, reject) => {
+        await scenes.forEach(async (scene, i) => {
+          // Get CSV Element using the scene ID.
+          const specElem = csvJSON.find((el) => el.fileName === scene.id);
+
+          // Upload Survey Nodes from DataJS
+          const survey = await SurveyNode.create([
+            {
+              _id: new ObjectId(),
+              info_hotspots: scene.infoHotspots,
+              link_hotspots: scene.linkHotspots,
+              levels: scene.levels,
+              face_size: scene.faceSize,
+              initial_parameters: scene.initialViewParameters,
+              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag}/`,
+              node_number: i,
+              survey_name: scene.name,
+              tiles_id: scene.id,
+              tiles_name: specElem?.title ? specElem?.title : scene.name,
+              date: '2021-11-16T00:00:00.000+10:00',
+              site: new ObjectId(site._id),
+            },
+          ]);
+
+          if (!survey) reject("Survey couldn't be uploaded");
+
+          // Upload to minimap nodes
+          const minimapNode = await MinimapNode.create([
+            {
+              _id: new ObjectId(),
+              floor: specElem?.level ? specElem.level : 0,
+              node_number: i,
+              survey_node: new ObjectId(survey[0]._id),
+              tiles_id: scene.id,
+              tiles_name: specElem?.title ? specElem?.title : scene.name,
+              site: new ObjectId(site._id),
+            },
+          ]);
+
+          if (!minimapNode) reject('Minimap Node cannot be uploaded');
+
+          // Upload Minimap conversions with the provided x/y coords from the CSV
+
+          const minimapConversion = await MinimapConversion.create([
+            {
+              _id: new ObjectId(),
+              floor: specElem?.level ? specElem.level : 0,
+              minimap_node: new ObjectId(minimapNode[0]._id),
+              survey_node: new ObjectId(survey[0]._id),
+              x: specElem?.x,
+              x_scale: 1,
+              y: specElem?.y,
+              y_scale: 1,
+              site: new ObjectId(site._id),
+            },
+          ]);
+
+          if (!minimapConversion)
+            reject('Minimap conversion cannot be uploaded.');
+
+          //Link/Info Hotspots if included *TODO in different ticket*
+        });
+
+        // Add Site Settings
+        // NOTE: These values need to be created as part of sceen process.
+        await SiteSettings.create({
+          _id: new ObjectId(),
+          enable: {
+            timeline: false,
+            rotation: true,
+            media: false,
+            faq: false,
+            documentation: false,
+            floors: false,
+            about: false,
+            animations: false,
+          },
+          initial_settings: {
+            date: '2021-11-16T00:00:00.000+10:00',
+            floor: 0,
+            pano_id: '',
+            yaw: 0,
+            pitch: 0,
+            fov: 0,
+            // Half of Pi
+            rotation_offset: 1.5707963267948966,
+          },
+          minimap: {
+            image_url: '',
+            image_large_url: '',
+            x_pixel_offset: 0,
+            y_pixel_offset: 0,
+            x_scale: 1,
+            y_scale: 1,
+            img_width: 0,
+            img_height: 0,
+            xy_flipped: false,
+          },
+          animation: {
+            url: 'NA',
+            title: 'NA',
+          },
+          sidenav: {
+            logo_url: 'https://picsum.photos/20/20',
+            subtitle_url: 'https://picsum.photos/20/20',
+          },
+          display: {
+            title: site.site_name,
+            subtitle: site.site_name,
+          },
+          marzipano_mouse_view_mode: 'drag',
+          num_floors: 0,
+          site: new ObjectId(site._id),
+        });
+
+        resolve('Data Uploaded');
+      });
+
+      if (!uploadData) throw new Error('Data could not be uploaded.');
+
+      //Delete files and folder
+      await fs.unlink(properties[0].path);
+      await fs.unlink(zipFile[0].path);
+      await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
+
+      return true;
+    } catch (e) {
+      ConsoleUtil.error(e.message);
+      return false;
     }
   }
 
@@ -335,30 +522,28 @@ export abstract class SurveyService {
         '-_id',
       );
 
-      const saveSiteMap = getCurrentSiteMap ?
-        await MinimapImages.findOneAndUpdate(
+      const saveSiteMap = getCurrentSiteMap
+        ? await MinimapImages.findOneAndUpdate(
             { site: site._id },
             {
-                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            }
-        ) :
-        await MinimapImages.create(
-            {
-                _id: new ObjectId(),
-                image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-                image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-                floor: floor,
-                site: site._id,
-                x_pixel_offset: 0,
-                y_pixel_offset: 0,
-                x_scale: 1,
-                y_scale: 1,
-                img_width: 1000,
-                img_height: 1000,
-                xy_flipped: false,
-            }
-        );
+              image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+              image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            },
+          )
+        : await MinimapImages.create({
+            _id: new ObjectId(),
+            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            floor: floor,
+            site: site._id,
+            x_pixel_offset: 0,
+            y_pixel_offset: 0,
+            x_scale: 1,
+            y_scale: 1,
+            img_width: 1000,
+            img_height: 1000,
+            xy_flipped: false,
+          });
 
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
