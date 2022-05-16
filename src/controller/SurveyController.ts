@@ -250,7 +250,8 @@ export class SurveyController {
             x_scale: s.x_scale,
             y: s.y,
             y_scale: s.y_scale,
-            site: s.site
+            site: s.site,
+            fov: s.survey_node.initial_parameters.fov
           };
         })
 
