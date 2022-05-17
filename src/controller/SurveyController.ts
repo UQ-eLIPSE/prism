@@ -213,54 +213,6 @@ export class SurveyController {
   }
 
   /**
-   * Return only node data for a given site.
-   * @param req
-   * @param res
-   */
-  public async getSingleSiteNodeData(req: Request, res: Response) {
-    try{
-      const { siteId } = req.params;
-      const allSurveys: IMinimapConversion[] = [];
-      
-      if (!siteId)
-        return CommonUtil.failResponse(res, 'Site ID has not been provided');
-
-      if (!allSurveys.length) {
-        const surveyNode = await SurveyNode.find({
-          site: new ObjectID(siteId),
-        });
-        for (const node of surveyNode) {
-          allSurveys.push(
-            await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
-              .populate('survey_node', '-_id')
-              .populate('minimap_node', '-_id'),
-          );
-        }
-      }
-
-      const results = allSurveys
-        .map((s: IMinimapConversion) => { 
-          return {
-            floor: s.floor,
-            node_number: s.survey_node.node_number,
-            tiles_id: s.survey_node.tiles_id,
-            tiles_name: s.survey_node.tiles_name,
-            survey_node: s.minimap_node.survey_node,
-            x: s.x,
-            x_scale: s.x_scale,
-            y: s.y,
-            y_scale: s.y_scale,
-            site: s.site
-          };
-        });
-
-      return CommonUtil.successResponse(res, '', results);
-    } catch (e) {
-      return CommonUtil.failResponse(res, e.message);
-    }
-  }
-
-  /**
    * Get all surveys name, date, and floor only based on floor or date
    * @param req
    * @param res
