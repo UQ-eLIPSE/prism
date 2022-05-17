@@ -185,7 +185,7 @@ export abstract class SurveyService {
       const uploadData = await new Promise(async (resolve, reject) => {
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
-          const specElem = csvJSON.find((el) => el.fileName === scene.id);
+          const specElem = csvJSON.find((el) => el.fileName === scene.name);
 
           // Upload Survey Nodes from DataJS
           const survey = await SurveyNode.create([
@@ -225,6 +225,7 @@ export abstract class SurveyService {
 
           // Upload Minimap conversions with the provided x/y coords from the CSV
 
+
           const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
@@ -245,58 +246,66 @@ export abstract class SurveyService {
           //Link/Info Hotspots if included *TODO in different ticket*
         });
 
+        // Check site settings exist - if so, don't recreate the document.
+        const checkSiteSettingsExist = await SiteSettings.findOne({site: new ObjectId(site._id)});
+
         // Add Site Settings
         // NOTE: These values need to be created as part of sceen process.
-        await SiteSettings.create({
-          _id: new ObjectId(),
-          enable: {
-            timeline: false,
-            rotation: true,
-            media: false,
-            faq: false,
-            documentation: false,
-            floors: false,
-            about: false,
-            animations: false,
-          },
-          initial_settings: {
-            date: '2021-11-16T00:00:00.000+10:00',
-            floor: 0,
-            pano_id: '',
-            yaw: 0,
-            pitch: 0,
-            fov: 0,
-            // Half of Pi
-            rotation_offset: 1.5707963267948966,
-          },
-          minimap: {
-            image_url: '',
-            image_large_url: '',
-            x_pixel_offset: 0,
-            y_pixel_offset: 0,
-            x_scale: 1,
-            y_scale: 1,
-            img_width: 0,
-            img_height: 0,
-            xy_flipped: false,
-          },
-          animation: {
-            url: 'NA',
-            title: 'NA',
-          },
-          sidenav: {
-            logo_url: 'https://picsum.photos/20/20',
-            subtitle_url: 'https://picsum.photos/20/20',
-          },
-          display: {
-            title: site.site_name,
-            subtitle: site.site_name,
-          },
-          marzipano_mouse_view_mode: 'drag',
-          num_floors: 0,
-          site: new ObjectId(site._id),
-        });
+        if (!checkSiteSettingsExist){
+          console.log("Reaching")
+          await SiteSettings.create({
+            _id: new ObjectId(),
+            enable: {
+              timeline: false,
+              rotation: true,
+              media: false,
+              faq: false,
+              documentation: false,
+              floors: false,
+              about: false,
+              animations: false,
+            },
+            initial_settings: {
+              date: '2021-11-16T00:00:00.000+10:00',
+              floor: 0,
+              pano_id: '',
+              yaw: 0,
+              pitch: 0,
+              fov: 0,
+              // Half of Pi
+              rotation_offset: 1.5707963267948966,
+            },
+            minimap: {
+              image_url: '',
+              image_large_url: '',
+              x_pixel_offset: 0,
+              y_pixel_offset: 0,
+              x_scale: 1,
+              y_scale: 1,
+              img_width: 0,
+              img_height: 0,
+              xy_flipped: false,
+            },
+            animation: {
+              url: 'NA',
+              title: 'NA',
+            },
+            sidenav: {
+              logo_url: 'https://picsum.photos/20/20',
+              subtitle_url: 'https://picsum.photos/20/20',
+            },
+            display: {
+              title: site.site_name,
+              subtitle: site.site_name,
+            },
+            marzipano_mouse_view_mode: 'drag',
+            num_floors: 0,
+            site: new ObjectId(site._id),
+          });
 
+        }
+        
+         
         resolve('Data Uploaded');
       });
 
