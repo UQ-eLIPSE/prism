@@ -18,6 +18,7 @@ import {
 } from '../models/SurveyModel';
 import { ObjectID } from 'bson';
 import { Site } from '../components/Site/SiteModel';
+import { ConsoleUtil } from '../utils/ConsoleUtil';
 
 const exec = require('child_process').exec;
 const StreamZip = require('node-stream-zip');
@@ -124,7 +125,7 @@ export class SurveyController {
               console.error(err);
               return;
             }
-            console.log('tarball is created && muntarcmd has been executed');
+            ConsoleUtil.log('tarball is created && muntarcmd has been executed');
           },
         );
       });
@@ -534,7 +535,7 @@ export class SurveyController {
 
       return CommonUtil.successResponse(res, uploadSiteMap.message);
     } catch (e) {
-      console.error(e);
+      ConsoleUtil.log(e);
       return CommonUtil.failResponse(res, e.message);
     }
   }
@@ -561,7 +562,7 @@ export class SurveyController {
             'Minimap node coordinates have been updated',
         );
     } catch (e) {
-        console.log(e);
+        ConsoleUtil.log(e);
         return CommonUtil.failResponse(res, e.message);
     }
   }
@@ -581,14 +582,14 @@ export class SurveyController {
           if (!findNodeId) throw new Error('Node does not exist in databae');
 
           const updateCoords = await SurveyService.updateNodeRotation(nodeId, rotation);
-          if (!updateCoords) throw new Error('Node fov cannot be updated');
+          if (!updateCoords) throw new Error('Node rotation cannot be updated');
 
           return CommonUtil.successResponse(
               res,
-              'Minimap node fov has been updated',
+              'Minimap node rotation has been updated',
           )
       } catch (e) {
-          console.log(e);
+          ConsoleUtil.log(e);
           return CommonUtil.failResponse(res, e.message);
       }
   }
