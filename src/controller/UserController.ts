@@ -5,7 +5,6 @@ import { IUser, InvitedUser, User, IUserList } from '../models/UserModel';
 import { CommonUtil, IResponse } from '../utils/CommonUtil';
 import { MailService } from '../service/MailService';
 import * as Mail from 'nodemailer/lib/mailer';
-import { MailOptions } from 'nodemailer/lib/smtp-pool';
 import { UserService } from '../service/UserService';
 import { AuthUtil } from '../utils/AuthUtil';
 
@@ -24,7 +23,7 @@ export class UserController {
     });
     const isInternalUser = CommonUtil.isInternalUser(email);
 
-    if (!invitedUser && isInternalUser) {
+    if (isInternalUser) {
       const { firstName, lastName, username, password, role } = res.locals.user;
 
       //if user is not invited but they are logged in using their uq sso.
@@ -44,13 +43,13 @@ export class UserController {
       await AuthUtil.generateToken(res, newUser.username, newUser._id);
       return CommonUtil.successResponse(res, `${role} user is created`);
     } else {
-      if (!invitedUser && !isInternalUser)
+      if ( !isInternalUser)
         return CommonUtil.failResponse(res, 'User is not authorized');
 
       const { firstName, lastName, email, role } = <IUser>invitedUser;
       const { user } = res.locals.user;
       // if user is in the invited user table and they login using uq sso.
-      if (invitedUser && isInternalUser) {
+      if ( isInternalUser) {
         const newUser: IUser = await new User({
           firstName,
           lastName,
@@ -219,109 +218,6 @@ export class UserController {
       `${(<IUserList>results).users.length} users is found`,
       <IUserList>results,
     );
-  }
-
-  /**
-   * Invite user req.body should have firstName, lastName, email, role
-   * @param req
-   * @param res
-   */
-  public async inviteUser(req: Request, res: Response) {
-    const { firstName, lastName, email, role } = req.body;
-
-    const invitedUser: IUser | null = await InvitedUser.findOne({ email });
-    const transporter: Mail = req.app.get('transporter');
-
-    const isInternalUser = email.includes('uq.edu.au');
-    const { JWT_Hash } = process.env;
-
-    const secureToken = !isInternalUser
-      ? jwt.sign({ firstName, lastName, email, role }, <string>JWT_Hash, {
-        algorithm: 'HS256',
-      })
-      : '';
-    const loginUrl = isInternalUser
-      ? 'http://localhost:8000/login'
-      : `http://localhost:8000/login/${secureToken}`;
-
-    const mailOption: MailOptions = {
-      from: 'admin@uwmt-001.zones.eait.uq.edu.au',
-      subject: 'You are invited to Urban Water',
-      html: `You have been invited to Urban Water please login: ${loginUrl}`,
-    };
-
-    if (!invitedUser) {
-      const newInvitedUser = new InvitedUser({
-        firstName,
-        lastName,
-        email,
-        role,
-      });
-      await newInvitedUser.save();
-
-      mailOption['to'] = newInvitedUser.email;
-
-      await MailService.sendMail(mailOption, <Mail>transporter);
-      return CommonUtil.successResponse(
-        res,
-        `An invite email has been sent to ${email}`,
-        newInvitedUser,
-      );
-    }
-
-    mailOption['to'] = invitedUser.email;
-    await MailService.sendMail(mailOption, <Mail>transporter);
-    return CommonUtil.successResponse(
-      res,
-      `An invite email has been sent to ${email}`,
-      invitedUser,
-    );
-  }
-
-  /**
-   * Update invited user such as their first name, last name, email
-   * @param req (params, body)
-   * @param res
-   */
-  public async updateInvitedUser(req: Request, res: Response) {
-    const { firstName, lastName, email, role, _id } = req.body;
-
-    const isInvitedUserFound = await InvitedUser.findById(_id);
-
-    if (!isInvitedUserFound)
-      return CommonUtil.failResponse(res, 'user is not found');
-    if (firstName && firstName !== '')
-      await InvitedUser.updateOne(
-        { _id: isInvitedUserFound._id },
-        { firstName },
-      );
-    if (lastName && lastName !== '')
-      await InvitedUser.updateOne(
-        { _id: isInvitedUserFound._id },
-        { lastName },
-      );
-    if (email && email !== '')
-      await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { email });
-    if (role && role !== '')
-      await InvitedUser.updateOne({ _id: isInvitedUserFound._id }, { role });
-
-    return CommonUtil.successResponse(
-      res,
-      'user details is successfully updated',
-    );
-  }
-
-  /**
-   * Delete invited user from database
-   * @param req (params, body)
-   * @param res
-   */
-  public async deleteInvitedUser(req: Request, res: Response) {
-    const { email } = req.body;
-
-    await InvitedUser.deleteOne({ email });
-
-    return CommonUtil.successResponse(res, 'user is successfully deleted');
   }
 
   /**

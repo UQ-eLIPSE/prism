@@ -76,26 +76,6 @@ export class Routes {
       AuthUtil.verifyCookie,
       this.userController.getCurrentUserDetails,
     );
-    router.post(
-      '/user/:username/invite',
-      AuthUtil.verifyCookie,
-      this.userController.inviteUser,
-    );
-    router.get(
-      '/user/:username/invite/users',
-      AuthUtil.verifyCookie,
-      this.userController.getInvitedUser,
-    );
-    router.put(
-      '/user/:username/invite/update',
-      AuthUtil.verifyCookie,
-      this.userController.updateInvitedUser,
-    );
-    router.delete(
-      '/user/:username/invite/delete',
-      AuthUtil.verifyCookie,
-      this.userController.deleteInvitedUser,
-    );
 
     router.get(
       '/users/:username/:page',
