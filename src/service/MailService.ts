@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { MailOptions } from 'nodemailer/lib/smtp-pool';
 import * as Mail from 'nodemailer/lib/mailer';
 import * as nodemailer from 'nodemailer';

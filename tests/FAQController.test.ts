@@ -30,8 +30,6 @@ async function removeAllCollections() {
       // Safe to ignore.
       if (error.message.includes('a background operation is currently running'))
         return;
-
-      console.log(error.message);
     }
   }
 }

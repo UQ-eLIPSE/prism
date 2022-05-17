@@ -61,6 +61,7 @@ export abstract class SurveyService {
       const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
       zip.on('error', (err: any) => {
+        // eslint-disable-next-line no-console
         console.error(err);
       });
 
@@ -319,7 +320,7 @@ export abstract class SurveyService {
     }
   }
 
-  static async readFileData(userDetails: any, entries: any, zip: any) {
+  static readFileData(userDetails: any, entries: any, zip: any) {
     const dataJs = entries.filter((entry: any) =>
       entry.name.endsWith('/data.js'),
     );
@@ -397,7 +398,7 @@ export abstract class SurveyService {
     });
   }
 
-  static async readSurveyJson(entries: any, zip: any) {
+  static readSurveyJson(entries: any, zip: any) {
     const surveyJson = entries.filter((entry: any) =>
       entry.name.endsWith('survey.json'),
     );
@@ -405,7 +406,7 @@ export abstract class SurveyService {
 
     return new Promise((resolve, reject) => {
       zip.stream((<any>surveyJson)[0].name, (err: any, stream: any) => {
-        stream.on('data', async (chunk: any) => {
+        stream.on('data', (chunk: any) => {
           minimapData = chunk.toString('utf8');
           if (minimapData) {
             minimapData = JSON.parse(minimapData);
@@ -449,8 +450,9 @@ export abstract class SurveyService {
 
   public static extractZip(destPath: string, entries: any, zip: any) {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
+    return new Promise( (resolve) => {
       zip.extract(null, destPath, (err: any) => {
+        // eslint-disable-next-line no-console
         console.log(err ? 'Extract error' : `Extracted entries`);
         zip.close();
         resolve('');
@@ -559,6 +561,7 @@ export abstract class SurveyService {
         message: 'Site Map has been saved',
       };
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       return { success: false, message: e.message };
     }

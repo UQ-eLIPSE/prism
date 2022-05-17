@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const LOG_COLOUR = '\x1b[33m';
 const SUCCESS_COLOUR = '\x1b[32m';
 const ERROR_COLOUR = '\x1b[31m';

@@ -15,6 +15,8 @@
             }
         ],
         "spaced-comment": ["warn", "always", { "exceptions": ["-", "+"] }],
+        "no-console": "warn",
+        "require-await": "warn",
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-non-null-assertion": "warn",

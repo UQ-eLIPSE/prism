@@ -97,7 +97,7 @@ export class UserController {
    * @param req
    * @param res
    */
-  public async decodeToken(req: Request, res: Response) {
+  public decodeToken(req: Request, res: Response) {
     return CommonUtil.successResponse(res, 'token is valid', res.locals.user);
   }
 
@@ -106,7 +106,7 @@ export class UserController {
   * @param req
   * @param res (logged in user details)
   */
-  public async getLoggedInUser(req: Request, res: Response) {
+  public getLoggedInUser(req: Request, res: Response) {
     const user = req.header('x-kvd-payload');
     res.send(user);
   }
@@ -326,7 +326,7 @@ export class UserController {
    * @param req
    * @param res
    */
-  public async logout(req: Request, res: Response) {
+  public logout(req: Request, res: Response) {
     const { user } = res.locals;
 
     if (!user) {

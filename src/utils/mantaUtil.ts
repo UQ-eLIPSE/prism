@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
  * @returns Boolean response whether the sync was successful or not
  */
 /** */
-export const uploadZipManta = async (extractedFolder: string, tag: string) => {
+export const uploadZipManta =  (extractedFolder: string, tag: string) => {
   /**
    * All env variables needed for Manta access.
    */

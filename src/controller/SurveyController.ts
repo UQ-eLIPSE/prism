@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { CommonUtil } from '../utils/CommonUtil';
@@ -85,7 +86,7 @@ export class SurveyController {
    * @param req
    * @param res
    */
-  public async uploadSurvey(req: Request, res: Response) {
+  public uploadSurvey(req: Request, res: Response) {
     let result: IMantaOutput[] = [];
 
     const { file } = req;
@@ -113,7 +114,7 @@ export class SurveyController {
       storeEntries: true,
     });
 
-    zip.on('ready', async () => {
+    zip.on('ready', () => {
       const entries = Object.values(zip.entries());
       const extractedFolder = file.originalname.split('.')[0];
       SurveyService.extractZip(`${destPath}`, entries, zip).then(() => {

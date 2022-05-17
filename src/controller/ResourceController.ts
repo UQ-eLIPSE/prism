@@ -307,7 +307,6 @@ export class ResourceController {
       if (!docObject) throw new Error('docObject not found.');
       return CommonUtil.successResponse(res, '', docObject || []);
     } catch (e) {
-      console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
@@ -331,7 +330,6 @@ export class ResourceController {
 
       return CommonUtil.successResponse(res, '', dirObject || []);
     } catch (e) {
-      console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
@@ -355,7 +353,6 @@ export class ResourceController {
 
       return CommonUtil.successResponse(res, '', dirObject || []);
     } catch (e) {
-      console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
     }
   }
@@ -375,7 +372,6 @@ export class ResourceController {
 
       return CommonUtil.successResponse(res, '', aboutInfo || []);
     } catch (e) {
-      console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
     }
   }

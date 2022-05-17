@@ -39,7 +39,7 @@ export class MantaService implements multer.StorageEngine {
     }
   }
 
-  private async mkdirInManta(MANTA_ROOT_FOLDER: string, PROJECT_NAME: string) {
+  private mkdirInManta(MANTA_ROOT_FOLDER: string, PROJECT_NAME: string) {
     return new Promise((resolve, reject) => {
       (<any>this.manta).mkdirp(
         `~~/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}`,
@@ -51,7 +51,7 @@ export class MantaService implements multer.StorageEngine {
     });
   }
 
-  private async uploadFileToManta(
+  private uploadFileToManta(
     destPath: string,
     fileStream: stream.Readable,
   ) {
@@ -67,6 +67,7 @@ export class MantaService implements multer.StorageEngine {
         },
 
         (err: any, res: any) => {
+          // eslint-disable-next-line no-console
           console.log(err, res);
           if (err) return reject(err);
           return resolve(res);

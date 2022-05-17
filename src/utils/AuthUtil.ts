@@ -11,7 +11,7 @@ export abstract class AuthUtil {
     return (req.cookies || {})['EAIT_WEB'];
   }
 
-  static async generateToken(res: Response, username: string, id: string) {
+  static generateToken(res: Response, username: string, id: string) {
     const { JWT_Hash, ENVIRONMENT } = process.env;
     const expiration = 2592000;
     const token = jwt.sign({ id, username }, <string>JWT_Hash, {
@@ -25,6 +25,7 @@ export abstract class AuthUtil {
     });
   }
 
+  // eslint-disable-next-line require-await
   static async authenticateUser(
     req: Request,
     res: Response,

@@ -76,6 +76,7 @@ export class App {
       //   await this.setupMailer();
       //   await this.setUpManta();
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Database connection error: ', e);
     }
 
