@@ -64,7 +64,7 @@ export class ResourceController {
     return CommonUtil.successResponse(res, '', newResource);
   }
 
-  /***
+  /** *
    * Update Resource
    * @param req
    * @param res

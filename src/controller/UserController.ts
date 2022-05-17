@@ -28,7 +28,7 @@ export class UserController {
     if (isInternalUser) {
       const { firstName, lastName, username, password, role } = res.locals.user;
 
-      //if user is not invited but they are logged in using their uq sso.
+      // if user is not invited but they are logged in using their uq sso.
       const newUser: IUser | null = await new User({
         firstName,
         lastName,

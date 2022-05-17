@@ -119,7 +119,7 @@ export class Routes {
      * Client side APIs
      */
 
-    //Surveys
+    // Surveys
     router.get(
       '/site/:siteId/survey/details/',
       this.surveyController.getIndividualSurveysDetails,
@@ -139,13 +139,13 @@ export class Routes {
       this.surveyController.uploadScenes,
     );
 
-    //resources
+    // resources
     router.get(
       '/site/:siteId/resources/:page',
       this.resourceController.getAllResources,
     );
 
-    //documentation
+    // documentation
     router.get(
       '/site/:siteId/documentation',
       this.resourceController.getAllDocumentation,
@@ -155,7 +155,7 @@ export class Routes {
       this.resourceController.getIndividualDocumentation,
     );
 
-    //directores
+    // directores
     router.get(
       '/directories/details',
       this.resourceController.getIndividualDirectory,
@@ -165,16 +165,16 @@ export class Routes {
       this.resourceController.getRootDirectory,
     );
 
-    //about
+    // about
     router.get('/site/:siteId/about', this.resourceController.getAboutInfo);
 
-    //hotspot
+    // hotspot
     router.get(
       '/site/:siteId/hotspot/details',
       this.surveyController.getIndividualHotspotDescription,
     );
 
-    //minimap
+    // minimap
     router.get(
       '/site/:siteId/minimap/details',
       this.surveyController.getMinimapImage,
@@ -186,15 +186,21 @@ export class Routes {
       this.surveyController.createSiteMap,
     );
 
-    //settings
+    /**
+     * Routes for editing the coordinates and fov of minimap nodes
+     */
+    router.patch('/node/coords/:nodeId', this.surveyController.updateNodeCoordinates);
+    router.patch('/node/rotation/:nodeId', this.surveyController.updateNodeRotation);
+
+    // settings
     router.get('/site/:siteId/settings', this.siteController.getSettings);
 
-    //sites
+    // sites
     router.get('/sites', this.siteController.getSites);
     router.post('/sites', this.siteController.createSite);
     router.get('/site-map', this.siteController.getSiteMap);
 
-    //Map pins
+    // Map pins
 
     router.post('/map-pins', this.mapPinsController.createPin);
     router.get('/map-pins', this.mapPinsController.getAllPins);

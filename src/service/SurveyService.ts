@@ -247,7 +247,7 @@ export abstract class SurveyService {
           if (!minimapConversion)
             reject('Minimap conversion cannot be uploaded.');
 
-          //Link/Info Hotspots if included *TODO in different ticket*
+          // Link/Info Hotspots if included *TODO in different ticket*
         });
 
         // Add Site Settings
@@ -307,7 +307,7 @@ export abstract class SurveyService {
 
       if (!uploadData) throw new Error('Data could not be uploaded.');
 
-      //Delete files and folder
+      // Delete files and folder
       await fs.unlink(properties[0].path);
       await fs.unlink(zipFile[0].path);
       await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
@@ -456,6 +456,36 @@ export abstract class SurveyService {
         resolve('');
       });
     });
+  }
+
+  public static async updateNodeCoordinates(
+    nodeId: string,
+    x: number,
+    y: number
+  ) {
+    const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
+      { survey_node: new ObjectId(nodeId) },
+      {
+        x: x,
+        y: y,
+      },
+    );
+
+    return (updateNodeCoords ? true : false);
+  }
+
+  public static async updateNodeRotation(
+    nodeId: string,
+    rotation: number
+  ) {
+    const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
+      { survey_node: new ObjectId(nodeId) },
+      {
+        rotation: rotation,
+      },
+    );
+
+    return (updateNodeRotation ? true : false);
   }
 
   /**

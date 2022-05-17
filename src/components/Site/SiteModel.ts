@@ -4,7 +4,7 @@ import { Schema, Document, Model, model } from 'mongoose';
 export interface ISiteSettings extends Document {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _id: any;
-  //specifies which features are enabled
+  // specifies which features are enabled
   enable: {
     timeline: boolean;
     rotation: boolean;
@@ -16,7 +16,7 @@ export interface ISiteSettings extends Document {
     animations: boolean;
   };
 
-  //settings related to minimap functionality
+  // settings related to minimap functionality
   minimap: {
     image_url: string;
     image_large_url: string;
@@ -43,7 +43,7 @@ export interface ISiteSettings extends Document {
   };
 
   animation: {
-    url: string; //url to animation video, not sure exactly how this fits in
+    url: string; // url to animation video, not sure exactly how this fits in
     title: string;
   };
   sidenav: {
@@ -51,17 +51,17 @@ export interface ISiteSettings extends Document {
     subtitle_url: string;
   };
 
-  //settings related to general display options
+  // settings related to general display options
   display: {
     title: string;
     subtitle: string;
     background_image: string;
     uq_logo: string;
   };
-  //view mode for the marzipano tool
+  // view mode for the marzipano tool
   marzipano_mouse_view_mode: string;
 
-  //number of floors, used for multi-story buildings generally 0
+  // number of floors, used for multi-story buildings generally 0
   num_floors: number;
 
   site: number;
