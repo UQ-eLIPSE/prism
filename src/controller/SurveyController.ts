@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { CommonUtil } from '../utils/CommonUtil';
 import { MantaService } from '../service/MantaService';

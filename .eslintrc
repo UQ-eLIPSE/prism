@@ -9,8 +9,8 @@
     "rules": {
         "semi": [2, "always"],
         "indent": ["error", 2],
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-non-null-assertion": "warn",
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-var-requires": 0,

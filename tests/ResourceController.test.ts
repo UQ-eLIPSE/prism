@@ -62,7 +62,7 @@ test('should return false upload dummy file which are not .zip', async (done) =>
   const resp = httpMocks.createResponse();
   resp.locals = { user: { username: 'Tester' } };
 
-  const err: any = null;
+  const err = null;
 
   await resourceController.createNewResource(request, resp, err);
 

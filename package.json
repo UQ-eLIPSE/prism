@@ -5,11 +5,11 @@
   "main": "dist/main.js",
   "scripts": {
     "clean": "rimraf dist",
+    "lint": "eslint . --ext .ts",
     "test": "jest --detectOpenHandles",
     "start": "node ./dist/main.js",
     "watch": "nodemon src/main.ts",
-    "build": "npm run clean && tsc",
-    "lint": "eslint . --ext .ts"
+    "build": "yarn run clean && tsc"
   },
   "author": "eLIPSE",
   "license": "ISC",

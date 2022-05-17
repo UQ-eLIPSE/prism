@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as stream from 'stream';
 import * as multer from 'multer';
 import * as manta from 'manta';

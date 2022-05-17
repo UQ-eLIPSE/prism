@@ -2,6 +2,7 @@ import { ObjectID } from 'bson';
 import { Schema, Document, Model, model } from 'mongoose';
 
 export interface ISiteSettings extends Document {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _id: any;
   //specifies which features are enabled
   enable: {
@@ -63,16 +64,18 @@ export interface ISiteSettings extends Document {
   //number of floors, used for multi-story buildings generally 0
   num_floors: number;
 
-  site: any;
+  site: number;
 }
 
 export interface ISite extends Document {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _id: any;
   site_name: string;
   tag: string;
 }
 
 export interface ISiteMap extends Document {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _id: any;
   image: string;
 }

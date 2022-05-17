@@ -34,7 +34,7 @@ export class ResourceController {
    * @param req
    * @param res
    */
-  public async createNewResource(req: Request, res: Response, err: any) {
+  public async createNewResource(req: Request, res: Response, err: { code: string; }) {
     const { file } = req;
     const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } =
       process.env;
@@ -102,6 +102,7 @@ export class ResourceController {
   public async getAllResources(req: Request, res: Response) {
     const maxResult = 10;
     const pageNo = parseInt(req.params.page) || 1;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const size = parseInt(req.query.size as any) || maxResult;
     const { siteId } = req.params;
     if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
@@ -298,7 +299,7 @@ export class ResourceController {
    * @param res
    */
   public async getIndividualDocumentation(req: Request, res: Response) {
-    const { _id } = req.query as any;
+    const { _id } = req.query;
     let docObject: IFiles | null = null;
 
     try {
@@ -317,7 +318,7 @@ export class ResourceController {
    * @param res
    */
   public async getIndividualDirectory(req: Request, res: Response) {
-    const { _id, name } = req.query as any;
+    const { _id, name } = req.query;
     let dirObject: IDirectories | null = null;
 
     try {

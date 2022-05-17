@@ -73,6 +73,7 @@ export abstract class AuthUtil {
       await jwt.verify(
         loginToken,
         <string>JWT_Hash,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (err: any, decoded: any) => {
           if (err) return CommonUtil.failResponse(res, err);
           const username = decoded.username;
@@ -107,6 +108,7 @@ export abstract class AuthUtil {
 
     if (!tokenType) {
       const invitedUserInDb = await InvitedUser.findOne({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         email: (<any>userDetails).email,
       });
       if (!invitedUserInDb)
@@ -115,11 +117,13 @@ export abstract class AuthUtil {
       next();
     } else {
       const userInDb: IUser | null = await User.findOne({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         email: (<any>userDetails).email,
       });
 
       if (!userInDb) return CommonUtil.failResponse(res, 'token is invalid');
       const todayDate = new Date().getTime() / 1000;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (todayDate > (<any>userDetails).exp)
         return CommonUtil.failResponse(res, 'token is expired');
       res.locals.user = userDetails;

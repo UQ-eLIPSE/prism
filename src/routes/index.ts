@@ -18,11 +18,14 @@ export class Routes {
   public siteController: SiteController = new SiteController();
   public mapPinsController: MapPinsController = new MapPinsController();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public routes(app: any, router: any): void {
     app.use('/api', router);
 
     const storage = multer.diskStorage({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filename: (req: Request, file: any, cb: any) => {
         if (
           [

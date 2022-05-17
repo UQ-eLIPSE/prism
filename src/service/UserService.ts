@@ -10,6 +10,7 @@ export abstract class UserService {
     fieldToSearch: object,
     res: Response,
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mongoQuery: any = {};
 
     mongoQuery.limit = size;

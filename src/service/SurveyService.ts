@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express-serve-static-core';
 import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
