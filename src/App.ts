@@ -73,8 +73,8 @@ export class App {
   public async run() {
     try {
       await this.setUpDatabase();
-      // await this.setupMailer();
-      // await this.setUpManta();
+    //   await this.setupMailer();
+    //   await this.setUpManta();
     } catch (e) {
       console.error('Database connection error: ', e);
     }

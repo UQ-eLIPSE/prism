@@ -64,10 +64,13 @@ class MapPinsController {
    */
   public async createPin(req: Request, res: Response) {
     try {
+      const siteName: string = req.body.site_name;
       const site = new Site({
         _id: new ObjectId(),
-        site_name: req.body.site_name,
+        site_name: siteName,
+        tag: siteName.replace(/\s/g, '_').toLowerCase(),
       });
+
       if (!site) return CommonUtil.failResponse(res, 'Site name is incorrect');
 
       const body: IMapPins = new MapPins({ _id: new ObjectId(), ...req.body });
@@ -146,6 +149,31 @@ class MapPinsController {
         'Map Pin has been deleted',
       );
     } catch (e) {
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
+   * uploadPreview - Uploads preview image to Manta
+   * @param req
+   * @param res
+   * @returns Success Response if the upload has been successful
+   */
+  public async uploadPreview(req: Request, res: Response) {
+    const { file } = req;
+    if (file === undefined) throw new Error('File is undefined');
+
+    try {
+      const uploadPreview = await mapPinsService.uploadPreview(file);
+      if (!uploadPreview.success) throw new Error(uploadPreview.message);
+
+      return CommonUtil.successResponse(
+        res,
+        uploadPreview.message,
+        uploadPreview.data,
+      );
+    } catch (e) {
+      console.error(e);
       return CommonUtil.failResponse(res, e.message);
     }
   }

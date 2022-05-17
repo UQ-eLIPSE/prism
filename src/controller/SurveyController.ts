@@ -40,6 +40,45 @@ export class SurveyController {
   }
 
   /**
+   * uploadScenes
+   * Uploads scenes with the provided zip and csv files on to Manta and DB
+   * @param req
+   * @param res
+   * @returns
+   */
+  public async uploadScenes(req: Request, res: Response) {
+    try {
+      const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+      };
+
+      const { siteId } = req.params;
+      if (!files) throw new Error('File is undefined');
+
+      if (!siteId) throw new Error('Site Id is not provided');
+
+      //Get site
+      const site = await Site.findById({ _id: new ObjectID(siteId) });
+      if (!site) throw new Error('Invalid Site Id');
+
+      const validate = await SurveyService.unzipValidateFile(
+        files as {
+          [fieldname: string]: Express.Multer.File[];
+        },
+        site,
+      );
+
+      if (!validate) throw new Error('Validation failed');
+
+      await SurveyService.uploadToDB(files, site);
+
+      return CommonUtil.successResponse(res, 'Successfully uploaded');
+    } catch (e) {
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
    * Upload survey and validate the files inside .zip
    * @param req
    * @param res
@@ -404,7 +443,7 @@ export class SurveyController {
       return CommonUtil.successResponse(
         res,
         '',
-        minimapImageObject.minimap || [],
+        minimapImageObject.image_url || [],
       );
     } catch (e) {
       console.error(e);
@@ -425,7 +464,7 @@ export class SurveyController {
     const { floor } = req.query;
 
     try {
-      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
+      const extNames = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp'];
 
       if (!extNames.includes(path.extname(file?.path as string)))
         throw new Error('File is undefined');

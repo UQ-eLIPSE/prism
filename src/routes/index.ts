@@ -10,6 +10,7 @@ import MapPinsController from '../components/MapPins/MapPinsController';
 import multer = require('multer');
 import { Request } from 'express';
 import path = require('path');
+import { cliVersionCheckPrintAndExit } from 'manta';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -26,7 +27,23 @@ export class Routes {
     const storage = multer.diskStorage({
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
       filename: (req: Request, file: any, cb: any) => {
-        cb(null, file.originalname);
+        if (
+          [
+            'image/jpg',
+            'image/jpeg',
+            'image/png',
+            'image/bmp',
+            'image/gif',
+            'image/webp',
+          ].includes(file.mimetype)
+        )
+          cb(
+            null,
+            `${
+              file.originalname.replaceAll(' ', '_').split('.')[0]
+            }-${Date.now()}.webp`,
+          );
+        else cb(null, file.originalname);
       },
     });
 
@@ -82,14 +99,6 @@ export class Routes {
 
     router.post('/logout', AuthUtil.verifyCookie, this.userController.logout);
 
-    router.post(
-      '/:username/upload/survey',
-      AuthUtil.verifyCookie,
-      this.surveyController.writeLocally.single('surveys'),
-      SurveyService.readZipFile,
-      this.surveyController.uploadSurvey,
-    );
-
     router.get(
       '/:username/surveys/:page',
       AuthUtil.verifyCookie,
@@ -118,6 +127,12 @@ export class Routes {
     router.get(
       '/site/:siteId/survey/details/compact',
       this.surveyController.getSurveyCompactVersion,
+    );
+
+    router.post(
+      '/site/:siteId/addScenes',
+      upload.fields([{ name: 'zipFile' }, { name: 'properties' }]),
+      this.surveyController.uploadScenes,
     );
 
     //resources
@@ -182,6 +197,15 @@ export class Routes {
     router.get('/map-pins/:id', this.mapPinsController.getPin);
     router.patch('/map-pins/:id', this.mapPinsController.updatePin);
     router.delete('/map-pins/:id', this.mapPinsController.deletePin);
+
+    /**
+     * API to upload site pin preview image
+     */
+    router.post(
+      '/map-pins/preview',
+      upload.single('file'),
+      this.mapPinsController.uploadPreview,
+    );
 
     /**
      * Admin section APIs
