@@ -11,8 +11,10 @@ import { AuthUtil } from '../utils/AuthUtil';
 export class UserController {
   /**
    * Create user if user's email is in invited user or user logged in using UQ SSO.
-   * If user is not in the invited user table and they logged in using UQ SSO, they will be automatically assigned guest role
-   * If user is an external user and not in the invited user table, the api will throw user is not authorized
+   * If user is not in the invited user table and they logged in using UQ SSO, 
+   * // they will be automatically assigned guest role
+   * If user is an external user and not in the invited user table, 
+   * // the api will throw user is not authorized
    * @param req
    * @param res
    */
@@ -129,8 +131,10 @@ export class UserController {
   }
 
   /**
-   * Update user's role to guest if the user is using UQ SSO. Delete user from database if user is Non-UQ
-   * @param req (current user's username, the username of another user which need to be updated or deleted)
+   * Update user's role to guest if the user is using UQ SSO. 
+   * Delete user from database if user is Non-UQ
+   * @param req (current user's username, 
+   *   the username of another user which need to be updated or deleted)
    * @param res
    */
   public async updateUserRole(req: Request, res: Response) {

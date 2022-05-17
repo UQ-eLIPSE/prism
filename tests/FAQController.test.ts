@@ -21,7 +21,8 @@ async function removeAllCollections() {
     try {
       await collection.drop();
     } catch (error) {
-      // This error happens when you try to drop a collection that's already dropped. Happens infrequently.
+      // This error happens when you try to drop a collection that's already dropped. 
+      // Happens infrequently.
       // Safe to ignore.
       if (error.message === 'ns not found') return;
 

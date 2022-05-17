@@ -9,6 +9,11 @@
     "rules": {
         "semi": [2, "always"],
         "indent": ["error", 2],
+        "max-len": [2, 100, 2, {
+            "ignoreUrls": true, 
+            "ignoreComments": false 
+            }
+        ],
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-non-null-assertion": "warn",

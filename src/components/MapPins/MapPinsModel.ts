@@ -1,7 +1,8 @@
 import { ObjectID } from 'bson';
 import { Schema, Document, Model, model } from 'mongoose';
 
-// Note: Not sure if site_name is needed with the use of name, however, as it appears elsewhere in the code, will be kept for the time being.
+// Note: Not sure if site_name is needed with the use of name, however, 
+// as it appears elsewhere in the code, will be kept for the time being.
 export interface IMapPins extends Document {
     _id: ObjectID;
     x: number;

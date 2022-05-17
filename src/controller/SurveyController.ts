@@ -116,8 +116,10 @@ export class SurveyController {
       const entries = Object.values(zip.entries());
       const extractedFolder = file.originalname.split('.')[0];
       SurveyService.extractZip(`${destPath}`, entries, zip).then(() => {
+        // eslint-disable-next-line max-len
         const muntarcmd = `muntar -f ${destPath}/${extractedFolder}.tar /${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${extractedFolder} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`;
         exec(
+          // eslint-disable-next-line max-len
           `tar -cvf ${destPath}/${extractedFolder}.tar ${destPath}/${extractedFolder} && ${muntarcmd}`,
           { maxBuffer: 200 * 1024 * 1024 },
           (err: any) => {

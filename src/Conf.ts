@@ -71,7 +71,8 @@ export function loadConfiguration(): Configuration {
     throw Error('Empty environment file. Check the environment file.');
   }
 
-  // Otherwise, load each part of the configuration and see if they can be assigned and not empty strings
+  // Otherwise, load each part of the configuration and 
+  // see if they can be assigned and not empty strings
   const output = Object.assign({}, TEMPLATE);
 
   Object.keys(TEMPLATE).forEach((key) => {

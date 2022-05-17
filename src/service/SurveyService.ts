@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express-serve-static-core';
 import { ISite, SiteSettings } from '../components/Site/SiteModel';
@@ -144,7 +145,8 @@ export abstract class SurveyService {
 
   /**
    * Upload to DB
-   * This function uploads properties from the CSV files containing filename and minimap coordinates (As the minimum)
+   * This function uploads properties from the CSV files containing 
+   * // filename and minimap coordinates (As the minimum)
    * along with combining that data with the provided marzipano data.js for the survey_nodes.
    * @param files - Request Files that contains the CSV and .ZIP
    * @param site - The associated site with the provided Id
