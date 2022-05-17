@@ -452,6 +452,36 @@ export abstract class SurveyService {
     });
   }
 
+  public static async updateNodeCoordinates(
+      nodeId: string,
+      x: Number,
+      y: Number
+    ) {
+        const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
+            { survey_node: new ObjectId(nodeId) },
+            {
+                x: x,
+                y: y,
+            },
+        );
+
+        return (updateNodeCoords ? true : false);
+    }
+
+    public static async updateNodeRotation(
+        nodeId: string,
+        rotation: Number
+    ) {
+        const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
+            { survey_node: new ObjectId(nodeId) },
+            {
+                rotation: rotation,
+            },
+        );
+
+        return (updateNodeRotation ? true : false);
+    }
+
   /**
    * createSiteMap - - Inserts Site Map in to site Settings and upload
    * to Manta.

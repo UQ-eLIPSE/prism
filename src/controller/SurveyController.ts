@@ -18,6 +18,7 @@ import {
 } from '../models/SurveyModel';
 import { ObjectID } from 'bson';
 import { Site } from '../components/Site/SiteModel';
+import { ConsoleUtil } from '../utils/ConsoleUtil';
 
 const exec = require('child_process').exec;
 const StreamZip = require('node-stream-zip');
@@ -124,7 +125,7 @@ export class SurveyController {
               console.error(err);
               return;
             }
-            console.log('tarball is created && muntarcmd has been executed');
+            ConsoleUtil.log('tarball is created && muntarcmd has been executed');
           },
         );
       });
@@ -251,7 +252,7 @@ export class SurveyController {
             y: s.y,
             y_scale: s.y_scale,
             site: s.site,
-            fov: s.survey_node.initial_parameters.fov
+            rotation: s.rotation,
           };
         })
 
@@ -534,8 +535,62 @@ export class SurveyController {
 
       return CommonUtil.successResponse(res, uploadSiteMap.message);
     } catch (e) {
-      console.error(e);
+      ConsoleUtil.log(e);
       return CommonUtil.failResponse(res, e.message);
     }
+  }
+
+  /**
+   * Updates the x and y coordinates of the selected node.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  public async updateNodeCoordinates(req: Request, res: Response) {
+    try {
+        const { nodeId } = req.params;
+        const { x, y } = req.body;
+
+        const findNodeId = await MinimapConversion.find({survey_node: new ObjectID(nodeId)})
+        if (!findNodeId) throw new Error('Node does not exist in database');
+
+        const updateCoords = await SurveyService.updateNodeCoordinates(nodeId, x, y);
+        if (!updateCoords) throw new Error('Node coordinates cannot be updated');
+
+        return CommonUtil.successResponse(
+            res,
+            'Minimap node coordinates have been updated',
+        );
+    } catch (e) {
+        ConsoleUtil.log(e);
+        return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
+   * Updates the field of view of the selected node.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  public async updateNodeRotation(req: Request, res: Response) {
+      try {
+          const { nodeId } = req.params;
+          const { rotation } = req.body;
+
+          const findNodeId = await MinimapConversion.find({survey_node: new Object(nodeId)});
+          if (!findNodeId) throw new Error('Node does not exist in databae');
+
+          const updateCoords = await SurveyService.updateNodeRotation(nodeId, rotation);
+          if (!updateCoords) throw new Error('Node rotation cannot be updated');
+
+          return CommonUtil.successResponse(
+              res,
+              'Minimap node rotation has been updated',
+          )
+      } catch (e) {
+          ConsoleUtil.log(e);
+          return CommonUtil.failResponse(res, e.message);
+      }
   }
 }

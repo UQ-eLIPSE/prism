@@ -10,6 +10,7 @@ export interface IMinimapConversion extends Document {
   survey_node: ISurveyNode;
   minimap_node: IMinimapNode;
   site: any;
+  rotation: number;
 }
 
 export interface IMinimapNode extends Document {
@@ -136,6 +137,7 @@ const MinimapConversionSchema: Schema = new Schema({
   survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
   minimap_node: { type: Schema.Types.Mixed, ref: 'minimap_nodes' },
   site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  rotation: { type: Number },
 });
 
 const HotspotDescriptionSchema: Schema = new Schema({
