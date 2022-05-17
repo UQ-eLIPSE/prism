@@ -75,6 +75,7 @@ class SiteService {
   ): Promise<{
     success: boolean;
     message: string;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     data: {};
   }> {
     try {
@@ -95,7 +96,7 @@ class SiteService {
         success: true,
         message: 'Preview image has been uploaded',
         data: {
-            url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+          url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
         }
       };
     } catch (e) {

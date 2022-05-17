@@ -88,6 +88,7 @@ declare module 'manta' {
       sign: any;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-types
     type JobConfiguration = string | string[] | Object;
 
     class MantaClient {

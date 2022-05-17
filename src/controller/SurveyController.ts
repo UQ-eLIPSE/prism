@@ -189,7 +189,7 @@ export class SurveyController {
           date: date,
           site: new ObjectID(siteId),
         });
-        for (let node of surveyNode) {
+        for (const node of surveyNode) {
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
               .populate('survey_node', '-_id')
@@ -223,7 +223,7 @@ export class SurveyController {
 
     let surveysWithFloor: IMinimapNode[] | null = null;
     let surveyWithDate: ISurveyNode[] | null = null;
-    let results: any[] = [];
+    const results: any[] = [];
     const map = new Map();
 
     if (!siteId)
@@ -263,7 +263,7 @@ export class SurveyController {
             'Survey with the date is not found',
           );
 
-        for (let survey of surveyWithDate) {
+        for (const survey of surveyWithDate) {
           surveysWithFloor = await MinimapNode.find(
             { survey_node: survey._id },
             '-_id',
@@ -357,7 +357,7 @@ export class SurveyController {
 
     const surveyNodes = surveyToBeDeleted.survey_nodes;
 
-    for (let surveyNode of surveyNodes) {
+    for (const surveyNode of surveyNodes) {
       await SurveyNode.findByIdAndRemove(id);
       const relatedMiniMapConversions = await MinimapConversion.findOne({
         survey_node: surveyNode,

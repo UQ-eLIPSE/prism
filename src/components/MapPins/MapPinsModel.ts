@@ -1,4 +1,4 @@
-import { ObjectId, ObjectID } from 'bson';
+import { ObjectID } from 'bson';
 import { Schema, Document, Model, model } from 'mongoose';
 
 // Note: Not sure if site_name is needed with the use of name, however, as it appears elsewhere in the code, will be kept for the time being.
@@ -16,16 +16,16 @@ export interface IMapPins extends Document {
 }
 
 const MapPinsSchema: Schema = new Schema({
-    _id: { type: ObjectID, auto: true },
-    x: { type: Number, required: true },
-    y:  { type: Number, required: true },
-    icon: { type: String },
-    cover_image: { type: String },
-    site: { type: ObjectID },
-    name: { type: String, required: true },
-    enabled: { type: Boolean, required: true },
-    site_name: {type: String, required: false },
-    external_url: { type: String, required: false }
+  _id: { type: ObjectID, auto: true },
+  x: { type: Number, required: true },
+  y:  { type: Number, required: true },
+  icon: { type: String },
+  cover_image: { type: String },
+  site: { type: ObjectID },
+  name: { type: String, required: true },
+  enabled: { type: Boolean, required: true },
+  site_name: {type: String, required: false },
+  external_url: { type: String, required: false }
 });
 
 export const MapPins: Model<IMapPins> = model<IMapPins>(

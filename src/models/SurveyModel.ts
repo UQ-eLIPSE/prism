@@ -1,5 +1,5 @@
-import { Schema, Document, Model, model, Types } from 'mongoose';
-var uuidv4 = require('uuidv4');
+import { Schema, Document, Model, model } from 'mongoose';
+const uuidv4 = require('uuidv4');
 
 export interface IMinimapConversion extends Document {
   floor: number;
@@ -146,17 +146,17 @@ const HotspotDescriptionSchema: Schema = new Schema({
 });
 
 const MinimapImagesSchema: Schema = new Schema({
-    image_url: { type: String },
-    floor: { type: Number },
-    site: { type: Schema.Types.ObjectId, ref: 'sites' },
-    image_large_url: { type: String },
-    x_pixel_offset: { type: Number },
-    y_pixel_offset: { type: Number },
-    x_scale: { type: Number },
-    y_scale: { type: Number },
-    img_width: { type: Number },
-    img_height: { type: Number },
-    xy_flipped: { type: Boolean },
+  image_url: { type: String },
+  floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  image_large_url: { type: String },
+  x_pixel_offset: { type: Number },
+  y_pixel_offset: { type: Number },
+  x_scale: { type: Number },
+  y_scale: { type: Number },
+  img_width: { type: Number },
+  img_height: { type: Number },
+  xy_flipped: { type: Boolean },
 });
 
 export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);

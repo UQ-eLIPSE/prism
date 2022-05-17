@@ -76,7 +76,7 @@ export class App {
     let transporter: Mail;
 
     if (!this.configuration.USE_SSO) {
-      let account = await nodemailer.createTestAccount();
+      const account = await nodemailer.createTestAccount();
       transporter = nodemailer.createTransport({
         host: 'smtp.ethereal.email',
         port: 587,
@@ -104,8 +104,8 @@ export class App {
   public async run() {
     try {
       await this.setUpDatabase();
-    //   await this.setupMailer();
-    //   await this.setUpManta();
+      //   await this.setupMailer();
+      //   await this.setUpManta();
     } catch (e) {
       console.error('Database connection error: ', e);
     }

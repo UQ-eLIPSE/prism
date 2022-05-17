@@ -66,7 +66,7 @@ test('Should save user to database', async (done) => {
     },
   ];
 
-  for (let user of users) {
+  for (const user of users) {
     const newUser = await new User(user);
     await newUser.save();
   }
