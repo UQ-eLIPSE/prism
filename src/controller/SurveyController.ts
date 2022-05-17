@@ -577,8 +577,6 @@ export class SurveyController {
           const { nodeId } = req.params;
           const { rotation } = req.body;
 
-          console.log(rotation);
-
           const findNodeId = await MinimapConversion.find({survey_node: new Object(nodeId)});
           if (!findNodeId) throw new Error('Node does not exist in databae');
 
