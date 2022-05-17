@@ -145,6 +145,10 @@ export class Routes {
       this.surveyController.getIndividualSurveysDetails,
     );
     router.get(
+      '/site/:siteId/survey/minimapSingleSite/',
+      this.surveyController.getSingleSiteNodeData,
+    );
+    router.get(
       '/site/:siteId/survey/details/compact',
       this.surveyController.getSurveyCompactVersion,
     );
