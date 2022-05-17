@@ -68,7 +68,7 @@ class MapPinsController {
       const site = new Site({
         _id: new ObjectId(),
         site_name: siteName,
-        tag: siteName.replace(' ', '_').toLowerCase(),
+        tag: siteName.replace(/\s/g, '_').toLowerCase(),
       });
 
       if (!site) return CommonUtil.failResponse(res, 'Site name is incorrect');
