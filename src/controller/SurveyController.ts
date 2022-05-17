@@ -251,7 +251,7 @@ export class SurveyController {
             y: s.y,
             y_scale: s.y_scale,
             site: s.site,
-            fov: s.survey_node.initial_parameters.fov
+            rotation: s.rotation,
           };
         })
 
@@ -572,15 +572,17 @@ export class SurveyController {
    * @param res 
    * @returns 
    */
-  public async updateNodeFov(req: Request, res: Response) {
+  public async updateNodeRotation(req: Request, res: Response) {
       try {
           const { nodeId } = req.params;
-          const { fov } = req.body;
+          const { rotation } = req.body;
 
-          const findNodeId = await SurveyNode.find({site: new Object(nodeId)});
+          console.log(rotation);
+
+          const findNodeId = await MinimapConversion.find({survey_node: new Object(nodeId)});
           if (!findNodeId) throw new Error('Node does not exist in databae');
 
-          const updateCoords = await SurveyService.updateNodeFov(nodeId, fov);
+          const updateCoords = await SurveyService.updateNodeRotation(nodeId, rotation);
           if (!updateCoords) throw new Error('Node fov cannot be updated');
 
           return CommonUtil.successResponse(

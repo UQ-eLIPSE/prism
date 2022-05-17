@@ -468,27 +468,18 @@ export abstract class SurveyService {
         return (updateNodeCoords ? true : false);
     }
 
-    public static async updateNodeFov(
+    public static async updateNodeRotation(
         nodeId: string,
-        fov: Number
+        rotation: Number
     ) {
-        const existingNode = await SurveyNode.findOne({ _id: new ObjectId(nodeId) });
+        const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
+            { survey_node: new ObjectId(nodeId) },
+            {
+                rotation: rotation,
+            },
+        );
 
-        if (existingNode) {
-            const updateNodeFov = await SurveyNode.findOneAndUpdate(
-                { _id: new ObjectId(nodeId) },
-                {
-                    initial_parameters: {
-                        ...existingNode.toObject().initial_parameters,
-                        fov: fov,
-                    }
-                }
-            );
-
-            return (updateNodeFov ? true : false);
-        } else {
-            throw new Error("Node does not exist in database.");
-        }
+        return (updateNodeRotation ? true : false);
     }
 
   /**

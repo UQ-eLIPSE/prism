@@ -210,7 +210,7 @@ export class Routes {
      * Routes for editing the coordinates and fov of minimap nodes
      */
     router.patch('/node/coords/:nodeId', this.surveyController.updateNodeCoordinates);
-    router.patch('/node/fov/:nodeId', this.surveyController.updateNodeFov);
+    router.patch('/node/rotation/:nodeId', this.surveyController.updateNodeRotation);
 
     //settings
     router.get('/site/:siteId/settings', this.siteController.getSettings);
