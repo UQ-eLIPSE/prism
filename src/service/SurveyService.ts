@@ -252,7 +252,6 @@ export abstract class SurveyService {
         // Add Site Settings
         // NOTE: These values need to be created as part of sceen process.
         if (!checkSiteSettingsExist){
-          console.log("Reaching")
           await SiteSettings.create({
             _id: new ObjectId(),
             enable: {
