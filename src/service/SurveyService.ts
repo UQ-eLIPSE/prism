@@ -574,30 +574,28 @@ export abstract class SurveyService {
   }
 
   public static async getSiteExistence(
-    site: string
+    site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MapPins.countDocuments(
-        { site: new ObjectId(site) },
-      );
+      const data = await MapPins.countDocuments({ site: new ObjectId(site) });
 
-      return {success: data ? true : false}
+      return { success: data ? true : false };
     } catch (e) {
-      return {success: false};
+      return { success: false };
     }
   }
 
   public static async getSitePopulated(
-    site: string
+    site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await SurveyNode.countDocuments(
-        { site: new ObjectId(site) },
-      );
+      const data = await SurveyNode.countDocuments({
+        site: new ObjectId(site),
+      });
 
-      return {success: data ? true : false}
+      return { success: data ? true : false };
     } catch (e) {
-      return {success: false};
+      return { success: false };
     }
   }
 }
