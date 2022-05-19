@@ -48,7 +48,7 @@ export class FAQController {
    * @param res
    */
   public async editQuestionAnswer(req: Request, res: Response) {
-    const { username, idx } = req.params as any;
+    const { username, idx } = req.params;
     const { user } = res.locals;
     const { question, answer } = req.body;
 

@@ -22,7 +22,8 @@ async function removeAllCollections() {
     try {
       await collection.drop();
     } catch (error) {
-      // This error happens when you try to drop a collection that's already dropped. Happens infrequently.
+      // This error happens when you try to drop a collection that's already dropped. 
+      // Happens infrequently.
       // Safe to ignore.
       if (error.message === 'ns not found') return;
 
@@ -30,8 +31,6 @@ async function removeAllCollections() {
       // Safe to ignore.
       if (error.message.includes('a background operation is currently running'))
         return;
-
-      console.log(error.message);
     }
   }
 }
@@ -66,7 +65,7 @@ test('Should save user to database', async (done) => {
     },
   ];
 
-  for (let user of users) {
+  for (const user of users) {
     const newUser = await new User(user);
     await newUser.save();
   }

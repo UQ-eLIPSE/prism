@@ -24,7 +24,8 @@ async function removeAllCollections() {
     try {
       await collection.drop();
     } catch (error) {
-      // This error happens when you try to drop a collection that's already dropped. Happens infrequently.
+      // This error happens when you try to drop a collection that's already dropped. 
+      // Happens infrequently.
       // Safe to ignore.
       if (error.message === 'ns not found') return;
 
@@ -32,8 +33,6 @@ async function removeAllCollections() {
       // Safe to ignore.
       if (error.message.includes('a background operation is currently running'))
         return;
-
-      console.log(error.message);
     }
   }
 }
@@ -62,7 +61,7 @@ test('should return false upload dummy file which are not .zip', async (done) =>
   const resp = httpMocks.createResponse();
   resp.locals = { user: { username: 'Tester' } };
 
-  const err: any = null;
+  const err = null;
 
   await resourceController.createNewResource(request, resp, err);
 

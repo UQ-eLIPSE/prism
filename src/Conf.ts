@@ -71,7 +71,8 @@ export function loadConfiguration(): Configuration {
     throw Error('Empty environment file. Check the environment file.');
   }
 
-  // Otherwise, load each part of the configuration and see if they can be assigned and not empty strings
+  // Otherwise, load each part of the configuration and 
+  // see if they can be assigned and not empty strings
   const output = Object.assign({}, TEMPLATE);
 
   Object.keys(TEMPLATE).forEach((key) => {
@@ -81,87 +82,87 @@ export function loadConfiguration(): Configuration {
 
     // If we have things that should be numbers, then parse it appropiately
     switch (key) {
-      case 'ENVIRONMENT':
-        output.ENVIRONMENT = dotEnvLoad.parsed[key];
-        break;
+    case 'ENVIRONMENT':
+      output.ENVIRONMENT = dotEnvLoad.parsed[key];
+      break;
 
-      case 'PROJECT_NAME':
-        output.PROJECT_NAME = dotEnvLoad.parsed[key];
-        break;
+    case 'PROJECT_NAME':
+      output.PROJECT_NAME = dotEnvLoad.parsed[key];
+      break;
 
-      case 'DATABASE_URL':
-        output.DATABASE_URL = dotEnvLoad.parsed[key];
-        break;
+    case 'DATABASE_URL':
+      output.DATABASE_URL = dotEnvLoad.parsed[key];
+      break;
 
-      case 'PORT_NUM':
-        output.PORT_NUM = parseInt(dotEnvLoad.parsed[key]);
-        break;
-      case 'USE_SENTRY':
-        output.USE_SENTRY = JSON.parse(dotEnvLoad.parsed[key]) as boolean;
-        break;
-      case 'SENTRY_DSN':
-        output.SENTRY_DSN = dotEnvLoad.parsed[key];
-        break;
+    case 'PORT_NUM':
+      output.PORT_NUM = parseInt(dotEnvLoad.parsed[key]);
+      break;
+    case 'USE_SENTRY':
+      output.USE_SENTRY = JSON.parse(dotEnvLoad.parsed[key]) as boolean;
+      break;
+    case 'SENTRY_DSN':
+      output.SENTRY_DSN = dotEnvLoad.parsed[key];
+      break;
 
-      case 'USE_SSO':
-        output.USE_SSO = JSON.parse(dotEnvLoad.parsed[key]) as boolean;
-        break;
+    case 'USE_SSO':
+      output.USE_SSO = JSON.parse(dotEnvLoad.parsed[key]) as boolean;
+      break;
 
-      case 'AUTH_HOST':
-        output.AUTH_HOST = dotEnvLoad.parsed[key];
-        break;
+    case 'AUTH_HOST':
+      output.AUTH_HOST = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MAIL_HOST':
-        output.MAIL_HOST = dotEnvLoad.parsed[key];
-        break;
+    case 'MAIL_HOST':
+      output.MAIL_HOST = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MAIL_PORT':
-        output.MAIL_PORT = parseInt(dotEnvLoad.parsed[key]);
-        break;
+    case 'MAIL_PORT':
+      output.MAIL_PORT = parseInt(dotEnvLoad.parsed[key]);
+      break;
 
-      case 'MAIL_SECRET':
-        output.MAIL_SECRET = dotEnvLoad.parsed[key];
-        break;
+    case 'MAIL_SECRET':
+      output.MAIL_SECRET = dotEnvLoad.parsed[key];
+      break;
 
-      case 'JWT_Hash':
-        output.JWT_Hash = dotEnvLoad.parsed[key];
-        break;
+    case 'JWT_Hash':
+      output.JWT_Hash = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MANTA_HOST_NAME':
-        output.MANTA_HOST_NAME = dotEnvLoad.parsed[key];
-        break;
+    case 'MANTA_HOST_NAME':
+      output.MANTA_HOST_NAME = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MANTA_KEY_ID':
-        output.MANTA_KEY_ID = dotEnvLoad.parsed[key];
-        break;
+    case 'MANTA_KEY_ID':
+      output.MANTA_KEY_ID = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MANTA_KEY_FILE':
-        output.MANTA_KEY_FILE = dotEnvLoad.parsed[key];
-        break;
+    case 'MANTA_KEY_FILE':
+      output.MANTA_KEY_FILE = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MANTA_SUB_USER':
-        output.MANTA_SUB_USER = dotEnvLoad.parsed[key];
-        break;
+    case 'MANTA_SUB_USER':
+      output.MANTA_SUB_USER = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MANTA_ROLES':
-        output.MANTA_ROLES = [dotEnvLoad.parsed[key]] as unknown as string[];
-        break;
+    case 'MANTA_ROLES':
+      output.MANTA_ROLES = [dotEnvLoad.parsed[key]] as unknown as string[];
+      break;
 
-      case 'MANTA_USER':
-        output.MANTA_USER = dotEnvLoad.parsed[key];
-        break;
+    case 'MANTA_USER':
+      output.MANTA_USER = dotEnvLoad.parsed[key];
+      break;
 
-      case 'MANTA_ROOT_FOLDER':
-        output.MANTA_ROOT_FOLDER = dotEnvLoad.parsed[key];
-        break;
+    case 'MANTA_ROOT_FOLDER':
+      output.MANTA_ROOT_FOLDER = dotEnvLoad.parsed[key];
+      break;
 
-      case 'TMP_FOLDER':
-        output.TMP_FOLDER = dotEnvLoad.parsed[key];
-        break;
+    case 'TMP_FOLDER':
+      output.TMP_FOLDER = dotEnvLoad.parsed[key];
+      break;
 
-      default:
-        ConsoleUtil.error(`Unhandled key ${key}. Check configuration`);
-        break;
+    default:
+      ConsoleUtil.error(`Unhandled key ${key}. Check configuration`);
+      break;
     }
   });
 

@@ -11,8 +11,10 @@ import { AuthUtil } from '../utils/AuthUtil';
 export class UserController {
   /**
    * Create user if user's email is in invited user or user logged in using UQ SSO.
-   * If user is not in the invited user table and they logged in using UQ SSO, they will be automatically assigned guest role
-   * If user is an external user and not in the invited user table, the api will throw user is not authorized
+   * If user is not in the invited user table and they logged in using UQ SSO, 
+   * // they will be automatically assigned guest role
+   * If user is an external user and not in the invited user table, 
+   * // the api will throw user is not authorized
    * @param req
    * @param res
    */
@@ -26,7 +28,7 @@ export class UserController {
     if (isInternalUser) {
       const { firstName, lastName, username, password, role } = res.locals.user;
 
-      //if user is not invited but they are logged in using their uq sso.
+      // if user is not invited but they are logged in using their uq sso.
       const newUser: IUser | null = await new User({
         firstName,
         lastName,
@@ -95,7 +97,7 @@ export class UserController {
    * @param req
    * @param res
    */
-  public async decodeToken(req: Request, res: Response) {
+  public decodeToken(req: Request, res: Response) {
     return CommonUtil.successResponse(res, 'token is valid', res.locals.user);
   }
 
@@ -104,9 +106,9 @@ export class UserController {
   * @param req
   * @param res (logged in user details)
   */
-  public async getLoggedInUser(req: Request, res: Response) {
-      var user = req.header('x-kvd-payload');
-      res.send(user);
+  public getLoggedInUser(req: Request, res: Response) {
+    const user = req.header('x-kvd-payload');
+    res.send(user);
   }
 
   /**
@@ -129,8 +131,10 @@ export class UserController {
   }
 
   /**
-   * Update user's role to guest if the user is using UQ SSO. Delete user from database if user is Non-UQ
-   * @param req (current user's username, the username of another user which need to be updated or deleted)
+   * Update user's role to guest if the user is using UQ SSO. 
+   * Delete user from database if user is Non-UQ
+   * @param req (current user's username, 
+   *   the username of another user which need to be updated or deleted)
    * @param res
    */
   public async updateUserRole(req: Request, res: Response) {
@@ -249,7 +253,7 @@ export class UserController {
     if (!userFound) return;
 
     const { firstName, lastName, role } = <IUser>userFound;
-    let transporter: Mail = req.app.get('transporter');
+    const transporter: Mail = req.app.get('transporter');
 
     const { JWT_Hash } = process.env;
 
@@ -322,7 +326,7 @@ export class UserController {
    * @param req
    * @param res
    */
-  public async logout(req: Request, res: Response) {
+  public logout(req: Request, res: Response) {
     const { user } = res.locals;
 
     if (!user) {

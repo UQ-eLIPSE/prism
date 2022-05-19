@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'manta' {
   import * as stream from 'stream';
 
@@ -88,6 +89,7 @@ declare module 'manta' {
       sign: any;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-types
     type JobConfiguration = string | string[] | Object;
 
     class MantaClient {
