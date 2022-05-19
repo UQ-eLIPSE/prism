@@ -5,10 +5,11 @@
   "main": "dist/main.js",
   "scripts": {
     "clean": "rimraf dist",
+    "lint": "eslint . --ext .ts",
     "test": "jest --detectOpenHandles",
     "start": "node ./dist/main.js",
     "watch": "nodemon src/main.ts",
-    "build": "npm run clean && tsc"
+    "build": "yarn run clean && yarn lint && yarn test && tsc"
   },
   "author": "eLIPSE",
   "license": "ISC",
@@ -41,6 +42,7 @@
     "nodemailer": "^6.4.17",
     "prettier": "^2.6.2",
     "serve-static": "^1.14.1",
+    "tslint": "^6.1.3",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.6"
   },
@@ -48,11 +50,17 @@
     "@sentry/types": "^6.0.2",
     "@types/bson": "^4.2.0",
     "@types/dotenv": "^8.2.0",
+    "@types/eslint": "^8.4.2",
     "@types/express": "^4.17.11",
     "@types/jest": "^27.4.1",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^17.0.21",
     "@types/request": "^2.48.5",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "jest": "^27.5.1",
     "node-mocks-http": "^1.10.1",
     "nodemon": "^2.0.7",
