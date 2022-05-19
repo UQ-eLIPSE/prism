@@ -8,6 +8,7 @@ export interface IResponse<PayloadType> {
 
 export abstract class CommonUtil {
   public static failResponse<T>(res: Response, message: string): Response {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return res.status(400).json(<T>(<any>{
       success: false,
       message: message,
@@ -17,8 +18,10 @@ export abstract class CommonUtil {
   public static successResponse<T>(
     res: Response,
     message: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload?: any,
   ): Response {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return res.status(200).json(<T>(<any>{
       success: true,
       payload: payload,

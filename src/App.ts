@@ -73,9 +73,10 @@ export class App {
   public async run() {
     try {
       await this.setUpDatabase();
-    //   await this.setupMailer();
-    //   await this.setUpManta();
+      //   await this.setupMailer();
+      //   await this.setUpManta();
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Database connection error: ', e);
     }
 
