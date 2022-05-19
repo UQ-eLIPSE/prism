@@ -567,12 +567,7 @@ export abstract class SurveyService {
         { site: new ObjectId(site) },
       );
 
-      if (data) {
-        return {success: true};
-      } else {
-        return {success: false};
-      }
-
+      return {success: data ? true : false}
     } catch (e) {
       return {success: false};
     }
@@ -585,11 +580,8 @@ export abstract class SurveyService {
       const data = await SurveyNode.countDocuments(
         { site: new ObjectId(site) },
       );
-      if (data) {
-        return {success: true};
-      } else {
-        return {success: false};
-      }
+
+      return {success: data ? true : false}
     } catch (e) {
       return {success: false};
     }
