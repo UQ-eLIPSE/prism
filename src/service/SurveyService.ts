@@ -540,6 +540,8 @@ export abstract class SurveyService {
           {
             image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            img_width: ImageSize(file.path).width,
+            img_height: ImageSize(file.path).height,
           },
         )
         : await MinimapImages.create({
