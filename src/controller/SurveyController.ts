@@ -539,6 +539,35 @@ export class SurveyController {
       return CommonUtil.failResponse(res, e.message);
     }
   }
+  /**
+   * getSurveyExistence - Returns booleans representing the existence of a site and surveys in the database.
+   * @param req 
+   * @param res 
+   * @returns site: SiteId, siteCreated: boolean, sitePopulated: boolean
+   */
+  public async getSurveyExistence(req: Request, res: Response) {
+      const { siteId } = req.params;
+      let result = {
+        site: siteId,
+        siteCreated: false,
+        sitePopulated: false,
+      }
+
+      if (!siteId) { throw new Error('No Site ID Specified'); }
+
+      try {
+        const siteCreated = await SurveyService.getSiteExistence(siteId);
+        result.siteCreated = siteCreated.success;
+
+        const sitePopulated = await SurveyService.getSitePopulated(siteId);
+        result.sitePopulated = sitePopulated.success;
+
+        return CommonUtil.successResponse(res, "", result);
+      } catch (e) {
+        ConsoleUtil.log(e);
+        return CommonUtil.failResponse(res, e.message);
+      }
+  }
 
   /**
    * Updates the x and y coordinates of the selected node.

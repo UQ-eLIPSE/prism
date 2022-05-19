@@ -186,6 +186,13 @@ export class Routes {
       this.surveyController.createSiteMap,
     );
 
+    router.get(
+        '/site/:siteId/exists',
+        this.surveyController.getSurveyExistence,
+    );
+
+    // process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/exists`
+
     /**
      * Routes for editing the coordinates and fov of minimap nodes
      */

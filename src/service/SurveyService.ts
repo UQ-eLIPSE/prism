@@ -7,6 +7,7 @@ import {
   Survey,
   MinimapImages,
 } from '../models/SurveyModel';
+import { MapPins } from '../components/MapPins/MapPinsModel';
 import { CommonUtil } from '../utils/CommonUtil';
 import * as fs from 'fs/promises';
 import csv = require('csvtojson');
@@ -555,6 +556,42 @@ export abstract class SurveyService {
     } catch (e) {
       console.error(e);
       return { success: false, message: e.message };
+    }
+  }
+
+  public static async getSiteExistence(
+    site: string
+  ): Promise<{ success: boolean }> {
+    try {
+      const data = await MapPins.countDocuments(
+        { site: new ObjectId(site) },
+      );
+
+      if (data) {
+        return {success: true};
+      } else {
+        return {success: false};
+      }
+
+    } catch (e) {
+      return {success: false};
+    }
+  }
+
+  public static async getSitePopulated(
+    site: string
+  ): Promise<{ success: boolean }> {
+    try {
+      const data = await SurveyNode.countDocuments(
+        { site: new ObjectId(site) },
+      );
+      if (data) {
+        return {success: true};
+      } else {
+        return {success: false};
+      }
+    } catch (e) {
+      return {success: false};
     }
   }
 }
