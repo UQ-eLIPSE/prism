@@ -146,7 +146,7 @@ export abstract class SurveyService {
 
   /**
    * Upload to DB
-   * This function uploads properties from the CSV files containing 
+   * This function uploads properties from the CSV files containing
    * // filename and minimap coordinates (As the minimum)
    * along with combining that data with the provided marzipano data.js for the survey_nodes.
    * @param files - Request Files that contains the CSV and .ZIP
@@ -231,7 +231,6 @@ export abstract class SurveyService {
 
           // Upload Minimap conversions with the provided x/y coords from the CSV
 
-
           const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
@@ -243,6 +242,7 @@ export abstract class SurveyService {
               y: specElem?.y,
               y_scale: 1,
               site: new ObjectId(site._id),
+              rotation: 0,
             },
           ]);
 
@@ -253,11 +253,13 @@ export abstract class SurveyService {
         });
 
         // Check site settings exist - if so, don't recreate the document.
-        const checkSiteSettingsExist = await SiteSettings.findOne({site: new ObjectId(site._id)});
+        const checkSiteSettingsExist = await SiteSettings.findOne({
+          site: new ObjectId(site._id),
+        });
 
         // Add Site Settings
         // NOTE: These values need to be created as part of sceen process.
-        if (!checkSiteSettingsExist){
+        if (!checkSiteSettingsExist) {
           await SiteSettings.create({
             _id: new ObjectId(),
             enable: {
@@ -307,10 +309,8 @@ export abstract class SurveyService {
             num_floors: 0,
             site: new ObjectId(site._id),
           });
-
         }
-        
-         
+
         resolve('Data Uploaded');
       });
 
@@ -458,7 +458,7 @@ export abstract class SurveyService {
 
   public static extractZip(destPath: string, entries: any, zip: any) {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise( (resolve) => {
+    return new Promise((resolve) => {
       zip.extract(null, destPath, (err: any) => {
         // eslint-disable-next-line no-console
         console.log(err ? 'Extract error' : `Extracted entries`);
@@ -471,7 +471,7 @@ export abstract class SurveyService {
   public static async updateNodeCoordinates(
     nodeId: string,
     x: number,
-    y: number
+    y: number,
   ) {
     const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
       { survey_node: new ObjectId(nodeId) },
@@ -481,13 +481,10 @@ export abstract class SurveyService {
       },
     );
 
-    return (updateNodeCoords ? true : false);
+    return updateNodeCoords ? true : false;
   }
 
-  public static async updateNodeRotation(
-    nodeId: string,
-    rotation: number
-  ) {
+  public static async updateNodeRotation(nodeId: string, rotation: number) {
     const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
       { survey_node: new ObjectId(nodeId) },
       {
@@ -495,7 +492,7 @@ export abstract class SurveyService {
       },
     );
 
-    return (updateNodeRotation ? true : false);
+    return updateNodeRotation ? true : false;
   }
 
   /**
@@ -538,26 +535,26 @@ export abstract class SurveyService {
 
       const saveSiteMap = getCurrentSiteMap
         ? await MinimapImages.findOneAndUpdate(
-          { site: site._id },
-          {
+            { site: site._id },
+            {
+              image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+              image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            },
+          )
+        : await MinimapImages.create({
+            _id: new ObjectId(),
             image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-          },
-        )
-        : await MinimapImages.create({
-          _id: new ObjectId(),
-          image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-          image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-          floor: floor,
-          site: site._id,
-          x_pixel_offset: 0,
-          y_pixel_offset: 0,
-          x_scale: 1,
-          y_scale: 1,
-          img_width: 1000,
-          img_height: 1000,
-          xy_flipped: false,
-        });
+            floor: floor,
+            site: site._id,
+            x_pixel_offset: 0,
+            y_pixel_offset: 0,
+            x_scale: 1,
+            y_scale: 1,
+            img_width: 1000,
+            img_height: 1000,
+            xy_flipped: false,
+          });
 
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
