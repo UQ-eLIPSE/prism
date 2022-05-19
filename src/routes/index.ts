@@ -186,6 +186,11 @@ export class Routes {
       this.surveyController.createSiteMap,
     );
 
+    router.get(
+        '/site/:siteId/exists',
+        this.surveyController.getSurveyExistence,
+    );
+
     /**
      * Routes for editing the coordinates and fov of minimap nodes
      */

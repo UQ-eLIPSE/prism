@@ -129,7 +129,9 @@ export class SurveyController {
               console.error(err);
               return;
             }
-            ConsoleUtil.log('tarball is created && muntarcmd has been executed');
+            ConsoleUtil.log(
+              'tarball is created && muntarcmd has been executed',
+            );
           },
         );
       });
@@ -223,7 +225,7 @@ export class SurveyController {
    * @param res
    */
   public async getSingleSiteNodeData(req: Request, res: Response) {
-    try{
+    try {
       const { siteId } = req.params;
       const allSurveys: IMinimapConversion[] = [];
 
@@ -243,22 +245,21 @@ export class SurveyController {
         }
       }
 
-      const results = allSurveys
-        .map((s: IMinimapConversion) => { 
-          return {
-            floor: s.floor,
-            node_number: s.survey_node.node_number,
-            tiles_id: s.survey_node.tiles_id,
-            tiles_name: s.survey_node.tiles_name,
-            survey_node: s.minimap_node.survey_node,
-            x: s.x,
-            x_scale: s.x_scale,
-            y: s.y,
-            y_scale: s.y_scale,
-            site: s.site,
-            rotation: s.rotation,
-          };
-        });
+      const results = allSurveys.map((s: IMinimapConversion) => {
+        return {
+          floor: s.floor,
+          node_number: s.survey_node.node_number,
+          tiles_id: s.survey_node.tiles_id,
+          tiles_name: s.survey_node.tiles_name,
+          survey_node: s.minimap_node.survey_node,
+          x: s.x,
+          x_scale: s.x_scale,
+          y: s.y,
+          y_scale: s.y_scale,
+          site: s.site,
+          rotation: s.rotation,
+        };
+      });
 
       return CommonUtil.successResponse(res, '', results);
     } catch (e) {
@@ -543,22 +544,59 @@ export class SurveyController {
       return CommonUtil.failResponse(res, e.message);
     }
   }
+  /**
+   * getSurveyExistence - Returns booleans representing the existence of a site and surveys in the database.
+   * @param req
+   * @param res
+   * @returns site: SiteId, siteCreated: boolean, sitePopulated: boolean
+   */
+  public async getSurveyExistence(req: Request, res: Response) {
+    const { siteId } = req.params;
+    const result = {
+      site: siteId,
+      siteCreated: false,
+      sitePopulated: false,
+    };
+
+    if (!siteId) {
+      throw new Error('No Site ID Specified');
+    }
+
+    try {
+      const siteCreated = await SurveyService.getSiteExistence(siteId);
+      result.siteCreated = siteCreated.success;
+
+      const sitePopulated = await SurveyService.getSitePopulated(siteId);
+      result.sitePopulated = sitePopulated.success;
+
+      return CommonUtil.successResponse(res, '', result);
+    } catch (e) {
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
 
   /**
    * Updates the x and y coordinates of the selected node.
-   * @param req 
-   * @param res 
-   * @returns 
+   * @param req
+   * @param res
+   * @returns
    */
   public async updateNodeCoordinates(req: Request, res: Response) {
     try {
       const { nodeId } = req.params;
       const { x, y } = req.body;
 
-      const findNodeId = await MinimapConversion.find({survey_node: new ObjectID(nodeId)});
+      const findNodeId = await MinimapConversion.find({
+        survey_node: new ObjectID(nodeId),
+      });
       if (!findNodeId) throw new Error('Node does not exist in database');
 
-      const updateCoords = await SurveyService.updateNodeCoordinates(nodeId, x, y);
+      const updateCoords = await SurveyService.updateNodeCoordinates(
+        nodeId,
+        x,
+        y,
+      );
       if (!updateCoords) throw new Error('Node coordinates cannot be updated');
 
       return CommonUtil.successResponse(
@@ -573,19 +611,24 @@ export class SurveyController {
 
   /**
    * Updates the field of view of the selected node.
-   * @param req 
-   * @param res 
-   * @returns 
+   * @param req
+   * @param res
+   * @returns
    */
   public async updateNodeRotation(req: Request, res: Response) {
     try {
       const { nodeId } = req.params;
       const { rotation } = req.body;
 
-      const findNodeId = await MinimapConversion.find({survey_node: new Object(nodeId)});
+      const findNodeId = await MinimapConversion.find({
+        survey_node: new Object(nodeId),
+      });
       if (!findNodeId) throw new Error('Node does not exist in databae');
 
-      const updateCoords = await SurveyService.updateNodeRotation(nodeId, rotation);
+      const updateCoords = await SurveyService.updateNodeRotation(
+        nodeId,
+        rotation,
+      );
       if (!updateCoords) throw new Error('Node rotation cannot be updated');
 
       return CommonUtil.successResponse(
