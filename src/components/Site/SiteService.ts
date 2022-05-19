@@ -1,6 +1,5 @@
 import { ISite, Site, SiteMap, SiteSettings } from './SiteModel';
-import { Response } from 'express-serve-static-core';
-import { ObjectId, ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 
 abstract class SiteService {
   static async getSettings(siteId: string) {

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { CommonUtil } from '../utils/CommonUtil';
 import { MantaService } from '../service/MantaService';
@@ -58,7 +60,7 @@ export class SurveyController {
 
       if (!siteId) throw new Error('Site Id is not provided');
 
-      //Get site
+      // Get site
       const site = await Site.findById({ _id: new ObjectID(siteId) });
       if (!site) throw new Error('Invalid Site Id');
 
@@ -84,7 +86,7 @@ export class SurveyController {
    * @param req
    * @param res
    */
-  public async uploadSurvey(req: Request, res: Response) {
+  public uploadSurvey(req: Request, res: Response) {
     let result: IMantaOutput[] = [];
 
     const { file } = req;
@@ -112,12 +114,14 @@ export class SurveyController {
       storeEntries: true,
     });
 
-    zip.on('ready', async () => {
+    zip.on('ready', () => {
       const entries = Object.values(zip.entries());
       const extractedFolder = file.originalname.split('.')[0];
       SurveyService.extractZip(`${destPath}`, entries, zip).then(() => {
+        // eslint-disable-next-line max-len
         const muntarcmd = `muntar -f ${destPath}/${extractedFolder}.tar /${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${extractedFolder} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`;
         exec(
+          // eslint-disable-next-line max-len
           `tar -cvf ${destPath}/${extractedFolder}.tar ${destPath}/${extractedFolder} && ${muntarcmd}`,
           { maxBuffer: 200 * 1024 * 1024 },
           (err: any) => {
@@ -190,7 +194,7 @@ export class SurveyController {
           date: date,
           site: new ObjectID(siteId),
         });
-        for (let node of surveyNode) {
+        for (const node of surveyNode) {
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
               .populate('survey_node', '-_id')
@@ -227,20 +231,20 @@ export class SurveyController {
         return CommonUtil.failResponse(res, 'Site ID has not been provided');
 
       if (!allSurveys.length) {
-          const surveyNode = await SurveyNode.find({
-            site: new ObjectID(siteId),
-          });
-          for (let node of surveyNode) {
-            allSurveys.push(
-              await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
+        const surveyNode = await SurveyNode.find({
+          site: new ObjectID(siteId),
+        });
+        for (const node of surveyNode) {
+          allSurveys.push(
+            await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
               .populate('survey_node', '-_id')
               .populate('minimap_node', '-_id'),
-            );
-          }
+          );
         }
+      }
 
-        const results = allSurveys
-          .map((s: IMinimapConversion) => { 
+      const results = allSurveys
+        .map((s: IMinimapConversion) => { 
           return {
             floor: s.floor,
             node_number: s.survey_node.node_number,
@@ -254,7 +258,7 @@ export class SurveyController {
             site: s.site,
             rotation: s.rotation,
           };
-        })
+        });
 
       return CommonUtil.successResponse(res, '', results);
     } catch (e) {
@@ -273,7 +277,7 @@ export class SurveyController {
 
     let surveysWithFloor: IMinimapNode[] | null = null;
     let surveyWithDate: ISurveyNode[] | null = null;
-    let results: any[] = [];
+    const results: any[] = [];
     const map = new Map();
 
     if (!siteId)
@@ -313,7 +317,7 @@ export class SurveyController {
             'Survey with the date is not found',
           );
 
-        for (let survey of surveyWithDate) {
+        for (const survey of surveyWithDate) {
           surveysWithFloor = await MinimapNode.find(
             { survey_node: survey._id },
             '-_id',
@@ -407,7 +411,7 @@ export class SurveyController {
 
     const surveyNodes = surveyToBeDeleted.survey_nodes;
 
-    for (let surveyNode of surveyNodes) {
+    for (const surveyNode of surveyNodes) {
       await SurveyNode.findByIdAndRemove(id);
       const relatedMiniMapConversions = await MinimapConversion.findOne({
         survey_node: surveyNode,
@@ -522,7 +526,7 @@ export class SurveyController {
 
       if (!siteId) throw new Error('Site Id is not provided');
 
-      //Get site
+      // Get site
       const site = await Site.findById({ _id: new ObjectID(siteId) });
       if (!site) throw new Error('Invalid Site Id');
 
@@ -577,22 +581,22 @@ export class SurveyController {
    */
   public async updateNodeCoordinates(req: Request, res: Response) {
     try {
-        const { nodeId } = req.params;
-        const { x, y } = req.body;
+      const { nodeId } = req.params;
+      const { x, y } = req.body;
 
-        const findNodeId = await MinimapConversion.find({survey_node: new ObjectID(nodeId)})
-        if (!findNodeId) throw new Error('Node does not exist in database');
+      const findNodeId = await MinimapConversion.find({survey_node: new ObjectID(nodeId)});
+      if (!findNodeId) throw new Error('Node does not exist in database');
 
-        const updateCoords = await SurveyService.updateNodeCoordinates(nodeId, x, y);
-        if (!updateCoords) throw new Error('Node coordinates cannot be updated');
+      const updateCoords = await SurveyService.updateNodeCoordinates(nodeId, x, y);
+      if (!updateCoords) throw new Error('Node coordinates cannot be updated');
 
-        return CommonUtil.successResponse(
-            res,
-            'Minimap node coordinates have been updated',
-        );
+      return CommonUtil.successResponse(
+        res,
+        'Minimap node coordinates have been updated',
+      );
     } catch (e) {
-        ConsoleUtil.log(e);
-        return CommonUtil.failResponse(res, e.message);
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
     }
   }
 
@@ -603,23 +607,23 @@ export class SurveyController {
    * @returns 
    */
   public async updateNodeRotation(req: Request, res: Response) {
-      try {
-          const { nodeId } = req.params;
-          const { rotation } = req.body;
+    try {
+      const { nodeId } = req.params;
+      const { rotation } = req.body;
 
-          const findNodeId = await MinimapConversion.find({survey_node: new Object(nodeId)});
-          if (!findNodeId) throw new Error('Node does not exist in databae');
+      const findNodeId = await MinimapConversion.find({survey_node: new Object(nodeId)});
+      if (!findNodeId) throw new Error('Node does not exist in databae');
 
-          const updateCoords = await SurveyService.updateNodeRotation(nodeId, rotation);
-          if (!updateCoords) throw new Error('Node rotation cannot be updated');
+      const updateCoords = await SurveyService.updateNodeRotation(nodeId, rotation);
+      if (!updateCoords) throw new Error('Node rotation cannot be updated');
 
-          return CommonUtil.successResponse(
-              res,
-              'Minimap node rotation has been updated',
-          )
-      } catch (e) {
-          ConsoleUtil.log(e);
-          return CommonUtil.failResponse(res, e.message);
-      }
+      return CommonUtil.successResponse(
+        res,
+        'Minimap node rotation has been updated',
+      );
+    } catch (e) {
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
   }
 }

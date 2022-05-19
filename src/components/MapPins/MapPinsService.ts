@@ -75,14 +75,17 @@ class SiteService {
   ): Promise<{
     success: boolean;
     message: string;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     data: {};
   }> {
     try {
+      // eslint-disable-next-line max-len
       const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME, MANTA_USER, MANTA_SUB_USER, MANTA_ROLES, MANTA_KEY_ID } = process.env;
       if (file === undefined) throw new Error('File is undefined');
 
       // Upload on to Manta
       const upload = execSync(
+        // eslint-disable-next-line max-len
         `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
       );
 
@@ -95,11 +98,10 @@ class SiteService {
         success: true,
         message: 'Preview image has been uploaded',
         data: {
-            url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+          url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
         }
       };
     } catch (e) {
-      console.error(e);
       return { success: false, message: e.message, data: {} };
     }
   }

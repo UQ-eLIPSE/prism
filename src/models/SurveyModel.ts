@@ -1,5 +1,5 @@
-import { Schema, Document, Model, model, Types } from 'mongoose';
-var uuidv4 = require('uuidv4');
+import { Schema, Document, Model, model } from 'mongoose';
+const uuidv4 = require('uuidv4');
 
 export interface IMinimapConversion extends Document {
   floor: number;
@@ -9,7 +9,7 @@ export interface IMinimapConversion extends Document {
   y_scale: number;
   survey_node: ISurveyNode;
   minimap_node: IMinimapNode;
-  site: any;
+  site: number;
   rotation: number;
 }
 
@@ -20,7 +20,7 @@ export interface IMinimapNode extends Document {
   minimap_conversion: IMinimapConversion;
   survey_node: ISurveyNode;
   floor: number;
-  site: any;
+  site: number;
 }
 
 export interface IInitialParams extends Document {
@@ -57,9 +57,9 @@ export interface ISurveyNode extends Document {
   initial_parameters: IInitialParams;
   link_hotspots: ILinkHotspot[];
   info_hotspots: IInfoHotspot[];
-  levels: any[]; // Cannot be mapped because of how Marzipano export the data for levels,
+  levels: number[]; // Cannot be mapped because of how Marzipano export the data for levels,
   face_size: number;
-  site: any;
+  site: number;
 }
 
 export interface ISurvey extends Document {
@@ -148,17 +148,17 @@ const HotspotDescriptionSchema: Schema = new Schema({
 });
 
 const MinimapImagesSchema: Schema = new Schema({
-    image_url: { type: String },
-    floor: { type: Number },
-    site: { type: Schema.Types.ObjectId, ref: 'sites' },
-    image_large_url: { type: String },
-    x_pixel_offset: { type: Number },
-    y_pixel_offset: { type: Number },
-    x_scale: { type: Number },
-    y_scale: { type: Number },
-    img_width: { type: Number },
-    img_height: { type: Number },
-    xy_flipped: { type: Boolean },
+  image_url: { type: String },
+  floor: { type: Number },
+  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  image_large_url: { type: String },
+  x_pixel_offset: { type: Number },
+  y_pixel_offset: { type: Number },
+  x_scale: { type: Number },
+  y_scale: { type: Number },
+  img_width: { type: Number },
+  img_height: { type: Number },
+  xy_flipped: { type: Boolean },
 });
 
 export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);

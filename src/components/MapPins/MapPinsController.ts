@@ -173,7 +173,6 @@ class MapPinsController {
         uploadPreview.data,
       );
     } catch (e) {
-      console.error(e);
       return CommonUtil.failResponse(res, e.message);
     }
   }

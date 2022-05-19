@@ -1,7 +1,6 @@
 import { UserController } from '../controller/UserController';
 import { SurveyController } from '../controller/SurveyController';
 import { AuthUtil } from '../utils/AuthUtil';
-import { SurveyService } from '../service/SurveyService';
 import { SettingController } from '../controller/SettingController';
 import { ResourceController } from '../controller/ResourceController';
 import { FAQController } from '../controller/FAQController';
@@ -9,8 +8,6 @@ import SiteController from '../components/Site/SiteController';
 import MapPinsController from '../components/MapPins/MapPinsController';
 import multer = require('multer');
 import { Request } from 'express';
-import path = require('path');
-import { cliVersionCheckPrintAndExit } from 'manta';
 
 export class Routes {
   public userController: UserController = new UserController();
@@ -21,11 +18,14 @@ export class Routes {
   public siteController: SiteController = new SiteController();
   public mapPinsController: MapPinsController = new MapPinsController();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public routes(app: any, router: any): void {
     app.use('/api', router);
 
     const storage = multer.diskStorage({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filename: (req: Request, file: any, cb: any) => {
         if (
           [
@@ -119,7 +119,7 @@ export class Routes {
      * Client side APIs
      */
 
-    //Surveys
+    // Surveys
     router.get(
       '/site/:siteId/survey/details/',
       this.surveyController.getIndividualSurveysDetails,
@@ -139,13 +139,13 @@ export class Routes {
       this.surveyController.uploadScenes,
     );
 
-    //resources
+    // resources
     router.get(
       '/site/:siteId/resources/:page',
       this.resourceController.getAllResources,
     );
 
-    //documentation
+    // documentation
     router.get(
       '/site/:siteId/documentation',
       this.resourceController.getAllDocumentation,
@@ -155,7 +155,7 @@ export class Routes {
       this.resourceController.getIndividualDocumentation,
     );
 
-    //directores
+    // directores
     router.get(
       '/directories/details',
       this.resourceController.getIndividualDirectory,
@@ -165,16 +165,16 @@ export class Routes {
       this.resourceController.getRootDirectory,
     );
 
-    //about
+    // about
     router.get('/site/:siteId/about', this.resourceController.getAboutInfo);
 
-    //hotspot
+    // hotspot
     router.get(
       '/site/:siteId/hotspot/details',
       this.surveyController.getIndividualHotspotDescription,
     );
 
-    //minimap
+    // minimap
     router.get(
       '/site/:siteId/minimap/details',
       this.surveyController.getMinimapImage,
@@ -199,15 +199,15 @@ export class Routes {
     router.patch('/node/coords/:nodeId', this.surveyController.updateNodeCoordinates);
     router.patch('/node/rotation/:nodeId', this.surveyController.updateNodeRotation);
 
-    //settings
+    // settings
     router.get('/site/:siteId/settings', this.siteController.getSettings);
 
-    //sites
+    // sites
     router.get('/sites', this.siteController.getSites);
     router.post('/sites', this.siteController.createSite);
     router.get('/site-map', this.siteController.getSiteMap);
 
-    //Map pins
+    // Map pins
 
     router.post('/map-pins', this.mapPinsController.createPin);
     router.get('/map-pins', this.mapPinsController.getAllPins);

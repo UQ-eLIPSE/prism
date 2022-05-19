@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express-serve-static-core';
 import { ISite, SiteSettings } from '../components/Site/SiteModel';
 import {
@@ -60,6 +62,7 @@ export abstract class SurveyService {
       const extractedFolder = zipFile[0].filename.replace('.zip', '');
 
       zip.on('error', (err: any) => {
+        // eslint-disable-next-line no-console
         console.error(err);
       });
 
@@ -67,6 +70,7 @@ export abstract class SurveyService {
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
       if (!csvJSON) throw new Error('Incorrect CSV format');
 
+      // eslint-disable-next-line no-async-promise-executor
       const zipOp = await new Promise(async (resolve, reject) => {
         await zip.on('ready', async () => {
           const entries = Object.values(zip.entries());
@@ -143,7 +147,8 @@ export abstract class SurveyService {
 
   /**
    * Upload to DB
-   * This function uploads properties from the CSV files containing filename and minimap coordinates (As the minimum)
+   * This function uploads properties from the CSV files containing
+   * // filename and minimap coordinates (As the minimum)
    * along with combining that data with the provided marzipano data.js for the survey_nodes.
    * @param files - Request Files that contains the CSV and .ZIP
    * @param site - The associated site with the provided Id
@@ -183,10 +188,11 @@ export abstract class SurveyService {
       const scenes: any[] = data.scenes;
 
       // Upload data to DB
+      // eslint-disable-next-line no-async-promise-executor
       const uploadData = await new Promise(async (resolve, reject) => {
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
-          const specElem = csvJSON.find((el) => el.fileName === scene.id);
+          const specElem = csvJSON.find((el) => el.fileName === scene.name);
 
           // Upload Survey Nodes from DataJS
           const survey = await SurveyNode.create([
@@ -237,73 +243,81 @@ export abstract class SurveyService {
               y: specElem?.y,
               y_scale: 1,
               site: new ObjectId(site._id),
+              rotation: 0,
             },
           ]);
 
           if (!minimapConversion)
             reject('Minimap conversion cannot be uploaded.');
 
-          //Link/Info Hotspots if included *TODO in different ticket*
+          // Link/Info Hotspots if included *TODO in different ticket*
+        });
+
+        // Check site settings exist - if so, don't recreate the document.
+        const checkSiteSettingsExist = await SiteSettings.findOne({
+          site: new ObjectId(site._id),
         });
 
         // Add Site Settings
         // NOTE: These values need to be created as part of sceen process.
-        await SiteSettings.create({
-          _id: new ObjectId(),
-          enable: {
-            timeline: false,
-            rotation: true,
-            media: false,
-            faq: false,
-            documentation: false,
-            floors: false,
-            about: false,
-            animations: false,
-          },
-          initial_settings: {
-            date: '2021-11-16T00:00:00.000+10:00',
-            floor: 0,
-            pano_id: '',
-            yaw: 0,
-            pitch: 0,
-            fov: 0,
-            // Half of Pi
-            rotation_offset: 1.5707963267948966,
-          },
-          minimap: {
-            image_url: '',
-            image_large_url: '',
-            x_pixel_offset: 0,
-            y_pixel_offset: 0,
-            x_scale: 1,
-            y_scale: 1,
-            img_width: 0,
-            img_height: 0,
-            xy_flipped: false,
-          },
-          animation: {
-            url: 'NA',
-            title: 'NA',
-          },
-          sidenav: {
-            logo_url: 'https://picsum.photos/20/20',
-            subtitle_url: 'https://picsum.photos/20/20',
-          },
-          display: {
-            title: site.site_name,
-            subtitle: site.site_name,
-          },
-          marzipano_mouse_view_mode: 'drag',
-          num_floors: 0,
-          site: new ObjectId(site._id),
-        });
+        if (!checkSiteSettingsExist) {
+          await SiteSettings.create({
+            _id: new ObjectId(),
+            enable: {
+              timeline: false,
+              rotation: true,
+              media: false,
+              faq: false,
+              documentation: false,
+              floors: false,
+              about: false,
+              animations: false,
+            },
+            initial_settings: {
+              date: '2021-11-16T00:00:00.000+10:00',
+              floor: 0,
+              pano_id: '',
+              yaw: 0,
+              pitch: 0,
+              fov: 0,
+              // Half of Pi
+              rotation_offset: 1.5707963267948966,
+            },
+            minimap: {
+              image_url: '',
+              image_large_url: '',
+              x_pixel_offset: 0,
+              y_pixel_offset: 0,
+              x_scale: 1,
+              y_scale: 1,
+              img_width: 0,
+              img_height: 0,
+              xy_flipped: false,
+            },
+            animation: {
+              url: 'NA',
+              title: 'NA',
+            },
+            sidenav: {
+              logo_url: 'https://picsum.photos/20/20',
+              subtitle_url: 'https://picsum.photos/20/20',
+            },
+            display: {
+              title: site.site_name,
+              subtitle: site.site_name,
+            },
+            marzipano_mouse_view_mode: 'drag',
+            num_floors: 0,
+            site: new ObjectId(site._id),
+          });
+        }
 
         resolve('Data Uploaded');
       });
 
       if (!uploadData) throw new Error('Data could not be uploaded.');
 
-      //Delete files and folder
+      // Delete files and folder
       await fs.unlink(properties[0].path);
       await fs.unlink(zipFile[0].path);
       await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
@@ -315,18 +329,18 @@ export abstract class SurveyService {
     }
   }
 
-  static async readFileData(userDetails: any, entries: any, zip: any) {
+  static readFileData(userDetails: any, entries: any, zip: any) {
     const dataJs = entries.filter((entry: any) =>
       entry.name.endsWith('/data.js'),
     );
     let marzipanoData: any;
-    let surveyNodeIds = new Set();
-    let outputFile: any = [];
+    const surveyNodeIds = new Set();
+    const outputFile: any = [];
 
     const { MANTA_ROOT_FOLDER, PROJECT_NAME, MANTA_USER, MANTA_HOST_NAME } =
       process.env;
     return new Promise((resolve, reject) => {
-      for (let data of dataJs) {
+      for (const data of dataJs) {
         zip.stream((<any>data).name, (err: any, stream: any) => {
           stream.on('data', (chunk: any) => {
             outputFile.push(chunk);
@@ -393,7 +407,7 @@ export abstract class SurveyService {
     });
   }
 
-  static async readSurveyJson(entries: any, zip: any) {
+  static readSurveyJson(entries: any, zip: any) {
     const surveyJson = entries.filter((entry: any) =>
       entry.name.endsWith('survey.json'),
     );
@@ -401,7 +415,7 @@ export abstract class SurveyService {
 
     return new Promise((resolve, reject) => {
       zip.stream((<any>surveyJson)[0].name, (err: any, stream: any) => {
-        stream.on('data', async (chunk: any) => {
+        stream.on('data', (chunk: any) => {
           minimapData = chunk.toString('utf8');
           if (minimapData) {
             minimapData = JSON.parse(minimapData);
@@ -422,7 +436,7 @@ export abstract class SurveyService {
     res: Response,
     fieldToSearch?: object,
   ) {
-    let mongoQuery: any = {};
+    const mongoQuery: any = {};
 
     mongoQuery.limit = size;
     mongoQuery.skip = size * pageNo - size;
@@ -444,8 +458,10 @@ export abstract class SurveyService {
   }
 
   public static extractZip(destPath: string, entries: any, zip: any) {
-    return new Promise(async (resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise((resolve) => {
       zip.extract(null, destPath, (err: any) => {
+        // eslint-disable-next-line no-console
         console.log(err ? 'Extract error' : `Extracted entries`);
         zip.close();
         resolve('');
@@ -454,34 +470,31 @@ export abstract class SurveyService {
   }
 
   public static async updateNodeCoordinates(
-      nodeId: string,
-      x: Number,
-      y: Number
-    ) {
-        const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
-            { survey_node: new ObjectId(nodeId) },
-            {
-                x: x,
-                y: y,
-            },
-        );
+    nodeId: string,
+    x: number,
+    y: number,
+  ) {
+    const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
+      { survey_node: new ObjectId(nodeId) },
+      {
+        x: x,
+        y: y,
+      },
+    );
 
-        return (updateNodeCoords ? true : false);
-    }
+    return updateNodeCoords ? true : false;
+  }
 
-    public static async updateNodeRotation(
-        nodeId: string,
-        rotation: Number
-    ) {
-        const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
-            { survey_node: new ObjectId(nodeId) },
-            {
-                rotation: rotation,
-            },
-        );
+  public static async updateNodeRotation(nodeId: string, rotation: number) {
+    const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
+      { survey_node: new ObjectId(nodeId) },
+      {
+        rotation: rotation,
+      },
+    );
 
-        return (updateNodeRotation ? true : false);
-    }
+    return updateNodeRotation ? true : false;
+  }
 
   /**
    * createSiteMap - - Inserts Site Map in to site Settings and upload
@@ -492,7 +505,7 @@ export abstract class SurveyService {
    */
   public static async createSiteMap(
     file: Express.Multer.File,
-    floor: Number,
+    floor: number,
     site: ISite,
   ): Promise<{
     success: boolean;
@@ -554,6 +567,7 @@ export abstract class SurveyService {
         message: 'Site Map has been saved',
       };
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       return { success: false, message: e.message };
     }
