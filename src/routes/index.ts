@@ -187,8 +187,8 @@ export class Routes {
     );
 
     router.get(
-        '/site/:siteId/exists',
-        this.surveyController.getSurveyExistence,
+      '/site/:siteId/exists',
+      this.surveyController.getSurveyExistence,
     );
 
     /**

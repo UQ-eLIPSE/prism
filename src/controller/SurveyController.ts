@@ -498,7 +498,7 @@ export class SurveyController {
       return CommonUtil.successResponse(
         res,
         '',
-        minimapImageObject.image_url || [],
+        minimapImageObject || {},
       );
     } catch (e) {
       console.error(e);
