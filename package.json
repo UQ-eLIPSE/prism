@@ -9,7 +9,7 @@
     "test": "jest --detectOpenHandles",
     "start": "node ./dist/main.js",
     "watch": "nodemon src/main.ts",
-    "build": "yarn run clean && yarn lint && yarn test && tsc"
+    "build": "yarn run clean && yarn lint && tsc"
   },
   "author": "eLIPSE",
   "license": "ISC",
