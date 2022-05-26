@@ -86,6 +86,8 @@ export interface IHotspotDescription extends Document {
 
 export interface IMinimapImages extends Document {
   floor: number;
+  floor_name: string;
+  floor_tag: string;
   image_url: string;
   image_large_url: string;
   x_pixel_offset: number;
@@ -150,6 +152,8 @@ const HotspotDescriptionSchema: Schema = new Schema({
 const MinimapImagesSchema: Schema = new Schema({
   image_url: { type: String },
   floor: { type: Number },
+  floor_name: { type: String },
+  floor_tag: { type: String },
   site: { type: Schema.Types.ObjectId, ref: 'sites' },
   image_large_url: { type: String },
   x_pixel_offset: { type: Number },

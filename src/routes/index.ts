@@ -186,6 +186,11 @@ export class Routes {
       this.surveyController.createSiteMap,
     );
 
+    router.patch(
+      '/site/:siteId/sitemap',
+      this.surveyController.updateMinimapFloorDetails
+    );
+
     router.get(
       '/site/:siteId/exists',
       this.surveyController.getSurveyExistence,

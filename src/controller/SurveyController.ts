@@ -544,6 +544,43 @@ export class SurveyController {
       return CommonUtil.failResponse(res, e.message);
     }
   }
+
+  /**
+   * Updates the floor_name and floor_tag the selected minimap floor.
+   * @param req
+   * @param res
+   * @returns Success Response if the upload/DB update has been successful
+   */
+  public async updateMinimapFloorDetails(req: Request, res: Response) {
+    try {      
+      const { siteId } = req.params;
+      const { floor } = req.query;
+      const { floor_name, floor_tag } = req.body;
+
+      if (!siteId) throw new Error('Site Id is not provided');
+      if (!floor) throw new Error('Floor is not provided');
+      if (!floor_name && !floor_tag) throw new Error('Floor name neither tag provided');
+      if (floor_name === ""  || floor_tag === "") throw new Error('Empty strings cannot be assigned to floor name or tag');
+
+      const site = await Site.findById({ _id: new ObjectID(siteId) });
+      if (!site) throw new Error('Invalid Site Id');
+
+      const updateMinimapFloorDetails = await SurveyService.updateMinimapFloorDetails(
+        site,
+        parseInt(floor as string),
+        floor_name,
+        floor_tag          
+      );
+
+      if (!updateMinimapFloorDetails.success) throw new Error(updateMinimapFloorDetails.message);
+      return CommonUtil.successResponse(res, updateMinimapFloorDetails.message);
+
+    } catch (e) {
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
   /**
    * getSurveyExistence - Returns booleans representing the existence of a site and surveys in the database.
    * @param req

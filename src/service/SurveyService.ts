@@ -537,7 +537,7 @@ export abstract class SurveyService {
 
       const saveSiteMap = getCurrentSiteMap
         ? await MinimapImages.findOneAndUpdate(
-          { site: site._id },
+          { floor, site: site._id },
           {
             image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
             image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
@@ -550,6 +550,8 @@ export abstract class SurveyService {
           image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
           image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
           floor: floor,
+          floor_name: "Level " + floor,
+          floor_tag: floor,
           site: site._id,
           x_pixel_offset: 0,
           y_pixel_offset: 0,
@@ -572,6 +574,42 @@ export abstract class SurveyService {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
+      return { success: false, message: e.message };
+    }
+  }
+
+  public static async updateMinimapFloorDetails(
+    site: ISite, 
+    floor: number, 
+    floor_name: string, 
+    floor_tag: string) {
+
+    try
+    {
+      
+      const getCurrentSiteMap = await MinimapImages.findOne(
+        { floor, site: new ObjectId(site._id) },
+        '-_id',
+      );
+
+      if (!getCurrentSiteMap) throw new Error('Site Map / Floor combination does not exist');
+      
+      const saveSiteMap = await MinimapImages.findOneAndUpdate(
+          { floor, site: new ObjectId(site._id) },
+          {
+            floor_name: floor_name,
+            floor_tag: floor_tag
+          }
+      );
+      
+      if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
+
+      return {
+        success: true,
+        message: 'Site Map has been saved',
+      };
+    } catch (e) {
+      ConsoleUtil.error(e);
       return { success: false, message: e.message };
     }
   }
