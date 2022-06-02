@@ -554,13 +554,14 @@ export class SurveyController {
   public async updateMinimapFloorDetails(req: Request, res: Response) {
     try {      
       const { siteId } = req.params;
-      const { floor } = req.query;
-      const { floor_name, floor_tag } = req.body;
+      const { floor_name, floor_tag, floor } = req.body;
 
       if (!siteId) throw new Error('Site Id is not provided');
-      if (!floor) throw new Error('Floor is not provided');
+      if (!floor && floor !== 0) throw new Error('Floor is not provided');
       if (!floor_name && !floor_tag) throw new Error('Floor name neither tag provided');
-      if (floor_name === ""  || floor_tag === "") throw new Error('Empty strings cannot be assigned to floor name or tag');
+      if (floor_name === ""  || floor_tag === "") {
+        throw new Error('Empty strings cannot be assigned to floor name or tag');
+      };
 
       const site = await Site.findById({ _id: new ObjectID(siteId) });
       if (!site) throw new Error('Invalid Site Id');
