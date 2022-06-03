@@ -136,7 +136,7 @@ export abstract class SurveyService {
       }
 
       // Upload tiles to Manta using Manta-Sync
-      const uploadZip = await uploadZipManta(extractedFolder, site.tag);
+      const uploadZip = await uploadZipManta(extractedFolder, site.tag.replaceAll(/[^a-zA-Z0-9-]/g, ''));
       if (!uploadZip) return false;
 
       return true;
@@ -204,7 +204,7 @@ export abstract class SurveyService {
               levels: scene.levels,
               face_size: scene.faceSize,
               initial_parameters: scene.initialViewParameters,
-              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag}/`,
+              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag.replaceAll(/[^a-zA-Z0-9-]/g, '')}/`,
               node_number: i,
               survey_name: scene.name,
               tiles_id: scene.id,
@@ -595,11 +595,11 @@ export abstract class SurveyService {
       if (!getCurrentSiteMap) throw new Error('Site Map / Floor combination does not exist');
       
       const saveSiteMap = await MinimapImages.findOneAndUpdate(
-          { floor, site: new ObjectId(site._id) },
-          {
-            floor_name: floor_name,
-            floor_tag: floor_tag
-          }
+        { floor, site: new ObjectId(site._id) },
+        {
+          floor_name: floor_name,
+          floor_tag: floor_tag
+        }
       );
       
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');

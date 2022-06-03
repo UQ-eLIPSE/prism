@@ -40,10 +40,10 @@ export class Routes {
           cb(
             null,
             `${
-              file.originalname.replaceAll(' ', '_').split('.')[0]
+              file.originalname.replaceAll(/[^a-zA-Z0-9-]/g, '').split('.')[0]
             }-${Date.now()}.webp`,
           );
-        else cb(null, file.originalname);
+        else cb(null, file.originalname.replaceAll(/[^a-zA-Z0-9-.]/g, ''));
       },
     });
 
