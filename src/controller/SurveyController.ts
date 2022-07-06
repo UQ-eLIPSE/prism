@@ -507,6 +507,70 @@ export class SurveyController {
   }
 
   /**
+   * Get minimap floor details
+   * @param req
+   * @param res
+   */
+  public async getMinimapFloors(req: Request, res: Response) {  
+    const { siteId } = req.params;
+
+    try {
+        if (!siteId) throw new Error('Site ID not entered');
+
+        const minimapFloorObject = await MinimapImages.find(
+            { site: new ObjectID(siteId) }
+        );
+        
+        if (!minimapFloorObject) throw new Error('minimapFloorObject not found.');
+
+        return CommonUtil.successResponse(
+            res,
+            '',
+            minimapFloorObject || []
+        );
+    } catch (e) {
+        console.error(e);
+        return CommonUtil.failResponse(res, e.message || e);
+    }
+  }
+
+  public async addMinimapFloor(req: Request, res: Response) {
+    const { siteId, floor } = req.params;
+
+    try {
+      if (!siteId) throw new Error('Site ID not entered');
+      if (!floor) throw new Error('Floor not entered');
+
+      const minimapFloorObject = await MinimapImages.find(
+        { site: new ObjectID(siteId), floor: floor }
+      );
+
+      if (JSON.stringify(minimapFloorObject) !== '[]') {
+        throw new Error(`Floor ${floor} on site ${siteId} already exists in database`);
+      } else {
+          const addedMinimapFloorObject = await MinimapImages.create({
+              _id: new ObjectID(),
+              floor: floor,
+              floor_name: "Level " + floor,
+              floor_tag: floor,
+              site: new ObjectID(siteId),
+          });
+      
+          if (!addedMinimapFloorObject) throw new Error('Failed to add empty floor to database.');
+      
+          return CommonUtil.successResponse(
+              res,
+              '',
+              addedMinimapFloorObject || []
+          );
+      }
+    } catch (e) {
+        console.error(e);
+        return CommonUtil.failResponse(res, e.message || e);
+    }
+  }
+
+  /**
    * createSiteMap - Inserts Site Map in to site Settings and upload
    * to Manta.
    * @param req

@@ -191,6 +191,18 @@ export class Routes {
       this.surveyController.updateMinimapFloorDetails
     );
 
+    // get floor information
+    router.get(
+        '/site/:siteId/minimap/floors',
+        this.surveyController.getMinimapFloors
+    );
+    
+    // add empty floor
+    router.get(
+        '/site/:siteId/minimap/newFloor/:floor',
+        this.surveyController.addMinimapFloor
+    );
+
     router.get(
       '/site/:siteId/exists',
       this.surveyController.getSurveyExistence,

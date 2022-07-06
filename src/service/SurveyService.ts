@@ -530,37 +530,15 @@ export abstract class SurveyService {
 
       if (!upload) throw new Error("Site map couldn't be uploaded.");
 
-      const getCurrentSiteMap = await MinimapImages.findOne(
-        { floor, site: new ObjectId(site._id) },
-        '-_id',
-      );
-
-      const saveSiteMap = getCurrentSiteMap
-        ? await MinimapImages.findOneAndUpdate(
-          { floor, site: site._id },
-          {
-            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-            img_width: ImageSize(file.path).width,
-            img_height: ImageSize(file.path).height,
-          },
-        )
-        : await MinimapImages.create({
-          _id: new ObjectId(),
+      const saveSiteMap = await MinimapImages.findOneAndUpdate(
+        { floor, site: site._id },
+        {
           image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
           image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-          floor: floor,
-          floor_name: "Level " + floor,
-          floor_tag: floor,
-          site: site._id,
-          x_pixel_offset: 0,
-          y_pixel_offset: 0,
-          x_scale: 1,
-          y_scale: 1,
           img_width: ImageSize(file.path).width,
           img_height: ImageSize(file.path).height,
-          xy_flipped: false,
-        });
+        },
+      );
 
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
