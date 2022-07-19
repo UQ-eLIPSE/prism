@@ -55,7 +55,7 @@ export class SurveyController {
         [fieldname: string]: Express.Multer.File[];
       };
 
-      const { siteId } = req.params;
+      const { siteId, floorId } = req.params;
       if (!files) throw new Error('File is undefined');
 
       if (!siteId) throw new Error('Site Id is not provided');
@@ -73,7 +73,7 @@ export class SurveyController {
 
       if (!validate) throw new Error('Validation failed');
 
-      await SurveyService.uploadToDB(files, site);
+      await SurveyService.uploadToDB(files, site, floorId);
 
       return CommonUtil.successResponse(res, 'Successfully uploaded');
     } catch (e) {
@@ -670,6 +670,40 @@ export class SurveyController {
 
       const sitePopulated = await SurveyService.getSitePopulated(siteId);
       result.sitePopulated = sitePopulated.success;
+
+      return CommonUtil.successResponse(res, '', result);
+    } catch (e) {
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
+   * getFloorSurveyExistence - Similar to getSurveyExistence, however, returns the existence of a survey for a given floor and site.
+   * @param req 
+   * @param res 
+   * @returns site: SiteId, floor: floorId, floorPopulated: boolean
+   */
+  public async getFloorSurveyExistence(req: Request, res: Response) {
+    const { siteId, floorId } = req.params;
+
+    const result = {
+      site: siteId,
+      floor: floorId,
+      floorPopulated: false,
+    }
+
+    if (!siteId) {
+      throw new Error('No Site ID Specififed');
+    }
+
+    if (!floorId) {
+      throw new Error('No Floor ID Specified');
+    }
+
+    try {
+      const floorPopulated = await SurveyService.getFloorPopulated(siteId, parseInt(floorId));
+      result.floorPopulated = floorPopulated.success;
 
       return CommonUtil.successResponse(res, '', result);
     } catch (e) {

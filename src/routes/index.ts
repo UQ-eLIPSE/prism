@@ -11,7 +11,7 @@ import { Request } from 'express';
 
 export class Routes {
   public userController: UserController = new UserController();
-  public surveyController: SurveyController = new SurveyController();
+public surveyController: SurveyController = new SurveyController();
   public settingController: SettingController = new SettingController();
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
@@ -134,7 +134,7 @@ export class Routes {
     );
 
     router.post(
-      '/site/:siteId/addScenes',
+      '/site/:siteId/:floorId/addScenes',
       upload.fields([{ name: 'zipFile' }, { name: 'properties' }]),
       this.surveyController.uploadScenes,
     );
@@ -203,10 +203,17 @@ export class Routes {
         this.surveyController.addMinimapFloor
     );
 
+    // return existence of survey for a site
     router.get(
       '/site/:siteId/exists',
       this.surveyController.getSurveyExistence,
     );
+
+    // get existence of a survey for a floor
+    router.get(
+        '/site/:siteId/:floorId/exists',
+        this.surveyController.getFloorSurveyExistence,
+    )
 
     /**
      * Routes for editing the coordinates and fov of minimap nodes

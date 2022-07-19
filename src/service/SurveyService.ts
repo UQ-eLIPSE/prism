@@ -160,6 +160,7 @@ export abstract class SurveyService {
       [fieldname: string]: Express.Multer.File[];
     },
     site: ISite,
+    floorId: string,
   ) {
     try {
       const { zipFile, properties } = files;
@@ -220,7 +221,7 @@ export abstract class SurveyService {
           const minimapNode = await MinimapNode.create([
             {
               _id: new ObjectId(),
-              floor: specElem?.level ? specElem.level : 0,
+              floor: floorId,
               node_number: i,
               survey_node: new ObjectId(survey[0]._id),
               tiles_id: scene.id,
@@ -236,7 +237,7 @@ export abstract class SurveyService {
           const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
-              floor: specElem?.level ? specElem.level : 0,
+              floor: floorId,
               minimap_node: new ObjectId(minimapNode[0]._id),
               survey_node: new ObjectId(survey[0]._id),
               x: specElem?.x,
@@ -611,6 +612,22 @@ export abstract class SurveyService {
       const data = await SurveyNode.countDocuments({
         site: new ObjectId(site),
       });
+
+      return { success: data ? true : false };
+    } catch (e) {
+      return { success: false };
+    }
+  }
+
+  public static async getFloorPopulated(
+    siteId: string,
+    floorId: number,
+  ): Promise<{ success: boolean }> {
+    try {
+      const data = await MinimapNode.countDocuments({ $and: [
+        {site: new ObjectId(siteId)},
+        {floor: floorId},
+      ]})
 
       return { success: data ? true : false };
     } catch (e) {
