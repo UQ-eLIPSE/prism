@@ -125,7 +125,7 @@ public surveyController: SurveyController = new SurveyController();
       this.surveyController.getIndividualSurveysDetails,
     );
     router.get(
-      '/site/:siteId/survey/minimapSingleSite/',
+      '/site/:siteId/:floorId/survey/minimapSingleSite/',
       this.surveyController.getSingleSiteNodeData,
     );
     router.get(

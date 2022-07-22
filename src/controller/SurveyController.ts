@@ -30,6 +30,20 @@ interface IMantaOutput {
   filename: string;
 }
 
+interface INodeReturnData {
+    floor: number;
+    node_number: number;
+    tiles_id: string;
+    tiles_name: string;
+    survey_node: ISurveyNode;
+    x: number;
+    x_scale: number;
+    y: number;
+    y_scale: number;
+    site: number;
+    rotation: number;
+}
+
 export class SurveyController {
   public mantaService: MantaService;
   public writeLocally: multer.Multer;
@@ -226,11 +240,15 @@ export class SurveyController {
    */
   public async getSingleSiteNodeData(req: Request, res: Response) {
     try {
-      const { siteId } = req.params;
+      const { siteId, floorId } = req.params;
       const allSurveys: IMinimapConversion[] = [];
 
       if (!siteId)
         return CommonUtil.failResponse(res, 'Site ID has not been provided');
+
+      if (!floorId) {
+        return CommonUtil.failResponse(res, 'Floor ID has not been provided');
+      }
 
       if (!allSurveys.length) {
         const surveyNode = await SurveyNode.find({
@@ -245,19 +263,24 @@ export class SurveyController {
         }
       }
 
-      const results = allSurveys.map((s: IMinimapConversion) => {
-        return {
-          floor: s.floor,
-          node_number: s.survey_node.node_number,
-          tiles_id: s.survey_node.tiles_id,
-          tiles_name: s.survey_node.tiles_name,
-          survey_node: s.minimap_node.survey_node,
-          x: s.x,
-          x_scale: s.x_scale,
-          y: s.y,
-          y_scale: s.y_scale,
-          site: s.site,
-          rotation: s.rotation,
+      const results: INodeReturnData[] = [];
+      allSurveys.map((s: IMinimapConversion) => {
+        if (s.floor == Number(floorId)) {
+          results.push(
+            {
+              floor: s.floor,
+              node_number: s.survey_node.node_number,
+              tiles_id: s.survey_node.tiles_id,
+              tiles_name: s.survey_node.tiles_name,
+              survey_node: s.minimap_node.survey_node,
+              x: s.x,
+              x_scale: s.x_scale,
+              y: s.y,
+              y_scale: s.y_scale,
+              site: s.site,
+              rotation: s.rotation,
+            }
+          );
         };
       });
 
