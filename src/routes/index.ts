@@ -11,7 +11,7 @@ import { Request } from 'express';
 
 export class Routes {
   public userController: UserController = new UserController();
-public surveyController: SurveyController = new SurveyController();
+  public surveyController: SurveyController = new SurveyController();
   public settingController: SettingController = new SettingController();
   public resourceController: ResourceController = new ResourceController();
   public faqController: FAQController = new FAQController();
@@ -62,6 +62,11 @@ public surveyController: SurveyController = new SurveyController();
     );
 
     router.post('/login', this.userController.login);
+    router.get(
+      '/login/sso',
+      AuthUtil.authenticateUser,
+      this.userController.loginOrCreateUser,
+    );
     router.post(
       '/forgot-password',
       this.userController.sendEmailForgotPassword,
@@ -70,6 +75,12 @@ public surveyController: SurveyController = new SurveyController();
       '/update-password',
       AuthUtil.verifyCookie,
       this.userController.updateUserPassword,
+    );
+
+    router.get(
+      '/login/user/info',
+      AuthUtil.authenticateUser,
+      this.userController.getUserInfo,
     );
 
     router.get('/logged-in-user', this.userController.getLoggedInUser);
@@ -188,19 +199,19 @@ public surveyController: SurveyController = new SurveyController();
 
     router.patch(
       '/site/:siteId/sitemap',
-      this.surveyController.updateMinimapFloorDetails
+      this.surveyController.updateMinimapFloorDetails,
     );
 
     // get floor information
     router.get(
-        '/site/:siteId/minimap/floors',
-        this.surveyController.getMinimapFloors
+      '/site/:siteId/minimap/floors',
+      this.surveyController.getMinimapFloors,
     );
-    
+
     // add empty floor
     router.get(
-        '/site/:siteId/minimap/newFloor/:floor',
-        this.surveyController.addMinimapFloor
+      '/site/:siteId/minimap/newFloor/:floor',
+      this.surveyController.addMinimapFloor,
     );
 
     // return existence of survey for a site
@@ -211,15 +222,21 @@ public surveyController: SurveyController = new SurveyController();
 
     // get existence of a survey for a floor
     router.get(
-        '/site/:siteId/:floorId/exists',
-        this.surveyController.getFloorSurveyExistence,
-    )
+      '/site/:siteId/:floorId/exists',
+      this.surveyController.getFloorSurveyExistence,
+    );
 
     /**
      * Routes for editing the coordinates and fov of minimap nodes
      */
-    router.patch('/node/coords/:nodeId', this.surveyController.updateNodeCoordinates);
-    router.patch('/node/rotation/:nodeId', this.surveyController.updateNodeRotation);
+    router.patch(
+      '/node/coords/:nodeId',
+      this.surveyController.updateNodeCoordinates,
+    );
+    router.patch(
+      '/node/rotation/:nodeId',
+      this.surveyController.updateNodeRotation,
+    );
 
     // settings
     router.get('/site/:siteId/settings', this.siteController.getSettings);

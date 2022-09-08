@@ -6,9 +6,57 @@ import { CommonUtil } from './CommonUtil';
 import { InvitedUser, IUser, User } from '../models/UserModel';
 
 export abstract class AuthUtil {
-  public static getTokenFromRequest(req: Request): undefined | string {
-    // Look through request to find EAIT_WEB cookie
+  /**
+   * This function gets the EAIT_WEB cookie from the network request
+   * @param req
+   * @returns a string or undefined
+   */
+  static getTokenFromRequest(req: Request): undefined | string {
     return (req.cookies || {})['EAIT_WEB'];
+  }
+
+  /**
+   * Using the SSO package, req is passed in to get the KVD payload information
+   * @param req
+   * @param res
+   * @returns ssoPayload containing UQ information
+   */
+  static async getSSOUser(req: Request, res: Response) {
+    const { AUTH_HOST } = process.env;
+    const sso = new SSO(<string>AUTH_HOST);
+    const token = this.getTokenFromRequest(req);
+    if (!token) return CommonUtil.failResponse(res, 'token is not found');
+
+    const ssoPayload = await sso.getUserInfoPayload(token);
+    if (!ssoPayload)
+      return CommonUtil.failResponse(res, 'Error, user info not found');
+
+    return ssoPayload;
+  }
+
+  /**
+   * Create User function
+   * @param username
+   * @returns Object with username and role
+   */
+  static async createUser(username: string) {
+    const createUser: IUser = new User({
+      username,
+    });
+    await createUser.save();
+    return createUser;
+  }
+
+  /**
+   * This function gets the users information from the EAIT_WEB cookie
+   * @param req
+   * @param res
+   * @returns user information
+   */
+  static async getUserInfo(req: Request, res: Response) {
+    const { user } = res.locals.user;
+    const payload = await User.findOne({ username: user });
+    return CommonUtil.successResponse(res, '', payload);
   }
 
   static generateToken(res: Response, username: string, id: string) {
@@ -31,9 +79,8 @@ export abstract class AuthUtil {
     res: Response,
     next: NextFunction,
   ): Promise<Response | undefined> {
-    const { JWT_Hash, USE_SSO, AUTH_HOST } = process.env;
+    const { JWT_Hash } = process.env;
     const jwtToken = req.body.token;
-    const useSSO = USE_SSO === 'true';
 
     if (jwtToken) {
       res.locals.jwtToken = jwtToken;
@@ -41,15 +88,11 @@ export abstract class AuthUtil {
       res.locals.tokenType = req.body.forgotPassword;
       next();
     } else {
-      if (!useSSO) {
+      if (!req.headers['x-kvd-payload']) {
         res.locals.user = req.body;
         next();
       } else {
-        const token: string | undefined = this.getTokenFromRequest(req);
-        const sso = new SSO(<string>AUTH_HOST);
-        if (!token) return CommonUtil.failResponse(res, 'token is not found');
-
-        const payload = sso.getUserInfoPayload(<string>token);
+        const payload = await AuthUtil.getSSOUser(req, res);
         if (!payload)
           return CommonUtil.failResponse(res, 'user details is not found');
 
@@ -68,7 +111,11 @@ export abstract class AuthUtil {
     const { JWT_Hash } = process.env;
     const userParams = req.params.username;
 
-    if (!token) return CommonUtil.failResponse(res, 'user is not authorized');
+    if (!token)
+      return CommonUtil.failResponse(
+        res,
+        'cookie verification failed, user is not authorized',
+      );
     else {
       const loginToken = (<string[]>token)[0].split('=')[1].split(';')[0];
       await jwt.verify(
@@ -81,7 +128,10 @@ export abstract class AuthUtil {
           const isUserFound = await User.findOne({ username });
 
           if (!isUserFound || userParams !== username)
-            return CommonUtil.failResponse(res, 'user is not authorized');
+            return CommonUtil.failResponse(
+              res,
+              'cookie fail, user is not authorized',
+            );
           if (isUserFound.role === 'guest')
             return CommonUtil.failResponse(
               res,

@@ -10,86 +10,32 @@ import { AuthUtil } from '../utils/AuthUtil';
 
 export class UserController {
   /**
+   * This functions calls the sso information which returns the logged in
+   * users information
+   * @param req
+   * @param res
+   */
+  public async getUserInfo(req: Request, res: Response) {
+    return AuthUtil.getUserInfo(req, res);
+  }
+
+  /**
    * Create user if user's email is in invited user or user logged in using UQ SSO.
-   * If user is not in the invited user table and they logged in using UQ SSO, 
+   * If user is not in the invited user table and they logged in using UQ SSO,
    * // they will be automatically assigned guest role
-   * If user is an external user and not in the invited user table, 
+   * If user is an external user and not in the invited user table,
    * // the api will throw user is not authorized
    * @param req
    * @param res
    */
   public async createNewUser(req: Request, res: Response) {
-    const { email } = res.locals.user;
-    const invitedUser: IUser | null = await InvitedUser.findOne({
-      email: email,
-    });
-    const isInternalUser = CommonUtil.isInternalUser(email);
-
-    if (isInternalUser) {
-      const { firstName, lastName, username, password, role } = res.locals.user;
-
-      // if user is not invited but they are logged in using their uq sso.
-      const newUser: IUser | null = await new User({
-        firstName,
-        lastName,
-        email,
-        role: role,
-        username: username,
-        password: bcrypt.hashSync(password, 10),
-      });
-      const create = await newUser.save();
-
-      if (!create)
-        return CommonUtil.failResponse(res, 'User is not authorized');
-
-      await AuthUtil.generateToken(res, newUser.username, newUser._id);
-      return CommonUtil.successResponse(res, `${role} user is created`);
-    } else {
-      if ( !isInternalUser)
-        return CommonUtil.failResponse(res, 'User is not authorized');
-
-      const { firstName, lastName, email, role } = <IUser>invitedUser;
-      const { user } = res.locals.user;
-      // if user is in the invited user table and they login using uq sso.
-      if ( isInternalUser) {
-        const newUser: IUser = await new User({
-          firstName,
-          lastName,
-          email,
-          role,
-          username: user,
-        });
-        await newUser.save();
-        await AuthUtil.generateToken(res, newUser.username, newUser._id);
-        return CommonUtil.successResponse<IResponse<string>>(
-          res,
-          'Guest user is created',
-        );
-      }
-
-      const { username } = res.locals.user || req.body;
-      const usernameIsFound = await User.findOne({ username });
-
-      if (usernameIsFound)
-        return CommonUtil.failResponse(res, 'username has already exists');
-
-      const password = bcrypt.hashSync(res.locals.user.password, 10) || '';
-      const newUser: IUser = await new User({
-        firstName,
-        lastName,
-        email,
-        role,
-        username,
-        password,
-      });
-      await newUser.save();
-      await InvitedUser.deleteOne({ email: email });
-
-      return CommonUtil.successResponse<IResponse<string>>(
-        res,
-        'User has been created',
-      );
-    }
+    const { user } = res.locals.user;
+    const createUser = await AuthUtil.createUser(user);
+    await AuthUtil.generateToken(res, createUser.username, createUser._id);
+    return CommonUtil.successResponse<IResponse<string>>(
+      res,
+      'Guest user is created',
+    );
   }
 
   /**
@@ -102,13 +48,19 @@ export class UserController {
   }
 
   /**
-  * Gets the current logged in user
-  * @param req
-  * @param res (logged in user details)
-  */
+   * Gets the current logged in user
+   * @param req
+   * @param res (logged in user details)
+   */
   public getLoggedInUser(req: Request, res: Response) {
     const user = req.header('x-kvd-payload');
     res.send(user);
+  }
+
+  public async getUserPermissions(req: Request, res: Response) {
+    if (!req) return CommonUtil.failResponse(res, 'failure to fetch info');
+    res.send(req.body);
+    return CommonUtil.successResponse(res, 'from user controlller' + req.body);
   }
 
   /**
@@ -131,9 +83,9 @@ export class UserController {
   }
 
   /**
-   * Update user's role to guest if the user is using UQ SSO. 
+   * Update user's role to guest if the user is using UQ SSO.
    * Delete user from database if user is Non-UQ
-   * @param req (current user's username, 
+   * @param req (current user's username,
    *   the username of another user which need to be updated or deleted)
    * @param res
    */
@@ -147,7 +99,7 @@ export class UserController {
       return CommonUtil.failResponse(res, 'user to be deleted is not found');
 
     const isInternalUser = CommonUtil.isInternalUser(
-      isUserToBeDeletedFound.email,
+      isUserToBeDeletedFound.email as string,
     );
 
     if (!isInternalUser) {
@@ -252,13 +204,13 @@ export class UserController {
       );
     if (!userFound) return;
 
-    const { firstName, lastName, role } = <IUser>userFound;
+    const { role } = <IUser>userFound;
     const transporter: Mail = req.app.get('transporter');
 
     const { JWT_Hash } = process.env;
 
     const secureToken = jwt.sign(
-      { firstName, lastName, email: userFound.email, role },
+      { email: userFound.email, role },
       <string>JWT_Hash,
       {
         algorithm: 'HS256',
@@ -294,7 +246,10 @@ export class UserController {
 
     const userFound = await User.findOne({ email });
     if (res.locals.user.username !== (<IUser>userFound).username)
-      return CommonUtil.failResponse(res, 'user is not authorized');
+      return CommonUtil.failResponse(
+        res,
+        'update password failed, user is not authorized',
+      );
 
     if (!userFound) return CommonUtil.failResponse(res, 'User is not found');
 
@@ -319,6 +274,24 @@ export class UserController {
     await AuthUtil.generateToken(res, loginUser.username, loginUser._id);
 
     return CommonUtil.successResponse(res, '', loginUser);
+  }
+
+  /**
+   * Creates or logs in user depending on the DB record. This is used
+   * as part of the SSO login.
+   * @param req
+   * @param res
+   * @returns Redirect to client.
+   */
+  public async loginOrCreateUser(req: Request, res: Response) {
+    if (!res.locals.user)
+      return CommonUtil.failResponse(res, "SSO User doesn't exist.");
+
+    const { user } = res.locals.user;
+    const findUser = await User.findOne({ username: user });
+    if (!findUser) await AuthUtil.createUser(user);
+
+    return res.redirect(process.env.CLIENT_ORIGIN as string);
   }
 
   /**

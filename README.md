@@ -35,6 +35,7 @@ _Techstack_
   - PORT_NUM - The port to host the application (e.g. port 8000)
   - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
   - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
+  - AUTH_HOST - the zone site name (e.g 'prism-{tag}.uqcloud.net')
 
 Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
 
