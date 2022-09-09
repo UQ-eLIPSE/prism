@@ -11,7 +11,8 @@ pipelines:
             - cat .env.prod.example | envsubst > .env
             - cat .env
             - yarn build
-            - tar -czvf server.tar.gz dist/ node_modules/ .env
+            - cp .env dist/.env
+            - tar -czvf server.tar.gz dist/ node_modules/
           artifacts:
             - server.tar.gz
       - step:
