@@ -12,7 +12,7 @@ pipelines:
             - cat .env
             - yarn build
             - cp .env dist/.env
-            - tar -czvf server.tar.gz dist/ node_modules/
+            - tar -czvf server.tar.gz dist/ node_modules/ .env
           artifacts:
             - server.tar.gz
       - step:
