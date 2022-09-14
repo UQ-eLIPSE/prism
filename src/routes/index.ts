@@ -24,7 +24,8 @@ export class Routes {
 
     const storage = multer.diskStorage({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      destination: (req: Request, file: any, cb: any) => cb(null, 'tmp/'),
+      destination: (req: Request, file: any, cb: any) =>
+        cb(null, process.env.TMP_FOLDER),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filename: (req: Request, file: any, cb: any) => {
         if (
