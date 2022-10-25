@@ -374,8 +374,8 @@ export class SurveyController {
         if (!surveysWithFloor)
           return CommonUtil.failResponse(res, 'Surveys not found');
         surveysWithFloor.map((survey) => {
-          if (!map.has(survey.survey_node.survey_name)) {
-            map.set(survey.survey_node.survey_name, true);
+          if (!map.has(survey.survey_node.date.toString())) {
+            map.set(survey.survey_node.date.toString(), true);
 
             return results.push({
               survey_name: survey.survey_node.survey_name,
@@ -794,6 +794,29 @@ export class SurveyController {
         res,
         'Minimap node rotation has been updated',
       );
+    } catch (e) {
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
+  /**
+   * returns the list of empty floors per a site ID
+   * @param req 
+   * @param res 
+   * @returns An array containing all the floors that are not populate per the site id
+   */
+  public async getEmptyFloors(req: Request, res: Response){
+    const { siteId } = req.params;
+
+    if (!siteId) {
+      throw new Error('No Site ID Specififed');
+    }
+
+    try {
+      const emptyFloors = await SurveyService.getEmptyFloors(siteId);
+      
+      return CommonUtil.successResponse(res, '', emptyFloors);
     } catch (e) {
       ConsoleUtil.log(e);
       return CommonUtil.failResponse(res, e.message);

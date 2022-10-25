@@ -27,6 +27,8 @@ interface CSVProperties {
   fileName: string;
   x: string;
   y: string;
+  date?: string;
+  survey_name?: string;
 }
 export abstract class SurveyService {
   /**
@@ -195,7 +197,12 @@ export abstract class SurveyService {
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
           const specElem = csvJSON.find((el) => el.fileName === scene.name);
-
+          
+          // Reformat date per Australian standard
+          if(specElem?.date) {
+            const dateAtt = specElem.date.split("/");
+            specElem.date = [dateAtt[1], dateAtt[0], dateAtt[2]].join("/");
+          }
           // Upload Survey Nodes from DataJS
           const survey = await SurveyNode.create([
             {
@@ -207,10 +214,10 @@ export abstract class SurveyService {
               initial_parameters: scene.initialViewParameters,
               manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag.replaceAll(/[^a-zA-Z0-9-]/g, '')}/`,
               node_number: i,
-              survey_name: scene.name,
+              survey_name: specElem?.survey_name ? specElem?.survey_name : '',
               tiles_id: scene.id,
               tiles_name: specElem?.title ? specElem?.title : scene.name,
-              date: '2021-11-16T00:00:00.000+10:00',
+              date: specElem?.date ? new Date(specElem.date) : new Date("01-01-1900"),
               site: new ObjectId(site._id),
             },
           ]);
@@ -266,12 +273,12 @@ export abstract class SurveyService {
           await SiteSettings.create({
             _id: new ObjectId(),
             enable: {
-              timeline: false,
+              timeline: true,
               rotation: true,
               media: false,
               faq: false,
               documentation: false,
-              floors: false,
+              floors: true,
               about: false,
               animations: false,
             },
@@ -354,13 +361,13 @@ export abstract class SurveyService {
               marzipanoData = marzipanoData.split('=')[1].replace(';', '');
               marzipanoData = JSON.parse(marzipanoData);
 
-              const newSurvey = new Survey({ surveyName: marzipanoData.name });
+              const newSurvey = new Survey({ survey_name: marzipanoData.name });
               await newSurvey.save();
 
               for (let idx = 0; idx < marzipanoData.scenes.length; idx++) {
                 const date = new Date().getTime();
                 const newSurveyNode = new SurveyNode({
-                  surveyName: marzipanoData.name,
+                  survey_name: marzipanoData.name,
                   uploadedAt: date,
                   uploadedBy: userDetails['username'],
                   mantaLink: `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${entries[0].name}`,
@@ -380,7 +387,7 @@ export abstract class SurveyService {
 
                 await Survey.findOneAndUpdate(
                   { _id: newSurvey._id },
-                  { $push: { surveyNodes: newSurveyNode._id } },
+                  { $push: { survey_nodes: newSurveyNode._id } },
                 );
 
                 const newMinimapCoversion = new MinimapConversion({
@@ -635,6 +642,42 @@ export abstract class SurveyService {
       ]})
 
       return { success: data ? true : false };
+    } catch (e) {
+      return { success: false };
+    }
+  }
+
+  public static async getEmptyFloors(
+    siteId: string,
+  ) {
+    try {
+      const allFloors: number[] = [];
+      const popFloors: number[] = [];
+
+      const allFloorsObj = await MinimapImages.find({
+        site: new ObjectId(siteId)
+      });
+      
+      for(const floor of allFloorsObj){
+        allFloors.push(floor.floor);
+      }
+
+      const popFloorsObj = await MinimapNode.find({
+        site: new ObjectId(siteId)
+      });
+
+      for(const floor of popFloorsObj){
+        popFloors.push(floor.floor);
+      }
+
+      const emptyFloors = allFloors.filter((floor) => {
+        if(!popFloors.includes(floor))
+          return floor;
+      });
+
+      return {success: true,
+        emptyFloors: emptyFloors,
+      }
     } catch (e) {
       return { success: false };
     }

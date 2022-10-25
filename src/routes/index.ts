@@ -221,6 +221,12 @@ export class Routes {
       this.surveyController.getSurveyExistence,
     );
 
+    // get empty floors for a survey
+    router.get(
+      '/site/:siteId/emptyFloors',
+      this.surveyController.getEmptyFloors,
+    );
+
     // get existence of a survey for a floor
     router.get(
       '/site/:siteId/:floorId/exists',
