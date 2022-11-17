@@ -31,17 +31,17 @@ interface IMantaOutput {
 }
 
 interface INodeReturnData {
-    floor: number;
-    node_number: number;
-    tiles_id: string;
-    tiles_name: string;
-    survey_node: ISurveyNode;
-    x: number;
-    x_scale: number;
-    y: number;
-    y_scale: number;
-    site: number;
-    rotation: number;
+  floor: number;
+  node_number: number;
+  tiles_id: string;
+  tiles_name: string;
+  survey_node: ISurveyNode;
+  x: number;
+  x_scale: number;
+  y: number;
+  y_scale: number;
+  site: number;
+  rotation: number;
 }
 
 export class SurveyController {
@@ -241,6 +241,7 @@ export class SurveyController {
   public async getSingleSiteNodeData(req: Request, res: Response) {
     try {
       const { siteId, floorId } = req.params;
+      const { date } = req.query;
       const allSurveys: IMinimapConversion[] = [];
 
       if (!siteId)
@@ -253,7 +254,9 @@ export class SurveyController {
       if (!allSurveys.length) {
         const surveyNode = await SurveyNode.find({
           site: new ObjectID(siteId),
+          date: date || undefined,
         });
+
         for (const node of surveyNode) {
           allSurveys.push(
             await MinimapConversion.findOne({ survey_node: node._id }, '-_id')
@@ -266,22 +269,20 @@ export class SurveyController {
       const results: INodeReturnData[] = [];
       allSurveys.map((s: IMinimapConversion) => {
         if (s.floor == Number(floorId)) {
-          results.push(
-            {
-              floor: s.floor,
-              node_number: s.survey_node.node_number,
-              tiles_id: s.survey_node.tiles_id,
-              tiles_name: s.survey_node.tiles_name,
-              survey_node: s.minimap_node.survey_node,
-              x: s.x,
-              x_scale: s.x_scale,
-              y: s.y,
-              y_scale: s.y_scale,
-              site: s.site,
-              rotation: s.rotation,
-            }
-          );
-        };
+          results.push({
+            floor: s.floor,
+            node_number: s.survey_node.node_number,
+            tiles_id: s.survey_node.tiles_id,
+            tiles_name: s.survey_node.tiles_name,
+            survey_node: s.minimap_node.survey_node,
+            x: s.x,
+            x_scale: s.x_scale,
+            y: s.y,
+            y_scale: s.y_scale,
+            site: s.site,
+            rotation: s.rotation,
+          });
+        }
       });
 
       return CommonUtil.successResponse(res, '', results);
@@ -518,11 +519,7 @@ export class SurveyController {
 
       if (!minimapImageObject) throw new Error('minimapImageObject not found.');
 
-      return CommonUtil.successResponse(
-        res,
-        '',
-        minimapImageObject || {},
-      );
+      return CommonUtil.successResponse(res, '', minimapImageObject || {});
     } catch (e) {
       console.error(e);
       return CommonUtil.failResponse(res, e.message || e);
@@ -534,26 +531,22 @@ export class SurveyController {
    * @param req
    * @param res
    */
-  public async getMinimapFloors(req: Request, res: Response) {  
+  public async getMinimapFloors(req: Request, res: Response) {
     const { siteId } = req.params;
 
     try {
-        if (!siteId) throw new Error('Site ID not entered');
+      if (!siteId) throw new Error('Site ID not entered');
 
-        const minimapFloorObject = await MinimapImages.find(
-            { site: new ObjectID(siteId) }
-        );
-        
-        if (!minimapFloorObject) throw new Error('minimapFloorObject not found.');
+      const minimapFloorObject = await MinimapImages.find({
+        site: new ObjectID(siteId),
+      });
 
-        return CommonUtil.successResponse(
-            res,
-            '',
-            minimapFloorObject || []
-        );
+      if (!minimapFloorObject) throw new Error('minimapFloorObject not found.');
+
+      return CommonUtil.successResponse(res, '', minimapFloorObject || []);
     } catch (e) {
-        console.error(e);
-        return CommonUtil.failResponse(res, e.message || e);
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
     }
   }
 
@@ -564,32 +557,36 @@ export class SurveyController {
       if (!siteId) throw new Error('Site ID not entered');
       if (!floor) throw new Error('Floor not entered');
 
-      const minimapFloorObject = await MinimapImages.find(
-        { site: new ObjectID(siteId), floor: floor }
-      );
+      const minimapFloorObject = await MinimapImages.find({
+        site: new ObjectID(siteId),
+        floor: floor,
+      });
 
       if (JSON.stringify(minimapFloorObject) !== '[]') {
-        throw new Error(`Floor ${floor} on site ${siteId} already exists in database`);
+        throw new Error(
+          `Floor ${floor} on site ${siteId} already exists in database`,
+        );
       } else {
-          const addedMinimapFloorObject = await MinimapImages.create({
-              _id: new ObjectID(),
-              floor: floor,
-              floor_name: "Level " + floor,
-              floor_tag: floor,
-              site: new ObjectID(siteId),
-          });
-      
-          if (!addedMinimapFloorObject) throw new Error('Failed to add empty floor to database.');
-      
-          return CommonUtil.successResponse(
-              res,
-              '',
-              addedMinimapFloorObject || []
-          );
+        const addedMinimapFloorObject = await MinimapImages.create({
+          _id: new ObjectID(),
+          floor: floor,
+          floor_name: 'Level ' + floor,
+          floor_tag: floor,
+          site: new ObjectID(siteId),
+        });
+
+        if (!addedMinimapFloorObject)
+          throw new Error('Failed to add empty floor to database.');
+
+        return CommonUtil.successResponse(
+          res,
+          '',
+          addedMinimapFloorObject || [],
+        );
       }
     } catch (e) {
-        console.error(e);
-        return CommonUtil.failResponse(res, e.message || e);
+      console.error(e);
+      return CommonUtil.failResponse(res, e.message || e);
     }
   }
 
@@ -639,30 +636,34 @@ export class SurveyController {
    * @returns Success Response if the upload/DB update has been successful
    */
   public async updateMinimapFloorDetails(req: Request, res: Response) {
-    try {      
+    try {
       const { siteId } = req.params;
       const { floor_name, floor_tag, floor } = req.body;
 
       if (!siteId) throw new Error('Site Id is not provided');
       if (!floor && floor !== 0) throw new Error('Floor is not provided');
-      if (!floor_name && !floor_tag) throw new Error('Floor name neither tag provided');
-      if (floor_name === ""  || floor_tag === "") {
-        throw new Error('Empty strings cannot be assigned to floor name or tag');
-      };
+      if (!floor_name && !floor_tag)
+        throw new Error('Floor name neither tag provided');
+      if (floor_name === '' || floor_tag === '') {
+        throw new Error(
+          'Empty strings cannot be assigned to floor name or tag',
+        );
+      }
 
       const site = await Site.findById({ _id: new ObjectID(siteId) });
       if (!site) throw new Error('Invalid Site Id');
 
-      const updateMinimapFloorDetails = await SurveyService.updateMinimapFloorDetails(
-        site,
-        parseInt(floor as string),
-        floor_name,
-        floor_tag          
-      );
+      const updateMinimapFloorDetails =
+        await SurveyService.updateMinimapFloorDetails(
+          site,
+          parseInt(floor as string),
+          floor_name,
+          floor_tag,
+        );
 
-      if (!updateMinimapFloorDetails.success) throw new Error(updateMinimapFloorDetails.message);
+      if (!updateMinimapFloorDetails.success)
+        throw new Error(updateMinimapFloorDetails.message);
       return CommonUtil.successResponse(res, updateMinimapFloorDetails.message);
-
     } catch (e) {
       ConsoleUtil.log(e);
       return CommonUtil.failResponse(res, e.message);
@@ -703,8 +704,8 @@ export class SurveyController {
 
   /**
    * getFloorSurveyExistence - Similar to getSurveyExistence, however, returns the existence of a survey for a given floor and site.
-   * @param req 
-   * @param res 
+   * @param req
+   * @param res
    * @returns site: SiteId, floor: floorId, floorPopulated: boolean
    */
   public async getFloorSurveyExistence(req: Request, res: Response) {
@@ -714,7 +715,7 @@ export class SurveyController {
       site: siteId,
       floor: floorId,
       floorPopulated: false,
-    }
+    };
 
     if (!siteId) {
       throw new Error('No Site ID Specififed');
@@ -725,7 +726,10 @@ export class SurveyController {
     }
 
     try {
-      const floorPopulated = await SurveyService.getFloorPopulated(siteId, parseInt(floorId));
+      const floorPopulated = await SurveyService.getFloorPopulated(
+        siteId,
+        parseInt(floorId),
+      );
       result.floorPopulated = floorPopulated.success;
 
       return CommonUtil.successResponse(res, '', result);
@@ -802,11 +806,11 @@ export class SurveyController {
 
   /**
    * returns the list of empty floors per a site ID
-   * @param req 
-   * @param res 
+   * @param req
+   * @param res
    * @returns An array containing all the floors that are not populate per the site id
    */
-  public async getEmptyFloors(req: Request, res: Response){
+  public async getEmptyFloors(req: Request, res: Response) {
     const { siteId } = req.params;
 
     if (!siteId) {
@@ -815,7 +819,7 @@ export class SurveyController {
 
     try {
       const emptyFloors = await SurveyService.getEmptyFloors(siteId);
-      
+
       return CommonUtil.successResponse(res, '', emptyFloors);
     } catch (e) {
       ConsoleUtil.log(e);

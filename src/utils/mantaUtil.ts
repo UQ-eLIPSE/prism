@@ -25,7 +25,7 @@ export const uploadZipManta =  (extractedFolder: string, tag: string) => {
   const upload = execSync(
     // eslint-disable-next-line max-len
     `manta-sync ${TMP_FOLDER}/${extractedFolder}/app-files/tiles /${MANTA_ROOT_FOLDER}/${tag} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
-    { encoding: 'utf-8' },
+    { encoding: 'utf-8',  maxBuffer: 200 * 1024 * 1024  },
   );
   if (!upload) return false;
 

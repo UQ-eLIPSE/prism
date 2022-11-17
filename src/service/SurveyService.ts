@@ -22,7 +22,7 @@ import { ConsoleUtil } from '../utils/ConsoleUtil';
 const StreamZip = require('node-stream-zip');
 
 interface CSVProperties {
-  level?: string;
+  floor?: string;
   title?: string;
   fileName: string;
   x: string;
@@ -138,7 +138,10 @@ export abstract class SurveyService {
       }
 
       // Upload tiles to Manta using Manta-Sync
-      const uploadZip = await uploadZipManta(extractedFolder, site.tag.replaceAll(/[^a-zA-Z0-9-]/g, ''));
+      const uploadZip = await uploadZipManta(
+        extractedFolder,
+        site.tag.replaceAll(/[^a-zA-Z0-9-]/g, ''),
+      );
       if (!uploadZip) return false;
 
       return true;
@@ -148,6 +151,26 @@ export abstract class SurveyService {
     }
   }
 
+  static async findAndUploadFloors(siteId: string, floor: string) {
+    const minimapFloorObject = await MinimapImages.find({
+      site: new ObjectId(siteId),
+      floor: floor,
+    });
+
+    if (JSON.stringify(minimapFloorObject) === '[]') {
+      const insertFloor = await MinimapImages.create({
+        _id: new ObjectId(),
+        floor: floor,
+        floor_name: 'Level ' + floor,
+        floor_tag: floor,
+        site: new ObjectId(siteId),
+      });
+
+      return insertFloor;
+    }
+
+    return minimapFloorObject;
+  }
   /**
    * Upload to DB
    * This function uploads properties from the CSV files containing
@@ -196,13 +219,24 @@ export abstract class SurveyService {
       const uploadData = await new Promise(async (resolve, reject) => {
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
-          const specElem = csvJSON.find((el) => el.fileName === scene.name);
-          
+          const specElem = csvJSON.find(
+            (el) => el.fileName === scene.name || el.fileName === scene.id,
+          );
+
           // Reformat date per Australian standard
-          if(specElem?.date) {
-            const dateAtt = specElem.date.split("/");
-            specElem.date = [dateAtt[1], dateAtt[0], dateAtt[2]].join("/");
+          if (specElem?.date) {
+            const dateAtt = specElem.date.split('/');
+            specElem.date = [dateAtt[1], dateAtt[0], dateAtt[2]].join('/');
           }
+          let testFloor;
+
+          if (specElem?.floor) {
+            testFloor = await this.findAndUploadFloors(
+              site._id,
+              specElem.floor,
+            );
+          }
+
           // Upload Survey Nodes from DataJS
           const survey = await SurveyNode.create([
             {
@@ -212,12 +246,17 @@ export abstract class SurveyService {
               levels: scene.levels,
               face_size: scene.faceSize,
               initial_parameters: scene.initialViewParameters,
-              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag.replaceAll(/[^a-zA-Z0-9-]/g, '')}/`,
+              manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag.replaceAll(
+                /[^a-zA-Z0-9-]/g,
+                '',
+              )}/`,
               node_number: i,
               survey_name: specElem?.survey_name ? specElem?.survey_name : '',
               tiles_id: scene.id,
               tiles_name: specElem?.title ? specElem?.title : scene.name,
-              date: specElem?.date ? new Date(specElem.date) : new Date("01-01-1900"),
+              date: specElem?.date
+                ? new Date(specElem.date)
+                : new Date('01-01-1900'),
               site: new ObjectId(site._id),
             },
           ]);
@@ -228,7 +267,7 @@ export abstract class SurveyService {
           const minimapNode = await MinimapNode.create([
             {
               _id: new ObjectId(),
-              floor: floorId,
+              floor: specElem?.floor ? specElem.floor : floorId,
               node_number: i,
               survey_node: new ObjectId(survey[0]._id),
               tiles_id: scene.id,
@@ -244,7 +283,7 @@ export abstract class SurveyService {
           const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
-              floor: floorId,
+              floor: specElem?.floor ? specElem.floor : floorId,
               minimap_node: new ObjectId(minimapNode[0]._id),
               survey_node: new ObjectId(survey[0]._id),
               x: specElem?.x,
@@ -570,29 +609,28 @@ export abstract class SurveyService {
   }
 
   public static async updateMinimapFloorDetails(
-    site: ISite, 
-    floor: number, 
-    floor_name: string, 
-    floor_tag: string) {
-
-    try
-    {
-      
+    site: ISite,
+    floor: number,
+    floor_name: string,
+    floor_tag: string,
+  ) {
+    try {
       const getCurrentSiteMap = await MinimapImages.findOne(
         { floor, site: new ObjectId(site._id) },
         '-_id',
       );
 
-      if (!getCurrentSiteMap) throw new Error('Site Map / Floor combination does not exist');
-      
+      if (!getCurrentSiteMap)
+        throw new Error('Site Map / Floor combination does not exist');
+
       const saveSiteMap = await MinimapImages.findOneAndUpdate(
         { floor, site: new ObjectId(site._id) },
         {
           floor_name: floor_name,
-          floor_tag: floor_tag
-        }
+          floor_tag: floor_tag,
+        },
       );
-      
+
       if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
 
       return {
@@ -636,10 +674,9 @@ export abstract class SurveyService {
     floorId: number,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MinimapNode.countDocuments({ $and: [
-        {site: new ObjectId(siteId)},
-        {floor: floorId},
-      ]})
+      const data = await MinimapNode.countDocuments({
+        $and: [{ site: new ObjectId(siteId) }, { floor: floorId }],
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -647,37 +684,32 @@ export abstract class SurveyService {
     }
   }
 
-  public static async getEmptyFloors(
-    siteId: string,
-  ) {
+  public static async getEmptyFloors(siteId: string) {
     try {
       const allFloors: number[] = [];
       const popFloors: number[] = [];
 
       const allFloorsObj = await MinimapImages.find({
-        site: new ObjectId(siteId)
+        site: new ObjectId(siteId),
       });
-      
-      for(const floor of allFloorsObj){
+
+      for (const floor of allFloorsObj) {
         allFloors.push(floor.floor);
       }
 
       const popFloorsObj = await MinimapNode.find({
-        site: new ObjectId(siteId)
+        site: new ObjectId(siteId),
       });
 
-      for(const floor of popFloorsObj){
+      for (const floor of popFloorsObj) {
         popFloors.push(floor.floor);
       }
 
       const emptyFloors = allFloors.filter((floor) => {
-        if(!popFloors.includes(floor))
-          return floor;
+        if (!popFloors.includes(floor)) return floor;
       });
 
-      return {success: true,
-        emptyFloors: emptyFloors,
-      }
+      return { success: true, emptyFloors: emptyFloors };
     } catch (e) {
       return { success: false };
     }
