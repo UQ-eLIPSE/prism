@@ -157,7 +157,7 @@ export abstract class SurveyService {
       floor: floor,
     });
 
-    if (JSON.stringify(minimapFloorObject) === '[]') {
+    if (!minimapFloorObject.length) {
       const insertFloor = await MinimapImages.create({
         _id: new ObjectId(),
         floor: floor,
@@ -214,13 +214,16 @@ export abstract class SurveyService {
 
       const scenes: any[] = data.scenes;
 
+      const allFloors: any[] = [];  
+
       // Upload data to DB
       // eslint-disable-next-line no-async-promise-executor
       const uploadData = await new Promise(async (resolve, reject) => {
+        const totalFloors = csvJSON.map((el) => el.floor).sort((a:any , b:any) => a-b);
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
           const specElem = csvJSON.find(
-            (el) => el.fileName === scene.name || el.fileName === scene.id,
+            (el) => el.fileName === scene.name || el.fileName === scene.id || el.title === scene.id || el.title === scene.name,
           );
 
           // Reformat date per Australian standard
@@ -228,13 +231,12 @@ export abstract class SurveyService {
             const dateAtt = specElem.date.split('/');
             specElem.date = [dateAtt[1], dateAtt[0], dateAtt[2]].join('/');
           }
-          let testFloor;
 
           if (specElem?.floor) {
-            testFloor = await this.findAndUploadFloors(
-              site._id,
-              specElem.floor,
-            );
+            allFloors.push({
+              siteId: site._id,
+              floor: specElem.floor
+            });
           }
 
           // Upload Survey Nodes from DataJS
@@ -323,7 +325,7 @@ export abstract class SurveyService {
             },
             initial_settings: {
               date: '2021-11-16T00:00:00.000+10:00',
-              floor: 0,
+              floor: 0 | parseInt(totalFloors[0] as string),
               pano_id: '',
               yaw: 0,
               pitch: 0,
@@ -358,12 +360,22 @@ export abstract class SurveyService {
             num_floors: 0,
             site: new ObjectId(site._id),
           });
-        }
+        };
 
         resolve('Data Uploaded');
       });
 
       if (!uploadData) throw new Error('Data could not be uploaded.');
+
+      if (allFloors.length > 0){
+        for (const floor of allFloors){
+          const uploadFloors = await this.findAndUploadFloors(
+            floor.siteId,
+            floor.floor,
+          );
+          if (!uploadFloors) throw new Error('Floors could not be uploaded.');
+        }
+      }
 
       // Delete files and folder
       await fs.unlink(properties[0].path);
