@@ -333,6 +333,8 @@ export class Routes {
       this.resourceController.getAllSubcategories,
     );
 
+    router.get('/settings', this.settingController.getSettings);
+
     router.get(
       '/:username/visibility/settings',
       AuthUtil.verifyCookie,

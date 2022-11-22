@@ -9,15 +9,11 @@ export class SettingController {
    * @param res
    */
   public async getSettings(req: Request, res: Response) {
-    const { username } = req.params;
-    const { user } = res.locals;
+    const isTableExist = await Settings.findOne();
 
-    if (user.username !== username)
-      return CommonUtil.failResponse(res, 'user is not authorized');
-    const isTableExist = await Settings.find().exec();
-
-    if (!isTableExist.length) {
+    if (!isTableExist) {
       const seeder = {
+        enableMultiSite: false,
         mediaPageVisibility: false,
         faqPageVisibility: false,
       };
