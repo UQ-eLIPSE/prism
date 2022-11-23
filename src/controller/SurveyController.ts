@@ -562,11 +562,7 @@ export class SurveyController {
         floor: floor,
       });
 
-      if (JSON.stringify(minimapFloorObject) !== '[]') {
-        throw new Error(
-          `Floor ${floor} on site ${siteId} already exists in database`,
-        );
-      } else {
+      if (JSON.stringify(minimapFloorObject) === '[]') {
         const addedMinimapFloorObject = await MinimapImages.create({
           _id: new ObjectID(),
           floor: floor,
@@ -582,6 +578,13 @@ export class SurveyController {
           res,
           '',
           addedMinimapFloorObject || [],
+        );
+      } else {
+
+        return CommonUtil.successResponse(
+          res,
+          '',
+          minimapFloorObject || [],
         );
       }
     } catch (e) {
