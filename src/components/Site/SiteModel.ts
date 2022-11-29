@@ -14,6 +14,7 @@ export interface ISiteSettings extends Document {
     floors: boolean;
     about: boolean;
     animations: boolean;
+    hotspots_nav: boolean;
   };
 
   // settings related to minimap functionality
@@ -94,6 +95,7 @@ const SiteSettingSchema: Schema = new Schema({
       floors: { type: Boolean },
       about: { type: Boolean },
       animations: { type: Boolean },
+      hotspots_nav: { type: Boolean },
     },
   },
   minimap: {

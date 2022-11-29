@@ -214,16 +214,22 @@ export abstract class SurveyService {
 
       const scenes: any[] = data.scenes;
 
-      const allFloors: any[] = [];  
+      const allFloors: any[] = [];
 
       // Upload data to DB
       // eslint-disable-next-line no-async-promise-executor
       const uploadData = await new Promise(async (resolve, reject) => {
-        const totalFloors = csvJSON.map((el) => el.floor).sort((a:any , b:any) => a-b);
+        const totalFloors = csvJSON
+          .map((el) => el.floor)
+          .sort((a: any, b: any) => a - b);
         await scenes.forEach(async (scene, i) => {
           // Get CSV Element using the scene ID.
           const specElem = csvJSON.find(
-            (el) => el.fileName === scene.name || el.fileName === scene.id || el.title === scene.id || el.title === scene.name,
+            (el) =>
+              el.fileName === scene.name ||
+              el.fileName === scene.id ||
+              el.title === scene.id ||
+              el.title === scene.name,
           );
 
           // Reformat date per Australian standard
@@ -235,7 +241,7 @@ export abstract class SurveyService {
           if (specElem?.floor) {
             allFloors.push({
               siteId: site._id,
-              floor: specElem.floor
+              floor: specElem.floor,
             });
           }
 
@@ -322,6 +328,7 @@ export abstract class SurveyService {
               floors: true,
               about: false,
               animations: false,
+              hotspots_nav: false,
             },
             initial_settings: {
               date: '2021-11-16T00:00:00.000+10:00',
@@ -360,15 +367,15 @@ export abstract class SurveyService {
             num_floors: 0,
             site: new ObjectId(site._id),
           });
-        };
+        }
 
         resolve('Data Uploaded');
       });
 
       if (!uploadData) throw new Error('Data could not be uploaded.');
 
-      if (allFloors.length > 0){
-        for (const floor of allFloors){
+      if (allFloors.length > 0) {
+        for (const floor of allFloors) {
           const uploadFloors = await this.findAndUploadFloors(
             floor.siteId,
             floor.floor,
