@@ -159,11 +159,11 @@ export class Routes {
 
     // documentation
     router.get(
-      '/site/:siteId/documentation',
+      '/site/:siteId/files',
       this.resourceController.getAllDocumentation,
     );
     router.get(
-      '/documentation/details',
+      '/files/details',
       this.resourceController.getIndividualDocumentation,
     );
 
