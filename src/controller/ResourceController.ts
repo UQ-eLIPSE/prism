@@ -15,7 +15,12 @@ import {
 } from '../models/ResourceModel';
 import * as multer from 'multer';
 import { ResourceService } from '../service/ResourceService';
-import { ObjectId } from 'bson';
+import { ObjectID, ObjectId } from 'bson';
+import { Site } from '../components/Site/SiteModel';
+import StreamZip = require('node-stream-zip');
+import * as fs from 'fs/promises';
+import { ConsoleUtil } from '../utils/ConsoleUtil';
+import { execSync } from 'child_process';
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -28,13 +33,140 @@ export class ResourceController {
     this.uploadFile = multer({ limits: limits, storage: this.mantaService });
   }
 
+  public async UploadDocumentation(
+    req: Request,
+    res: Response,
+    err: { code: string },
+  ) {
+    const { files } = req;
+    const {
+      TMP_FOLDER,
+      MANTA_HOST_NAME,
+      MANTA_USER,
+      MANTA_ROOT_FOLDER,
+      MANTA_ROLES,
+      MANTA_KEY_ID,
+      MANTA_SUB_USER,
+    } = process.env;
+
+    const { zipFile } = files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    const { siteId } = req.params;
+    if (!siteId) throw new Error('Site Id is not provided');
+    if (!files) throw new Error('File is undefined');
+    //  Get site
+    const site = await Site.findById({ _id: new ObjectID(siteId) });
+    if (!site) throw new Error('Invalid Site Id');
+
+    // Create a zip stream for the zip file.
+    const zip = new StreamZip({
+      file: `${TMP_FOLDER}/${zipFile[0].filename}`,
+      storeEntries: true,
+    });
+
+    // Folder without .zip ext
+    const extractedFolder = zipFile[0].filename.replace('.zip', '');
+
+    zip.on('error', (err: any) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    });
+
+    // Extract the zip file.
+    const zipOp = await new Promise(async (resolve, reject) => {
+      await zip.on('ready', async () => {
+        // Extract zip
+        await zip.extract(
+          null,
+          `${TMP_FOLDER}/${extractedFolder}`,
+          (err: any) => {
+            ConsoleUtil.error(err ? 'Extract error' : 'Extracted');
+            zip.close();
+
+            err ? reject() : resolve('Extracted');
+          },
+        );
+      });
+    });
+
+    if (!zipOp) return;
+
+    // Upload the files to Manta.
+    const upload = execSync(
+      // eslint-disable-next-line max-len
+      `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/${site.tag}/Documents/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
+      { encoding: 'utf-8', maxBuffer: 200 * 1024 * 1024 },
+    );
+    if (!upload) return CommonUtil.failResponse(res, 'Failed to upload files.');
+
+    const fileLoop = async (
+      dirPath: string,
+      topLevelDirectory: IDirectories,
+    ) => {
+      const fullDirPath =
+        dirPath === '/'
+          ? `${TMP_FOLDER}/${extractedFolder}`
+          : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
+      const allFiles = await fs.readdir(fullDirPath);
+      for (const currFile of allFiles) {
+        if (currFile.startsWith('._')) continue;
+        const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
+        if (fileStat.isDirectory()) {
+          // Add Directory to the directories collection
+          const directory = await new Directories({
+            _id: new ObjectID(),
+            name: currFile,
+            parent: topLevelDirectory._id,
+          });
+
+          topLevelDirectory.subdirectories = [
+            ...topLevelDirectory.subdirectories,
+            directory._id,
+          ];
+          await fileLoop(`${dirPath}/${currFile}`, directory);
+          directory.save();
+        } else {
+          // Add to files collection and using the given directory,
+          // add association to the directory structure.
+          const file = await new Files({
+            _id: new ObjectID(),
+            name: currFile,
+            url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${
+              site.tag
+            }/Documents/${dirPath === '/' ? '' : `${dirPath}/`}${currFile}`,
+            uploaded_at: new Date(),
+          });
+          topLevelDirectory.files = [...topLevelDirectory.files, file._id];
+          file.save();
+        }
+      }
+    };
+
+    const originalDirFolder = new Directories({
+      _id: new ObjectID(),
+      name: 'Documents',
+    });
+
+    await fileLoop('/', originalDirFolder);
+
+    originalDirFolder.save();
+
+    return CommonUtil.successResponse(res, 'Resource Endpoint is successful.');
+  }
+
   /**
    *
    * @param err - Multer error message
    * @param req
    * @param res
    */
-  public async createNewResource(req: Request, res: Response, err: { code: string; }) {
+  public async createNewResource(
+    req: Request,
+    res: Response,
+    err: { code: string },
+  ) {
     const { file } = req;
     const { MANTA_HOST_NAME, MANTA_USER, MANTA_ROOT_FOLDER, PROJECT_NAME } =
       process.env;

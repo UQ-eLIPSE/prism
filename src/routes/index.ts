@@ -157,6 +157,12 @@ export class Routes {
       this.resourceController.getAllResources,
     );
 
+    router.post(
+      '/documentation/:siteId',
+      upload.fields([{ name: 'zipFile' }]),
+      this.resourceController.UploadDocumentation,
+    );
+
     // documentation
     router.get(
       '/site/:siteId/files',
