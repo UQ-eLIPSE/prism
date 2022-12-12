@@ -79,7 +79,7 @@ export abstract class AuthUtil {
     res: Response,
     next: NextFunction,
   ): Promise<Response | undefined> {
-    const { JWT_Hash } = process.env;
+    const { JWT_Hash, CLIENT_ORIGIN } = process.env;
     const jwtToken = req.body.token;
 
     if (jwtToken) {
@@ -89,8 +89,11 @@ export abstract class AuthUtil {
       next();
     } else {
       if (!req.headers['x-kvd-payload']) {
-        res.locals.user = req.body;
-        next();
+        // Commenting this logic out as it could be potentially used later.
+        // res.locals.user = req.body;
+        // next();
+
+        res.redirect(`https://api.uqcloud.net/login/${CLIENT_ORIGIN}/api/login/sso`);
       } else {
         const payload = await AuthUtil.getSSOUser(req, res);
         if (!payload)
