@@ -89,11 +89,8 @@ export abstract class AuthUtil {
       next();
     } else {
       if (!req.headers['x-kvd-payload']) {
-        // Commenting this logic out as it could be potentially used later.
-        // res.locals.user = req.body;
-        // next();
-
-        res.redirect(`https://api.uqcloud.net/login/${CLIENT_ORIGIN}/api/login/sso`);
+        res.locals.user = req.body;
+        next();
       } else {
         const payload = await AuthUtil.getSSOUser(req, res);
         if (!payload)
