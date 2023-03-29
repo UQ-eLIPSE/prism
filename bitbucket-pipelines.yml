@@ -37,7 +37,7 @@ pipelines:
             - export TARBALL="$(msign /elipse/stor/builds/deploy-${BITBUCKET_BUILD_NUMBER}.tar.gz)"
 
             #   # And the actual deploy steps on each zone
-            - triton --act-as=elipse inst exec prism-014 -- /bin/sh -c "cd /opt/ && rm -rf server && mkdir server/ && curl \"${TARBALL}\" | tar -C server/ -zxvf - && service prism restart"
+            - triton --act-as=elipse inst exec $ZONE_TAG -- /bin/sh -c "cd /opt/ && rm -rf server && mkdir server/ && curl \"${TARBALL}\" | tar -C server/ -zxvf - && service prism restart"
 
     main:
       - step:
