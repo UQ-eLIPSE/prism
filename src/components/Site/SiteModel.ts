@@ -75,10 +75,14 @@ export interface ISite extends Document {
   tag: string;
 }
 
+/**
+ * Site map object
+ */
 export interface ISiteMap extends Document {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _id: any;
-  image: string;
+  name: string;
+  image_url: string;
 }
 
 const SiteSettingSchema: Schema = new Schema({
@@ -154,11 +158,15 @@ const SiteSchema: Schema = new Schema({
   tag: { type: String },
 });
 
+/**
+ * Schema for a site map rendered on the homepage
+ */
 const SiteMapSchema: Schema = new Schema({
   _id: {
     type: ObjectID,
   },
-  image: { type: String },
+  image_url: { type: String },
+  name: { type: String },
 });
 
 export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
@@ -166,6 +174,9 @@ export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
   SiteSettingSchema,
 );
 export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);
+/**
+ * This handles the site map on the homepage
+ */
 export const SiteMap: Model<ISiteMap> = model<ISiteMap>(
   'site_map',
   SiteMapSchema,

@@ -580,12 +580,7 @@ export class SurveyController {
           addedMinimapFloorObject || [],
         );
       } else {
-
-        return CommonUtil.successResponse(
-          res,
-          '',
-          minimapFloorObject || [],
-        );
+        return CommonUtil.successResponse(res, '', minimapFloorObject || []);
       }
     } catch (e) {
       console.error(e);
@@ -594,13 +589,13 @@ export class SurveyController {
   }
 
   /**
-   * createSiteMap - Inserts Site Map in to site Settings and upload
+   * createMinimap - Inserts Mini Map in to site Settings and upload
    * to Manta.
    * @param req
    * @param res
    * @returns Success Response if the upload/DB update has been successful
    */
-  public async createSiteMap(req: Request, res: Response) {
+  public async createMinimap(req: Request, res: Response) {
     const { file } = req;
     const { siteId } = req.params;
     const { floor } = req.query;
@@ -618,7 +613,7 @@ export class SurveyController {
       const site = await Site.findById({ _id: new ObjectID(siteId) });
       if (!site) throw new Error('Invalid Site Id');
 
-      const uploadSiteMap = await SurveyService.createSiteMap(
+      const uploadSiteMap = await SurveyService.createMinimap(
         file,
         parseInt(floor as string),
         site,

@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { ISite, ISiteSettings } from './SiteModel';
+import { ISite, ISiteMap, ISiteSettings, SiteMap } from './SiteModel';
 import { IResponse } from '../../utils/CommonUtil';
 import { CommonUtil } from '../../utils/CommonUtil';
 
 import SiteService from './SiteService';
+import { ObjectId } from 'mongodb';
 
 /**
  * Controller for getting site specific settings
@@ -44,13 +45,24 @@ class SiteController {
       results.sites,
     );
   }
-  public async getSiteMap(req: Request, res: Response) {
-    const results = await SiteService.getSiteMap();
+
+  /**
+   * This function renders the sitemap for the homepage. If no name is specified
+   * then it is assumed only one sitemap exists and the first one will be returned
+   * @param req contains either nothing or a site map name
+   * @returns a sitemap object
+   */
+  public async getSitemap(req: Request, res: Response) {
+    const { name } = req.params;
+    const results = name
+      ? await SiteService.getSitemap(name)
+      : await SiteService.getSitemap();
+
     if (!results) return CommonUtil.failResponse(res, 'No Site Map is found');
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(
       res,
       '',
-      results.siteMap,
+      results.sitemap,
     );
   }
 
@@ -69,6 +81,45 @@ class SiteController {
       res,
       '',
       createSite,
+    );
+  }
+
+  /**
+   * This function performs from checks before creating the site map
+   * The sitemap name must always be lowercase and unique (acts as the id)
+   * The name whitespace will also be changed to dashes to handle GET req
+   * Trailing white space will also be removed from the name
+   * @param req sitemap name, image url, tag (i.e "QLD", "NSW" etc)
+   * @param res success or failure to upload to mongodb
+   * @returns a sitemap on sucess
+   */
+  public async createSitemap(req: Request, res: Response) {
+    const mapName: string = encodeURIComponent(req.body.name);
+
+    const sitemap = new SiteMap({
+      _id: new ObjectId(),
+      name: mapName,
+      image_url: req.body.image_url,
+    });
+
+    //check that the map is unique
+    const isDuplicate = await SiteService.checkForDuplicateSitemaps(
+      sitemap.name,
+    );
+
+    if (isDuplicate) {
+      return CommonUtil.failResponse(
+        res,
+        'Duplicate sitemap name exists, please give map another name',
+      );
+    }
+    const createSitemap = await SiteService.createSitemap(sitemap);
+    if (!createSitemap)
+      return CommonUtil.failResponse(res, 'Failed to create new sitemap');
+    return CommonUtil.successResponse<IResponse<ISiteSettings>>(
+      res,
+      '',
+      createSitemap,
     );
   }
 }

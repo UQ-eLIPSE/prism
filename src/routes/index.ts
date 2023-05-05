@@ -199,9 +199,9 @@ export class Routes {
     );
 
     router.post(
-      '/site/:siteId/sitemap',
+      '/site/:siteId/minimap',
       upload.single('file'),
-      this.surveyController.createSiteMap,
+      this.surveyController.createMinimap,
     );
 
     router.patch(
@@ -257,10 +257,10 @@ export class Routes {
     // sites
     router.get('/sites', this.siteController.getSites);
     router.post('/sites', this.siteController.createSite);
-    router.get('/site-map', this.siteController.getSiteMap);
+    router.get('/site-map/:name', this.siteController.getSitemap);
+    router.post('/create-site-map', this.siteController.createSitemap);
 
     // Map pins
-
     router.post('/map-pins', this.mapPinsController.createPin);
     router.get('/map-pins', this.mapPinsController.getAllPins);
     router.get('/map-pins/:id', this.mapPinsController.getPin);

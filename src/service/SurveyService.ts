@@ -564,13 +564,13 @@ export abstract class SurveyService {
   }
 
   /**
-   * createSiteMap - - Inserts Site Map in to site Settings and upload
+   * createMinimap - - Inserts Mini Map in to site Settings and upload
    * to Manta.
    * @param file - Uploaded file
    * @param site - Provided Site
    * @returns
    */
-  public static async createSiteMap(
+  public static async createMinimap(
     file: Express.Multer.File,
     floor: number,
     site: ISite,
@@ -594,9 +594,9 @@ export abstract class SurveyService {
         `mput -f ${file.path} ${MANTA_ROOT_FOLDER} --account=${MANTA_USER} --user=${MANTA_SUB_USER} --keyId=${MANTA_KEY_ID} --role=${MANTA_ROLES} --url=${MANTA_HOST_NAME}`,
       );
 
-      if (!upload) throw new Error("Site map couldn't be uploaded.");
+      if (!upload) throw new Error("Mini map couldn't be uploaded.");
 
-      const saveSiteMap = await MinimapImages.findOneAndUpdate(
+      const saveMiniMap = await MinimapImages.findOneAndUpdate(
         { floor, site: site._id },
         {
           image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
@@ -611,7 +611,7 @@ export abstract class SurveyService {
         },
       );
 
-      if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
+      if (!saveMiniMap) throw new Error('Mini Map Cannot Be Saved');
 
       // Delete file from local tmp.
       await fs.unlink(file.path);
