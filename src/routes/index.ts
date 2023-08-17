@@ -8,7 +8,6 @@ import SiteController from '../components/Site/SiteController';
 import MapPinsController from '../components/MapPins/MapPinsController';
 import multer = require('multer');
 import { Request } from 'express';
-
 export class Routes {
   public userController: UserController = new UserController();
   public surveyController: SurveyController = new SurveyController();
@@ -20,7 +19,25 @@ export class Routes {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public routes(app: any, router: any): void {
-    app.use('/api', router);
+    app.use(
+      '/api',
+      (req: Request, res: any, next: any) => {
+        // make new session cookie exists called 'elipse-session' make one which expires in 1 day
+        // with a unique id
+        const cookie = req.cookies['elipse-session'];
+        if (cookie === undefined) {
+          const randomNumber = Math.random().toString();
+          const sessionCookie = randomNumber.substring(2, randomNumber.length);
+          res.cookie('elipse-session', sessionCookie, {
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            httpOnly: true,
+          });
+        }
+
+        next();
+      },
+      router,
+    );
 
     const storage = multer.diskStorage({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -53,7 +53,13 @@ export class App {
       express.static(this.clientPath, this.expressStaticOptions),
     );
     this.express.use(cookieParser());
-    this.express.use(cors());
+    this.express.use(
+      cors({
+        origin: [this.configuration.CLIENT_ORIGIN, 'http://localhost'],
+        credentials: true,
+      }),
+    );
+
     this.express.use(bodyParser.json({ limit: '50mb' }));
     this.routes.routes(this.express, this.router);
     ConsoleUtil.log('Done setting up express routes...');
