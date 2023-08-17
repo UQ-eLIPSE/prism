@@ -55,7 +55,11 @@ export class App {
     this.express.use(cookieParser());
     this.express.use(
       cors({
-        origin: [this.configuration.CLIENT_ORIGIN, 'http://localhost'],
+        origin: [
+          this.configuration.CLIENT_ORIGIN,
+          'http://localhost',
+          /\.uqcloud\.net$/,
+        ],
         credentials: true,
       }),
     );
