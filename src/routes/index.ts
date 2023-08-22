@@ -22,14 +22,22 @@ export class Routes {
     app.use(
       '/api',
       (req: Request, res: any, next: any) => {
-        // make new session cookie exists called 'elipse-session' make one which expires in 1 day
-        // with a unique id
         const cookie = req.cookies['elipse-session'];
+
         if (cookie === undefined) {
-          const randomNumber = Math.random().toString();
-          const sessionCookie = randomNumber.substring(2, randomNumber.length);
-          res.cookie('elipse-session', sessionCookie, {
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
+          // Generate a new unique ID for the session
+          const newSessionId = Math.random().toString(36).substring(2);
+          // Set the new session cookie with a 20-minute expiration time
+          res.cookie('elipse-session', newSessionId, {
+            maxAge: 20 * 60 * 1000, // 20 minutes
+            secure: true,
+            httpOnly: true,
+            sameSite: 'none',
+          });
+        } else {
+          // If the cookie exists, extend its expiration time by 20 minutes
+          res.cookie('elipse-session', cookie, {
+            maxAge: 20 * 60 * 1000, // 20 minutes
             secure: true,
             httpOnly: true,
             sameSite: 'none',
