@@ -30,7 +30,9 @@ export class Routes {
           const sessionCookie = randomNumber.substring(2, randomNumber.length);
           res.cookie('elipse-session', sessionCookie, {
             maxAge: 24 * 60 * 60 * 1000, // 1 day
+            secure: true,
             httpOnly: true,
+            sameSite: 'none',
           });
         }
 
