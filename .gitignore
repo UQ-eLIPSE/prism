@@ -8,3 +8,4 @@ package.lock
 tmp/
 /.vscode/settings.json
 prism_mongodumps/*
+

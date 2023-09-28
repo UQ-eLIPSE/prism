@@ -39,12 +39,41 @@ _Techstack_
 
 Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
 
-## Running
+## Quick Running locally with `run_docker.sh`
+1. Navigate to the server-side project folder:
+```
+cd prism-server
+```
+2. Execute the script:
+```
+- ./run_docker.sh <yourUQname> <EnvFileName> <local data folder (where the local seed folder is)> <local seed folder> 
+```
+For an AGCO360 data seed project, replace <yourUQname> and use:
+```
+./run_docker.sh <yourUQname> .env.AGCO360.example agco360 2023_05_10_agco
+```
+**Note**: 
+- Ensure install wget:
+  - for mac: 
+  ```
+  brew install wget
+  ```
+  - for Debian/Ubuntu: 
+  ```
+  sudo apt update
+  sudo apt install wget
+  ```
+- Ensure `./run_docker.sh` is executable. If not, execute `chmod +x ./run_docker.sh`.
+- To rerun the container, if data files already exist, answer "no" when asked, "Do you want to download Mongo dump data?"
+- On the initial build, answer "y" when prompted to build the Docker images.
+- Docker container will run background use `docker logs -f CONTAINER_ID` to monitor
+- Test data DB output with `docker exec -it mongodb mongosh --eval 'db = db.getSiblingDB("agco360"); var cursor = db.sites.find().limit(1); while(cursor.hasNext()) { printjson(cursor.next()); }'`
 
+## Running
 cd prism-server
 cp .env.<project-name>.sample .env
 
-### Running Locally
+### Running Locally 
 
 before running locally you need to get the manta keys run
 
