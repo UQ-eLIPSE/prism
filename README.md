@@ -79,3 +79,10 @@ Retrieve the dump files by using the `get_mongodumps.sh` script.
 Download mongo database tools from this link if you do not have mongorestore
 
 https://www.mongodb.com/try/download/database-tools
+
+### Linting and Prettier
+
+It is always good practice to lint and prettier your code prior to review,
+use this command to check that all linting errors are fixed and the code
+is prettied
+`yarn lint:pretty`

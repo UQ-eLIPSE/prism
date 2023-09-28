@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { CommonUtil } from '../utils/CommonUtil';
-import { FAQ } from '../models/FAQModel';
+import { Request, Response } from "express";
+import { CommonUtil } from "../utils/CommonUtil";
+import { FAQ } from "../models/FAQModel";
 
 export class FAQController {
   /**
@@ -9,9 +9,9 @@ export class FAQController {
    * @param res
    */
   public async getFAQ(req: Request, res: Response) {
-    const faqCollection = await FAQ.find({}, '-_id');
+    const faqCollection = await FAQ.find({}, "-_id");
 
-    return CommonUtil.successResponse(res, '', faqCollection);
+    return CommonUtil.successResponse(res, "", faqCollection);
   }
 
   /**
@@ -25,20 +25,20 @@ export class FAQController {
     const { body } = req;
 
     if (user.username !== username)
-      return CommonUtil.failResponse(res, 'user is not authorized');
+      return CommonUtil.failResponse(res, "user is not authorized");
     if (!Array.isArray(body))
-      return CommonUtil.failResponse(res, 'payload should be an array');
-    if (!body.length) return CommonUtil.failResponse(res, 'payload is empty');
+      return CommonUtil.failResponse(res, "payload should be an array");
+    if (!body.length) return CommonUtil.failResponse(res, "payload is empty");
 
     for (let idx = 0; idx < body.length; idx++) {
-      body[idx]['idx'] = idx;
+      body[idx]["idx"] = idx;
       const newFAQ = await new FAQ(body[idx]);
       await newFAQ.save();
     }
 
     return CommonUtil.successResponse(
       res,
-      'Question and answer has been saved successfully',
+      "Question and answer has been saved successfully",
     );
   }
 
@@ -53,17 +53,17 @@ export class FAQController {
     const { question, answer } = req.body;
 
     if (user.username !== username)
-      return CommonUtil.failResponse(res, 'user is not authorized');
+      return CommonUtil.failResponse(res, "user is not authorized");
     const isQuestionAnswerFound = await FAQ.findOne({ idx });
 
     if (!isQuestionAnswerFound)
-      return CommonUtil.failResponse(res, 'requested data is not found');
+      return CommonUtil.failResponse(res, "requested data is not found");
     if (question) await FAQ.updateOne({ idx }, { question });
     if (answer) await FAQ.updateOne({ idx }, { answer });
 
     return CommonUtil.successResponse(
       res,
-      'requested data has been edited successfully',
+      "requested data has been edited successfully",
     );
   }
 
@@ -78,15 +78,15 @@ export class FAQController {
     const { idx } = req.body;
 
     if (user.username !== username)
-      return CommonUtil.failResponse(res, 'user is not authorized');
+      return CommonUtil.failResponse(res, "user is not authorized");
     const isQuestionAnswerFound = await FAQ.findOne({ idx });
     if (!isQuestionAnswerFound)
-      return CommonUtil.failResponse(res, 'requested data is not found');
+      return CommonUtil.failResponse(res, "requested data is not found");
 
     await FAQ.deleteOne({ idx });
     return CommonUtil.successResponse(
       res,
-      'requested data has been deleted successfully',
+      "requested data has been deleted successfully",
     );
   }
 }

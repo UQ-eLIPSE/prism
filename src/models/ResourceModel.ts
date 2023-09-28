@@ -1,5 +1,5 @@
-import { Schema, Document, Model, model } from 'mongoose';
-import { IUser } from './UserModel';
+import { Schema, Document, Model, model } from "mongoose";
+import { IUser } from "./UserModel";
 
 /**
  * Typescript interface
@@ -66,12 +66,12 @@ const AreaSchema: Schema = new Schema({
 
 const CategorySchema: Schema = new Schema({
   name: { type: String, required: true },
-  subcategories: [{ type: Schema.Types.ObjectId, ref: 'Subcategory' }],
+  subcategories: [{ type: Schema.Types.ObjectId, ref: "Subcategory" }],
 });
 
 const SubcategorySchema: Schema = new Schema({
   name: { type: String, required: true },
-  parentCategories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
+  parentCategories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
 });
 
 const TypeSchema: Schema = new Schema({
@@ -83,15 +83,15 @@ const ResourceSchema: Schema = new Schema({
   name: { type: String, required: true },
   description: { type: String },
   url: { type: String, required: true },
-  area_name: { type: Schema.Types.Mixed, ref: 'Area' },
-  category: { type: Schema.Types.Mixed, ref: 'Category' },
-  subcategory: { type: Schema.Types.Mixed, ref: 'Subcategory' },
-  resource_type: { type: Schema.Types.Mixed, ref: 'Type' },
+  area_name: { type: Schema.Types.Mixed, ref: "Area" },
+  category: { type: Schema.Types.Mixed, ref: "Category" },
+  subcategory: { type: Schema.Types.Mixed, ref: "Subcategory" },
+  resource_type: { type: Schema.Types.Mixed, ref: "Type" },
   content_type: { type: String, required: true },
   uploaded_at: { type: Date, required: true },
-  uploaded_by: { type: Schema.Types.Mixed, required: true, ref: 'User' },
+  uploaded_by: { type: Schema.Types.Mixed, required: true, ref: "User" },
   modified_at: { type: Date },
-  modified_by: { type: Schema.Types.Mixed, ref: 'User' },
+  modified_by: { type: Schema.Types.Mixed, ref: "User" },
 });
 
 const FilesSchema: Schema = new Schema({
@@ -102,41 +102,41 @@ const FilesSchema: Schema = new Schema({
 
 const DirectoriesSchema: Schema = new Schema({
   name: { type: String, required: true },
-  subdirectories: [{ type: Schema.Types.ObjectId, ref: 'Directories' }],
-  files: [{ type: Schema.Types.ObjectId, ref: 'Documentation' }],
-  parent: { type: Schema.Types.ObjectId, ref: 'Documentation' },
+  subdirectories: [{ type: Schema.Types.ObjectId, ref: "Directories" }],
+  files: [{ type: Schema.Types.ObjectId, ref: "Documentation" }],
+  parent: { type: Schema.Types.ObjectId, ref: "Documentation" },
 });
 
 const AboutSchema: Schema = new Schema({
   info: { type: String, required: true },
 });
 
-export const Area: Model<IArea> = model<IArea>('Area', AreaSchema);
+export const Area: Model<IArea> = model<IArea>("Area", AreaSchema);
 export const Category: Model<ICategory> = model<ICategory>(
-  'Category',
+  "Category",
   CategorySchema,
 );
 export const Subcategory: Model<ISubcategory> = model<ISubcategory>(
-  'Subcategory',
+  "Subcategory",
   SubcategorySchema,
 );
-export const Type: Model<IType> = model<IType>('Type', TypeSchema);
+export const Type: Model<IType> = model<IType>("Type", TypeSchema);
 export const Resource: Model<IResource> = model<IResource>(
-  'Resource',
+  "Resource",
   ResourceSchema,
 );
 export const Files: Model<IFiles> = model<IFiles>(
-  'files',
+  "files",
   FilesSchema,
-  'files',
+  "files",
 );
 export const Directories: Model<IDirectories> = model<IDirectories>(
-  'Directories',
+  "Directories",
   DirectoriesSchema,
-  'directories',
+  "directories",
 );
 export const About: Model<IAbout> = model<IAbout>(
-  'About',
+  "About",
   AboutSchema,
-  'about',
+  "about",
 );

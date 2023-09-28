@@ -1,4 +1,4 @@
-import { Response } from 'express-serve-static-core';
+import { Response } from "express-serve-static-core";
 
 export interface IResponse<PayloadType> {
   success: boolean;
@@ -34,6 +34,6 @@ export abstract class CommonUtil {
   }
 
   public static isInternalUser(email: string) {
-    return email.includes('uq.edu.au');
+    return email.includes("uq.edu.au");
   }
 }

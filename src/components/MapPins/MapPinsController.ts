@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import { IResponse } from '../../utils/CommonUtil';
-import { CommonUtil } from '../../utils/CommonUtil';
+import { Request, Response } from "express";
+import { IResponse } from "../../utils/CommonUtil";
+import { CommonUtil } from "../../utils/CommonUtil";
 
-import mapPinsService from './MapPinsService';
-import { IMapPins, MapPins } from './MapPinsModel';
-import SiteService from '../Site/SiteService';
-import { Site } from '../Site/SiteModel';
-import { ObjectId } from 'mongodb';
+import mapPinsService from "./MapPinsService";
+import { IMapPins, MapPins } from "./MapPinsModel";
+import SiteService from "../Site/SiteService";
+import { Site } from "../Site/SiteModel";
+import { ObjectId } from "mongodb";
 
 /**
  * Controller for getting site specific settings
@@ -22,11 +22,11 @@ class MapPinsController {
   public async getAllPins(req: Request, res: Response) {
     try {
       const results = await mapPinsService.getMapPins();
-      if (!results) throw new Error('No map pins found');
+      if (!results) throw new Error("No map pins found");
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
-        '',
+        "",
         results.mapPins,
       );
     } catch (e) {
@@ -44,12 +44,12 @@ class MapPinsController {
   public async getPin(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      if (!id) throw new Error('id is a required parameter');
+      if (!id) throw new Error("id is a required parameter");
 
       const result = await mapPinsService.getMapPin(id);
-      if (!result) throw new Error('Map pins found');
+      if (!result) throw new Error("Map pins found");
 
-      return CommonUtil.successResponse<IResponse<IMapPins>>(res, '', result);
+      return CommonUtil.successResponse<IResponse<IMapPins>>(res, "", result);
     } catch (e) {
       return CommonUtil.failResponse;
     }
@@ -68,26 +68,29 @@ class MapPinsController {
       const site = new Site({
         _id: new ObjectId(),
         site_name: siteName,
-        tag: siteName.replace(/\s/g, '_').toLowerCase(),
+        tag: siteName.replace(/\s/g, "_").toLowerCase(),
       });
 
-      if (!site) return CommonUtil.failResponse(res, 'Site name is incorrect');
+      if (!site) return CommonUtil.failResponse(res, "Site name is incorrect");
 
-      const body: IMapPins = new MapPins({ _id: new ObjectId(), ...req.body });
+      const body: IMapPins = new MapPins({
+        _id: new ObjectId(),
+        ...req.body,
+      });
       if (!body)
         return CommonUtil.failResponse(res, `Body is incorrect: ${body}`);
 
       const createSite = await SiteService.createSite(site);
-      if (!createSite) throw new Error('Site could not be created');
+      if (!createSite) throw new Error("Site could not be created");
 
       body.site = new ObjectId(createSite._id);
 
       const result = await mapPinsService.createMapPin(body);
-      if (!result) throw new Error('Map pin could not be created');
+      if (!result) throw new Error("Map pin could not be created");
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
-        'Map Pin has been created',
+        "Map Pin has been created",
       );
     } catch (e) {
       return CommonUtil.failResponse(res, e.message);
@@ -114,15 +117,15 @@ class MapPinsController {
           },
         );
 
-        if (!updateSiteName) throw new Error('Site name could not be updated.');
+        if (!updateSiteName) throw new Error("Site name could not be updated.");
       }
 
       const update = await mapPinsService.updateMapPin(id, body);
-      if (!update) throw new Error('MapPin cannot be updated');
+      if (!update) throw new Error("MapPin cannot be updated");
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
-        'Map Pin has been updated',
+        "Map Pin has been updated",
       );
     } catch (e) {
       return CommonUtil.failResponse(res, e.message);
@@ -139,14 +142,14 @@ class MapPinsController {
   public async deletePin(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      if (!id) throw new Error('id is a required parameter');
+      if (!id) throw new Error("id is a required parameter");
 
       const deletePin = await mapPinsService.deleteMapPin(id);
-      if (!deletePin) throw new Error('Map Pin cannot be deleted');
+      if (!deletePin) throw new Error("Map Pin cannot be deleted");
 
       return CommonUtil.successResponse<IResponse<IMapPins>>(
         res,
-        'Map Pin has been deleted',
+        "Map Pin has been deleted",
       );
     } catch (e) {
       return CommonUtil.failResponse(res, e.message);
@@ -161,7 +164,7 @@ class MapPinsController {
    */
   public async uploadPreview(req: Request, res: Response) {
     const { file } = req;
-    if (file === undefined) throw new Error('File is undefined');
+    if (file === undefined) throw new Error("File is undefined");
 
     try {
       const uploadPreview = await mapPinsService.uploadPreview(file);

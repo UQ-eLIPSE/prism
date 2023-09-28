@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import { IUser, InvitedUser, User, IUserList } from '../models/UserModel';
-import { CommonUtil, IResponse } from '../utils/CommonUtil';
-import { MailService } from '../service/MailService';
-import * as Mail from 'nodemailer/lib/mailer';
-import { UserService } from '../service/UserService';
-import { AuthUtil } from '../utils/AuthUtil';
+import { Request, Response } from "express";
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
+import { IUser, InvitedUser, User, IUserList } from "../models/UserModel";
+import { CommonUtil, IResponse } from "../utils/CommonUtil";
+import { MailService } from "../service/MailService";
+import * as Mail from "nodemailer/lib/mailer";
+import { UserService } from "../service/UserService";
+import { AuthUtil } from "../utils/AuthUtil";
 
 export class UserController {
   /**
@@ -16,7 +16,7 @@ export class UserController {
    * @param res
    */
   public async getUserInfo(req: Request, res: Response) {
-    return AuthUtil.getUserInfo(req, res);
+    return await AuthUtil.getUserInfo(req, res);
   }
 
   /**
@@ -34,7 +34,7 @@ export class UserController {
     await AuthUtil.generateToken(res, createUser.username, createUser._id);
     return CommonUtil.successResponse<IResponse<string>>(
       res,
-      'Guest user is created',
+      "Guest user is created",
     );
   }
 
@@ -44,7 +44,7 @@ export class UserController {
    * @param res
    */
   public decodeToken(req: Request, res: Response) {
-    return CommonUtil.successResponse(res, 'token is valid', res.locals.user);
+    return CommonUtil.successResponse(res, "token is valid", res.locals.user);
   }
 
   /**
@@ -53,14 +53,14 @@ export class UserController {
    * @param res (logged in user details)
    */
   public getLoggedInUser(req: Request, res: Response) {
-    const user = req.header('x-kvd-payload');
+    const user = req.header("x-kvd-payload");
     res.send(user);
   }
 
-  public async getUserPermissions(req: Request, res: Response) {
-    if (!req) return CommonUtil.failResponse(res, 'failure to fetch info');
+  public getUserPermissions(req: Request, res: Response) {
+    if (!req) return CommonUtil.failResponse(res, "failure to fetch info");
     res.send(req.body);
-    return CommonUtil.successResponse(res, 'from user controlller' + req.body);
+    return CommonUtil.successResponse(res, "from user controlller" + req.body);
   }
 
   /**
@@ -76,10 +76,10 @@ export class UserController {
     if (!currentUser)
       return CommonUtil.failResponse(
         res,
-        'make sure user email address is correct',
+        "make sure user email address is correct",
       );
 
-    return CommonUtil.successResponse(res, '', <IUser>currentUser);
+    return CommonUtil.successResponse(res, "", <IUser>currentUser);
   }
 
   /**
@@ -96,7 +96,7 @@ export class UserController {
       username: usernameToBeUpdated,
     });
     if (!isUserToBeDeletedFound)
-      return CommonUtil.failResponse(res, 'user to be deleted is not found');
+      return CommonUtil.failResponse(res, "user to be deleted is not found");
 
     const isInternalUser = CommonUtil.isInternalUser(
       isUserToBeDeletedFound.email as string,
@@ -107,11 +107,11 @@ export class UserController {
     } else {
       await User.updateOne(
         { username: isUserToBeDeletedFound.username },
-        { role: 'guest' },
+        { role: "guest" },
       );
     }
 
-    return CommonUtil.successResponse(res, 'user is successfully deleted');
+    return CommonUtil.successResponse(res, "user is successfully deleted");
   }
 
   /**
@@ -124,7 +124,7 @@ export class UserController {
     const maxResult = 10;
     const pageNo = parseInt(req.params.page) || 1;
     const size = parseInt(req.query.size as string) || maxResult;
-    const fieldToSearch = { role: 'projectAdmin' };
+    const fieldToSearch = { role: "projectAdmin" };
 
     const results = await UserService.setUserListPagination(
       maxResult,
@@ -136,7 +136,7 @@ export class UserController {
 
     return CommonUtil.successResponse<IResponse<IUserList>>(
       res,
-      '',
+      "",
       <IUserList>results,
     );
   }
@@ -149,7 +149,7 @@ export class UserController {
   public async searchUser(req: Request, res: Response) {
     const { query } = req.query;
 
-    const searchRegex = new RegExp(escape(query as string), 'gi');
+    const searchRegex = new RegExp(escape(query as string), "gi");
 
     const maxResult = 10;
     const pageNo = parseInt(req.params.page) || 1;
@@ -183,7 +183,7 @@ export class UserController {
    */
   public async getInvitedUser(req: Request, res: Response) {
     const allInvitedUser: IUser[] = await InvitedUser.find();
-    return CommonUtil.successResponse(res, '', allInvitedUser);
+    return CommonUtil.successResponse(res, "", allInvitedUser);
   }
 
   /**
@@ -195,17 +195,17 @@ export class UserController {
     const { email } = req.body;
 
     const userFound = await User.findOne({ email });
-    const isInternalUser = email.includes('uq.edu.au');
+    const isInternalUser = email.includes("uq.edu.au");
 
     if (isInternalUser)
       return CommonUtil.failResponse(
         res,
-        'Please change your password from UQ SSO',
+        "Please change your password from UQ SSO",
       );
     if (!userFound) return;
 
     const { role } = <IUser>userFound;
-    const transporter: Mail = req.app.get('transporter');
+    const transporter: Mail = req.app.get("transporter");
 
     const { JWT_Hash } = process.env;
 
@@ -213,19 +213,19 @@ export class UserController {
       { email: userFound.email, role },
       <string>JWT_Hash,
       {
-        algorithm: 'HS256',
-        expiresIn: '1d',
+        algorithm: "HS256",
+        expiresIn: "1d",
       },
     );
 
     const loginUrl = isInternalUser
-      ? 'http://localhost:8000/login'
+      ? "http://localhost:8000/login"
       : `http://localhost:8000/login/${secureToken}`;
 
     const mailOption = {
-      from: 'admin@uwmt-001.zones.eait.uq.edu.au',
+      from: "admin@uwmt-001.zones.eait.uq.edu.au",
       to: userFound.email,
-      subject: 'You are invited to Urban Water',
+      subject: "You are invited to Urban Water",
       html: `You have been invited to Urban Water please login: ${loginUrl}`,
     };
 
@@ -248,16 +248,16 @@ export class UserController {
     if (res.locals.user.username !== (<IUser>userFound).username)
       return CommonUtil.failResponse(
         res,
-        'update password failed, user is not authorized',
+        "update password failed, user is not authorized",
       );
 
-    if (!userFound) return CommonUtil.failResponse(res, 'User is not found');
+    if (!userFound) return CommonUtil.failResponse(res, "User is not found");
 
     await User.findOneAndUpdate(
       { email },
       { password: bcrypt.hashSync(password, 10) },
     );
-    return CommonUtil.successResponse(res, 'Password is updated successfully');
+    return CommonUtil.successResponse(res, "Password is updated successfully");
   }
 
   /**
@@ -270,10 +270,10 @@ export class UserController {
     const loginUser = await User.findOne({ email: email });
 
     if (!loginUser || !bcrypt.compareSync(password, <string>loginUser.password))
-      return CommonUtil.failResponse(res, 'login details is invalid');
+      return CommonUtil.failResponse(res, "login details is invalid");
     await AuthUtil.generateToken(res, loginUser.username, loginUser._id);
 
-    return CommonUtil.successResponse(res, '', loginUser);
+    return CommonUtil.successResponse(res, "", loginUser);
   }
 
   /**
@@ -303,11 +303,11 @@ export class UserController {
     const { user } = res.locals;
 
     if (!user) {
-      res.clearCookie('loginToken');
+      res.clearCookie("loginToken");
       delete res.locals.user;
-      return CommonUtil.successResponse(res, 'Logout successfully');
+      return CommonUtil.successResponse(res, "Logout successfully");
     }
 
-    return CommonUtil.failResponse(res, 'You are not login');
+    return CommonUtil.failResponse(res, "You are not login");
   }
 }

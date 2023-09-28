@@ -1,25 +1,28 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Response } from 'express-serve-static-core';
-import { ISite, SiteSettings } from '../components/Site/SiteModel';
+import { Response } from "express-serve-static-core";
+import { ISite, SiteSettings } from "../components/Site/SiteModel";
 import {
   SurveyNode,
   MinimapConversion,
   MinimapNode,
   Survey,
   MinimapImages,
-} from '../models/SurveyModel';
-import { MapPins } from '../components/MapPins/MapPinsModel';
-import { CommonUtil } from '../utils/CommonUtil';
-import * as fs from 'fs/promises';
-import csv = require('csvtojson');
-import process = require('process');
-import ImageSize from 'image-size';
-import { execSync } from 'child_process';
-import { ObjectId } from 'bson';
-import { uploadZipManta } from '../utils/mantaUtil';
-import { ConsoleUtil } from '../utils/ConsoleUtil';
-const StreamZip = require('node-stream-zip');
+} from "../models/SurveyModel";
+import { MapPins } from "../components/MapPins/MapPinsModel";
+import { CommonUtil } from "../utils/CommonUtil";
+import * as fs from "fs/promises";
+import csv = require("csvtojson");
+import process = require("process");
+import ImageSize from "image-size";
+import { execSync } from "child_process";
+import { ObjectId } from "bson";
+import { uploadZipManta } from "../utils/mantaUtil";
+import { ConsoleUtil } from "../utils/ConsoleUtil";
+
+// this packages uses require over import
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const StreamZip = require("node-stream-zip");
 
 interface CSVProperties {
   floor?: string;
@@ -50,10 +53,10 @@ export abstract class SurveyService {
 
       // Check if the files are zip and csv.
       if (
-        zipFile[0].mimetype !== 'application/zip' &&
-        properties[0].mimetype !== 'text/csv'
+        zipFile[0].mimetype !== "application/zip" &&
+        properties[0].mimetype !== "text/csv"
       )
-        throw new Error('Invalid file types');
+        throw new Error("Invalid file types");
 
       // Create a zip stream for the zip file.
       const zip = new StreamZip({
@@ -62,20 +65,20 @@ export abstract class SurveyService {
       });
 
       // Folder without .zip ext
-      const extractedFolder = zipFile[0].filename.replace('.zip', '');
+      const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
-      zip.on('error', (err: any) => {
+      zip.on("error", (err: any) => {
         // eslint-disable-next-line no-console
         console.error(err);
       });
 
       // Get Open CSV and convert to JSON.
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
-      if (!csvJSON) throw new Error('Incorrect CSV format');
+      if (!csvJSON) throw new Error("Incorrect CSV format");
 
       // eslint-disable-next-line no-async-promise-executor
       const zipOp = await new Promise(async (resolve, reject) => {
-        await zip.on('ready', async () => {
+        await zip.on("ready", async () => {
           const entries = Object.values(zip.entries());
 
           // Check if the images exist
@@ -85,62 +88,62 @@ export abstract class SurveyService {
             );
             if (!checkImageExist)
               reject(
-                'Image does not exist, please upload your CSV file again with the correct file name.',
+                "Image does not exist, please upload your CSV file again with the correct file name.",
               );
           }
 
           // Check Marzipano app files exist
           const appFilesExist = entries.some(
             (entry: any) =>
-              entry.name.endsWith('app-files/') && entry.isDirectory,
+              entry.name.endsWith("app-files/") && entry.isDirectory,
           );
 
           // Check Data.js exists as part of the Marzipano zip.
           const dataJsExist = entries.some((entry: any) =>
-            entry.name.includes('app-files/data.js'),
+            entry.name.includes("app-files/data.js"),
           );
 
           if (!appFilesExist || !dataJsExist)
-            reject('Marzipano folder structure is not correct');
+            reject("Marzipano folder structure is not correct");
 
           // Extract zip
           await zip.extract(
             null,
             `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
-              '.zip',
-              '',
+              ".zip",
+              "",
             )}`,
             (err: any) => {
-              ConsoleUtil.error(err ? 'Extract error' : 'Extracted');
+              ConsoleUtil.error(err ? "Extract error" : "Extracted");
               zip.close();
 
-              err ? reject() : resolve('Extracted');
+              err ? reject() : resolve("Extracted");
             },
           );
         });
       });
 
-      if (!zipOp) throw new Error('Zip op failed');
+      if (!zipOp) throw new Error("Zip op failed");
 
       // Check data.js and match the tile names
       const readData = await fs.readFile(
         `${process.env.TMP_FOLDER}/${zipFile[0].filename.replace(
-          '.zip',
-          '',
+          ".zip",
+          "",
         )}/app-files/data.js`,
-        'utf-8',
+        "utf-8",
       );
 
       // Check file name against the tiles.
       for (const field of csvJSON) {
         if (!readData.includes(field.fileName))
-          throw new Error('Image does not exist in the Marzipano zip file.');
+          throw new Error("Image does not exist in the Marzipano zip file.");
       }
 
       // Upload tiles to Manta using Manta-Sync
       const uploadZip = await uploadZipManta(
         extractedFolder,
-        site.tag.replaceAll(/[^a-zA-Z0-9-]/g, ''),
+        site.tag.replaceAll(/[^a-zA-Z0-9-]/g, ""),
       );
       if (!uploadZip) return false;
 
@@ -161,7 +164,7 @@ export abstract class SurveyService {
       const insertFloor = await MinimapImages.create({
         _id: new ObjectId(),
         floor: floor,
-        floor_name: 'Level ' + floor,
+        floor_name: "Level " + floor,
         floor_tag: floor,
         site: new ObjectId(siteId),
       });
@@ -191,26 +194,26 @@ export abstract class SurveyService {
       const { zipFile, properties } = files;
       // Convert CSV to JSON
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
-      if (!csvJSON) throw new Error('Incorrect CSV format');
+      if (!csvJSON) throw new Error("Incorrect CSV format");
       const { MANTA_HOST_NAME, MANTA_ROOT_FOLDER, TMP_FOLDER } = process.env;
 
-      const extractedFolder = zipFile[0].filename.replace('.zip', '');
+      const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
       // Read from data.js
       const dataJS = await fs.readFile(
         `${TMP_FOLDER}/${extractedFolder}/app-files/data.js`,
-        'utf8',
+        "utf8",
       );
 
-      if (!dataJS) throw new Error('Cannot read data.js');
+      if (!dataJS) throw new Error("Cannot read data.js");
 
       const stringedJSONData = dataJS
-        .replace('var APP_DATA = ', '')
-        .replace(/;/g, '');
+        .replace("var APP_DATA = ", "")
+        .replace(/;/g, "");
 
       const data = JSON.parse(stringedJSONData);
 
-      if (!data.scenes) throw new Error('Scenes are not available');
+      if (!data.scenes) throw new Error("Scenes are not available");
 
       const scenes: any[] = data.scenes;
 
@@ -234,8 +237,8 @@ export abstract class SurveyService {
 
           // Reformat date per Australian standard
           if (specElem?.date) {
-            const dateAtt = specElem.date.split('/');
-            specElem.date = [dateAtt[1], dateAtt[0], dateAtt[2]].join('/');
+            const dateAtt = specElem.date.split("/");
+            specElem.date = [dateAtt[1], dateAtt[0], dateAtt[2]].join("/");
           }
 
           if (specElem?.floor) {
@@ -256,15 +259,15 @@ export abstract class SurveyService {
               initial_parameters: scene.initialViewParameters,
               manta_link: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${site.tag.replaceAll(
                 /[^a-zA-Z0-9-]/g,
-                '',
+                "",
               )}/`,
               node_number: i,
-              survey_name: specElem?.survey_name ? specElem?.survey_name : '',
+              survey_name: specElem?.survey_name ? specElem?.survey_name : "",
               tiles_id: scene.id,
               tiles_name: specElem?.title ? specElem?.title : scene.name,
               date: specElem?.date
                 ? new Date(specElem.date)
-                : new Date('01-01-1900'),
+                : new Date("01-01-1900"),
               site: new ObjectId(site._id),
             },
           ]);
@@ -284,7 +287,7 @@ export abstract class SurveyService {
             },
           ]);
 
-          if (!minimapNode) reject('Minimap Node cannot be uploaded');
+          if (!minimapNode) reject("Minimap Node cannot be uploaded");
 
           // Upload Minimap conversions with the provided x/y coords from the CSV
 
@@ -304,7 +307,7 @@ export abstract class SurveyService {
           ]);
 
           if (!minimapConversion)
-            reject('Minimap conversion cannot be uploaded.');
+            reject("Minimap conversion cannot be uploaded.");
 
           // Link/Info Hotspots if included *TODO in different ticket*
         });
@@ -331,9 +334,9 @@ export abstract class SurveyService {
               hotspots_nav: false,
             },
             initial_settings: {
-              date: '2021-11-16T00:00:00.000+10:00',
+              date: "2021-11-16T00:00:00.000+10:00",
               floor: 0 | parseInt(totalFloors[0] as string),
-              pano_id: '',
+              pano_id: "",
               yaw: 0,
               pitch: 0,
               fov: 0,
@@ -341,8 +344,8 @@ export abstract class SurveyService {
               rotation_offset: 1.5707963267948966,
             },
             minimap: {
-              image_url: '',
-              image_large_url: '',
+              image_url: "",
+              image_large_url: "",
               x_pixel_offset: 0,
               y_pixel_offset: 0,
               x_scale: 1,
@@ -352,27 +355,27 @@ export abstract class SurveyService {
               xy_flipped: false,
             },
             animation: {
-              url: 'NA',
-              title: 'NA',
+              url: "NA",
+              title: "NA",
             },
             sidenav: {
-              logo_url: 'https://picsum.photos/20/20',
-              subtitle_url: 'https://picsum.photos/20/20',
+              logo_url: "https://picsum.photos/20/20",
+              subtitle_url: "https://picsum.photos/20/20",
             },
             display: {
               title: site.site_name,
               subtitle: site.site_name,
             },
-            marzipano_mouse_view_mode: 'drag',
+            marzipano_mouse_view_mode: "drag",
             num_floors: 0,
             site: new ObjectId(site._id),
           });
         }
 
-        resolve('Data Uploaded');
+        resolve("Data Uploaded");
       });
 
-      if (!uploadData) throw new Error('Data could not be uploaded.');
+      if (!uploadData) throw new Error("Data could not be uploaded.");
 
       if (allFloors.length > 0) {
         for (const floor of allFloors) {
@@ -380,14 +383,16 @@ export abstract class SurveyService {
             floor.siteId,
             floor.floor,
           );
-          if (!uploadFloors) throw new Error('Floors could not be uploaded.');
+          if (!uploadFloors) throw new Error("Floors could not be uploaded.");
         }
       }
 
       // Delete files and folder
       await fs.unlink(properties[0].path);
       await fs.unlink(zipFile[0].path);
-      await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
+      await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, {
+        recursive: true,
+      });
 
       return true;
     } catch (e) {
@@ -398,7 +403,7 @@ export abstract class SurveyService {
 
   static readFileData(userDetails: any, entries: any, zip: any) {
     const dataJs = entries.filter((entry: any) =>
-      entry.name.endsWith('/data.js'),
+      entry.name.endsWith("/data.js"),
     );
     let marzipanoData: any;
     const surveyNodeIds = new Set();
@@ -409,17 +414,19 @@ export abstract class SurveyService {
     return new Promise((resolve, reject) => {
       for (const data of dataJs) {
         zip.stream((<any>data).name, (err: any, stream: any) => {
-          stream.on('data', (chunk: any) => {
+          stream.on("data", (chunk: any) => {
             outputFile.push(chunk);
           });
 
-          stream.on('end', async () => {
-            marzipanoData = Buffer.concat(outputFile).toString('utf8');
+          stream.on("end", async () => {
+            marzipanoData = Buffer.concat(outputFile).toString("utf8");
             if (marzipanoData) {
-              marzipanoData = marzipanoData.split('=')[1].replace(';', '');
+              marzipanoData = marzipanoData.split("=")[1].replace(";", "");
               marzipanoData = JSON.parse(marzipanoData);
 
-              const newSurvey = new Survey({ survey_name: marzipanoData.name });
+              const newSurvey = new Survey({
+                survey_name: marzipanoData.name,
+              });
               await newSurvey.save();
 
               for (let idx = 0; idx < marzipanoData.scenes.length; idx++) {
@@ -427,7 +434,7 @@ export abstract class SurveyService {
                 const newSurveyNode = new SurveyNode({
                   survey_name: marzipanoData.name,
                   uploadedAt: date,
-                  uploadedBy: userDetails['username'],
+                  uploadedBy: userDetails["username"],
                   mantaLink: `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${entries[0].name}`,
                   nodeNumber: idx,
                   tilesId: marzipanoData.scenes[idx].id,
@@ -445,7 +452,11 @@ export abstract class SurveyService {
 
                 await Survey.findOneAndUpdate(
                   { _id: newSurvey._id },
-                  { $push: { survey_nodes: newSurveyNode._id } },
+                  {
+                    $push: {
+                      survey_nodes: newSurveyNode._id,
+                    },
+                  },
                 );
 
                 const newMinimapCoversion = new MinimapConversion({
@@ -468,7 +479,7 @@ export abstract class SurveyService {
 
             zip.close();
           });
-          stream.on('error', reject);
+          stream.on("error", reject);
         });
       }
     });
@@ -476,22 +487,22 @@ export abstract class SurveyService {
 
   static readSurveyJson(entries: any, zip: any) {
     const surveyJson = entries.filter((entry: any) =>
-      entry.name.endsWith('survey.json'),
+      entry.name.endsWith("survey.json"),
     );
     let minimapData: any;
 
     return new Promise((resolve, reject) => {
       zip.stream((<any>surveyJson)[0].name, (err: any, stream: any) => {
-        stream.on('data', (chunk: any) => {
-          minimapData = chunk.toString('utf8');
+        stream.on("data", (chunk: any) => {
+          minimapData = chunk.toString("utf8");
           if (minimapData) {
             minimapData = JSON.parse(minimapData);
             resolve(minimapData);
           }
         });
 
-        stream.on('end', () => zip.close());
-        stream.on('error', reject);
+        stream.on("end", () => zip.close());
+        stream.on("error", reject);
       });
     });
   }
@@ -509,7 +520,7 @@ export abstract class SurveyService {
     mongoQuery.skip = size * pageNo - size;
 
     const allSurveys = await Survey.find(fieldToSearch as any, {}, mongoQuery);
-    if (!allSurveys) return CommonUtil.failResponse(res, 'No survey is found');
+    if (!allSurveys) return CommonUtil.failResponse(res, "No survey is found");
 
     const totalCount = await Survey.countDocuments(fieldToSearch as any);
     const nextPage =
@@ -529,9 +540,9 @@ export abstract class SurveyService {
     return new Promise((resolve) => {
       zip.extract(null, destPath, (err: any) => {
         // eslint-disable-next-line no-console
-        console.log(err ? 'Extract error' : `Extracted entries`);
+        console.log(err ? "Extract error" : `Extracted entries`);
         zip.close();
-        resolve('');
+        resolve("");
       });
     });
   }
@@ -587,7 +598,7 @@ export abstract class SurveyService {
         MANTA_USER,
         MANTA_KEY_ID,
       } = process.env;
-      if (file === undefined) throw new Error('File is undefined');
+      if (file === undefined) throw new Error("File is undefined");
 
       // Upload on to Manta
       const upload = execSync(
@@ -611,14 +622,14 @@ export abstract class SurveyService {
         },
       );
 
-      if (!saveMiniMap) throw new Error('Mini Map Cannot Be Saved');
+      if (!saveMiniMap) throw new Error("Mini Map Cannot Be Saved");
 
       // Delete file from local tmp.
       await fs.unlink(file.path);
 
       return {
         success: true,
-        message: 'Site Map has been saved',
+        message: "Site Map has been saved",
       };
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -636,11 +647,11 @@ export abstract class SurveyService {
     try {
       const getCurrentSiteMap = await MinimapImages.findOne(
         { floor, site: new ObjectId(site._id) },
-        '-_id',
+        "-_id",
       );
 
       if (!getCurrentSiteMap)
-        throw new Error('Site Map / Floor combination does not exist');
+        throw new Error("Site Map / Floor combination does not exist");
 
       const saveSiteMap = await MinimapImages.findOneAndUpdate(
         { floor, site: new ObjectId(site._id) },
@@ -650,11 +661,11 @@ export abstract class SurveyService {
         },
       );
 
-      if (!saveSiteMap) throw new Error('Site Map Cannot Be Saved');
+      if (!saveSiteMap) throw new Error("Site Map Cannot Be Saved");
 
       return {
         success: true,
-        message: 'Site Map has been saved',
+        message: "Site Map has been saved",
       };
     } catch (e) {
       ConsoleUtil.error(e);
@@ -666,7 +677,9 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MapPins.countDocuments({ site: new ObjectId(site) });
+      const data = await MapPins.countDocuments({
+        site: new ObjectId(site),
+      });
 
       return { success: data ? true : false };
     } catch (e) {

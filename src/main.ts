@@ -1,9 +1,9 @@
 // Project imports
-import { loadConfiguration, Configuration, TEMPLATE } from './Conf';
-import { ConsoleUtil } from './utils/ConsoleUtil';
-import { App } from './App';
+import { loadConfiguration, Configuration, TEMPLATE } from "./Conf";
+import { ConsoleUtil } from "./utils/ConsoleUtil";
+import { App } from "./App";
 
-ConsoleUtil.log('Loading configuration...');
+ConsoleUtil.log("Loading configuration...");
 
 let configuration: Configuration = TEMPLATE;
 try {
@@ -15,7 +15,7 @@ try {
   process.exit(1);
 }
 
-ConsoleUtil.log('Checking DB connection...');
+ConsoleUtil.log("Checking DB connection...");
 
 const app = new App(configuration.DATABASE_URL, configuration);
 app

@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { ISite, ISiteMap, ISiteSettings, SiteMap } from './SiteModel';
-import { IResponse } from '../../utils/CommonUtil';
-import { CommonUtil } from '../../utils/CommonUtil';
+import { Request, Response } from "express";
+import { ISite, ISiteSettings, SiteMap } from "./SiteModel";
+import { IResponse } from "../../utils/CommonUtil";
+import { CommonUtil } from "../../utils/CommonUtil";
 
-import SiteService from './SiteService';
-import { ObjectId } from 'mongodb';
+import SiteService from "./SiteService";
+import { ObjectId } from "mongodb";
 
 /**
  * Controller for getting site specific settings
@@ -17,13 +17,13 @@ class SiteController {
    */
   public async getSettings(req: Request, res: Response) {
     const { siteId } = req.params;
-    if (!siteId) return CommonUtil.failResponse(res, 'Site Id is not provided');
+    if (!siteId) return CommonUtil.failResponse(res, "Site Id is not provided");
     const results = await SiteService.getSettings(siteId);
-    if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
+    if (!results) return CommonUtil.failResponse(res, "No Setting is found");
 
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(
       res,
-      '',
+      "",
       results.settings[0],
     );
   }
@@ -37,11 +37,11 @@ class SiteController {
    */
   public async getSites(req: Request, res: Response) {
     const results = await SiteService.getSites();
-    if (!results) return CommonUtil.failResponse(res, 'No Setting is found');
+    if (!results) return CommonUtil.failResponse(res, "No Setting is found");
 
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(
       res,
-      '',
+      "",
       results.sites,
     );
   }
@@ -58,10 +58,10 @@ class SiteController {
       ? await SiteService.getSitemap(name)
       : await SiteService.getSitemap();
 
-    if (!results) return CommonUtil.failResponse(res, 'No Site Map is found');
+    if (!results) return CommonUtil.failResponse(res, "No Site Map is found");
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(
       res,
-      '',
+      "",
       results.sitemap,
     );
   }
@@ -76,10 +76,10 @@ class SiteController {
     const site: ISite = req.body;
 
     const createSite = await SiteService.createSite(site);
-    if (!createSite) return CommonUtil.failResponse(res, 'No Setting is found');
+    if (!createSite) return CommonUtil.failResponse(res, "No Setting is found");
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(
       res,
-      '',
+      "",
       createSite,
     );
   }
@@ -102,7 +102,7 @@ class SiteController {
       image_url: req.body.image_url,
     });
 
-    //check that the map is unique
+    // check that the map is unique
     const isDuplicate = await SiteService.checkForDuplicateSitemaps(
       sitemap.name,
     );
@@ -110,15 +110,15 @@ class SiteController {
     if (isDuplicate) {
       return CommonUtil.failResponse(
         res,
-        'Duplicate sitemap name exists, please give map another name',
+        "Duplicate sitemap name exists, please give map another name",
       );
     }
     const createSitemap = await SiteService.createSitemap(sitemap);
     if (!createSitemap)
-      return CommonUtil.failResponse(res, 'Failed to create new sitemap');
+      return CommonUtil.failResponse(res, "Failed to create new sitemap");
     return CommonUtil.successResponse<IResponse<ISiteSettings>>(
       res,
-      '',
+      "",
       createSitemap,
     );
   }

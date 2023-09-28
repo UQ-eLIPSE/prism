@@ -1,4 +1,4 @@
-import { Schema, Document, Model, model } from 'mongoose';
+import { Schema, Document, Model, model } from "mongoose";
 
 export interface ISettings extends Document {
   enableMultiSite: boolean;
@@ -8,20 +8,18 @@ export interface ISettings extends Document {
 }
 
 export interface ISingleSiteSettings extends Document {
-  backgroundImage: string,
-  siteTitle: string
+  backgroundImage: string;
+  siteTitle: string;
 }
 
 const SettingSchema: Schema = new Schema({
   enableMultiSite: { type: Boolean },
   mediaPageVisibility: { type: Boolean },
   faqPageVisibility: { type: Boolean },
-  singleSiteSettings: { type: Schema.Types.Mixed }
+  singleSiteSettings: { type: Schema.Types.Mixed },
 });
 
-
-
 export const Settings: Model<ISettings> = model<ISettings>(
-  'Settings',
+  "Settings",
   SettingSchema,
 );

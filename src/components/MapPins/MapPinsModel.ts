@@ -1,15 +1,15 @@
-import { ObjectID } from 'bson';
-import { Schema, Document, Model, model } from 'mongoose';
+import { ObjectId } from "bson";
+import { Schema, Document, Model, model } from "mongoose";
 
 // Note: Not sure if site_name is needed with the use of name, however,
 // as it appears elsewhere in the code, will be kept for the time being.
 export interface IMapPins extends Document {
-  _id: ObjectID;
+  _id: ObjectId;
   x: number;
   y: number;
   icon: string;
   cover_image?: string;
-  site: ObjectID;
+  site: ObjectId;
   name: string;
   enabled: boolean;
   site_name?: string;
@@ -18,12 +18,12 @@ export interface IMapPins extends Document {
 }
 
 const MapPinsSchema: Schema = new Schema({
-  _id: { type: ObjectID, auto: true },
+  _id: { type: ObjectId, auto: true },
   x: { type: Number, required: true },
   y: { type: Number, required: true },
   icon: { type: String },
   cover_image: { type: String },
-  site: { type: ObjectID },
+  site: { type: ObjectId },
   name: { type: String, required: true },
   enabled: { type: Boolean, required: true },
   site_name: { type: String, required: false },
@@ -32,6 +32,6 @@ const MapPinsSchema: Schema = new Schema({
 });
 
 export const MapPins: Model<IMapPins> = model<IMapPins>(
-  'map_pins',
+  "map_pins",
   MapPinsSchema,
 );

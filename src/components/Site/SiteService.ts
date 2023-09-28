@@ -1,5 +1,5 @@
-import { ISite, ISiteMap, Site, SiteMap, SiteSettings } from './SiteModel';
-import { ObjectId } from 'bson';
+import { ISite, ISiteMap, Site, SiteMap, SiteSettings } from "./SiteModel";
+import { ObjectId } from "bson";
 
 abstract class SiteService {
   static async getSettings(siteId: string) {

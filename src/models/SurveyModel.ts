@@ -1,5 +1,5 @@
-import { Schema, Document, Model, model } from 'mongoose';
-const uuidv4 = require('uuidv4');
+import { Schema, Document, Model, model } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 export interface IMinimapConversion extends Document {
   floor: number;
@@ -101,13 +101,13 @@ export interface IMinimapImages extends Document {
 
 const SurveySchema: Schema = new Schema({
   survey_name: { type: String },
-  survey_nodes: [{ type: Schema.Types.Mixed, ref: 'survey_nodes' }],
+  survey_nodes: [{ type: Schema.Types.Mixed, ref: "survey_nodes" }],
 });
 
 const SurveyNodeSchema: Schema = new Schema({
   survey_name: { type: String },
   uploaded_at: { type: Date },
-  uploaded_by: { type: String, ref: 'User' },
+  uploaded_by: { type: String, ref: "User" },
   manta_link: { type: String },
   date: { type: Date },
   node_number: { type: Number },
@@ -118,16 +118,16 @@ const SurveyNodeSchema: Schema = new Schema({
   info_hotspots: [Schema.Types.Mixed],
   levels: [Schema.Types.Mixed],
   face_size: { type: Number },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
 });
 
 const MinimapNodeSchema: Schema = new Schema({
   node_number: { type: Number },
   tiles_id: { type: String },
   tiles_name: { type: String },
-  survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
+  survey_node: { type: Schema.Types.Mixed, ref: "survey_nodes" },
   floor: { type: Number },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
 });
 
 const MinimapConversionSchema: Schema = new Schema({
@@ -136,16 +136,16 @@ const MinimapConversionSchema: Schema = new Schema({
   y: { type: Number },
   x_scale: { type: Number },
   y_scale: { type: Number },
-  survey_node: { type: Schema.Types.Mixed, ref: 'survey_nodes' },
-  minimap_node: { type: Schema.Types.Mixed, ref: 'minimap_nodes' },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  survey_node: { type: Schema.Types.Mixed, ref: "survey_nodes" },
+  minimap_node: { type: Schema.Types.Mixed, ref: "minimap_nodes" },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
   rotation: { type: Number },
 });
 
 const HotspotDescriptionSchema: Schema = new Schema({
   header: { type: Schema.Types.Mixed },
   contents: [Schema.Types.Mixed],
-  tiles_id: { type: String, ref: 'survey_node' },
+  tiles_id: { type: String, ref: "survey_node" },
   info_id: { type: String, default: uuidv4 },
 });
 
@@ -154,7 +154,7 @@ const MinimapImagesSchema: Schema = new Schema({
   floor: { type: Number },
   floor_name: { type: String },
   floor_tag: { type: String },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
   image_large_url: { type: String },
   x_pixel_offset: { type: Number },
   y_pixel_offset: { type: Number },
@@ -165,24 +165,24 @@ const MinimapImagesSchema: Schema = new Schema({
   xy_flipped: { type: Boolean },
 });
 
-export const Survey: Model<ISurvey> = model<ISurvey>('Survey', SurveySchema);
+export const Survey: Model<ISurvey> = model<ISurvey>("Survey", SurveySchema);
 export const SurveyNode: Model<ISurveyNode> = model<ISurveyNode>(
-  'survey_nodes',
+  "survey_nodes",
   SurveyNodeSchema,
 );
 export const MinimapNode: Model<IMinimapNode> = model<IMinimapNode>(
-  'minimap_nodes',
+  "minimap_nodes",
   MinimapNodeSchema,
 );
 export const MinimapConversion: Model<IMinimapConversion> =
-  model<IMinimapConversion>('minimap_conversion', MinimapConversionSchema);
+  model<IMinimapConversion>("minimap_conversion", MinimapConversionSchema);
 export const HotspotDescription: Model<IHotspotDescription> =
   model<IHotspotDescription>(
-    'hotspot_description',
+    "hotspot_description",
     HotspotDescriptionSchema,
-    'hotspot_description',
+    "hotspot_description",
   );
 export const MinimapImages: Model<IMinimapImages> = model<IMinimapImages>(
-  'minimap_images',
+  "minimap_images",
   MinimapImagesSchema,
 );

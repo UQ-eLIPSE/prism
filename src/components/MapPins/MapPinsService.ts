@@ -1,9 +1,9 @@
-import { IMapPins, MapPins } from './MapPinsModel';
-import { ObjectId } from 'bson';
-import { Site } from '../Site/SiteModel';
+import { IMapPins, MapPins } from "./MapPinsModel";
+import { ObjectId } from "bson";
+import { Site } from "../Site/SiteModel";
 
-import * as fs from 'fs/promises';
-import { execSync } from 'child_process';
+import * as fs from "fs/promises";
+import { execSync } from "child_process";
 
 class SiteService {
   /**
@@ -39,7 +39,7 @@ class SiteService {
    */
   static async getMapPin(id: string) {
     const mapPin = await MapPins.findOne({ _id: new ObjectId(id) });
-    if (mapPin === null) throw new Error('Map Pin not found');
+    if (mapPin === null) throw new Error("Map Pin not found");
 
     const site = await Site.findById(mapPin.site);
     if (site === null) return mapPin;
@@ -70,9 +70,7 @@ class SiteService {
     return true;
   }
 
-  public static async uploadPreview(
-    file: Express.Multer.File,
-  ): Promise<{
+  public static async uploadPreview(file: Express.Multer.File): Promise<{
     success: boolean;
     message: string;
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -80,8 +78,15 @@ class SiteService {
   }> {
     try {
       // eslint-disable-next-line max-len
-      const { MANTA_ROOT_FOLDER, MANTA_HOST_NAME, MANTA_USER, MANTA_SUB_USER, MANTA_ROLES, MANTA_KEY_ID } = process.env;
-      if (file === undefined) throw new Error('File is undefined');
+      const {
+        MANTA_ROOT_FOLDER,
+        MANTA_HOST_NAME,
+        MANTA_USER,
+        MANTA_SUB_USER,
+        MANTA_ROLES,
+        MANTA_KEY_ID,
+      } = process.env;
+      if (file === undefined) throw new Error("File is undefined");
 
       // Upload on to Manta
       const upload = execSync(
@@ -96,10 +101,10 @@ class SiteService {
 
       return {
         success: true,
-        message: 'Preview image has been uploaded',
+        message: "Preview image has been uploaded",
         data: {
           url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-        }
+        },
       };
     } catch (e) {
       return { success: false, message: e.message, data: {} };

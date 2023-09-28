@@ -1,6 +1,6 @@
-import { User } from '../models/UserModel';
-import { CommonUtil } from '../utils/CommonUtil';
-import { Response } from 'express-serve-static-core';
+import { User } from "../models/UserModel";
+import { CommonUtil } from "../utils/CommonUtil";
+import { Response } from "express-serve-static-core";
 
 export abstract class UserService {
   static async setUserListPagination(
@@ -17,7 +17,7 @@ export abstract class UserService {
     mongoQuery.skip = size * pageNo - size;
 
     const allUsers = await User.find(fieldToSearch, {}, mongoQuery);
-    if (!allUsers) return CommonUtil.failResponse(res, 'No user is found');
+    if (!allUsers) return CommonUtil.failResponse(res, "No user is found");
 
     const totalCount = await User.countDocuments(fieldToSearch);
     const nextPage =

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-declare module 'manta' {
-  import * as stream from 'stream';
+declare module "manta" {
+  import * as stream from "stream";
 
   namespace auth {
     export function cliSigner(options: any): any;

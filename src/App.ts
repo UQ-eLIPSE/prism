@@ -1,17 +1,17 @@
 // Library imports
-import * as express from 'express';
-import * as Sentry from '@sentry/node';
-import * as mongoose from 'mongoose';
-import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
-import * as cookieParser from 'cookie-parser';
-import { ServeStaticOptions } from 'serve-static';
+import * as express from "express";
+import * as Sentry from "@sentry/node";
+import * as mongoose from "mongoose";
+import * as bodyParser from "body-parser";
+import * as cors from "cors";
+import * as cookieParser from "cookie-parser";
+import { ServeStaticOptions } from "serve-static";
 
 // Project imports
-import { Routes } from './routes';
-import { Configuration } from './Conf';
-import { ConsoleUtil } from './utils/ConsoleUtil';
-import { MantaService } from './service/MantaService';
+import { Routes } from "./routes";
+import { Configuration } from "./Conf";
+import { ConsoleUtil } from "./utils/ConsoleUtil";
+import { MantaService } from "./service/MantaService";
 
 export class App {
   private express: express.Application;
@@ -34,14 +34,14 @@ export class App {
 
   private async setUpDatabase() {
     await mongoose.connect(this.databaseUrl);
-    ConsoleUtil.log('Done setting up database functions');
+    ConsoleUtil.log("Done setting up database functions");
   }
 
   private async setUpManta() {
     try {
       const manta = new MantaService();
       await manta.setupManta();
-      ConsoleUtil.log('Done initializing Manta ...');
+      ConsoleUtil.log("Done initializing Manta ...");
     } catch (e) {
       ConsoleUtil.error(e);
     }
@@ -57,26 +57,26 @@ export class App {
       cors({
         origin: [
           this.configuration.CLIENT_ORIGIN,
-          'http://localhost',
+          "http://localhost",
           /\.uqcloud\.net$/,
         ],
         credentials: true,
       }),
     );
 
-    this.express.use(bodyParser.json({ limit: '50mb' }));
+    this.express.use(bodyParser.json({ limit: "50mb" }));
     this.routes.routes(this.express, this.router);
-    ConsoleUtil.log('Done setting up express routes...');
+    ConsoleUtil.log("Done setting up express routes...");
   }
 
   private setupSentry(): void {
     if (this.configuration.USE_SENTRY || this.configuration.USE_SSO) {
-      ConsoleUtil.log('Setting up Sentry...');
-      ConsoleUtil.log('Using SSO...');
+      ConsoleUtil.log("Setting up Sentry...");
+      ConsoleUtil.log("Using SSO...");
       Sentry.init({ dsn: this.configuration.SENTRY_DSN });
     } else {
-      ConsoleUtil.log('Not using Sentry...');
-      ConsoleUtil.log('Not using SSO...');
+      ConsoleUtil.log("Not using Sentry...");
+      ConsoleUtil.log("Not using SSO...");
     }
   }
 
@@ -87,7 +87,7 @@ export class App {
       //   await this.setUpManta();
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('Database connection error: ', e);
+      console.error("Database connection error: ", e);
     }
 
     this.setUpExpress();

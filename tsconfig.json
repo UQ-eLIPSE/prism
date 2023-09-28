@@ -5,10 +5,7 @@
     "module": "commonjs",
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "lib": [
-        "es2015",
-        "ES2021.String"
-    ],
+    "lib": ["es2015", "ES2021.String"],
     "outDir": "dist",
     "noImplicitAny": true,
     "noImplicitThis": true,

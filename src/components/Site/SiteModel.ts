@@ -1,5 +1,5 @@
-import { ObjectID } from 'bson';
-import { Schema, Document, Model, model } from 'mongoose';
+import { ObjectId } from "bson";
+import { Schema, Document, Model, model } from "mongoose";
 
 export interface ISiteSettings extends Document {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,7 +21,7 @@ export interface ISiteSettings extends Document {
   minimap: {
     image_url: string;
     image_large_url: string;
-    x_pixel_offset: number; // offset from certain point (not sure where or how this is calculated)
+    x_pixel_offset: number; // offset from certain point (unsure of how this is calculated)
     y_pixel_offset: number; // not clear on what this does
     x_scale: number;
     y_scale: number;
@@ -87,7 +87,7 @@ export interface ISiteMap extends Document {
 
 const SiteSettingSchema: Schema = new Schema({
   _id: {
-    type: ObjectID,
+    type: ObjectId,
   },
   enable: {
     type: {
@@ -147,12 +147,12 @@ const SiteSettingSchema: Schema = new Schema({
   },
   marzipano_mouse_view_mode: { type: String },
   num_floors: { type: Number },
-  site: { type: Schema.Types.ObjectId, ref: 'sites' },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
 });
 
 const SiteSchema: Schema = new Schema({
   _id: {
-    type: ObjectID,
+    type: ObjectId,
   },
   site_name: { type: String },
   tag: { type: String },
@@ -163,21 +163,21 @@ const SiteSchema: Schema = new Schema({
  */
 const SiteMapSchema: Schema = new Schema({
   _id: {
-    type: ObjectID,
+    type: ObjectId,
   },
   image_url: { type: String },
   name: { type: String },
 });
 
 export const SiteSettings: Model<ISiteSettings> = model<ISiteSettings>(
-  'site_settings',
+  "site_settings",
   SiteSettingSchema,
 );
-export const Site: Model<ISite> = model<ISite>('sites', SiteSchema);
+export const Site: Model<ISite> = model<ISite>("sites", SiteSchema);
 /**
  * This handles the site map on the homepage
  */
 export const SiteMap: Model<ISiteMap> = model<ISiteMap>(
-  'site_map',
+  "site_map",
   SiteMapSchema,
 );

@@ -1,4 +1,4 @@
-import { Schema, Document, Model, model } from 'mongoose';
+import { Schema, Document, Model, model } from "mongoose";
 
 export interface IUser extends Document {
   username: string;
@@ -22,8 +22,8 @@ const UserSchema: Schema = new Schema({
   role: {
     type: String,
     required: true,
-    enum: ['superAdmin', 'projectAdmin', 'guest'],
-    default: 'guest',
+    enum: ["superAdmin", "projectAdmin", "guest"],
+    default: "guest",
   },
 });
 
@@ -32,14 +32,14 @@ const InvitedUserSchema: Schema = new Schema({
   role: {
     type: String,
     required: true,
-    enum: ['superAdmin', 'projectAdmin', 'guest'],
-    default: 'guest',
+    enum: ["superAdmin", "projectAdmin", "guest"],
+    default: "guest",
   },
 });
 
-export const User: Model<IUser> = model<IUser>('users', UserSchema);
+export const User: Model<IUser> = model<IUser>("users", UserSchema);
 
 export const InvitedUser: Model<IUser> = model<IUser>(
-  'InvitedUser',
+  "InvitedUser",
   InvitedUserSchema,
 );

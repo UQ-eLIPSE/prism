@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as stream from 'stream';
-import * as multer from 'multer';
-import * as manta from 'manta';
-import * as fs from 'fs';
-import { Request } from 'express-serve-static-core';
-import { ConsoleUtil } from '../utils/ConsoleUtil';
+import * as stream from "stream";
+import * as multer from "multer";
+import * as manta from "manta";
+import * as fs from "fs";
+import { Request } from "express-serve-static-core";
+import { ConsoleUtil } from "../utils/ConsoleUtil";
 
 export class MantaService implements multer.StorageEngine {
   private manta: manta.manta.MantaClient | null = null;
@@ -22,7 +22,7 @@ export class MantaService implements multer.StorageEngine {
 
       this.manta = await manta.createClient({
         sign: manta.privateKeySigner({
-          key: fs.readFileSync(MANTA_KEY_FILE as any, 'utf-8'),
+          key: fs.readFileSync(MANTA_KEY_FILE as any, "utf-8"),
           keyId: MANTA_KEY_ID,
           user: MANTA_USER,
           subuser: MANTA_SUB_USER,
@@ -51,18 +51,15 @@ export class MantaService implements multer.StorageEngine {
     });
   }
 
-  private uploadFileToManta(
-    destPath: string,
-    fileStream: stream.Readable,
-  ) {
+  private uploadFileToManta(destPath: string, fileStream: stream.Readable) {
     return new Promise<any>((resolve, reject) => {
       (<manta.manta.MantaClient>this.manta).put(
         destPath,
         fileStream,
         {
           headers: {
-            'access-control-allow-origin': '*',
-            'access-control-allow-methods': 'GET',
+            "access-control-allow-origin": "*",
+            "access-control-allow-methods": "GET",
           },
         },
 
@@ -86,7 +83,7 @@ export class MantaService implements multer.StorageEngine {
       const { MANTA_ROOT_FOLDER, PROJECT_NAME } = process.env;
       const destPath = `~~/${MANTA_ROOT_FOLDER}/`;
 
-      if (file.fieldname === 'resource') {
+      if (file.fieldname === "resource") {
         if (!this.manta) {
           await this.setupManta();
         }
