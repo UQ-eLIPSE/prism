@@ -1,6 +1,4 @@
 #!/bin/bash
-declare -A PROJECTS
-
 # The following functions are called in the Main Execution Flow in this order:
 # 1. load_projects: Loads project data from 'projects.txt'.
 # 2. select_project: Selects the target project and assigns its parameters.
@@ -12,20 +10,29 @@ declare -A PROJECTS
 #    5.3. restore_data_in_mongodb: Restores data in the MongoDB instance.
 #    5.4. display_information: Displays relevant information about the process.
 
+IDS=()
+DATANAMES=()
+RESTORE_DATAS=()
+RESTORE_FILENAMES=()
+
 load_projects() {
+    index=0
     while IFS="|" read -r id dataname restore_data restore_filename; do
-        PROJECTS["$id,dataname"]=$dataname
-        PROJECTS["$id,restore_data"]=$restore_data
-        PROJECTS["$id,restore_filename"]=$restore_filename
+        IDS[$index]=$id
+        DATANAMES[$index]=$dataname
+        RESTORE_DATAS[$index]=$restore_data
+        RESTORE_FILENAMES[$index]=$restore_filename
+        index=$((index+1))
     done < projects.txt
 }
 
 select_project() {
     read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water " project_name
-    project="${project_name::1}"
-    DATANAME="${PROJECTS["$project,dataname"]}"
-    RESTORE_DATA="${PROJECTS["$project,restore_data"]}"
-    RESTORE_FILENAME="${PROJECTS["$project,restore_filename"]}"
+    project_index=$((project_name - 1))
+
+    DATANAME="${DATANAMES[$project_index]}"
+    RESTORE_DATA="${RESTORE_DATAS[$project_index]}"
+    RESTORE_FILENAME="${RESTORE_FILENAMES[$project_index]}"
 
     if [ -z "$DATANAME" ]; then
         echo "Invalid project number."
