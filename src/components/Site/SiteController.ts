@@ -54,6 +54,7 @@ class SiteController {
    */
   public async getSitemap(req: Request, res: Response) {
     const { name } = req.params;
+
     const results = name
       ? await SiteService.getSitemap(name)
       : await SiteService.getSitemap();

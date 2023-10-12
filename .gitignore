@@ -2,6 +2,7 @@ node_modules/
 dist/
 .env
 yarn.lock
+yarn-error.log
 package.lock
 .idea
 .DS_Store

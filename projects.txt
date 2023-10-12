@@ -2,3 +2,4 @@
 2|.env.ANLB.sample|anlb|anlb-001_anlb_mongodump
 3|.env.kingston.sample|kingston|prism-001_kingston_mongodump
 4|.env.urban_water_new.example|urban_water|prism-008_urbanwater_mongodump
+5|.env.camphill.example|camphill|dump_camphill_2023-10-05

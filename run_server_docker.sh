@@ -27,7 +27,7 @@ load_projects() {
 }
 
 select_project() {
-    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water " project_name
+    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water, 5. Camp Hill " project_name
     project_index=$((project_name - 1))
 
     DATANAME="${DATANAMES[$project_index]}"
