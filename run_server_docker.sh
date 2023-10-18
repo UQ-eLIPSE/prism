@@ -82,7 +82,7 @@ build_and_run() {
     read -p "Do you want to build the Docker images before starting? (y/n): " build_option
     build_flag=""
     [[ "$build_option" =~ ^[yY]$ ]] && build_flag="--build" 
-    docker-compose up -d $build_flag
+    sudo docker-compose up -d $build_flag
     restore_data
     echo "Container successfully running in the background. You can:"
     echo "1) Check its status with command: docker ps"

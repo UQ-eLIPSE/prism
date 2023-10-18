@@ -8,7 +8,7 @@ pipelines:
           script:
             - apt-get update && apt-get install gettext-base
             - yarn
-            - cat .env.prod.camphill.example | envsubst > .env
+            - cat .env.prod.aeb.example | envsubst > .env
             - cat .env
             - yarn build
             - cp .env dist/.env
