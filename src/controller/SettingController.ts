@@ -10,7 +10,6 @@ export class SettingController {
    */
   public async getSettings(req: Request, res: Response) {
     const isTableExist = await Settings.findOne();
-    console.log(isTableExist);
     if (!isTableExist) {
       const seeder = {
         enableMultiSite: false,
@@ -41,12 +40,12 @@ export class SettingController {
     if (mediaPageVisibility !== undefined)
       await Settings.updateOne(
         { mediaPageVisibility: settings[0].mediaPageVisibility },
-        { mediaPageVisibility }
+        { mediaPageVisibility },
       );
     if (faqPageVisibility !== undefined)
       await Settings.updateOne(
         { faqPageVisibility: settings[0].faqPageVisibility },
-        { faqPageVisibility }
+        { faqPageVisibility },
       );
 
     return CommonUtil.successResponse(res, "Setting is successfully updated");
