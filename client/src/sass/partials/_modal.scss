@@ -1,0 +1,326 @@
+.container {
+  position: absolute;
+  z-index: 100;
+  height: 100%;
+  width: 100%;
+}
+
+.modal,
+.toolModal {
+  width: 45%;
+  position: fixed;
+  border-radius: 1.5em;
+  background: white;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2em;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-title {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+// This should be changed to div + background-image to allow for easy styling while keeping aspect ratio.
+.image-preview {
+  background-color: #ffa786;
+  padding-bottom: calc(100% * 1 / 2);
+  border-radius: 0.75em 0.75em 0em 0em;
+  margin-top: 1.5em;
+  background-position: center;
+  background-size: cover;
+  position: relative;
+
+  &:hover {
+    label {
+      display: block;
+    }
+  }
+
+  label {
+    border-radius: 0.75em 0.75em 0em 0em;
+    position: absolute;
+    width: 100%;
+    padding-top: calc(100% * 1 / 2);
+    cursor: pointer;
+    display: none;
+
+    &.displayed {
+      display: block !important;
+    }
+
+    &.light {
+      span {
+        color: #ffffff;
+
+        &:hover,
+        &.dropUploadHover {
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
+
+    &.dropUpload {
+      pointer-events: none;
+    }
+
+    span {
+      border-radius: 0.75em 0.75em 0em 0em;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border: 2px dashed rgba(0, 0, 0, 0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        font-size: 4em;
+      }
+
+      p {
+        font-size: 1.25em;
+        padding: 0.5em;
+      }
+
+      &:hover,
+      &.dropUploadHover {
+        border: 2px dashed #000000;
+        border-radius: 0.75em 0.75em 0em 0em;
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+
+      div {
+        background-color: #ee6d3f;
+        color: #ffffff;
+        border-radius: 0.5em;
+        cursor: pointer;
+        padding: 0.75em 2em;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: #393fc5;
+          box-shadow: 2.5px 2.5px 10px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+
+  input {
+    display: none;
+  }
+}
+
+.create-pin-button {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    padding: 1em 2em;
+    border-radius: 0.5em;
+    background-color: #e8754b;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: bold;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #161a71;
+    }
+  }
+}
+
+.edit-title {
+  font-size: 1.5em;
+}
+#image-text {
+  text-align: center;
+  line-height: 2em;
+}
+#modal-close {
+  &:hover {
+    color: dimgray;
+  }
+  font-size: 1.2em;
+  cursor: pointer;
+}
+.module-form {
+  &#sitemap {
+    border-radius: 0.75em;
+    margin-top: 25px;
+  }
+
+  border-radius: 0 0 0.75em 0.75em;
+  background-color: #ffa786;
+  margin-bottom: 1.5em;
+  justify-content: space-between;
+  padding: 1em;
+  width: 100%;
+
+  .add-external-url {
+    .add-url {
+      display: flex;
+      gap: 0.5em;
+      align-items: center;
+
+      input[type="url"] {
+        flex-grow: 2;
+        padding: 1em;
+        border-radius: 0.5em;
+        outline: none;
+        border: 1px solid #6a260e;
+      }
+
+      input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-right: 0.5em;
+      }
+    }
+  }
+
+  &.input-form {
+    display: flex;
+    flex-direction: row;
+    gap: 0 1em;
+
+    &.input-section {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 2;
+      gap: 0.5em;
+
+      input {
+        padding: 1em;
+        border-radius: 0.5em;
+        outline: none;
+        border: 1px solid #6a260e;
+      }
+    }
+
+    .add-icon-button > button {
+      height: 100%;
+      width: 6.5em;
+      padding: 0.5em;
+      margin-left: 1em;
+      border-radius: 0.5em;
+      background-color: #e8754b;
+      border: none;
+      cursor: pointer;
+      color: #ffffff;
+      transition: all 0.3s ease;
+
+      i {
+        font-size: 2em;
+        margin-right: 0.2em;
+      }
+
+      &:hover {
+        background-color: #161a71;
+      }
+    }
+  }
+}
+#input-section {
+  width: 100%;
+}
+
+.checkbox-form {
+  background-color: #8a8a8a58;
+  &:hover {
+    background-color: #ffffff;
+    cursor: pointer;
+  }
+}
+
+.input-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1em;
+  margin-top: 0.5em;
+  width: 100%;
+}
+
+.input-checkbox {
+  margin-right: 1em;
+}
+
+.select-icon-text {
+  font-weight: bold;
+  font-size: 0.75em;
+}
+
+.modal-icon {
+  border-radius: 0.75em 0.75em 0 0;
+  margin-top: 1.5em;
+  background-color: #ffa786;
+  display: flex;
+  flex-direction: row;
+  padding: 1.5em 4em;
+  justify-content: space-between;
+
+  .icon-button-container {
+    background-color: #e9c369;
+    border: none;
+    width: 5em;
+    height: 5em;
+    border-radius: 0.8em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+
+    &:hover {
+      background-color: #ee6d3f;
+    }
+
+    &.selected {
+      background-color: #a3421f;
+    }
+
+    .select-icon {
+      color: #ffffff;
+      font-size: 2em;
+      margin-top: 6px;
+    }
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.closeModal,
+.toolCloseModal {
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100%;
+  width: 100%;
+  z-index: 199;
+  box-shadow: inset 0 0 10px #cfcfcf;
+}
+
+.toolCloseModal {
+  top: 0;
+  left: 0;
+}
+
+.toolContainer {
+  top: 0;
+  left: 0;
+}
+
+.toolModal {
+  height: 80%;
+  width: 40%;
+  overflow: auto;
+}

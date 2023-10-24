@@ -1,0 +1,239 @@
+@import "./_variables.scss";
+header {
+  font-size: 24px;
+  margin: 10px;
+}
+
+.drawerContainer {
+  padding: 20px;
+  text-align: center;
+  width: $timelineWidth;
+  font-family: "Lato", Helvetica, sans-serif;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.drawer,
+.scrollControl {
+  z-index: 11;
+}
+
+.formControl {
+  min-width: 100px;
+  margin: 10px 0 10px 10px !important;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.MuiPaper-elevation1 {
+  box-shadow: none;
+}
+
+.MuiAccordionSummary-root {
+  padding: 0;
+}
+
+.surveyContainer {
+  margin-top: -5px;
+}
+
+.monthName {
+  position: absolute;
+  color: $darkText;
+  text-transform: capitalize;
+  bottom: 1px;
+  background-color: transparent;
+  border: none;
+  font-size: 15px;
+  font-family: "lato", Helvetica, sans-serif;
+  transition: all 0.05s ease-in-out;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 90%;
+  margin: auto;
+  height: 100%;
+  &:hover ~ span,
+  &:hover {
+    color: $prismPrimary;
+    cursor: pointer;
+  }
+}
+
+.deactivatedMonth {
+  // color: red !important;
+  opacity: 0.5;
+}
+
+.monthNameDiv {
+  width: 75px;
+  text-align: left;
+}
+
+.currentSurvey,
+.inactiveSurvey {
+  padding: 2px 5px 3px 5px;
+  border-radius: 10px;
+  color: white;
+  background-color: $prismPrimary;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+  height: auto;
+  font-size: 0.9em;
+}
+
+.inactiveSurvey {
+  background-color: transparent;
+  color: rgb(170, 170, 170);
+}
+
+.MuiAccordionSummary-content.Mui-expanded span {
+  transition: opacity 0.5s ease-out;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.monthContainer {
+  position: relative;
+  width: 100%;
+}
+
+.node {
+  border-radius: 50%;
+  background: $prismPrimary;
+  background-clip: padding-box;
+  border-color: $primaryLight;
+  border-style: solid;
+  width: 15px;
+  height: 15px;
+  border-width: 3px;
+  margin-top: 17px;
+  margin-right: 10px;
+  z-index: 2;
+}
+
+.selectedNode {
+  border-color: white;
+  background-color: white;
+}
+
+.currentMonth {
+  color: $prismPrimary;
+}
+
+.fa {
+  font-size: 20px;
+}
+
+.surveyDateContainer {
+  margin-left: -10px;
+  display: flex;
+  padding: 5px 10px 5px 10px;
+  position: relative;
+  color: $text;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.selectedSurvey {
+  border-radius: 100px;
+  background: $prismPrimary;
+  color: white;
+  padding: 3px 5px 3px 5px;
+  & p {
+    color: white;
+    margin-right: 5px;
+    padding: 0px;
+  }
+}
+
+.timelineLine {
+  background-color: $primaryLight;
+  width: 2px;
+  position: absolute;
+  z-index: 1;
+  top: 30px; // 5 for padding, 15 for circle height
+  left: 16.5px; // 10 for padding, 7.5 for circle width, -1 for div width
+  height: 60px;
+}
+
+.timelineLineLast {
+  // Last line in any given month with >= 3 surveys
+  height: 0px;
+}
+
+.timelineLineSingle {
+  // When only 1 survey in  month
+  height: 0px;
+}
+
+.timelineLineDouble {
+  // Two surveys in month
+  height: 0px;
+}
+
+.levelsSelect {
+  display: flex;
+  & label {
+    align-self: center;
+    color: $lightText;
+    font-family: "Lato", Helvetica, sans-serif;
+  }
+  & fieldset {
+    border-color: #eee;
+    border-width: 1px;
+    border-radius: 8px;
+  }
+  & div[role="button"] {
+    color: $lightText;
+    padding: 8px;
+    font-size: 14px;
+    font-family: "Lato", Helvetica, sans-serif;
+  }
+}
+
+.close {
+  margin-left: 182px;
+  background-color: transparent;
+  border: none;
+  background-color: $prismPrimary;
+  box-shadow: 0 0 4px rgba(128, 128, 128, 0.493);
+  cursor: pointer;
+  color: white;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 1em;
+  vertical-align: middle;
+  i {
+    margin-left: -0.5px;
+    margin-top: 0.8px;
+  }
+  &:hover {
+    background-color: white;
+    color: $prismPrimary;
+  }
+}
+
+.divider {
+  background-color: transparent;
+  height: 2px;
+}
+
+.surveyInactive {
+  opacity: 0.5;
+  cursor: default !important;
+  background-color: transparent;
+}
+
+.MuiAccordion-root:before {
+  background-color: transparent;
+}
+
+.timelineHidden {
+  display: none;
+}

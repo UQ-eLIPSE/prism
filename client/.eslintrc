@@ -1,0 +1,9 @@
+// Your ESLint configuration
+{
+  "plugins": ["react-hooks", "@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ]
+}

@@ -1,0 +1,135 @@
+@import "./_variables.scss";
+
+.sideNav {
+  background-color: white;
+  display: flex;
+}
+
+.iconHover {
+  margin: 0px;
+}
+
+.menuButton {
+  box-shadow: 0 0 3px grey;
+  background-color: white;
+  color: $lightText;
+  height: 36px;
+  left: 60px;
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: left 0.25s ease-in-out;
+  width: 36px;
+  z-index: 1201;
+
+  &:hover {
+    background-color: $lightText;
+    box-shadow: none;
+    color: white;
+  }
+
+  & .MuiIconButton-label {
+    position: fixed;
+  }
+}
+
+.menuOpen {
+  left: 280px;
+  transition: left 0.25s ease-in-out;
+}
+
+.chevronLeft {
+  transform: rotate(180deg);
+  margin-left: 0px;
+  margin-top: -5px;
+  transition: transform 0.25s ease-in-out;
+}
+
+.chevronRight {
+  margin-left: 5px;
+  margin-top: -5px;
+}
+
+.hide {
+  display: none;
+}
+
+.drawer {
+  width: drawerWidth;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.drawerOpen {
+  transition: width 0.25s ease-in-out;
+  width: $drawerWidth;
+}
+
+.drawerClose {
+  overflow-x: hidden;
+  transition: width 0.25s ease-in-out;
+  width: 80px !important;
+}
+
+.link {
+  padding: 10px 20px;
+}
+
+.linkText {
+  color: $darkText;
+  font-family: Lexend Deca;
+  font-size: 1.5em;
+  margin-left: 1em;
+}
+
+.linkIcon {
+  color: $lightText;
+
+  &:hover {
+    color: $primary;
+  }
+
+  &:selected {
+    color: $primary;
+  }
+}
+
+.navLink {
+  text-decoration: none;
+}
+
+.awmcLogoGroup {
+  margin-bottom: 1.8em;
+  margin-top: 1.25em;
+}
+
+.awmcLogo {
+  margin-left: 0.45em;
+  width: 4.25em;
+}
+
+.awmcTitle {
+  margin-left: 0.94em;
+  margin-right: 0.625em;
+  vertical-align: super;
+  width: 12em;
+}
+
+.prismLogoGroup {
+  bottom: 1.5em;
+  position: absolute;
+}
+
+.prismLogo {
+  display: flex;
+  height: 3em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.prismTitle {
+  margin-bottom: 0.25em;
+  margin-left: 0.8em;
+  width: 12.5em;
+}

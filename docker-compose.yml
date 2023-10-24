@@ -1,5 +1,22 @@
 version: "3.7"
 services:
+  client:
+    container_name: prism_client
+    hostname: client
+    tty: true
+    build:
+      context: ./client
+      dockerfile: dockerfile
+    volumes:
+      - ./client:/var/www/client
+      - /var/www/client/node_modules
+    ports:
+      - '3000:3000'
+    working_dir: /var/www/client
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+
   server:
     container_name: prism_server
     hostname: server

@@ -1,0 +1,104 @@
+@import "./_variables.scss";
+
+.site-title {
+  position: "absolute";
+  margin-left: "1.5em";
+  margin-top: "1.5em";
+  z-index: 2;
+  display: flex;
+  align-items: center;
+
+  line-height: 1em;
+  gap: 1em;
+  background-color: white;
+  padding: 0.5em 2em;
+  color: #161a71;
+
+  border-radius: 0.5em;
+  box-shadow: -0.3em 0em #83c5be;
+
+  h1 {
+    font-size: 1.5em;
+    margin: 0em;
+  }
+
+  h2 {
+    margin: 0em;
+  }
+
+  .prism-title-icon {
+    height: 2.5em;
+  }
+
+  i {
+    font-size: 1.5em;
+    color: #000000;
+  }
+}
+
+.facility-name {
+  color: #fff;
+  font-family: "Lexend Deca", "Lato", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  //margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 3.125em;
+  top: 3.125em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px #4a4a4a;
+  z-index: 1;
+  transition-duration: 0.2s;
+  transition-property: margin-right;
+  transition-timing-function: ease-out;
+
+  .firstLineName {
+    font-size: 3.45em;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 5px;
+    line-height: 0.85em;
+  }
+
+  .secondLineName {
+    font-size: 1.79em;
+    margin-top: 0.25em;
+  }
+}
+
+.timelineOpen {
+  margin-right: $timelineWidth;
+}
+
+// Alternative, subtle title / infocard.
+.title-card {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 0.375rem;
+  padding: 1em;
+  right: 100px;
+  top: 1.125em;
+  // Inherited from .facility-name
+  color: #fff;
+  font-family: "Lexend Deca", "Lato", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  //margin: 0;
+  position: absolute;
+  text-transform: capitalize;
+  text-shadow: 0 0 20px #4a4a4a;
+  z-index: 10;
+  flex-direction: row;
+
+  .firstLineName {
+    font-size: 1.79em;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 5px;
+    line-height: 0.85em;
+  }
+
+  .secondLineName {
+    font-size: 1em;
+    margin-top: 0.25em;
+    margin-bottom: 0;
+  }
+}

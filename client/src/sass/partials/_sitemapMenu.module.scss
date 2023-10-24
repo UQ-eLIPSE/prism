@@ -1,0 +1,135 @@
+@import "./_variables.scss";
+.sitemap-menu-overlay {
+  position: absolute;
+  z-index: 5;
+  background-color: #aaabac79;
+  width: 100%;
+  height: 100%;
+  padding-left: 2em;
+  top: 0;
+  left: 0;
+}
+
+.hide-overlay {
+  background-color: transparent;
+  width: 0px;
+  height: 0px;
+}
+
+.sitemap-button {
+  z-index: 6;
+  background: white;
+  width: 18vw;
+  min-width: 250px;
+  border-radius: 20px 20px 0 0;
+  padding-inline-start: 40px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  display: flex;
+  flex-direction: row;
+  flex-flow: row;
+  align-items: center;
+  gap: 2em;
+  position: fixed;
+  bottom: 0;
+  left: 10em;
+  box-shadow: -0.5em 0 0 0 #83c5be;
+  border: none;
+
+  &:hover {
+    background: #c3e1c7;
+    color: #4a5b6d;
+    cursor: pointer;
+    .sitemap-menu-btn-label {
+      color: #4a5b6d;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+#arrow-icon {
+  font-size: 2em;
+}
+
+.sitemap-menu-btn-label {
+  color: black;
+  font-weight: 600;
+}
+
+.site-pin-menu {
+  color: black;
+  list-style-type: none;
+  padding: 1em 0;
+  background-color: #f5f5f5;
+  font-size: 1.2em;
+  font-weight: 600;
+  display: flex;
+  gap: 1em;
+
+  &:hover {
+    background-color: #e7e7e797;
+    color: #676767a2;
+    cursor: pointer;
+  }
+}
+
+.sitemap-menu-padding {
+  padding-inline-start: 40px;
+}
+
+.sitemap-menu-full {
+  background-color: white;
+  padding-inline-start: 0px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: -0.5em 0 0 0 #83c5be;
+  height: 100%;
+  overflow-y: scroll;
+  width: 18vw;
+  min-width: 250px;
+  top: 0em;
+  padding-top: 2em;
+  position: absolute;
+  z-index: 10;
+  padding-bottom: 5vw;
+  left: 10em;
+}
+
+.sitemap-menu-header {
+  display: flex;
+  width: 18vw;
+  min-width: 220px;
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  position: fixed;
+  bottom: 0;
+  background-color: white;
+
+  &:hover {
+    cursor: pointer;
+    background: #c3e1c7;
+    color: #4a5b6d;
+    .sitemap-menu-btn-label {
+      color: #4a5b6d;
+      min-width: 200px;
+    }
+  }
+}
+
+.sitemap-menu-label {
+  background-color: #9ed7ad92;
+  font-size: 1em;
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
+  color: #000000;
+  list-style-type: none;
+
+  &.label-gap {
+    margin-top: 0.5em;
+  }
+}

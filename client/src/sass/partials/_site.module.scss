@@ -1,0 +1,49 @@
+@import "variables";
+
+// Override for Pagination on Media page (wasn't able to find a solution with MUI Theming)
+div[class*="MTablePaginationInner-root"] {
+  order: 2;
+  box-shadow: 0 0 2px #00000029;
+  background-color: #fff;
+  border-radius: 10px;
+  height: 50px;
+  margin-left: 100px;
+}
+
+div[class*="Mui-expanded"] {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+strong {
+  font-weight: 600;
+}
+
+// Loader
+.fas.fa-spinner.fa-pulse {
+  align-items: center;
+  color: $primary;
+  display: flex;
+  font-size: 3em;
+  justify-content: center;
+  text-align: center;
+}
+
+.linkButton {
+  background: #e76f51;
+  border-radius: 0.375rem;
+  padding: 1em;
+  color: #fff;
+  position: absolute;
+  text-transform: uppercase;
+  z-index: 1;
+  border-style: none;
+  right: 1.15em;
+  top: 1.125em;
+  outline: none;
+  cursor: pointer;
+  i {
+    font-size: 2em;
+    line-height: 0.85em;
+  }
+}

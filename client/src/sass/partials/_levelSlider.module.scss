@@ -1,0 +1,53 @@
+@import "./_variables.scss";
+
+.levelSliderContainer {
+  z-index: 100;
+  position: relative;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+
+    label {
+      height: 30px;
+      width: 30px;
+      background-color: white;
+      border: 2px solid $prismPrimary;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+
+      &.checked {
+        background-color: $prismPrimary;
+
+        span {
+          color: white;
+        }
+      }
+
+      &.floorDisabled {
+        background-color: #bbbbbb;
+        cursor: not-allowed;
+        //  Disabled for the time being. This will be added back in with admin login.
+        // pointer-events: none;
+
+        span {
+          color: #666666;
+        }
+      }
+
+      span {
+        color: $prismPrimary;
+        line-height: 1em;
+        font-weight: 600;
+      }
+
+      &:hover:not(.floorDisabled) {
+        transform: scale(1.1);
+      }
+    }
+  }
+}

@@ -1,0 +1,181 @@
+// Google Fonts
+@import url("https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap");
+
+// Font Variables
+$bodyFonts: "Lato", "Helvetica", sans-serif;
+$headerFonts: "Lexend Deca", Helvetica, Arial, sans-serif;
+
+$timeline-width: 240px;
+
+$prismPrimary: #e76f51;
+$primary: #3274ba;
+$blue: #4285f5;
+
+$primaryLight: #f5c5b9;
+
+$background: #f9fbff;
+$borderColor: rgba(225, 225, 225, 0.8);
+$borderHotspot: 5px solid #fce9e5;
+$border: 1px solid $borderColor;
+
+$lightText: #b9bfd0;
+$text: #999;
+$darkText: #4a5b6d;
+
+$bodyFonts: "lato", Helvetica, sans-serif;
+
+$timelineWidth: 320px;
+$infoPanelWidth: 400px;
+$drawerWidth: 300px;
+$sidenavWidth: 300px;
+
+// IDMIN Variables
+// Standards
+$uq: #51247a;
+$purple: #962a8b;
+$red: #e62645;
+$orange: #eb602b;
+$gold: #bb9d65;
+$yellow: #fbb800;
+$light-blue: #00a2c7;
+$blue: #4085c6;
+$green: #2ea836;
+$elipse-blue: #4a5b6d;
+
+// Neutrals
+$grey: #d7d1cc;
+$dark-grey: #999490;
+$darker-grey: #333;
+$border-grey: #e8e3e0;
+
+// Basics
+$white: #ffffff;
+$black: #00000029;
+
+// Responsive
+$mobile: 800px;
+$tablet: 1300px;
+
+// Other
+$border-radius-5: 5px;
+$border-radius-10: 10px;
+
+@mixin animate($time) {
+  transition: all #{$time} cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+}
+
+@mixin solid-color($color) {
+  background-color: $color;
+  color: $white;
+}
+
+@mixin transparent-color($color, $hover: true) {
+  background-color: rgba($color, 0.15);
+  color: $color;
+
+  @if ($hover) {
+    &:hover {
+      background-color: rgba($color, 1);
+    }
+  }
+}
+
+// .uq {
+//   @include transparent-color($uq, true);
+// }
+// .uq-static {
+//   @include transparent-color($uq, false);
+// }
+// .uq-solid {
+//   @include solid-color($uq);
+// }
+// .purple {
+//   @include transparent-color($purple, true);
+// }
+// .purple-static {
+//   @include transparent-color($purple, false);
+// }
+// .purple-solid {
+//   @include solid-color($purple);
+// }
+// .red {
+//   @include transparent-color($red, true);
+// }
+// .red-static {
+//   @include transparent-color($red, false);
+// }
+// .red-solid {
+//   @include solid-color($red);
+// }
+// .orange {
+//   @include transparent-color($orange, true);
+// }
+// .orange-static {
+//   @include transparent-color($orange, false);
+// }
+// .orange-solid {
+//   @include solid-color($orange);
+// }
+// .gold {
+//   @include transparent-color($gold, true);
+// }
+// .gold-static {
+//   @include transparent-color($gold, false);
+// }
+// .gold-solid {
+//   @include solid-color($gold);
+// }
+// .yellow {
+//   @include transparent-color($yellow, true);
+// }
+// .yellow-static {
+//   @include transparent-color($yellow, false);
+// }
+// .yellow-solid {
+//   @include solid-color($yellow);
+// }
+// .light-blue {
+//   @include transparent-color($light-blue, true);
+// }
+// .light-blue-static {
+//   @include transparent-color($light-blue, false);
+// }
+// .light-blue-solid {
+//   @include solid-color($light-blue);
+// }
+// .blue {
+//   @include transparent-color($blue, true);
+// }
+// .blue-static {
+//   @include transparent-color($blue, false);
+// }
+// .blue-solid {
+//   @include solid-color($blue);
+// }
+// .green {
+//   @include transparent-color($green, true);
+// }
+// .green-static {
+//   @include transparent-color($green, false);
+// }
+// .green-solid {
+//   @include solid-color($green);
+// }
+// .grey {
+//   @include transparent-color($grey, true);
+// }
+// .grey-static {
+//   @include transparent-color($grey, false);
+// }
+// .grey-solid {
+//   @include solid-color($grey);
+// }
+// .dark-grey {
+//   @include transparent-color($dark-grey, true);
+// }
+// .dark-grey-static {
+//   @include transparent-color($dark-grey, false);
+// }
+// .dark-grey-solid {
+//   @include solid-color($dark-grey);
+// }

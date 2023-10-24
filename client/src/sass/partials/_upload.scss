@@ -1,0 +1,288 @@
+.upload {
+  width: 100%;
+  height: 100%;
+  background-color: #fdecdf;
+  justify-content: center;
+
+  .uploadSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(100% - 70.5px);
+    padding: 2em;
+    gap: 2em;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  p {
+    font-size: 1.2em;
+    text-align: center;
+  }
+
+  #site-upload-title {
+    border: none;
+  }
+
+  input[type="text"] {
+    font-size: 1.5em;
+    font-weight: 600;
+    font-family: "Lato", Helvetica, sans-serif;
+  }
+
+  #cancelBtn {
+    margin-right: 10em;
+  }
+
+  .submitBtn,
+  .formBtn,
+  .cancelBtn {
+    justify-content: center;
+    background-color: #ee6d3f;
+    color: #ffffff;
+    border-radius: 0.5em;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    padding: 1em 0em 1em 0em;
+    width: 8em;
+    text-align: center;
+
+    &:not(.disabled):hover {
+      background-color: #393fc5;
+      box-shadow: 2.5px 2.5px 10px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .cancelBtn {
+    &.addNewSite {
+      display: none;
+    }
+  }
+
+  .newMarzipano {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+    max-height: 50%;
+
+    > div {
+      text-align: center;
+
+      p {
+        margin-bottom: 2em;
+      }
+
+      i {
+        font-size: 5em;
+        color: #212121;
+      }
+    }
+
+    form {
+      width: 100%;
+      height: 100%;
+
+      > span {
+        display: flex;
+        flex-direction: row;
+        gap: 2em;
+        height: 100%;
+
+        label {
+          width: 100%;
+          height: 100%;
+        }
+
+        label > *:not(.uploadField) {
+          pointer-events: none;
+        }
+
+        .uploadField {
+          padding: 3em 0;
+          border: 2px dashed #000000;
+          border-radius: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          transition: all 0.3s ease;
+          height: 100%;
+
+          .cancelCross {
+            display: none;
+          }
+
+          .fileSize {
+            font-size: 0.75em;
+            margin-bottom: 1em;
+            line-height: 1em;
+            height: 1em;
+          }
+
+          p:not(.fileSize) {
+            margin: 1em 0 0 0;
+          }
+
+          .uploadIcons {
+            font-size: 3em;
+          }
+
+          .error {
+            color: red;
+          }
+
+          &:hover,
+          &.hovered {
+            cursor: pointer;
+            transform: scale(1.01);
+            box-shadow: 0px 2.5px 10px rgba(0, 0, 0, 0.2);
+            border: 2px dashed #ee6d3f;
+
+            .cancelCross {
+              width: 26px;
+              height: 26px;
+              margin-top: 0.5em;
+              margin-right: 0.5em;
+              border-radius: 50%;
+              background-color: white;
+              color: $prismPrimary;
+              z-index: 100;
+              border: 2px solid $prismPrimary;
+              position: absolute;
+              top: 0;
+              right: 0;
+              font-weight: bold;
+              display: block;
+              cursor: pointer;
+              line-height: 19px;
+              text-align: center;
+
+              .icon {
+                font-size: 15px;
+                vertical-align: middle;
+              }
+
+              &:hover {
+                background-color: $prismPrimary;
+                color: white;
+              }
+            }
+          }
+
+          &.solid {
+            border-style: solid;
+          }
+
+          &.invalid {
+            animation: shake 0.3s;
+          }
+
+          @keyframes shake {
+            25% {
+              transform: translateX(4px);
+              background-color: rgba(255, 0, 0, 0.2);
+            }
+
+            50% {
+              transform: translateX(-4px);
+              background-color: rgba(255, 0, 0, 0.2);
+            }
+
+            75% {
+              transform: translateX(4px);
+            }
+          }
+        }
+
+        input {
+          width: 2em;
+        }
+      }
+    }
+  }
+
+  .submitBtn,
+  .cancelBtn {
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed !important;
+    }
+
+    font-size: 1em;
+
+    i {
+      font-size: 1.25em;
+    }
+
+    p {
+      font-family: "lato", Helvetica, sans-serif;
+      margin: 0;
+    }
+
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    border: none;
+    outline: none;
+    padding: 1em;
+  }
+
+  .buttonBox {
+    display: flex;
+    flex-direction: row;
+    gap: 2em;
+    justify-content: center;
+  }
+
+  .edit-button {
+    color: $prismPrimary;
+    cursor: pointer;
+  }
+
+  .validationTable {
+    flex-shrink: 1;
+    border: 1px solid #f5ac8e;
+    border-radius: 6px;
+    overflow-y: auto;
+    max-height: calc(100vh - 270.398px - 30.5px - 55px - 12em) !important;
+
+    table {
+      font-family: Arial, Helvetica, sans-serif;
+      border-collapse: separate;
+      width: fit-content;
+      align-items: center;
+      justify-content: center;
+
+      th {
+        top: 0;
+        padding: 12px;
+        text-align: left;
+        background-color: #f5ac8e;
+        color: white;
+        position: sticky;
+      }
+
+      td,
+      th {
+        padding: 10px;
+      }
+
+      .centerCol {
+        text-align: center;
+      }
+
+      .error {
+        color: red;
+      }
+
+      .allGood {
+        color: green;
+      }
+    }
+  }
+}

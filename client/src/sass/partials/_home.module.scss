@@ -1,0 +1,43 @@
+@import "./_variables.scss";
+
+.grid {
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: black;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 12;
+}
+
+.image {
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%;
+  position: relative;
+  border: 1px solid black;
+  background: black;
+  opacity: 0.4;
+}
+
+.title {
+  position: fixed;
+  margin-right: 40px;
+  top: 0%;
+  right: 0%;
+  font-size: 3em;
+  line-height: 1em;
+  color: white;
+  z-index: 10;
+}
+
+.company_logo {
+  position: fixed;
+  background-color: white;
+  padding: 0.5em;
+  width: 6%;
+  bottom: 1em;
+  right: 3.5em;
+}

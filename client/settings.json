@@ -1,0 +1,51 @@
+{
+  "enable": {
+    "timeline": true,
+    "rotation": true,
+    "media": false,
+    "faq": false,
+    "documentation": true,
+    "floors": true,
+    "about": true,
+    "animations": false
+  },
+
+  "minimap": {
+    "image_url": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-01.png",
+    "image_large_url": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/minimaps/level-01.png",
+    "x_pixel_offset": 21.65,
+    "y_pixel_offset": 73.5,
+    "x_scale": 1,
+    "y_scale": 1,
+    "img_width": 1248,
+    "img_height": -825,
+    "xy_flipped": false
+  },
+
+  "initial_settings": {
+    "date": "2021-11-16T00:00:00.000+10:00",
+    "floor": 0,
+    "pano_id": "0_entry",
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "fov": 0.0
+  },
+
+  "animation": {
+    "url": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/videos/ANLB_Video_FINAL.mp4",
+    "title": "Media"
+  },
+  "sidenav": {
+    "logo_url": "https://picsum.photos/20/20",
+    "subtitle_url": "https://picsum.photos/20/20"
+  },
+  "display": {
+    "title": "Andrew N. Liveris Building",
+    "subtitle": "Building",
+    "background_image": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/andrew_liveris/images/ANLB.png",
+    "uq_logo": "https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/urban_water/uq_logo.png"
+  },
+
+  "marzipano_mouse_view_mode": "drag",
+  "num_floors": 12
+}

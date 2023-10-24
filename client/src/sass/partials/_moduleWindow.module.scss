@@ -1,0 +1,106 @@
+@import "./_variables.scss";
+
+// Image Preview.
+.preview {
+  position: relative;
+  display: block;
+  margin: 5px;
+  width: calc(100% - 10px);
+
+  border: 1px solid grey;
+  border-radius: 5px;
+}
+
+.preview img,
+.preview video {
+  display: block;
+  margin: auto auto auto auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+// Float icon over top right.
+.preview i {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  text-shadow: 0 0 2px white;
+  color: #0076c0;
+}
+
+.preview:hover i {
+  color: #000000;
+}
+
+// .module is the module background, behind dialog.
+.module {
+  z-index: 10; // Float on top.
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  //overflow: auto;                   // Enable scroll if needed.
+
+  // Translucent Background.
+  background-color: rgb(0, 0, 0); // Fallback color.
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+// .content is the module dialog.
+.module .content {
+  z-index: 11;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 2%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0;
+  width: 90%;
+  height: 90%;
+  //max-width: 90%;
+  //max-height: 90%;
+
+  padding: 20px;
+
+  border: 1px solid grey;
+  border-radius: 5px;
+  background-color: #ffffff;
+}
+
+.module img,
+.module video {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+// Shares functionality with InfoPanel Close button.
+.module .close {
+  position: fixed;
+  font-size: 24px; // Same as material Icon
+  top: 0.5em;
+  right: 0.5em;
+
+  background: none;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  cursor: pointer;
+
+  transition: left ease-out 0.19s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  > i {
+    background-color: white;
+    border-radius: 15px;
+    color: $prismPrimary;
+  }
+}

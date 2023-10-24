@@ -1,0 +1,33 @@
+@import "./_variables.scss";
+
+.timelineButton {
+  top: 50%;
+  transform: translate(-50%, -50%);
+  right: 7px;
+  color: #b9bfd0;
+  width: 36px;
+  height: 36px;
+  z-index: 12;
+  position: absolute;
+  transform: translateY(-50%);
+  box-shadow: 0 0 3px grey;
+  transition: left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+  background-color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out !important;
+  font-size: 20px;
+  &:hover {
+    background-color: #b9bfd0;
+    color: white;
+  }
+}
+
+.timelineClosed {
+  right: $timelineWidth - 16px;
+}
+
+.timelineHidden {
+  display: none;
+}
