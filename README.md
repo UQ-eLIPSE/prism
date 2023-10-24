@@ -41,16 +41,20 @@ Make sure before running this server, you have the `prism-tst-id_rsa` key in the
 
 ## Quick Run with docker
 
-1. Navigate to the server-side project folder:
+1. Navigate to the prism project folder root:
 
 ```
-cd prism-server
+cd prism
 ```
 
 2. Execute the script:
-
+- run server with docker, run client directly on your local with:
 ```
-./run_server_docker.sh
+./run_project.sh
+```
+- run server and client both in docker:
+```
+./run_project_docker.sh
 ```
 
 **Note**: When you run this script, you'll see the following information:

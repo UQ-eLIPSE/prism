@@ -9,6 +9,7 @@
 #    5.2. start_docker_compose: Initiates Docker Compose, optionally rebuilding if needed.
 #    5.3. restore_data_in_mongodb: Restores data in the MongoDB instance.
 #    5.4. display_information: Displays relevant information about the process.
+# 6. build_and_run_client: start install yarn on client folder and run yarn start on client
 
 IDS=()
 DATANAMES=()
@@ -27,7 +28,7 @@ load_projects() {
 }
 
 select_project() {
-    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water, 5. Camp Hill " project_name
+    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water, 5. Camp Hill, 6. aeb, 7. uqlakes " project_name
     project_index=$((project_name - 1))
 
     DATANAME="${DATANAMES[$project_index]}"
@@ -73,23 +74,34 @@ get_mongo_dump() {
 restore_data() {
     cd "./prism_mongodumps/$RESTORE_DATA"
     mongorestore "$RESTORE_FILENAME"
-    
+    cd ..
+    cd ..
 }
 
 build_and_run() {
     [ ! -f "${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
     cp "${DATANAME}" .env
     echo "created server env file!"
-    cp ./client/.env.develop.example ./client/.env
-    echo "created client env file!"
+    
     read -p "Do you want to build the Docker images before starting? (y/n): " build_option
     build_flag=""
-    [[ "$build_option" =~ ^[yY]$ ]] && build_flag="--build" 
-    sudo docker-compose up -d $build_flag
+    [[ "$build_option" =~ ^[yY]$ ]] && build_flag="--build"
+    COMPOSE_HTTP_TIMEOUT=120 
+    sudo docker-compose -f docker-compose-server.yml up -d $build_flag
     restore_data
     echo "Container successfully running in the background. You can:"
     echo "1) Check its status with command: docker ps"
     echo "2) Monitor its logs with command: docker logs -f CONTAINER_ID"
+}
+
+build_and_run_client(){
+    cp ./client/.env.develop.example ./client/.env
+    echo "created client env file!"
+    cd ./client
+    read -p "Before start client, do you need install with yarn (please choose yes for a first run)? (y/n): " yarn_option
+    [[ "$yarn_option" =~ ^[yY]$ ]] && yarn
+    
+    yarn start
 }
 
 # Main execution flow
@@ -106,3 +118,4 @@ select_project
 get_mantakey
 get_mongo_dump
 build_and_run
+build_and_run_client

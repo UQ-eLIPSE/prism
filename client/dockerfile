@@ -1,29 +1,26 @@
 FROM node:16-alpine
 
-# Create a temporary work directory
+# Create a work directory
 WORKDIR /var/www/client
 
 # Install packages
-# Creating a temporary folder so we can build our node_modules
-RUN mkdir -p /tmp/client 
-
-# It be like that sometimes. In short, we need to install python
 RUN apk add --no-cache --virtual .gyp \
         python3 \
         make \
-        g++ git
+        g++ \
+        git
 
-# Copy package files and install dependencies
-COPY package.json /tmp/client/
-RUN cd /tmp/client && yarn
+# Copy package files
+COPY package.json /var/www/client/
 
-# Delete the temporary dependencies
-RUN apk del .gyp
-
-# Link node_modules from /tmp/client to /var/www/client
-RUN ln -s /tmp/client/node_modules /var/www/client/node_modules
+# Install dependencies
+RUN yarn
 
 # Copy code
 COPY . /var/www/client
 
+# Start the application
 ENTRYPOINT ["yarn", "start"]
+
+# Clean up
+RUN apk del .gyp
