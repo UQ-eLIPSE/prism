@@ -79,6 +79,9 @@ restore_data() {
 build_and_run() {
     [ ! -f "${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
     cp "${DATANAME}" .env
+    echo "created server env file!"
+    cp ./client/.env.develop.example ./client/.env
+    echo "created client env file!"
     read -p "Do you want to build the Docker images before starting? (y/n): " build_option
     build_flag=""
     [[ "$build_option" =~ ^[yY]$ ]] && build_flag="--build" 
