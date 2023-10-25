@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"aeb.faqs"},{"v":2,"unique":true,"key":{"idx":1},"name":"idx_1","ns":"aeb.faqs","background":true}],"uuid":"9850c2cf9ebe476bbdd5f390904df8a7"}

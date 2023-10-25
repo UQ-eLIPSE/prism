@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"camphill.invitedusers"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"camphill.invitedusers","background":true}],"uuid":"3046633179984550bb21ce30d6885c3c"}

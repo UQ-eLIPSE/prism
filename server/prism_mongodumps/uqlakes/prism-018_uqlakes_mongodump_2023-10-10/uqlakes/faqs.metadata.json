@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"uqlakes.faqs"},{"v":2,"unique":true,"key":{"idx":1},"name":"idx_1","ns":"uqlakes.faqs","background":true}],"uuid":"8ea1687c6800487a9ea6474e825f8bfa"}

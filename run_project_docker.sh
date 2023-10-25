@@ -42,13 +42,13 @@ select_project() {
 
 get_mantakey() {
     # Make folder for mantakey
-    [ ! -d "./tmp" ] && mkdir ./tmp
+    [ ! -d "./server/tmp" ] && mkdir ./server/tmp
 
-    if [ ! -f "tmp/prism-tst-id_rsa" ]; then
+    if [ ! -f "./server/tmp/prism-tst-id_rsa" ]; then
         wget --no-parent -r http://stluc.manta.uqcloud.net/elipse/public/PRISM-TST/prism-tst.tar.gz -O prism-tst.tar.gz
         [ $? -ne 0 ] && echo "Error downloading the file." && exit 1
         tar -xvzf prism-tst.tar.gz
-        mv prism-tst/prism-tst-id_rsa tmp
+        mv prism-tst/prism-tst-id_rsa ./server/tmp
         rm -rf prism-tst.tar.gz prism-tst
     fi
 }
@@ -63,23 +63,23 @@ get_mongo_dump() {
             exit 1
         fi
         # Download dumpdata
-        scp -r $USERNAME@mango.eait.uq.edu.au:/home/groups/elipse-projects/Prism/prism_mongodumps/ .
+        scp -r $USERNAME@mango.eait.uq.edu.au:/home/groups/elipse-projects/Prism/prism_mongodumps/ ./server/
         [ $? -ne 0 ] && echo "Error downloading dumpdata. Check your username and accessibility" && exit 1
     else
-        echo "Data files exist at ./prism_mongodumps"
+        echo "Data files exist at ./server/prism_mongodumps"
     fi
 }
 
 restore_data() {
-    cd "./prism_mongodumps/$RESTORE_DATA"
+    cd "./server/prism_mongodumps/$RESTORE_DATA"
     mongorestore "$RESTORE_FILENAME"
-    cd ..
-    cd ..
+    cd ../../..
+  
 }
 
 build_and_run() {
-    [ ! -f "${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
-    cp "${DATANAME}" .env
+    [ ! -f "./server/${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
+    cp ./server/"${DATANAME}" .env
     echo "created server env file!"
     cp ./client/.env.develop.example ./client/.env
     echo "created client env file!"

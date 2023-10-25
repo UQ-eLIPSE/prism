@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"aeb.invitedusers"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"aeb.invitedusers","background":true}],"uuid":"7b650d583f4145498a37537d8e30fc6c"}

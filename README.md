@@ -48,11 +48,17 @@ cd prism
 ```
 
 2. Execute the script:
+
 - run server with docker, run client directly on your local with:
+
 ```
 ./run_project.sh
 ```
+
+**Note**: In this case, to stop docker containers run `docker-compose -f ./server/docker-compose-server.yml down`
+
 - run server and client both in docker:
+
 ```
 ./run_project_docker.sh
 ```

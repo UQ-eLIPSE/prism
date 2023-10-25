@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"679c878e8f544fdeac13b3212cea7b68","collectionName":"hotspot_description","type":"collection"}

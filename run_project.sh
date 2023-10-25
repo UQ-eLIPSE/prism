@@ -28,7 +28,7 @@ load_projects() {
 }
 
 select_project() {
-    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water, 5. Camp Hill, 6. aeb, 7. uqlakes " project_name
+    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water, 5. Camp Hill, 6. aeb, 7. uqlakes  " project_name
     project_index=$((project_name - 1))
 
     DATANAME="${DATANAMES[$project_index]}"
@@ -43,13 +43,13 @@ select_project() {
 
 get_mantakey() {
     # Make folder for mantakey
-    [ ! -d "./tmp" ] && mkdir ./tmp
+    [ ! -d "./server/tmp" ] && mkdir ./server/tmp
 
-    if [ ! -f "tmp/prism-tst-id_rsa" ]; then
+    if [ ! -f "./server/tmp/prism-tst-id_rsa" ]; then
         wget --no-parent -r http://stluc.manta.uqcloud.net/elipse/public/PRISM-TST/prism-tst.tar.gz -O prism-tst.tar.gz
         [ $? -ne 0 ] && echo "Error downloading the file." && exit 1
         tar -xvzf prism-tst.tar.gz
-        mv prism-tst/prism-tst-id_rsa tmp
+        mv prism-tst/prism-tst-id_rsa ./server/tmp
         rm -rf prism-tst.tar.gz prism-tst
     fi
 }
@@ -64,30 +64,28 @@ get_mongo_dump() {
             exit 1
         fi
         # Download dumpdata
-        scp -r $USERNAME@mango.eait.uq.edu.au:/home/groups/elipse-projects/Prism/prism_mongodumps/ .
+        scp -r $USERNAME@mango.eait.uq.edu.au:/home/groups/elipse-projects/Prism/prism_mongodumps/ ./server/
         [ $? -ne 0 ] && echo "Error downloading dumpdata. Check your username and accessibility" && exit 1
     else
-        echo "Data files exist at ./prism_mongodumps"
+        echo "Data files exist at ./server/prism_mongodumps"
     fi
 }
 
 restore_data() {
-    cd "./prism_mongodumps/$RESTORE_DATA"
+    cd "./server/prism_mongodumps/$RESTORE_DATA"
     mongorestore "$RESTORE_FILENAME"
-    cd ..
-    cd ..
+    cd ../../..  
 }
 
 build_and_run() {
-    [ ! -f "${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
-    cp "${DATANAME}" .env
-    echo "created server env file!"
-    
+    [ ! -f "./server/${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
+    cp ./server/"${DATANAME}" ./server/.env
+    echo "created server env file!" 
     read -p "Do you want to build the Docker images before starting? (y/n): " build_option
     build_flag=""
     [[ "$build_option" =~ ^[yY]$ ]] && build_flag="--build"
-    COMPOSE_HTTP_TIMEOUT=120 
-    sudo docker-compose -f docker-compose-server.yml up -d $build_flag
+    COMPOSE_HTTP_TIMEOUT=500
+    sudo docker-compose -f ./server/docker-compose-server.yml up -d $build_flag
     restore_data
     echo "Container successfully running in the background. You can:"
     echo "1) Check its status with command: docker ps"
@@ -99,8 +97,7 @@ build_and_run_client(){
     echo "created client env file!"
     cd ./client
     read -p "Before start client, do you need install with yarn (please choose yes for a first run)? (y/n): " yarn_option
-    [[ "$yarn_option" =~ ^[yY]$ ]] && yarn
-    
+    [[ "$yarn_option" =~ ^[yY]$ ]] && yarn   
     yarn start
 }
 

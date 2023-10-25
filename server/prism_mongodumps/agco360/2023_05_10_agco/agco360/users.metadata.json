@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"agco360.users"},{"v":2,"unique":true,"key":{"username":1},"name":"username_1","ns":"agco360.users","background":true}],"uuid":"164c00914a41436ab1e52c28c5103193"}

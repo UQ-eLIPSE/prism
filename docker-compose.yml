@@ -1,3 +1,50 @@
+# version: "3.7"
+# services:
+#   client:
+#     container_name: prism_client
+#     hostname: client
+#     tty: true
+#     build:
+#       context: ./client
+#       dockerfile: ./client/dockerfile
+#     volumes:
+#       - ./client:/var/www/client
+#       - /var/www/client/node_modules
+#     ports:
+#       - "3000:3000"
+#     working_dir: /var/www/client
+#     environment:
+#       - PORT=3000
+#       - NODE_ENV=development
+
+#   server:
+#     container_name: prism_server
+#     hostname: server
+#     build:
+#       context: .
+#       dockerfile: ./server/dockerfile
+#     volumes:
+#       - ./:/var/www/server
+#       - /var/www/server/node_modules
+#     ports:
+#       - "8000:8000"
+#     working_dir: /var/www/server
+#     environment:
+#       - PORT=8000
+#       - NODE_ENV=development
+#     depends_on:
+#       - mongodb
+
+#   mongodb:
+#     image: mongo:latest
+#     container_name: mongodb
+#     volumes:
+#       - /data/db
+#     environment:
+#       - MONGO_DATA_DIR=/data/db
+#       - MONGO_LOG_DIR=/dev/null
+#     ports:
+#       - "27017:27017"
 version: "3.7"
 services:
   client:
@@ -6,32 +53,32 @@ services:
     tty: true
     build:
       context: ./client
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     volumes:
       - ./client:/var/www/client
       - /var/www/client/node_modules
     ports:
-      - '3000:3000'
+      - "3000:3000"
     working_dir: /var/www/client
     environment:
-      - PORT=3000
-      - NODE_ENV=development
+      PORT: 3000
+      NODE_ENV: development
 
   server:
     container_name: prism_server
     hostname: server
     build:
-      context: .
-      dockerfile: dockerfile
+      context: ./server
+      dockerfile: Dockerfile
     volumes:
-      - ./:/var/www/server
+      - ./server:/var/www/server
       - /var/www/server/node_modules
     ports:
       - "8000:8000"
     working_dir: /var/www/server
     environment:
-      - PORT=8000
-      - NODE_ENV=development
+      PORT: 8000
+      NODE_ENV: development
     depends_on:
       - mongodb
 
@@ -39,9 +86,12 @@ services:
     image: mongo:latest
     container_name: mongodb
     volumes:
-      - /data/db
+      - mongodb_data:/data/db
     environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:27017"
+
+volumes:
+  mongodb_data:

@@ -1,12 +1,11 @@
 version: "3.7"
 services:
-
   server:
     container_name: prism_server
     hostname: server
     build:
-      context: .
-      dockerfile: dockerfile
+      context: . 
+      dockerfile: Dockerfile
     volumes:
       - ./:/var/www/server
       - /var/www/server/node_modules
