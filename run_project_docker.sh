@@ -79,7 +79,7 @@ restore_data() {
 
 build_and_run() {
     [ ! -f "./server/${DATANAME}" ] && echo "No file named $DATANAME" && exit 1
-    cp ./server/"${DATANAME}" .env
+    cp ./server/"${DATANAME}" ./server/.env
     echo "created server env file!"
     cp ./client/.env.develop.example ./client/.env
     echo "created client env file!"
