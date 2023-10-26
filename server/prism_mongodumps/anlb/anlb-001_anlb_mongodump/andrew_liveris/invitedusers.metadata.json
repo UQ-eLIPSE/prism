@@ -1,1 +1,0 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"andrew_liveris.invitedusers"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"andrew_liveris.invitedusers","background":true}],"uuid":"26eef1e1ad1d474a8cb0f9eaffad52ea"}

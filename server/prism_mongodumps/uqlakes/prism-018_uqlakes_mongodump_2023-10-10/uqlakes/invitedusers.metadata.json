@@ -1,1 +1,0 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"uqlakes.invitedusers"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"uqlakes.invitedusers","background":true}],"uuid":"a30e6c1d92f14aeea979493de34be89c"}

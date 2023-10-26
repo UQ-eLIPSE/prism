@@ -1,1 +1,0 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"urban_water.invitedusers"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"urban_water.invitedusers","background":true}],"uuid":"f626efe6b6e94364949ed2cd8974522c"}
