@@ -4,7 +4,7 @@ services:
     container_name: prism_server
     hostname: server
     build:
-      context: . 
+      context: .
       dockerfile: Dockerfile
     volumes:
       - ./:/var/www/server

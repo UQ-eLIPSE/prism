@@ -8,7 +8,7 @@ package.lock
 .DS_Store
 tmp/
 /.vscode/settings.json
-prism_mongodumps/*
+/server/prism_mongodumps/*
 
 # Client
 .DS_Store
