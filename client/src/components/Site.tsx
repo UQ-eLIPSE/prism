@@ -151,7 +151,6 @@ function Site(props: SiteInterface) {
       pitch: infoPitch,
       yaw: infoYaw,
     };
-
     // Check marzipano is not undefined
     if (!marzipano) throw new Error("Marzipano is undefined.");
     marzipano.panUpdateCurrView(
@@ -159,9 +158,9 @@ function Site(props: SiteInterface) {
       marzipano?.findSceneById(currPanoId),
     );
     updateViewParams(viewParams);
-
     // Open info panel
-    getInfoHotspot(info_id);
+    console.log("info click", info_id);
+    // getInfoHotspot(info_id);
   }
 
   function minimapClick(panoId: string): void {
@@ -213,7 +212,6 @@ function Site(props: SiteInterface) {
             changeInfoPanelOpen,
             config,
           );
-
           // Get current tile id based on previous node number
           let currentTilesId = nodesData[0].minimap_node.tiles_id;
           let xDifference = 10000;

@@ -81,6 +81,7 @@ export default class MarzipanoHelper {
 
     // Create scenes.
     this.scenes = this.data.map((nodeData) => {
+      console.log(nodeData.survey_node.info_hotspots);
       const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
 
       const limiter = Marzipano.RectilinearView.limit.traditional(
@@ -130,6 +131,7 @@ export default class MarzipanoHelper {
 
       // Create info hotspots.
       nodeData.survey_node.info_hotspots.forEach((hotspot) => {
+        console.log("hotspot", hotspot);
         const element = this.createInfoHotspotElement(hotspot);
         scene.hotspotContainer().createHotspot(element, {
           yaw: hotspot.yaw,
@@ -233,6 +235,7 @@ export default class MarzipanoHelper {
     // Create wrapper element to hold icon and tooltip.
     const wrapper = document.createElement("div");
     wrapper.onclick = (): void => {
+      console.log("click", hotspot.info_id);
       this.getInfoHotspot(hotspot.info_id);
     };
     wrapper.classList.add("hotspot");
@@ -241,6 +244,7 @@ export default class MarzipanoHelper {
     // Create hotspot/tooltip header.
     const header = document.createElement("div");
     header.classList.add("info-hotspot-header");
+    header.classList.add("tests");
 
     // Place header and text into wrapper element.
     wrapper.appendChild(header);
@@ -312,7 +316,7 @@ export default class MarzipanoHelper {
       this.data || []
     ).find((s) => s.survey_node.tiles_id === id)?.survey_node?.info_hotspots;
     if (!infoHotspotTargets) throw new Error("Could not find info hotspots.");
-
+    console.log("info");
     // Return array of survey nodes
     return infoHotspotTargets;
   }
