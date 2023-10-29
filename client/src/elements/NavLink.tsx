@@ -8,6 +8,7 @@ interface Props {
   currentPath: string;
   hideMenu: boolean;
   setPath: (value: string) => void;
+  moduleWindowOpen: React.MouseEventHandler<HTMLElement>;
 }
 
 export const NavLink = (props: Props): React.ReactElement => {
@@ -15,7 +16,12 @@ export const NavLink = (props: Props): React.ReactElement => {
     <Link
       to={props.value.link}
       data-cy={props.value.dataCy}
-      onClick={(): void => props.setPath(props.value.link)}
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>): void => {
+        props.setPath(props.value.link);
+        if (props.value.link === "/media") {
+          props.moduleWindowOpen(e);
+        }
+      }}
       className={classNames({
         active: props.currentPath === props.value.link,
         small: props.hideMenu,

@@ -29,30 +29,25 @@ export interface ModuleWindowProps {
   contentSrc: string; // URL / File Path.
   contentAlt: string; // Alt tag.
   // eslint-disable-next-line @typescript-eslint/ban-types
-  closeHandler: Function;
+  closeHandler: () => void;
   autoplay: boolean; // Autoplay functionality
 }
 
 export default class ModuleWindow extends React.Component<ModuleWindowProps> {
   constructor(props: ModuleWindowProps) {
     super(props);
-
-    // Bind events.
-    this.closeModule = this.closeModule.bind(this);
-  }
-
-  private closeModule() {
-    if (typeof this.props.closeHandler !== "function") return;
-    this.props.closeHandler();
   }
 
   public render() {
     return (
       <div>
-        <div className={ModuleWindowStyles.module} onClick={this.closeModule}>
+        <div
+          className={ModuleWindowStyles.module}
+          onClick={this.props.closeHandler}
+        >
           <button
             className={ModuleWindowStyles.close}
-            onClick={this.closeModule}
+            onClick={this.props.closeHandler}
           >
             <i className="far fa-times-circle" />
           </button>

@@ -7,6 +7,7 @@ import prism_logo from "../img/prism-logo.svg";
 import { useUserContext } from "../context/UserContext";
 import { useSettingsContext } from "../context/SettingsContext";
 import { ISettings } from "../typings/settings";
+import ModuleWindow, { MEDIA_TYPES, ModuleWindowProps } from "./ModuleWindow";
 
 export interface ISidebarLink {
   link: string;
@@ -21,7 +22,10 @@ interface ISidebarProps {
   siteId: string;
   onClick: () => void;
 }
-
+type ModuleWindowContent = Pick<
+  ModuleWindowProps,
+  "contentType" | "contentAlt" | "contentSrc" | "autoplay"
+>;
 /**
  * Sidebar Component handles navigation between different views of Prism
  *
@@ -32,12 +36,19 @@ interface ISidebarProps {
  * @param props site configurations, will contain what, siteMode: whether the site already has scenes uploaded (show add scenes and site icon on sidenb)
  */
 const Sidebar: React.FC<ISidebarProps> = (props) => {
-  // const [moduleWindowContent] = useState<ModuleWindowContent>({
-  //     contentType: MEDIA_TYPES.VIDEO,
-  //     contentAlt: props.config?.animation.title,
-  //     contentSrc: props.config?.animation.url,
-  //     autoplay: true,
-  // });
+  const [moduleWindowContent, setModuleWindowContent] =
+    useState<ModuleWindowContent>({
+      contentType: MEDIA_TYPES.VIDEO,
+      contentAlt: props.config?.animation.title
+        ? props.config?.animation.title
+        : "",
+      contentSrc: props.config?.animation.url
+        ? props.config?.animation.url
+        : "",
+      autoplay: true,
+    });
+  // const [isModuleWindowClosed, setIsModuleWindowClosed] = useState(false);
+  const [moduleWindowOpen, setModuleWindowOpen] = useState<boolean>(false);
   const [settings] = useSettingsContext();
   const [hideMenu] = useState<boolean>(false);
   const [currentPath, setCurrentPath] = useState<string>(
@@ -59,7 +70,12 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
       text: props.config ? "Site" : "Add Scenes",
       dataCy: "sb-site",
     };
-
+    const mediaLink = {
+      link: "/media",
+      icon: "fas fa-compact-disc fa-2x",
+      text: "Media",
+      dataCy: "sb-media",
+    };
     const homeLink = {
       link: "/",
       icon: "fas fa-map-marked-alt fa-2x",
@@ -92,8 +108,8 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
 
     // If the user is an admin then enable addScene link
     process.env.REACT_APP_USE_SSO === "false" || user?.isAdmin
-      ? createLinks.push(homeLink, siteLink, addScene)
-      : createLinks.push(homeLink, siteLink);
+      ? createLinks.push(homeLink, siteLink, addScene, mediaLink)
+      : createLinks.push(homeLink, siteLink, mediaLink);
 
     props.config &&
       props.config.enable.documentation &&
@@ -130,6 +146,27 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
         setPath(value.link);
     }
   };
+  const enableModuleWindow: React.MouseEventHandler<HTMLElement> = (e) => {
+    // e.preventDefault();
+    console.log(e);
+    console.log("enableModuleWindow called");
+    if (moduleWindowOpen) {
+      setModuleWindowOpen(false);
+    } else {
+      setModuleWindowContent({
+        contentType: MEDIA_TYPES.VIDEO,
+        contentAlt: props.config?.animation.title
+          ? props.config?.animation.title
+          : "",
+        contentSrc: props.config?.animation.url
+          ? props.config?.animation.url
+          : "",
+        autoplay: true,
+      });
+    }
+    setModuleWindowOpen(true);
+    console.log("moduleWindowOpen after setting:", moduleWindowOpen);
+  };
 
   const navigate = useNavigate();
   return (
@@ -143,17 +180,47 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
           <img className="prismLogo" src={prism_logo} alt="Prism by eLIPSE" />
         </a>
       </div>
-
+      {moduleWindowOpen && (
+        <ModuleWindow
+          contentType={moduleWindowContent.contentType}
+          contentSrc={moduleWindowContent.contentSrc}
+          contentAlt={moduleWindowContent.contentAlt}
+          closeHandler={() => {
+            setModuleWindowOpen(false);
+            // setIsModuleWindowClosed(true);
+          }}
+          autoplay={moduleWindowContent.autoplay}
+        />
+      )}
       <nav>
+        {props.config?.enable.animations && (
+          <nav onClick={(e) => enableModuleWindow(e)}>
+            <a href="#">
+              <span
+                className="nav-icon"
+                data-title={moduleWindowContent.contentAlt}
+                data-cy="sb-icon"
+              >
+                <i className="fas fa-play-circle fa-2x" />
+              </span>
+              <span className={"nav-text"} data-cy="sb-text">
+                Animation
+              </span>
+            </a>
+          </nav>
+        )}
         {links.map((value, index) => {
           if (!(addHidden && settings?.enableMultiSite)) {
             return (
               <NavLink
+                key={`${index}-${moduleWindowOpen ? "open" : "closed"}`}
                 value={value}
-                key={index}
                 currentPath={currentPath}
                 hideMenu={hideMenu}
                 setPath={setPath}
+                moduleWindowOpen={enableModuleWindow}
+                // setIsModuleWindowClosed={setIsModuleWindowClosed}
+                // isModuleWindowClosed={isModuleWindowClosed}
               />
             );
           }
