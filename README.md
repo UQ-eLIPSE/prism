@@ -90,20 +90,35 @@ cd prism
 
 ## Manually Running
 
-cd prism-server
+cd prism
 cp .env.<project-name>.sample .env
+open .env file and change `DATABASE_URL=mongodb://mongodb:27017/<porject-name>` to `DATABASE_URL=mongodb://localhost:27017/<porject-name>`
 
 ### Running Locally
 
-before running locally you need to get the manta keys run
+- before running locally you need to get the manta keys run
 
 ```
-./get_mantakey.sh
+./server/get_mantakey.sh
 ```
 
 and this should put the key in the correct directory
 
-docker-compose up --build
+- start mongoDB locally
+
+```
+systemctl start mongod
+```
+
+- to project root
+  `cd server`
+  `yarn` for initially running to install node_modules
+  `yarn watch` if node_modules already exists
+
+- to project root
+  `cd client`
+  `yarn` for initially running to install node_modules
+  `yarn start` if node_modules already exists
 
 ### Running on Zone
 
@@ -113,13 +128,12 @@ yarn && yarn build
 
 Retrieve the dump files by using the `get_mongodumps.sh` script.
 
-- Run:
+- To project root, run:
 
-  - `./get_mongodumps.sh <mango username> <output directory>`
-  - navigate to `<outupt directory>` from here you can run `monogorestore <chooose a directory to restore>`
-
-  example
-
+  - `./server/get_mongodumps.sh`
+  - `cd ./server/prism_mongodumps/<project-name>`
+  - `mongorestore <dump-file-name>`
+    example:
   - prism_mongodumps
     - anlb_dump
     - agco360_dump
