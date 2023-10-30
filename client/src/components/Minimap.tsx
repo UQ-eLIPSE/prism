@@ -5,6 +5,7 @@ import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
+import { InfoHotspot } from "../interfaces/NodeData";
 
 interface NewNode {
   floor: number;
@@ -19,6 +20,7 @@ interface NewNode {
   y_scale: number;
   rotation: number;
   minimapShown?: boolean;
+  info_hotspots: InfoHotspot[] | [];
 }
 
 function Minimap(props: Readonly<object> | any) {
@@ -187,7 +189,7 @@ function Minimap(props: Readonly<object> | any) {
         }
 
         const isMapEnlarged = props.minimapEnlarged;
-        // const isInfoNode = node.info_hotspots.length > 0;
+        // const isInfoNode = (node.info_hotspots?.length ?? 0) > 0;
         const nodeTitle = node.tiles_name;
 
         return (
@@ -220,7 +222,7 @@ function Minimap(props: Readonly<object> | any) {
                     node.tiles_id !== props.currPanoId,
                   [MinimapStyles.upscaled]: props.minimapEnlarged,
                   [MinimapStyles.scaled]: !props.minimapEnlarged,
-                  // [MinimapStyles.infoNode]: node.info_hotspots.length, !!! Removed as it may be needed later with other infoNode functionality.
+                  [MinimapStyles.infoNode]: node.info_hotspots?.length ?? 0, //!!! Removed as it may be needed later with other infoNode functionality.
                 })}
                 key={node.tiles_id}
                 id={node.tiles_id}
@@ -240,10 +242,10 @@ function Minimap(props: Readonly<object> | any) {
               >
                 {/* Commented out as it may be needed with future infoNode functionality. */}
                 {/* {isInfoNode && (
-                                <div className={MinimapStyles.infoIcon}>
-                                    <i className="fas fa-info-circle" />
-                                </div>
-                            )} */}
+                  <div className={MinimapStyles.infoIcon}>
+                    <i className="fas fa-info-circle" />
+                  </div>
+                )} */}
                 {nodeTitle}
               </div>
             )}

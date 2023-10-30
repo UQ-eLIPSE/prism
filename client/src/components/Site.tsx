@@ -382,10 +382,9 @@ function Site(props: SiteInterface) {
         timelineOpen={timelineOpen}
       />
       <div
-        className={`linkButton ${timelineOpen && "timelineOpen"} ${
-          !config.enable.hotspots_nav && "disabled"
-        }`}
+        className={`linkButton ${!config.enable.hotspots_nav && "disabled"}`}
         onClick={(e): void => handleDropdownClick(e, !linkNodeListOpen)}
+        style={{ zIndex: 9 }}
       >
         {linkNodeListOpen ? (
           <i className="fas fa-chevron-up" />

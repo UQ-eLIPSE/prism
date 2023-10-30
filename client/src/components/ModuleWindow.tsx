@@ -44,6 +44,7 @@ export default class ModuleWindow extends React.Component<ModuleWindowProps> {
         <div
           className={ModuleWindowStyles.module}
           onClick={this.props.closeHandler}
+          style={{ zIndex: 11 }}
         >
           <button
             className={ModuleWindowStyles.close}

@@ -188,27 +188,11 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
         />
       )}
       <nav>
-        {props.config?.enable.animations && (
-          <nav onClick={(e) => enableModuleWindow(e)}>
-            <a href="#">
-              <span
-                className="nav-icon"
-                data-title={moduleWindowContent.contentAlt}
-                data-cy="sb-icon"
-              >
-                <i className="fas fa-play-circle fa-2x" />
-              </span>
-              <div className={"nav-text"} data-cy="sb-text">
-                Animation
-              </div>
-            </a>
-          </nav>
-        )}
         {links.map((value, index) => {
           if (!(addHidden && settings?.enableMultiSite)) {
             return (
               <NavLink
-                key={`${index}-${moduleWindowOpen ? "open" : "closed"}`}
+                key={index}
                 value={value}
                 currentPath={currentPath}
                 hideMenu={hideMenu}
@@ -218,35 +202,36 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
           }
         })}
       </nav>
-
-      <nav onClick={() => setModuleWindowOpen(true)}>
-        <a
-          href="#"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <span
-            className="nav-icon"
-            data-title={moduleWindowContent.contentAlt}
-            data-cy="sb-icon"
+      {props.config?.enable.animations && (
+        <nav onClick={(e) => enableModuleWindow(e)}>
+          <a
+            href="#"
             style={{
-              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
             }}
           >
-            <i className="fas fa-play-circle fa-2x" />
-          </span>
-          <span
-            className={"nav-text"}
-            data-cy="sb-text"
-            style={{ textAlign: "center" }}
-          >
-            Animation
-          </span>
-        </a>
-      </nav>
+            <span
+              className="nav-icon"
+              data-title={moduleWindowContent.contentAlt}
+              data-cy="sb-icon"
+              style={{
+                textAlign: "center",
+              }}
+            >
+              <i className="fas fa-play-circle fa-2x" />
+            </span>
+            <span
+              className={"nav-text"}
+              data-cy="sb-text"
+              style={{ textAlign: "center" }}
+            >
+              Animation
+            </span>
+          </a>
+        </nav>
+      )}
 
       <div className="nav-icon-container">
         {user?.isAdmin && (

@@ -16,12 +16,7 @@ interface PropsType {
 export default class TitleCard extends React.Component<PropsType, object> {
   public render() {
     return (
-      <div
-        className={`title-card ${
-          this.props.timelineOpen ? "timelineOpen" : ""
-        }`}
-        data-cy="facility-name"
-      >
+      <div className={`title-card`} data-cy="facility-name">
         <p className="firstLineName" data-cy="facility-name-title">
           {this.props.firstLineName}
         </p>
