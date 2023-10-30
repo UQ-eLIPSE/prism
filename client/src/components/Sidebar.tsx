@@ -47,7 +47,6 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
         : "",
       autoplay: true,
     });
-  // const [isModuleWindowClosed, setIsModuleWindowClosed] = useState(false);
   const [moduleWindowOpen, setModuleWindowOpen] = useState<boolean>(false);
   const [settings] = useSettingsContext();
   const [hideMenu] = useState<boolean>(false);
@@ -70,12 +69,12 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
       text: props.config ? "Site" : "Add Scenes",
       dataCy: "sb-site",
     };
-    const mediaLink = {
-      link: "/media",
-      icon: "fas fa-compact-disc fa-2x",
-      text: "Media",
-      dataCy: "sb-media",
-    };
+    // const mediaLink = {
+    //   link: "/media",
+    //   icon: "fas fa-compact-disc fa-2x",
+    //   text: "Media",
+    //   dataCy: "sb-media",
+    // };
     const homeLink = {
       link: "/",
       icon: "fas fa-map-marked-alt fa-2x",
@@ -108,8 +107,8 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
 
     // If the user is an admin then enable addScene link
     process.env.REACT_APP_USE_SSO === "false" || user?.isAdmin
-      ? createLinks.push(homeLink, siteLink, addScene, mediaLink)
-      : createLinks.push(homeLink, siteLink, mediaLink);
+      ? createLinks.push(homeLink, siteLink, addScene)
+      : createLinks.push(homeLink, siteLink);
 
     props.config &&
       props.config.enable.documentation &&
@@ -147,9 +146,7 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     }
   };
   const enableModuleWindow: React.MouseEventHandler<HTMLElement> = (e) => {
-    // e.preventDefault();
     console.log(e);
-    console.log("enableModuleWindow called");
     if (moduleWindowOpen) {
       setModuleWindowOpen(false);
     } else {
@@ -165,7 +162,6 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
       });
     }
     setModuleWindowOpen(true);
-    console.log("moduleWindowOpen after setting:", moduleWindowOpen);
   };
 
   const navigate = useNavigate();
@@ -187,7 +183,6 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
           contentAlt={moduleWindowContent.contentAlt}
           closeHandler={() => {
             setModuleWindowOpen(false);
-            // setIsModuleWindowClosed(true);
           }}
           autoplay={moduleWindowContent.autoplay}
         />
@@ -203,9 +198,9 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
               >
                 <i className="fas fa-play-circle fa-2x" />
               </span>
-              <span className={"nav-text"} data-cy="sb-text">
+              <div className={"nav-text"} data-cy="sb-text">
                 Animation
-              </span>
+              </div>
             </a>
           </nav>
         )}
@@ -218,14 +213,41 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
                 currentPath={currentPath}
                 hideMenu={hideMenu}
                 setPath={setPath}
-                moduleWindowOpen={enableModuleWindow}
-                // setIsModuleWindowClosed={setIsModuleWindowClosed}
-                // isModuleWindowClosed={isModuleWindowClosed}
               />
             );
           }
         })}
       </nav>
+
+      <nav onClick={() => setModuleWindowOpen(true)}>
+        <a
+          href="#"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <span
+            className="nav-icon"
+            data-title={moduleWindowContent.contentAlt}
+            data-cy="sb-icon"
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <i className="fas fa-play-circle fa-2x" />
+          </span>
+          <span
+            className={"nav-text"}
+            data-cy="sb-text"
+            style={{ textAlign: "center" }}
+          >
+            Animation
+          </span>
+        </a>
+      </nav>
+
       <div className="nav-icon-container">
         {user?.isAdmin && (
           <>
