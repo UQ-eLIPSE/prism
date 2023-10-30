@@ -44,6 +44,7 @@ interface INodeReturnData {
   y_scale: number;
   site: number;
   rotation: number;
+  info_hotspots: object[];
 }
 
 export class SurveyController {
@@ -84,7 +85,7 @@ export class SurveyController {
         files as {
           [fieldname: string]: Express.Multer.File[];
         },
-        site,
+        site
       );
 
       if (!validate) throw new Error("Validation failed");
@@ -148,9 +149,9 @@ export class SurveyController {
               return;
             }
             ConsoleUtil.log(
-              "tarball is created && muntarcmd has been executed",
+              "tarball is created && muntarcmd has been executed"
             );
-          },
+          }
         );
       });
     });
@@ -172,7 +173,7 @@ export class SurveyController {
       maxResult,
       pageNo,
       size,
-      res,
+      res
     );
     return CommonUtil.successResponse(res, "", allSurveys);
   }
@@ -193,7 +194,7 @@ export class SurveyController {
     if (floor) {
       allSurveys = await MinimapConversion.find(
         { floor, site: new ObjectId(siteId) },
-        "-_id",
+        "-_id"
       )
         .populate("survey_node", "-_id")
         .populate("minimap_node", "-_id");
@@ -203,7 +204,7 @@ export class SurveyController {
       if (!results)
         return CommonUtil.failResponse(
           res,
-          "Surveys with the floor number is not found",
+          "Surveys with the floor number is not found"
         );
     }
 
@@ -217,7 +218,7 @@ export class SurveyController {
           allSurveys.push(
             (await MinimapConversion.findOne({ survey_node: node._id }, "-_id")
               .populate("survey_node", "-_id")
-              .populate("minimap_node", "-_id")) as IMinimapConversion,
+              .populate("minimap_node", "-_id")) as IMinimapConversion
           );
         }
       }
@@ -264,7 +265,7 @@ export class SurveyController {
           allSurveys.push(
             (await MinimapConversion.findOne({ survey_node: node._id }, "-_id")
               .populate("survey_node", "-_id")
-              .populate("minimap_node", "-_id")) as IMinimapConversion,
+              .populate("minimap_node", "-_id")) as IMinimapConversion
           );
         }
       }
@@ -284,6 +285,7 @@ export class SurveyController {
             y_scale: s.y_scale,
             site: s.site,
             rotation: s.rotation,
+            info_hotspots: s.survey_node.info_hotspots,
           });
         }
       });
@@ -319,12 +321,12 @@ export class SurveyController {
       if (floor) {
         surveysWithFloor = await MinimapNode.find(
           { floor, site: new ObjectId(siteId) },
-          "-_id",
+          "-_id"
         ).populate("survey_node", "-_id");
         if (!surveysWithFloor)
           return CommonUtil.failResponse(
             res,
-            "Survey with the floor number is not found",
+            "Survey with the floor number is not found"
           );
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.survey_name) || !map.has(floor)) {
@@ -346,13 +348,13 @@ export class SurveyController {
         if (!surveyWithDate)
           return CommonUtil.failResponse(
             res,
-            "Survey with the date is not found",
+            "Survey with the date is not found"
           );
 
         for (const survey of surveyWithDate) {
           surveysWithFloor = await MinimapNode.find(
             { survey_node: survey._id },
-            "-_id",
+            "-_id"
           ).populate("survey_node", "-_id");
 
           if (!surveysWithFloor || !Array.isArray(surveysWithFloor))
@@ -424,7 +426,7 @@ export class SurveyController {
       pageNo,
       size,
       res,
-      fieldToSearchCount,
+      fieldToSearchCount
     );
     return CommonUtil.successResponse(res, "", results);
   }
@@ -464,7 +466,7 @@ export class SurveyController {
     await Survey.findByIdAndDelete(id);
     return CommonUtil.successResponse(
       res,
-      "Survey has been successfully deleted",
+      "Survey has been successfully deleted"
     );
   }
 
@@ -486,12 +488,12 @@ export class SurveyController {
 
       const hotspotObject = await SurveyNode.findOne(
         { tiles_id: tilesId, site: new ObjectId(siteId) },
-        "-_id",
+        "-_id"
       );
       if (!hotspotObject) throw new Error("hotspotObject not found.");
 
       const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map(
-        (e) => e.info_id,
+        (e) => e.info_id
       );
       const hotspotDescs = await HotspotDescription.find({
         info_id: { $in: hotspotDescriptionInfoIds },
@@ -521,7 +523,7 @@ export class SurveyController {
 
       const minimapImageObject = await MinimapImages.findOne(
         { floor, site: new ObjectId(siteId) },
-        "-_id",
+        "-_id"
       );
 
       if (!minimapImageObject) throw new Error("minimapImageObject not found.");
@@ -584,7 +586,7 @@ export class SurveyController {
         return CommonUtil.successResponse(
           res,
           "",
-          addedMinimapFloorObject || [],
+          addedMinimapFloorObject || []
         );
       } else {
         return CommonUtil.successResponse(res, "", minimapFloorObject || []);
@@ -623,7 +625,7 @@ export class SurveyController {
       const uploadSiteMap = await SurveyService.createMinimap(
         file,
         parseInt(floor as string),
-        site,
+        site
       );
       if (!uploadSiteMap.success) throw new Error(uploadSiteMap.message);
 
@@ -651,7 +653,7 @@ export class SurveyController {
         throw new Error("Floor name neither tag provided");
       if (floor_name === "" || floor_tag === "") {
         throw new Error(
-          "Empty strings cannot be assigned to floor name or tag",
+          "Empty strings cannot be assigned to floor name or tag"
         );
       }
 
@@ -663,7 +665,7 @@ export class SurveyController {
           site,
           parseInt(floor as string),
           floor_name,
-          floor_tag,
+          floor_tag
         );
 
       if (!updateMinimapFloorDetails.success)
@@ -735,7 +737,7 @@ export class SurveyController {
     try {
       const floorPopulated = await SurveyService.getFloorPopulated(
         siteId,
-        parseInt(floorId),
+        parseInt(floorId)
       );
       result.floorPopulated = floorPopulated.success;
 
@@ -765,13 +767,13 @@ export class SurveyController {
       const updateCoords = await SurveyService.updateNodeCoordinates(
         nodeId,
         x,
-        y,
+        y
       );
       if (!updateCoords) throw new Error("Node coordinates cannot be updated");
 
       return CommonUtil.successResponse(
         res,
-        "Minimap node coordinates have been updated",
+        "Minimap node coordinates have been updated"
       );
     } catch (e) {
       ConsoleUtil.log(e);
@@ -797,13 +799,13 @@ export class SurveyController {
 
       const updateCoords = await SurveyService.updateNodeRotation(
         nodeId,
-        rotation,
+        rotation
       );
       if (!updateCoords) throw new Error("Node rotation cannot be updated");
 
       return CommonUtil.successResponse(
         res,
-        "Minimap node rotation has been updated",
+        "Minimap node rotation has been updated"
       );
     } catch (e) {
       ConsoleUtil.log(e);
