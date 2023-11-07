@@ -39,7 +39,8 @@ interface SiteInterface {
 
 function Site(props: SiteInterface) {
   const { siteId, config, updateFloor } = props;
-  let marzipano: Marzipano | undefined;
+  // let marzipano: Marzipano | undefined;
+  const marzipano = useRef<Marzipano | undefined>();
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
@@ -89,7 +90,7 @@ function Site(props: SiteInterface) {
       await updateFloors();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currfloor, floorExists, currPanoId, currDate]);
+  }, [currfloor, currDate]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -152,10 +153,10 @@ function Site(props: SiteInterface) {
       yaw: infoYaw,
     };
     // Check marzipano is not undefined
-    if (!marzipano) throw new Error("Marzipano is undefined.");
-    marzipano.panUpdateCurrView(
+    if (!marzipano.current) throw new Error("Marzipano is undefined.");
+    marzipano.current.panUpdateCurrView(
       viewParams,
-      marzipano?.findSceneById(currPanoId),
+      marzipano.current.findSceneById(currPanoId),
     );
     updateViewParams(viewParams);
     // Open info panel
@@ -164,7 +165,8 @@ function Site(props: SiteInterface) {
   }
 
   function minimapClick(panoId: string): void {
-    if (marzipano) marzipano.switchScene(marzipano.findSceneById(panoId));
+    if (marzipano.current)
+      marzipano?.current?.switchScene(marzipano.current.findSceneById(panoId));
   }
 
   function updateRotation(rotation: number): void {
@@ -179,9 +181,9 @@ function Site(props: SiteInterface) {
     const viewParams = currViewParams;
 
     if (floor !== Infinity) {
-      if (marzipano !== undefined) {
-        marzipano.viewer.domElement().innerHTML = "<div></div>";
-        marzipano.viewer.destroyAllScenes();
+      if (marzipano.current !== undefined) {
+        marzipano.current.viewer.domElement().innerHTML = "<div></div>";
+        marzipano.current.viewer.destroyAllScenes();
 
         if (abortController.length > 1) {
           abortController[abortController.length - 1].abort();
@@ -203,15 +205,17 @@ function Site(props: SiteInterface) {
 
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
-          marzipano = new Marzipano(
-            nodesData,
-            getInfoHotspot,
-            updateCurrPano,
-            updateRotation,
-            updateViewParams,
-            changeInfoPanelOpen,
-            config,
-          );
+          if (!marzipano.current) {
+            marzipano.current = new Marzipano(
+              nodesData,
+              getInfoHotspot,
+              updateCurrPano,
+              updateRotation,
+              updateViewParams,
+              changeInfoPanelOpen,
+              config,
+            );
+          }
           // Get current tile id based on previous node number
           let currentTilesId = nodesData[0].minimap_node.tiles_id;
           let xDifference = 10000;
@@ -248,10 +252,13 @@ function Site(props: SiteInterface) {
             viewParams.pitch !== 0 ||
             viewParams.yaw !== 0
           ) {
-            if (marzipano && marzipano.findSceneById(currPanoId)) {
-              marzipano.updateCurrView(
+            if (
+              marzipano.current &&
+              marzipano.current.findSceneById(currPanoId)
+            ) {
+              marzipano.current.updateCurrView(
                 viewParams,
-                marzipano.findSceneById(currPanoId),
+                marzipano.current.findSceneById(currPanoId),
               );
             }
           }
@@ -394,8 +401,8 @@ function Site(props: SiteInterface) {
       </div>
       {linkNodeListOpen && (
         <LinkNodes
-          linkNodes={marzipano?.findLinkNodesById(currPanoId) ?? ""}
-          infoNodes={marzipano?.findInfoNodesById(currPanoId) ?? ""}
+          linkNodes={marzipano.current?.findLinkNodesById(currPanoId) ?? ""}
+          infoNodes={marzipano.current?.findInfoNodesById(currPanoId) ?? ""}
           timelineOpen={timelineOpen}
           onLinkNodeClick={minimapClick}
           onInfoNodeClick={infoNodeClick}
