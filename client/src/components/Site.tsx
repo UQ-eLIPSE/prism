@@ -445,7 +445,7 @@ function Site(props: SiteInterface) {
       <div className="minimapCorner">
         <Minimap
           currPanoId={currPanoId}
-          onClickNode={setCurrPanoId}
+          onClickNode={minimapClick}
           currRotation={currRotation}
           minimapEnlarged={minimapEnlarged}
           updateMinimapEnlarged={updateMinimapEnlarged}
