@@ -3,6 +3,7 @@
 import { NodeData } from "../interfaces/NodeData";
 import { HotspotDescription } from "../interfaces/HotspotDescription";
 import { PinData } from "../components/SiteSelector";
+import { MinimapReturn } from "../components/Site";
 
 export interface apiResponse {
   success: boolean;
@@ -405,7 +406,7 @@ export default class NetworkCalls {
     floor: number,
     siteId: string,
     abortController: AbortController,
-  ): Promise<string> {
+  ): Promise<MinimapReturn> {
     const res = await fetchWithCredentials(
       process.env.REACT_APP_BASE_URL +
         `/api/site/${siteId}/minimap/details?floor=${floor}`,
@@ -421,7 +422,20 @@ export default class NetworkCalls {
     }
 
     if (!data.success) {
-      return "";
+      return {
+        image_url: "",
+        floor: 0,
+        site: "",
+        image_large_url: "",
+        x_pixel_offset: 0,
+        y_pixel_offset: 0,
+        x_scale: 0,
+        y_scale: 0,
+        img_width: 0,
+        img_height: 0,
+        xy_flipped: false,
+        __v: 0,
+      };
     }
     return data.payload;
   }

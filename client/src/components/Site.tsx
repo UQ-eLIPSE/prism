@@ -39,7 +39,6 @@ interface SiteInterface {
 
 function Site(props: SiteInterface) {
   const { siteId, config, updateFloor } = props;
-  // let marzipano: Marzipano | undefined;
   const marzipano = useRef<Marzipano | undefined>();
   const sideNavOpen = false;
 
@@ -89,7 +88,6 @@ function Site(props: SiteInterface) {
     (async () => {
       await updateFloors();
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currfloor, currDate]);
 
   const updateFloors = async (): Promise<void> => {
@@ -98,8 +96,7 @@ function Site(props: SiteInterface) {
       if (resJSON.success) {
         const empty = await NetworkCalls.getEmptyFloors(siteId);
         const usableFloors = new Set<number>([
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ...resJSON.payload.map((e: any) => e.floor),
+          ...resJSON.payload.map((e: MinimapReturn) => e.floor),
           ...empty.emptyFloors,
         ]);
         setFloors([...Array.from(usableFloors)]);
@@ -160,8 +157,8 @@ function Site(props: SiteInterface) {
     );
     updateViewParams(viewParams);
     // Open info panel
-    console.log("info click", info_id);
-    // getInfoHotspot(info_id);
+    // console.log("info click", info_id);
+    getInfoHotspot(info_id);
   }
 
   function minimapClick(panoId: string): void {
@@ -285,8 +282,7 @@ function Site(props: SiteInterface) {
   async function changeFloor(floor: number) {
     try {
       if (floor !== Infinity) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const res: any = await NetworkCalls.fetchMinimap(
+        const res: MinimapReturn = await NetworkCalls.fetchMinimap(
           floor,
           siteId,
           minimapImagesAbortController,
@@ -347,8 +343,7 @@ function Site(props: SiteInterface) {
   async function getMinimapImage(floor: number): Promise<void> {
     try {
       if (floor !== Infinity) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const res: any = await NetworkCalls.fetchMinimap(
+        const res: MinimapReturn = await NetworkCalls.fetchMinimap(
           floor,
           siteId,
           minimapImagesAbortController,
