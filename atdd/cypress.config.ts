@@ -7,7 +7,8 @@ export default defineConfig({
       // handle events here
     },
     specPattern: "e2e/**/*.cy.{js,ts}",
-    baseUrl: "https://prism-020.uqcloud.net", // Adjust to your application's URL
+    // Adjust to your application's URL
+    baseUrl: "http://localhost:3000",
     // additional configurations...
     supportFile: false,
   },
