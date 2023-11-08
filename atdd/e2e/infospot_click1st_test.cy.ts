@@ -1,9 +1,9 @@
 describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view, after click first nodelink and switch the scene", () => {
   it("should compare elements with .hotspot-tooltip and .linkNodeNames", () => {
-    // Visit the page where your divs are located
+    // Visit the page where your hotspots are located
     cy.visit("/site");
 
-    // First, click on the first visible hotspot
+    // First, click on the first visible hotspot to switch scene
     cy.get(".hotspot.link-hotspot")
       .filter((index, element) => {
         // Filter those elements based on a condition
@@ -13,11 +13,9 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
       .as("firstVisible")
       .invoke("attr", "id", "firstVisibleHotspot")
       .click();
-    cy.wait(1000); // Better to wait for a specific event than use a hardcoded wait
+    cy.wait(1000); // TODO: Better to wait for a specific event than use a hardcoded wait
 
-    // Second, get all other hotspots that are not the first visible one
-    // cy.get("@firstVisible").then(($first) => {
-
+    // Second, get all hotspot visible on new scene
     cy.get(".hotspot.link-hotspot")
       .filter((index, element) => {
         const grandparent = Cypress.$(element).parent().parent();
@@ -46,35 +44,34 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
             cy.wait(500); // Adjust the time according to your application's needs
 
             // Log the HTML content for the first element in each collection for debugging
-            cy.log(`Collection1  HTML: ${htmlCollection1}`);
-            cy.log(`Collection2 HTML: ${htmlCollection2}`);
+            cy.log(`Collection1 Element 0 HTML: ${htmlCollection1[0]}`);
+            cy.log(`Collection2 Element 0 HTML: ${htmlCollection2[0]}`);
 
             // Comparing the length of both collections
-            // expect(
-            //   htmlCollection1.length,
-            //   "Both collections should have the same number of elements",
-            // ).to.equal(htmlCollection2.length);
+            expect(
+              htmlCollection1.length,
+              "Both collections should have the same number of elements"
+            ).to.equal(htmlCollection2.length);
 
             // Continue with comparison content
             htmlCollection1.forEach((html, index) => {
               try {
                 expect(html.trim()).to.equal(
                   htmlCollection2[index].trim(),
-                  `HTML content of element ${index} should match`,
+                  `HTML content of element ${index} should match`
                 );
               } catch (e) {
                 console.error(`Error in element ${index}:`, e);
                 console.log(
-                  `Collection1 Element ${index} HTML: ${htmlCollection1[index]}`,
+                  `Collection1 Element ${index} HTML: ${htmlCollection1[index]}`
                 );
                 console.log(
-                  `Collection2 Element ${index} HTML: ${htmlCollection2[index]}`,
+                  `Collection2 Element ${index} HTML: ${htmlCollection2[index]}`
                 );
                 throw e; // rethrow the error so Cypress knows the test failed
               }
             });
           });
       });
-    // });
   });
 });
