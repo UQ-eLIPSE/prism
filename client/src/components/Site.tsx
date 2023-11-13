@@ -39,7 +39,7 @@ interface SiteInterface {
 
 function Site(props: SiteInterface) {
   const { siteId, config, updateFloor } = props;
-  const marzipano = useRef<Marzipano | undefined>();
+  const marzipano = useRef<Marzipano>();
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
@@ -303,11 +303,6 @@ function Site(props: SiteInterface) {
 
   function changeTimelineOpen(open: boolean): void {
     setTimelineOpen(open);
-
-    // Return minimap to normal when timeline is open
-    // if (open) {
-    //   this.updateMinimapEnlarged(!open);
-    // }
   }
 
   // Loads all HotspotDescriptions for the current survey location.
