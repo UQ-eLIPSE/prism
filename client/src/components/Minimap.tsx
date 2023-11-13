@@ -339,8 +339,8 @@ function Minimap(props: Readonly<object> | any) {
             editing && !selectedNode
               ? "selecting"
               : editing && selectedNode
-              ? "editing"
-              : ""
+                ? "editing"
+                : ""
           }`}
         >
           <i
