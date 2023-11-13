@@ -331,10 +331,10 @@ const UploadFiles: React.FC<UploadFilesProp> = (props) => {
                             id: "uploadCSVFile",
                           })
                         : errorInCsv
-                          ? messages.formatMessage({
-                              id: "CSVFileError",
-                            })
-                          : csvFileInfo.name}
+                        ? messages.formatMessage({
+                            id: "CSVFileError",
+                          })
+                        : csvFileInfo.name}
                     </p>
                     <p className="fileSize">
                       {csvFileInfo && `(${returnFileSize(csvFileInfo.size)})`}

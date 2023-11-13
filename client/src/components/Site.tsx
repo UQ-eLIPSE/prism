@@ -157,7 +157,6 @@ function Site(props: SiteInterface) {
     );
     updateViewParams(viewParams);
     // Open info panel
-    // console.log("info click", info_id);
     getInfoHotspot(info_id);
   }
 
