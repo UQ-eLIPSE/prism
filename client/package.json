@@ -27,9 +27,9 @@
     "validator": "^13.11.0"
   },
   "engines": {
-    "node": "16.x.x",
+    "node": "20.x.x",
     "yarn": "1.x.x",
-    "npm": "8.x.x"
+    "npm": "10.x.x"
   },
   "resolutions": {
     "babel-loader": "9.1.3"

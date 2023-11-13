@@ -9,36 +9,6 @@ _Techstack_
 - Manta - Object Storage of choice
 - Node 16
 
-## List of files to configure
-
-- .env (use .env.ANLB.sample or .env.kingston.sample or .env.urban_water.sample as a reference)
-
-  - Use Conf.ts to act as a guide if .env.\*.sample is not up to date
-  - DATABASE_URL - The location where MongoDB is (e.g. 'mongodb://localhost:27017/andrew-liveris')
-  - PORT_NUM - The port to host the application (e.g. port 8000)
-  - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
-  - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
-  - TMP_FOLDER - Where the tmp folder is located (i.e. C:\Users\...\prism\tmp)
-  - JWT_Hash - JWT salt hash
-  - USE_SSO - Set to false for local development
-  - MANTA_HOST_NAME - The location where Manta should be hosted. E.g. https://stluc.manta.uqcloud.net
-  - MANTA_KEY_FILE - Where the public/private keys are to authenticate self to Manta i.e. in C://.ssh/id_rsa or C:\.ssh\id_rsa (PLEASE NOTE: you will need to create this file if it does not exist - private key found on LastPass).
-  - MANTA_KEY_ID - The id of the key. E.g. SHA256:Some_Hashed_String
-  - MANTA_SUB_USER - The subuser associated with the keys. Generally empty
-  - MANTA_ROLES - The roles the user would have on Manta. Generally an empty array
-  - MANTA_USER - The username associated with the Manta keys
-  - MANTA_ROOT_FOLDER - Where the public folder is located on Manta. E.g. public/user_name/files
-
-- .env-development (use .env.ANLB.sample as a reference)
-  - Use Conf.ts to act as a guide if .env.urban_water.sample is not up to date
-  - DATABASE_URL - The location where MongoDB is (e.g. 'mongodb://mongodb:27017/andrew-liveris')
-  - PORT_NUM - The port to host the application (e.g. port 8000)
-  - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
-  - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
-  - AUTH_HOST - the zone site name (e.g 'prism-{tag}.uqcloud.net')
-
-Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
-
 ## Quick Run with docker
 
 1. Navigate to the prism project folder root:
@@ -47,7 +17,7 @@ Make sure before running this server, you have the `prism-tst-id_rsa` key in the
 cd prism
 ```
 
-2. Execute the script:
+2. Execute one of the following scripts:
 
 - run server with docker, run client directly on your local with:
 
@@ -70,7 +40,7 @@ cd prism
 - Enter your unique username (UQ username).
 - Run docker-compose with / without --build
 
-**Note**:
+  **Note**:
 
 - Ensure install wget:
   - for mac:
@@ -87,6 +57,14 @@ cd prism
 - On the initial build, answer "y" when prompted to build the Docker images.
 - Docker container will run background use `docker logs -f CONTAINER_ID` to monitor
 - Test data DB output with `docker exec -it mongodb mongosh --eval 'db = db.getSiblingDB("agco360"); var cursor = db.sites.find().limit(1); while(cursor.hasNext()) { printjson(cursor.next()); }'`
+
+- run server, mongodb and client locally:
+
+```
+./run_project_local.sh
+```
+
+**Note**:You have to create a env local file under the directory prism/server/, for example: .env.urban_water_new.example.local
 
 ## Manually Running
 
@@ -149,3 +127,33 @@ It is always good practice to lint and prettier your code prior to review,
 use this command to check that all linting errors are fixed and the code
 is prettied
 `yarn lint:pretty`
+
+## List of files to configure
+
+- .env (use .env.ANLB.sample or .env.kingston.sample or .env.urban_water.sample as a reference)
+
+  - Use Conf.ts to act as a guide if .env.\*.sample is not up to date
+  - DATABASE_URL - The location where MongoDB is (e.g. 'mongodb://localhost:27017/andrew-liveris')
+  - PORT_NUM - The port to host the application (e.g. port 8000)
+  - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
+  - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
+  - TMP_FOLDER - Where the tmp folder is located (i.e. C:\Users\...\prism\tmp)
+  - JWT_Hash - JWT salt hash
+  - USE_SSO - Set to false for local development
+  - MANTA_HOST_NAME - The location where Manta should be hosted. E.g. https://stluc.manta.uqcloud.net
+  - MANTA_KEY_FILE - Where the public/private keys are to authenticate self to Manta i.e. in C://.ssh/id_rsa or C:\.ssh\id_rsa (PLEASE NOTE: you will need to create this file if it does not exist - private key found on LastPass).
+  - MANTA_KEY_ID - The id of the key. E.g. SHA256:Some_Hashed_String
+  - MANTA_SUB_USER - The subuser associated with the keys. Generally empty
+  - MANTA_ROLES - The roles the user would have on Manta. Generally an empty array
+  - MANTA_USER - The username associated with the Manta keys
+  - MANTA_ROOT_FOLDER - Where the public folder is located on Manta. E.g. public/user_name/files
+
+- .env-development (use .env.ANLB.sample as a reference)
+  - Use Conf.ts to act as a guide if .env.urban_water.sample is not up to date
+  - DATABASE_URL - The location where MongoDB is (e.g. 'mongodb://mongodb:27017/andrew-liveris')
+  - PORT_NUM - The port to host the application (e.g. port 8000)
+  - USE_SENTRY - Set to false to disable (useful for dev mode). Otherwise true for production.
+  - SENTRY_DSN - See the Sentry site for the value of the DSN to be used.
+  - AUTH_HOST - the zone site name (e.g 'prism-{tag}.uqcloud.net')
+
+Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
