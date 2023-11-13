@@ -39,7 +39,7 @@ interface SiteInterface {
 
 function Site(props: SiteInterface) {
   const { siteId, config, updateFloor } = props;
-  let marzipano: Marzipano | undefined;
+  const marzipano = useRef<Marzipano>();
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
@@ -88,8 +88,7 @@ function Site(props: SiteInterface) {
     (async () => {
       await updateFloors();
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currfloor, floorExists, currPanoId, currDate]);
+  }, [currfloor, currDate]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -97,8 +96,7 @@ function Site(props: SiteInterface) {
       if (resJSON.success) {
         const empty = await NetworkCalls.getEmptyFloors(siteId);
         const usableFloors = new Set<number>([
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ...resJSON.payload.map((e: any) => e.floor),
+          ...resJSON.payload.map((e: MinimapReturn) => e.floor),
           ...empty.emptyFloors,
         ]);
         setFloors([...Array.from(usableFloors)]);
@@ -152,19 +150,19 @@ function Site(props: SiteInterface) {
       yaw: infoYaw,
     };
     // Check marzipano is not undefined
-    if (!marzipano) throw new Error("Marzipano is undefined.");
-    marzipano.panUpdateCurrView(
+    if (!marzipano.current) throw new Error("Marzipano is undefined.");
+    marzipano.current.panUpdateCurrView(
       viewParams,
-      marzipano?.findSceneById(currPanoId),
+      marzipano.current.findSceneById(currPanoId),
     );
     updateViewParams(viewParams);
     // Open info panel
-    console.log("info click", info_id);
-    // getInfoHotspot(info_id);
+    getInfoHotspot(info_id);
   }
 
   function minimapClick(panoId: string): void {
-    if (marzipano) marzipano.switchScene(marzipano.findSceneById(panoId));
+    if (marzipano.current)
+      marzipano?.current?.switchScene(marzipano.current.findSceneById(panoId));
   }
 
   function updateRotation(rotation: number): void {
@@ -179,9 +177,9 @@ function Site(props: SiteInterface) {
     const viewParams = currViewParams;
 
     if (floor !== Infinity) {
-      if (marzipano !== undefined) {
-        marzipano.viewer.domElement().innerHTML = "<div></div>";
-        marzipano.viewer.destroyAllScenes();
+      if (marzipano.current !== undefined) {
+        marzipano.current.viewer.domElement().innerHTML = "<div></div>";
+        marzipano.current.viewer.destroyAllScenes();
 
         if (abortController.length > 1) {
           abortController[abortController.length - 1].abort();
@@ -203,15 +201,17 @@ function Site(props: SiteInterface) {
 
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
-          marzipano = new Marzipano(
-            nodesData,
-            getInfoHotspot,
-            updateCurrPano,
-            updateRotation,
-            updateViewParams,
-            changeInfoPanelOpen,
-            config,
-          );
+          if (!marzipano.current) {
+            marzipano.current = new Marzipano(
+              nodesData,
+              getInfoHotspot,
+              updateCurrPano,
+              updateRotation,
+              updateViewParams,
+              changeInfoPanelOpen,
+              config,
+            );
+          }
           // Get current tile id based on previous node number
           let currentTilesId = nodesData[0].minimap_node.tiles_id;
           let xDifference = 10000;
@@ -248,10 +248,13 @@ function Site(props: SiteInterface) {
             viewParams.pitch !== 0 ||
             viewParams.yaw !== 0
           ) {
-            if (marzipano && marzipano.findSceneById(currPanoId)) {
-              marzipano.updateCurrView(
+            if (
+              marzipano.current &&
+              marzipano.current.findSceneById(currPanoId)
+            ) {
+              marzipano.current.updateCurrView(
                 viewParams,
-                marzipano.findSceneById(currPanoId),
+                marzipano.current.findSceneById(currPanoId),
               );
             }
           }
@@ -278,8 +281,7 @@ function Site(props: SiteInterface) {
   async function changeFloor(floor: number) {
     try {
       if (floor !== Infinity) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const res: any = await NetworkCalls.fetchMinimap(
+        const res: MinimapReturn = await NetworkCalls.fetchMinimap(
           floor,
           siteId,
           minimapImagesAbortController,
@@ -300,11 +302,6 @@ function Site(props: SiteInterface) {
 
   function changeTimelineOpen(open: boolean): void {
     setTimelineOpen(open);
-
-    // Return minimap to normal when timeline is open
-    // if (open) {
-    //   this.updateMinimapEnlarged(!open);
-    // }
   }
 
   // Loads all HotspotDescriptions for the current survey location.
@@ -340,8 +337,7 @@ function Site(props: SiteInterface) {
   async function getMinimapImage(floor: number): Promise<void> {
     try {
       if (floor !== Infinity) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const res: any = await NetworkCalls.fetchMinimap(
+        const res: MinimapReturn = await NetworkCalls.fetchMinimap(
           floor,
           siteId,
           minimapImagesAbortController,
@@ -394,8 +390,8 @@ function Site(props: SiteInterface) {
       </div>
       {linkNodeListOpen && (
         <LinkNodes
-          linkNodes={marzipano?.findLinkNodesById(currPanoId) ?? ""}
-          infoNodes={marzipano?.findInfoNodesById(currPanoId) ?? ""}
+          linkNodes={marzipano.current?.findLinkNodesById(currPanoId) ?? ""}
+          infoNodes={marzipano.current?.findInfoNodesById(currPanoId) ?? ""}
           timelineOpen={timelineOpen}
           onLinkNodeClick={minimapClick}
           onInfoNodeClick={infoNodeClick}
@@ -438,7 +434,7 @@ function Site(props: SiteInterface) {
       <div className="minimapCorner">
         <Minimap
           currPanoId={currPanoId}
-          onClickNode={setCurrPanoId}
+          onClickNode={minimapClick}
           currRotation={currRotation}
           minimapEnlarged={minimapEnlarged}
           updateMinimapEnlarged={updateMinimapEnlarged}

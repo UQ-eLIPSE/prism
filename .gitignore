@@ -40,3 +40,5 @@ data
 *.njsproj
 *.sln
 *.sw?
+# ignore cypress screenshot
+atdd/cypress/screenshots/
