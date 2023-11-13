@@ -1,20 +1,13 @@
 {
-    "compilerOptions": {
-      "target": "es5" ,
-      "lib": [
-        "es5",
-        "dom"
-      ] ,
-      "module": "commonjs" ,
-      "types": [
-        "cypress",
-        "node"
-      ] ,
-      "esModuleInterop": true ,
-      "forceConsistentCasingInFileNames": true,
-      "strict": true ,
-      "skipLibCheck": true 
-    },
-    "include": ["**/*.ts"]
-  }
-  
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "module": "commonjs",
+    "types": ["cypress", "node"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts"]
+}
