@@ -531,7 +531,7 @@ function SiteSelector({ onButtonClick }: SiteSelectorProps) {
           setSitemap={setSitemap}
         />
       )}
-      <div className="sitehome-container">
+      <div className="sitehome-container" data-cy="multi-sites">
         <div className="sitehome-title-container">
           <span></span>
 

@@ -233,7 +233,9 @@ const EditPanel: React.FC<EditPanelProps> = ({
             </button>
           </div>
         )}
-        <button onClick={onClick}>To Single Site</button>
+        <button onClick={onClick} data-cy="singlesiteBtn">
+          To Single Site
+        </button>
       </div>
     </>
   );
