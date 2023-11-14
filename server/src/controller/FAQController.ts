@@ -38,7 +38,7 @@ export class FAQController {
 
     return CommonUtil.successResponse(
       res,
-      "Question and answer has been saved successfully"
+      "Question and answer has been saved successfully",
     );
   }
 
@@ -63,7 +63,7 @@ export class FAQController {
 
     return CommonUtil.successResponse(
       res,
-      "requested data has been edited successfully"
+      "requested data has been edited successfully",
     );
   }
 
@@ -86,7 +86,7 @@ export class FAQController {
     await FAQ.deleteOne({ idx });
     return CommonUtil.successResponse(
       res,
-      "requested data has been deleted successfully"
+      "requested data has been deleted successfully",
     );
   }
 }
