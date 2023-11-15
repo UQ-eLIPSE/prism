@@ -2,11 +2,21 @@ describe("Verify that when a user clicks all nodes on the minimap, application c
   it("clicks each mininode element and then compares", () => {
     //check multisites or singlesite
     cy.visit("/");
-    cy.get("body").then(($body) => {
-      if ($body.find("#623971b5f0861184d7de5ba4").length > 0) {
-        cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
-      } else {
-        cy.get("[data-cy='sb-site']").should("exist").click();
+    //get Project title
+    cy.get("h1").then(($h1) => {
+      const text = $h1.text();
+      switch (text) {
+        case "AGCO360":
+          cy.log("multi");
+          cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
+          break;
+        case "":
+          cy.log("single");
+          cy.visit("/site");
+          break;
+        default:
+          cy.log("single");
+          cy.visit("/site");
       }
     });
     // Visit the page where the elements exist
