@@ -10,15 +10,12 @@ describe("Verify that when a user clicks all nodes on the minimap, application c
         const text = $h1.text();
         switch (text) {
           case "AGCO360":
-            cy.log("multi");
             cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
             break;
           case "":
-            cy.log("single");
             cy.visit(`${zone}/site`);
             break;
           default:
-            cy.log("single");
             cy.visit(`${zone}/site`);
         }
       });
@@ -26,19 +23,6 @@ describe("Verify that when a user clicks all nodes on the minimap, application c
       // Get all elements with the class '.someclass'
       cy.get("[class^='_minimap_node']").then(($elements) => {
         $elements.each((index, element) => {
-          // Log the HTML of the element
-          cy.wrap(element)
-            .invoke("html")
-            .then((html) => {
-              cy.log(`Element ${index} HTML: ${html}`);
-            });
-          // Log a specific data attribute, e.g., 'data-id'
-          cy.wrap(element)
-            .invoke("attr", "data-id")
-            .then((dataId) => {
-              cy.log(`Element ${index} data-id: ${dataId}`);
-            });
-
           cy.wrap(element)
             .click({ force: true })
             .then(() => {
@@ -105,14 +89,6 @@ describe("Verify that when a user clicks all nodes on the minimap, application c
                           const htmlCollection2 = $collection2
                             .map((index, html) => html.textContent ?? "")
                             .get();
-                          // Log the HTML content for the first element in each collection for debugging
-                          cy.log(
-                            `Collection1 Element 0 HTML: ${htmlCollection1}`,
-                          );
-                          cy.log(
-                            `Collection2 Element 0 HTML: ${htmlCollection2}`,
-                          );
-
                           // Comparing the length of both collections
                           expect(
                             htmlCollection1.length,
@@ -144,7 +120,7 @@ describe("Verify that when a user clicks all nodes on the minimap, application c
                 cy.log(
                   "No .hotspot.link-hotspot elements found, skipping checks.",
                 );
-                // return;
+                return;
               }
             },
           );
