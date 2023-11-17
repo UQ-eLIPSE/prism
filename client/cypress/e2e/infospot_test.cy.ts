@@ -23,25 +23,18 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
     it(`Testing: ${zone}, should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
       // Visit the page where your divs are located
       cy.visit(zone);
-      cy.get("h1").then(($h1) => {
-        const text = $h1.text();
-        switch (text) {
-          case "AGCO360":
-            cy.log("multi");
-            cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
-            performChecks();
-            break;
-          case "":
-            cy.log("single");
-            cy.visit(`${zone}/site`);
-            performChecks();
-            break;
-          default:
-            cy.log("single");
-            cy.visit(`${zone}/site`);
-            performChecks();
+      
+      cy.wait(10000);      
+      cy.get(".mainApp").should('be.visible').then(($mainApp) => {
+        if ($mainApp.find('.sitehome-container').length > 0) {
+          cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
+          performChecks();          
+        } else {
+          cy.visit(`${zone}/site`);
+          performChecks();
         }
       });
+
       function performChecks() {
         cy.get("body").then(($body) => {
           if ($body.find(".linkButton.disabled").length > 0) {

@@ -25,20 +25,17 @@ describe("Verify that when a user clicks all nodes on the minimap, application c
     it("Testing: ${zone}, clicks each mininode element and then compares", () => {
       //check multisites or singlesite
       cy.visit(zone);
+      
       //get Project title
-      cy.get("h1").then(($h1) => {
-        const text = $h1.text();
-        switch (text) {
-          case "AGCO360":
-            cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
-            break;
-          case "":
-            cy.visit(`${zone}/site`);
-            break;
-          default:
-            cy.visit(`${zone}/site`);
+      cy.wait(10000);      
+      cy.get(".mainApp").should('be.visible').then(($mainApp) => {
+        if ($mainApp.find('.sitehome-container').length > 0) {
+          cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
+        } else {
+          cy.visit(`${zone}/site`);
         }
       });
+
       // Visit the page where the elements exist
       // Get all elements with the class '.someclass'
       cy.get("[class^='_minimap_node']").then(($elements) => {
