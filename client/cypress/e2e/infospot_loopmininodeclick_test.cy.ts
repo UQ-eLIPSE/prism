@@ -1,5 +1,25 @@
 import { testEachZone } from "../testutils";
 
+/*
+Feature: LinkNode Information Consistency
+As a user
+I want to see consistent information in the 3D view and expanded left top bar
+So that I can trust the data displayed is accurate
+
+Scenario: Verify information consistency between hotspot tooltip and linkNode in 3D view
+Given I am logged into the application
+If: 
+It is a multi sites application,
+And I click a map-pin with unique ID
+Then I should navigate to a single site 3D view page
+And I click on each mininode on current minimap
+Then I should see a scene with one or more hotspot with displayed information matching information in the expanded left top bar
+Else:
+When I navigate to the 3D view page
+And I click on each mininode on current minimap
+Then I should see a scene with one or more hotspot with displayed information matching information in the expanded left top bar
+*/
+
 describe("Verify that when a user clicks all nodes on the minimap, application correctly populates the top-left-div with a list that matches the names of the hotspots present in the current scene", () => {
   testEachZone((zone: string) => {
     it("Testing: ${zone}, clicks each mininode element and then compares", () => {
