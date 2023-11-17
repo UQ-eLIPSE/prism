@@ -2,7 +2,7 @@
 _Quick Start_
 
 1. navigate to test folder: `cd prism/atdd/`
-2. install packages: `yarn`
+2. install packages: `yarn add cypress --dev`, if needed
 3. (optional) for site need authentication and single session:
    firstly run bash in your terminal(this need to be done each time when you start VScode):
    `export CYPRESS_USERNAME=your-user-name`
