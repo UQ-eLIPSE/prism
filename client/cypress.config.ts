@@ -8,9 +8,9 @@ export default defineConfig({
       // "https://prism-015.uqcloud.net", //single site without hotspots
       // "https://prism-014.uqcloud.net", //single site without hotspots
       // "https://prism-017.uqcloud.net", //single site without hotspots
-      // "https://prism-018.uqcloud.net", //single site without hotspots
+      "https://prism-018.uqcloud.net", //single site without hotspots
       "https://prism-019.uqcloud.net", //multi sites with hotspots
-      // "https://prism-020.uqcloud.net", //single site with hotspots
+      "https://prism-020.uqcloud.net", //single site with hotspots
       // "https://prism-021.uqcloud.net", //single site without hotspots
     ],
   },

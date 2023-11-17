@@ -1,39 +1,24 @@
 import { testEachZone } from "../testutils";
 
-/*
-Feature: LinkNode Information Consistency
-As a user
-I want to see consistent information in the 3D view and expanded left top bar
-So that I can trust the data displayed is accurate
-
-Scenario: Verify information consistency between hotspot tooltip and linkNode in 3D view
-Given I am logged into the application
-If: 
-It is a multi sites application,
-And I click a map-pin with unique ID
-Then I should navigate to a single site 3D view page
-Then I should see a hotspot with displayed information in this scene matching information in the expanded left top bar
-Else:
-When I navigate to the single 3D view page
-Then I should see a hotspot with displayed information in this scene matching information in the expanded left top bar
-*/
-
 describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view", () => {
   testEachZone((zone: string) => {
     it(`Testing: ${zone}, should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
-      // Visit the page where your divs are located
       cy.visit(zone);
-      
-      cy.wait(10000);      
-      cy.get(".mainApp").should('be.visible').then(($mainApp) => {
-        if ($mainApp.find('.sitehome-container').length > 0) {
-          cy.get("#623971b5f0861184d7de5ba4").click({ force: true });
-          performChecks();          
-        } else {
-          cy.visit(`${zone}/site`);
-          performChecks();
-        }
-      });
+      // TODO: aiming remove cy.wait, at this stage it is necessary to keep it for the if block
+      cy.wait(1000);
+      cy.get(".mainApp")
+        .should("be.visible")
+        .then(($mainApp) => {
+          if ($mainApp.find(".sitehome-container").length > 0) {
+            cy.get(".pin.enabled.enabled.false.bottom.enabled").click({
+              force: true,
+            });
+            performChecks();
+          } else {
+            cy.visit(`${zone}/site`);
+            performChecks();
+          }
+        });
 
       function performChecks() {
         cy.get("body").then(($body) => {
@@ -49,27 +34,24 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
                 .should("exist")
                 .find(".hotspot-tooltip")
                 .then(($collection1) => {
-                  // Map through each .hotspot-tooltip and get their inner HTML content
                   const htmlCollection1 = $collection1
                     .map((index, html) => html.innerHTML)
                     .get();
-                  // Retrieve the collection 2 of elements with .linkNodeNames
                   cy.get(".linkButton").should("exist").click();
                   cy.get(".linkNodeNames")
                     .should("exist")
                     .then(($collection2) => {
-                      // Map through each element in collection2 and get their inner HTML content
                       const htmlCollection2 = $collection2
                         .map((index, html) => html.textContent ?? "")
                         .get();
 
-                      // Comparing the length of both collections
+                      // Test: Comparing the length of both collections
                       expect(
                         htmlCollection1.length,
                         "Both collections should have the same number of elements",
                       ).to.equal(htmlCollection2.length);
 
-                      // Continue with comparison content
+                      // Test: Continue with comparison content
                       htmlCollection1.forEach((html, index) => {
                         expect(html.trim()).to.equal(
                           htmlCollection2[index].trim(),
