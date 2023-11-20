@@ -11,12 +11,12 @@ type MappedConfigType<I, K extends keyof I> = {
   type: I[K] extends number
     ? "number"
     : I[K] extends string
-    ? "string"
-    : I[K] extends Date
-    ? "Date"
-    : I[K] extends boolean
-    ? "boolean"
-    : never;
+      ? "string"
+      : I[K] extends Date
+        ? "Date"
+        : I[K] extends boolean
+          ? "boolean"
+          : never;
 };
 
 /**

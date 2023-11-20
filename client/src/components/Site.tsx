@@ -71,7 +71,9 @@ function Site(props: SiteInterface) {
   const [infoPanelOpen, setInfoPanelOpen] = useState<boolean>(false);
   const [minimapEnlarged, setMinimapEnlarged] = useState<boolean>(false);
   const [nodesData, setNodesData] = useState<NodeData[]>([]);
-  const [timelineOpen, setTimelineOpen] = useState<boolean>(true);
+  const [timelineOpen, setTimelineOpen] = useState<boolean>(
+    config.enable.timeline,
+  );
   const [linkNodeListOpen, setLinkNodeListOpen] = useState<boolean>(false);
   const [hotspotDictionary, setHotspotDictionary] = useState<
     HotspotDescription[]

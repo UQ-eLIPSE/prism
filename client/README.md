@@ -5,7 +5,7 @@ This README should contain details on how to configure the server of the PRISM c
 _Techstack_
 
 - React
-- Node 16
+- Node 20
 
 ## List of files to configure
 
@@ -33,3 +33,8 @@ It is always good practice to lint and prettier your code prior to review,
 use this command to check that all linting errors are fixed and the code
 is prettied
 `yarn lint:pretty`
+
+## Running Cypress Tests
+
+1. navigate to test folder: `cd prism/client/`
+2. start tests:`yarn cypress:run` or `yarn cypress run --headed --no-exit` (optional: `--spec <path/to/specific/testfilename>`)
