@@ -4,7 +4,7 @@ describe("Test case: Timeline section with border less div UI", () => {
   testEachZone((zone: string) => {
     it(`Testing:  Timeline section div should not contain divider line <hr>`, () => {
       cy.visit(zone);
-      // TODO: aiming remove cy.wait, at this stage it is necessary to keep it for the if block
+      // TODO: aiming remove all cy.wait, at this stage it is necessary to keep it
       cy.wait(1000);
       cy.get(".mainApp")
         .should("be.visible")
@@ -22,9 +22,9 @@ describe("Test case: Timeline section with border less div UI", () => {
 
       function performChecks() {
         cy.get("[class^='_timelineButton']").click();
-        cy.get("[class^='MuiDivider-root _timeline_divider']").should(
-          "not.exist",
-        );
+        cy.get("#drawer-container").should("exist");
+        cy.wait(10000);
+        cy.get("[class*='_timeline_divider']").should("not.exist");
       }
     });
     it(`Testing:  Timeline section should not contain box-shadow`, () => {
