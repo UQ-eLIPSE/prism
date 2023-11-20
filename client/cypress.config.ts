@@ -5,6 +5,7 @@ export default defineConfig({
     username: process.env.CYPRESS_USERNAME,
     password: process.env.CYPRESS_PASSWORD,
     deployedZones: [
+      // "http://localhost:3000", //for local test
       "https://prism-015.uqcloud.net", //single site without hotspots
       "https://prism-014.uqcloud.net", //single site without hotspots
       "https://prism-017.uqcloud.net", //single site without hotspots
