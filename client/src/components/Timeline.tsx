@@ -132,6 +132,7 @@ function Timeline(props: Props) {
               `${month.monthName}`
             )}
           </p>
+          <div className={TimelineStyles.timeline}></div>
         </div>
       );
     });
