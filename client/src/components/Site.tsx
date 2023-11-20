@@ -83,6 +83,7 @@ function Site(props: SiteInterface) {
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
 
   useEffect(() => {
+    console.log("curr floor", currfloor);
     getSurveyNodes(currfloor);
     getFloorExistence(currfloor);
     updateFloor(currfloor);
@@ -96,6 +97,7 @@ function Site(props: SiteInterface) {
     try {
       const resJSON = await NetworkCalls.getFloors(siteId, currDate);
       if (resJSON.success) {
+        console.log(resJSON.payload);
         const empty = await NetworkCalls.getEmptyFloors(siteId);
         const usableFloors = new Set<number>([
           ...resJSON.payload.map((e: MinimapReturn) => e.floor),
@@ -175,7 +177,7 @@ function Site(props: SiteInterface) {
     setCurrViewParams(viewParams);
   }
 
-  function getSurveyNodes(floor = 0): void {
+  function getSurveyNodes(floor: number): void {
     const viewParams = currViewParams;
 
     if (floor !== Infinity) {
