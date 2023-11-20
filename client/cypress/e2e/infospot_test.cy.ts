@@ -48,14 +48,14 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
                       // Test: Comparing the length of both collections
                       expect(
                         htmlCollection1.length,
-                        "Both collections should have the same number of elements",
+                        "Both collections should have the same number of elements"
                       ).to.equal(htmlCollection2.length);
 
                       // Test: Continue with comparison content
                       htmlCollection1.forEach((html, index) => {
                         expect(html.trim()).to.equal(
                           htmlCollection2[index].trim(),
-                          `HTML content of element ${index} should match`,
+                          `HTML content of element ${index} should match`
                         );
                       });
                     });
@@ -129,7 +129,7 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
                             cy.wrap($linkButton).click();
                           } else {
                             cy.log(
-                              "The .linkButton contains the .fas.fa-chevron-up icon, not clicking.",
+                              "The .linkButton contains the .fas.fa-chevron-up icon, not clicking."
                             );
                           }
                         });
@@ -142,29 +142,24 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
                             .get();
                           expect(
                             htmlCollection1.length,
-                            "Both collections should have the same number of elements",
+                            "Both collections should have the same number of elements"
                           ).to.equal(htmlCollection2.length);
                           htmlCollection1.forEach((html, index) => {
-                            try {
-                              expect(html.trim()).to.equal(
-                                htmlCollection2[index].trim(),
-                                `HTML content of element ${index} should match`,
-                              );
-                            } catch (e) {
-                              console.error(`Error in element ${index}:`, e);
-                              throw e;
-                            }
+                            expect(html.trim()).to.equal(
+                              htmlCollection2[index].trim(),
+                              `HTML content of element ${index} should match`
+                            );
                           });
                         });
                     });
                 }
               } else {
                 cy.log(
-                  "No .hotspot.link-hotspot elements found, skipping checks.",
+                  "No .hotspot.link-hotspot elements found, skipping checks."
                 );
                 return;
               }
-            },
+            }
           );
         }
       });
