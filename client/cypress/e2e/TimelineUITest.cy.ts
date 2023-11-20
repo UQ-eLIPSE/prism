@@ -23,7 +23,7 @@ describe("Test case: Timeline section with border less div UI", () => {
       function performChecks() {
         cy.get("[class^='_timelineButton']").click();
         cy.get("[class^='MuiDivider-root _timeline_divider']").should(
-          "not.exist"
+          "not.exist",
         );
       }
     });
