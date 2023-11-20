@@ -83,7 +83,9 @@ function Site(props: SiteInterface) {
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
 
   useEffect(() => {
-    marzipano.current = undefined;
+    if (marzipano.current) {
+      marzipano.current = undefined;
+    }
     getSurveyNodes(currfloor);
     getFloorExistence(currfloor);
     updateFloor(currfloor);
