@@ -83,7 +83,7 @@ function Site(props: SiteInterface) {
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
 
   useEffect(() => {
-    console.log("curr floor", currfloor);
+    marzipano.current = undefined;
     getSurveyNodes(currfloor);
     getFloorExistence(currfloor);
     updateFloor(currfloor);
@@ -97,7 +97,6 @@ function Site(props: SiteInterface) {
     try {
       const resJSON = await NetworkCalls.getFloors(siteId, currDate);
       if (resJSON.success) {
-        console.log(resJSON.payload);
         const empty = await NetworkCalls.getEmptyFloors(siteId);
         const usableFloors = new Set<number>([
           ...resJSON.payload.map((e: MinimapReturn) => e.floor),
