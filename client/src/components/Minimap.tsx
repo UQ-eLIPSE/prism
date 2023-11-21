@@ -562,7 +562,7 @@ function Minimap(props: Readonly<object> | any) {
                   />
                 </button>
               )}
-              {!imageUrl ? (
+              {imageUrl ? (
                 <img
                   className={classNames(
                     "small-map-img",
