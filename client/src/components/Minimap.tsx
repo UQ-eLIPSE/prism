@@ -73,7 +73,7 @@ function Minimap(props: Readonly<object> | any) {
         console.log(error);
       }
     };
-
+    console.log("minimap: ", props.minimapData);
     if (props.minimapData && props.minimapData.image_url) {
       getMinimapNodes();
       setFloorName(props.minimapData.floor_name);
@@ -563,7 +563,7 @@ function Minimap(props: Readonly<object> | any) {
                   />
                 </button>
               )}
-              {imageUrl ? (
+              {!imageUrl ? (
                 <img
                   className={classNames(
                     "small-map-img",

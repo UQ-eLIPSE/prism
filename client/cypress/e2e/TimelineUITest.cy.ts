@@ -21,7 +21,7 @@ describe("Test case: Timeline section with border less div UI", () => {
         });
 
       function performChecks() {
-        cy.get("[class^='_timelineButton']").click();
+        cy.get("[class^='_timelineButton']").click({ force: true });
         cy.get("#drawer-container").should("exist");
         cy.wait(10000);
         cy.get("[class*='_timeline_divider']").should("not.exist");

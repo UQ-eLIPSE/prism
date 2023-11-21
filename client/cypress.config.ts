@@ -5,14 +5,14 @@ export default defineConfig({
     username: process.env.CYPRESS_USERNAME,
     password: process.env.CYPRESS_PASSWORD,
     deployedZones: [
-      // "http://localhost:3000", //for local test
-      "https://prism-015.uqcloud.net", //single site without hotspots
-      // "https://prism-014.uqcloud.net", //single site without hotspots
-      // "https://prism-017.uqcloud.net", //single site without hotspots
-      // "https://prism-018.uqcloud.net", //single site without hotspots
-      // "https://prism-019.uqcloud.net", //multi sites with hotspots
-      // "https://prism-020.uqcloud.net", //single site with hotspots
-      // "https://prism-021.uqcloud.net", //single site without hotspots
+      // "http://localhost:3000", //for local test, depending project with/without timeline
+      "https://prism-015.uqcloud.net", //single site without hotspots, with timeline
+      "https://prism-014.uqcloud.net", //single site without hotspots, with timeline
+      "https://prism-017.uqcloud.net", //single site without hotspots, with timeline
+      "https://prism-018.uqcloud.net", //single site without hotspots, with timeline
+      "https://prism-019.uqcloud.net", //multi sites with hotspots, without timeline
+      "https://prism-020.uqcloud.net", //single site with hotspots, with timeline
+      "https://prism-021.uqcloud.net", //single site without hotspots, with timeline
     ],
   },
   e2e: {
