@@ -1,5 +1,3 @@
-// cypress/support/commands.ts
-
 Cypress.Commands.add("testEachZone", (testFn: (url: string) => void): void => {
   const allURLs: string[] = Cypress.env("deployedZones");
 
