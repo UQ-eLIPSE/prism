@@ -116,7 +116,7 @@ function Site(props: SiteInterface) {
     }
   };
 
-  async function getFloorExistence(floor: number) {
+  async function getFloorExistence(floor: number = 0) {
     try {
       if (floor !== Infinity) {
         const floorSurveyExists: {
