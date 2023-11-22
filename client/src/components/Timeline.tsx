@@ -160,6 +160,7 @@ function Timeline(props: Props) {
       return (
         <div className={TimelineStyles.monthContainer} key={month.monthName}>
           <Accordion
+            elevation={0}
             expanded={expandedAccordian === month.monthName}
             onChange={() => {
               setExpandedAccordian(
