@@ -1,8 +1,9 @@
-import { testEachZone } from "../testutils";
+// import { testEachZone } from "../testutils";
 
 describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view", () => {
-  testEachZone((zone: string) => {
-    it(`Testing: ${zone}, should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
+  // testEachZone((zone: string) => {
+  it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
+    cy.testEachZone((zone) => {
       cy.visit(zone);
       // TODO: aiming remove cy.wait, at this stage it is necessary to keep it for the if block
       cy.wait(1000);
@@ -67,7 +68,11 @@ describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNod
         });
       }
     });
-    it("Testing: ${zone}, clicks each mininode element and then compares", () => {
+    });
+  it("Testing in each Zone: clicks each mininode element and then compares", () => {
+    cy.testEachZone((zone) => { 
+
+    
       cy.visit(zone);
       cy.wait(1000);
       cy.get(".mainApp")
