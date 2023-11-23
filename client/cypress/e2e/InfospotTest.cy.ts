@@ -7,7 +7,6 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
       if (zone.hotspots) {
-        // cy.wait(5000);
         cy.get(".hotspot.link-hotspot")
           .filter((index, element) => {
             // Filter those elements based on a condition
