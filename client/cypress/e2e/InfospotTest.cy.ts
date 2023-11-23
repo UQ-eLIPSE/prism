@@ -6,50 +6,42 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
-      cy.get("body").then(($body) => {
-        if ($body.find(".linkButton.disabled").length > 0) {
-          return;
-        } else {
-          if ($body.find(".hotspot.link-hotspot").length > 0) {
-            cy.get(".hotspot.link-hotspot")
-              .filter((index, element) => {
-                // Filter those elements based on a condition
-                return Cypress.$(element).css("display") === "block";
-              })
+      if (zone.hotspots) {
+        cy.get(".hotspot.link-hotspot")
+          .filter((index, element) => {
+            // Filter those elements based on a condition
+            return Cypress.$(element).css("display") === "block";
+          })
+          .should("exist")
+          .find(".hotspot-tooltip")
+          .then(($collection1) => {
+            const htmlCollection1 = $collection1
+              .map((index, html) => html.innerHTML)
+              .get();
+            cy.get(".linkButton").should("exist").click();
+            cy.get(".linkNodeNames")
               .should("exist")
-              .find(".hotspot-tooltip")
-              .then(($collection1) => {
-                const htmlCollection1 = $collection1
-                  .map((index, html) => html.innerHTML)
+              .then(($collection2) => {
+                const htmlCollection2 = $collection2
+                  .map((index, html) => html.textContent ?? "")
                   .get();
-                cy.get(".linkButton").should("exist").click();
-                cy.get(".linkNodeNames")
-                  .should("exist")
-                  .then(($collection2) => {
-                    const htmlCollection2 = $collection2
-                      .map((index, html) => html.textContent ?? "")
-                      .get();
 
-                    // Test: Comparing the length of both collections
-                    expect(
-                      htmlCollection1.length,
-                      "Both collections should have the same number of elements",
-                    ).to.equal(htmlCollection2.length);
+                // Test: Comparing the length of both collections
+                expect(
+                  htmlCollection1.length,
+                  "Both collections should have the same number of elements"
+                ).to.equal(htmlCollection2.length);
 
-                    // Test: Continue with comparison content
-                    htmlCollection1.forEach((html, index) => {
-                      expect(html.trim()).to.equal(
-                        htmlCollection2[index].trim(),
-                        `HTML content of element ${index} should match`,
-                      );
-                    });
-                  });
+                // Test: Continue with comparison content
+                htmlCollection1.forEach((html, index) => {
+                  expect(html.trim()).to.equal(
+                    htmlCollection2[index].trim(),
+                    `HTML content of element ${index} should match`
+                  );
+                });
               });
-          } else {
-            return;
-          }
-        }
-      });
+          });
+      }
     });
 
     it("Testing in each Zone: clicks each mininode element and then compares", () => {
@@ -58,17 +50,9 @@ testEachZone((zone: Cypress.PrismZone) => {
           cy.wrap(element)
             .click({ force: true })
             .then(() => {
-              cy.get("body").then(($body) => {
-                if ($body.find(".linkButton.disabled").length > 0) {
-                  return;
-                } else {
-                  if ($body.find(".hotspot.link-hotspot").length > 0) {
-                    performChecks();
-                  } else {
-                    return;
-                  }
-                }
-              });
+              if (zone.hotspots) {
+                performChecks();
+              }
             });
         });
 
@@ -100,7 +84,7 @@ testEachZone((zone: Cypress.PrismZone) => {
                             cy.wrap($linkButton).click();
                           } else {
                             cy.log(
-                              "The .linkButton contains the .fas.fa-chevron-up icon, not clicking.",
+                              "The .linkButton contains the .fas.fa-chevron-up icon, not clicking."
                             );
                           }
                         });
@@ -113,12 +97,12 @@ testEachZone((zone: Cypress.PrismZone) => {
                             .get();
                           expect(
                             htmlCollection1.length,
-                            "Both collections should have the same number of elements",
+                            "Both collections should have the same number of elements"
                           ).to.equal(htmlCollection2.length);
                           htmlCollection1.forEach((html, index) => {
                             expect(html.trim()).to.equal(
                               htmlCollection2[index].trim(),
-                              `HTML content of element ${index} should match`,
+                              `HTML content of element ${index} should match`
                             );
                           });
                         });
@@ -126,11 +110,11 @@ testEachZone((zone: Cypress.PrismZone) => {
                 }
               } else {
                 cy.log(
-                  "No .hotspot.link-hotspot elements found, skipping checks.",
+                  "No .hotspot.link-hotspot elements found, skipping checks."
                 );
                 return;
               }
-            },
+            }
           );
         }
       });
