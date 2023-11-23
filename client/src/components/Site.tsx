@@ -116,7 +116,7 @@ function Site(props: SiteInterface) {
     }
   };
 
-  async function getFloorExistence(floor: number = 0) {
+  async function getFloorExistence(floor: number) {
     try {
       if (floor !== Infinity) {
         const floorSurveyExists: {
@@ -178,7 +178,7 @@ function Site(props: SiteInterface) {
     setCurrViewParams(viewParams);
   }
 
-  function getSurveyNodes(floor: number): void {
+  function getSurveyNodes(floor: number = 0): void {
     const viewParams = currViewParams;
 
     if (floor !== Infinity) {
