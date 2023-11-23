@@ -61,7 +61,6 @@ testEachZone((zone: Cypress.PrismZone) => {
         function performChecks() {
           cy.get(".hotspot.link-hotspot").then(
             ($result: JQuery<HTMLElement>) => {
-              if ($result.length > 0) {
                 const filtered = $result.filter((index, element) => {
                   const $element = Cypress.$(element);
                   const grandparent = $element.parent().parent();
@@ -110,12 +109,6 @@ testEachZone((zone: Cypress.PrismZone) => {
                         });
                     });
                 }
-              } else {
-                cy.log(
-                  "No .hotspot.link-hotspot elements found, skipping checks."
-                );
-                return;
-              }
             }
           );
         }
