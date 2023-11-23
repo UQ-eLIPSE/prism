@@ -6,7 +6,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.accessZone(zone);
     });
 
-    it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
+    it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames on the first landing view`, () => {
       if (zone.hotspots) {
         performChecks();
       }
