@@ -7,7 +7,7 @@ const testEachZone = (testFn: (zone: Cypress.PrismZone) => void): void => {
   });
 };
 
-const performChecks = () => {
+const hotspotsDropdownConsistencyCheck = () => {
   cy.get(".hotspot.link-hotspot").then(
     ($result: JQuery<HTMLElement>) => {
         const filtered = $result.filter((index, element) => {
@@ -62,5 +62,5 @@ const performChecks = () => {
   );
 }
 
-export { testEachZone, performChecks };
+export { testEachZone, hotspotsDropdownConsistencyCheck };
 

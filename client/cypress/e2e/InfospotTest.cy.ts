@@ -1,4 +1,4 @@
-import { testEachZone, performChecks } from "../testutils";
+import { testEachZone, hotspotsDropdownConsistencyCheck } from "../testutils";
 
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view", () => {
@@ -8,7 +8,7 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames on the first landing view`, () => {
       if (zone.hotspots) {
-        performChecks();
+        hotspotsDropdownConsistencyCheck();
       }
     });
 
@@ -19,7 +19,7 @@ testEachZone((zone: Cypress.PrismZone) => {
             .click({ force: true })
             .then(() => {
               if (zone.hotspots) {
-                performChecks();
+                hotspotsDropdownConsistencyCheck();
               }
             });
         });
