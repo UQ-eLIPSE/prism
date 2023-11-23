@@ -1,57 +1,31 @@
 import { testEachZone } from "../testutils";
 
-describe("Test case: Timeline section with border less div UI", () => {
-  testEachZone((zone: string) => {
-    it(`Testing:  Timeline section div should not contain divider line <hr>`, () => {
-      cy.visit(zone);
-      // TODO: aiming remove all cy.wait, at this stage it is necessary to keep it
-      cy.wait(1000);
-      cy.get(".mainApp")
-        .should("be.visible")
-        .then(($mainApp) => {
-          if ($mainApp.find(".sitehome-container").length > 0) {
-            cy.get(".pin.enabled.enabled.false.bottom.enabled").click({
-              force: true,
-            });
-            performChecks();
-          } else {
-            cy.visit(`${zone}/site`);
-            performChecks();
-          }
-        });
+testEachZone((zone: Cypress.PrismZone) => {
+  describe("Test case: Timeline section with border less div UI", () => {
+    
 
-      function performChecks() {
-        cy.get("[class^='_timelineButton']").click({ force: true });
-        cy.get("#drawer-container").should("exist");
-        cy.wait(10000);
-        cy.get("[class*='_timeline_divider']").should("not.exist");
-      }
-    });
-    it(`Testing:  Timeline section should not contain box-shadow`, () => {
-      cy.visit(zone);
-      // TODO: aiming remove cy.wait, at this stage it is necessary to keep it for the if block
-      cy.wait(1000);
-      cy.get(".mainApp")
-        .should("be.visible")
-        .then(($mainApp) => {
-          if ($mainApp.find(".sitehome-container").length > 0) {
-            cy.get(".pin.enabled.enabled.false.bottom.enabled").click({
-              force: true,
-            });
-            performChecks();
-          } else {
-            cy.visit(`${zone}/site`);
-            performChecks();
-          }
-        });
+      beforeEach(() => {
+        cy.accessZone(zone);      
+      });    
+      
+      it(`Testing: Timeline section div should not contain divider line <hr> ${zone.url}`, () => {        
+        if(zone.timeline) {
+          cy.get("[class^='_timelineButton']").click({ force: true });
+          cy.get("#drawer-container").should("exist");
+          cy.get("[class*='_timeline_divider']").should("not.exist");
+        }
+      });
 
-      function performChecks() {
-        cy.get("[class*='MuiPaper-elevation1']").each(($el) => {
-          const style = window.getComputedStyle($el[0]);
-          const boxShadow = style.boxShadow;
-          expect(boxShadow).to.be.oneOf(["none", ""]);
-        });
-      }
-    });
+
+      it(`Testing: Timeline section should not contain box-shadow ${zone.url}`, () => {
+        if(zone.timeline) {
+          cy.get("[class*='MuiPaper-elevation1']").each(($el) => {
+              const style = window.getComputedStyle($el[0]);
+              const boxShadow = style.boxShadow;
+              expect(boxShadow).to.be.oneOf(["none", ""]);
+          });
+        }
+      });
+    
   });
 });

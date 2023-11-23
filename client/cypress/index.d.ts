@@ -1,9 +1,13 @@
 declare namespace Cypress {
+  
+  interface PrismZone {
+    url: string, 
+    singleSite: boolean, 
+    hotspots: boolean,
+    timeline: boolean
+  }
+
   interface Chainable<Subject> {
-    /**
-     * Custom command to test each zone.
-     * @example cy.testEachZone((zone) => { ... })
-     */
-    testEachZone(testFn: (zone: string) => void): void;
+    accessZone(zone: PrismZone): void;
   }
 }

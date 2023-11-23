@@ -1,5 +1,4 @@
 describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view", () => {
-  // testEachZone((zone: string) => {
   it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames`, () => {
     cy.testEachZone((zone) => {
       cy.visit(zone);
