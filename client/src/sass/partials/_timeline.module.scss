@@ -25,10 +25,6 @@ header {
   flex-grow: 1;
 }
 
-.MuiPaper-elevation1 {
-  box-shadow: none;
-}
-
 .MuiAccordionSummary-root {
   padding: 0;
 }
@@ -142,10 +138,9 @@ header {
   border-radius: 100px;
   background: $prismPrimary;
   color: white;
-  padding: 3px 5px 3px 5px;
   & p {
     color: white;
-    margin-right: 5px;
+    margin-right: 0px;
     padding: 0px;
   }
 }
@@ -236,4 +231,12 @@ header {
 
 .timelineHidden {
   display: none;
+}
+.timeline {
+  background-color: #f5c5b9;
+  width: 2px;
+  position: absolute;
+  top: 40px;
+  left: 16.5px;
+  height: 30px;
 }

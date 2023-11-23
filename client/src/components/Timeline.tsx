@@ -4,7 +4,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Drawer,
-  Divider,
   Accordion,
   AccordionDetails,
   AccordionSummary,
@@ -133,6 +132,7 @@ function Timeline(props: Props) {
               `${month.monthName}`
             )}
           </p>
+          <div className={TimelineStyles.timeline}></div>
         </div>
       );
     });
@@ -156,11 +156,11 @@ function Timeline(props: Props) {
     surveys: SurveyMonth[],
     allSurveys: SurveyMonth[],
   ): React.ReactElement[] => {
-    return allSurveys.map((month: SurveyMonth, i) => {
+    return allSurveys.map((month: SurveyMonth) => {
       return (
         <div className={TimelineStyles.monthContainer} key={month.monthName}>
-          {i === 0 ? "" : <Divider className={TimelineStyles.divider} />}
           <Accordion
+            elevation={0}
             expanded={expandedAccordian === month.monthName}
             onChange={() => {
               setExpandedAccordian(

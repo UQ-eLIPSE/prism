@@ -83,6 +83,9 @@ function Site(props: SiteInterface) {
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
 
   useEffect(() => {
+    if (marzipano.current) {
+      marzipano.current = undefined;
+    }
     getSurveyNodes(currfloor);
     getFloorExistence(currfloor);
     updateFloor(currfloor);
@@ -175,7 +178,7 @@ function Site(props: SiteInterface) {
     setCurrViewParams(viewParams);
   }
 
-  function getSurveyNodes(floor = 0): void {
+  function getSurveyNodes(floor: number = 0): void {
     const viewParams = currViewParams;
 
     if (floor !== Infinity) {
