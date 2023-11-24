@@ -379,7 +379,11 @@ function Site(props: SiteInterface) {
   return (
     <div id="sitePage">
       <TitleCard
-        firstLineName={config.display.title}
+        firstLineName={
+          marzipano.current
+            ? marzipano.current.findNameById(currPanoId)
+            : config.display.title
+        }
         timelineOpen={timelineOpen}
       />
       <div
