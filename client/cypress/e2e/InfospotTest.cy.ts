@@ -27,4 +27,3 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
   });
 });
-
