@@ -8,7 +8,7 @@
 import React from "react";
 
 interface PropsType {
-  firstLineName: string;
+  firstLineName?: string;
   secondLineName?: string;
   timelineOpen: boolean;
 }
