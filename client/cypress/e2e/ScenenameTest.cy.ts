@@ -3,7 +3,6 @@ import { testEachZone } from "../testutils";
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Scene Name Displaying in div .title-card", () => {
     beforeEach(() => {
-      cy.log(zone.url);
       cy.accessZone(zone);
     });
     it(`Testing:  Scene Name Displaying in div .title-card`, () => {
