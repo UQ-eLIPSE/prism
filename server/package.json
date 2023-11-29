@@ -20,7 +20,6 @@
   "author": "eLIPSE",
   "license": "ISC",
   "dependencies": {
-    "@sentry/node": "^7.71.0",
     "@uq-elipse/uq-eait-sso": "^0.0.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -44,7 +43,6 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@sentry/types": "^7.71.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
