@@ -7,9 +7,7 @@ export interface Configuration {
   PROJECT_NAME: string;
   DATABASE_URL: string;
   PORT_NUM: number;
-  USE_SENTRY: boolean;
   USE_SSO: boolean;
-  SENTRY_DSN: string;
   AUTH_HOST: string;
   CLIENT_ORIGIN: string;
   MAIL_HOST: string;
@@ -31,9 +29,7 @@ export const TEMPLATE: Configuration = {
   PROJECT_NAME: "",
   DATABASE_URL: "Initial_Value",
   PORT_NUM: 8000,
-  USE_SENTRY: true,
   USE_SSO: false,
-  SENTRY_DSN: "",
   AUTH_HOST: "",
   CLIENT_ORIGIN: "/",
   MAIL_HOST: "",
@@ -98,12 +94,6 @@ export function loadConfiguration(): Configuration {
 
       case "PORT_NUM":
         output.PORT_NUM = parseInt(dotEnvLoad.parsed[key]);
-        break;
-      case "USE_SENTRY":
-        output.USE_SENTRY = JSON.parse(dotEnvLoad.parsed[key]) as boolean;
-        break;
-      case "SENTRY_DSN":
-        output.SENTRY_DSN = dotEnvLoad.parsed[key];
         break;
 
       case "USE_SSO":
