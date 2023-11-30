@@ -44,3 +44,4 @@ data
 *.sw?
 # ignore cypress screenshot
 atdd/cypress/screenshots/
+yarn.lock

@@ -1,6 +1,5 @@
 // Library imports
 import * as express from "express";
-import * as Sentry from "@sentry/node";
 import * as mongoose from "mongoose";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
@@ -69,13 +68,10 @@ export class App {
     ConsoleUtil.log("Done setting up express routes...");
   }
 
-  private setupSentry(): void {
-    if (this.configuration.USE_SENTRY || this.configuration.USE_SSO) {
-      ConsoleUtil.log("Setting up Sentry...");
+  private setupSSO(): void {
+    if (this.configuration.USE_SSO) {
       ConsoleUtil.log("Using SSO...");
-      Sentry.init({ dsn: this.configuration.SENTRY_DSN });
     } else {
-      ConsoleUtil.log("Not using Sentry...");
       ConsoleUtil.log("Not using SSO...");
     }
   }
@@ -91,6 +87,6 @@ export class App {
     }
 
     this.setUpExpress();
-    this.setupSentry();
+    this.setupSSO();
   }
 }
