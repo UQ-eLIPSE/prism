@@ -544,7 +544,9 @@ function SiteSelector({ onButtonClick }: SiteSelectorProps) {
                 alt="prism logo"
               />
               <h1>
-                {(process.env.REACT_APP_PROJECT_TITLE as string) ||
+                {(window._env_
+                  ? window._env_.PROJECT_TITLE
+                  : (process.env.REACT_APP_PROJECT_TITLE as string)) ||
                   "PROJECT TITLE"}
               </h1>
             </div>
