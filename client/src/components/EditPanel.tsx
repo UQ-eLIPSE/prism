@@ -81,7 +81,7 @@ const EditPanel: React.FC<EditPanelProps> = ({
   const checkScenesExists = async (siteId: string, config: IConfiguration) => {
     try {
       const siteData = await fetch(
-        `${config.BASE_URL}/api/site/${siteId}/exists`,
+        `${window._env_? window._env_.API_URL : config.BASE_URL}/api/site/${siteId}/exists`,
         {
           method: "GET",
         },
