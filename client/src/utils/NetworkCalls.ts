@@ -29,9 +29,11 @@ export async function fetchWithCredentials(
 }
 
 export default class NetworkCalls {
-  
-  private static window_api_url=window._env_ && window._env_.API_URL? window._env_.API_URL : process.env.REACT_APP_BASE_URL
-  
+  private static window_api_url =
+    window._env_ && window._env_.API_URL
+      ? window._env_.API_URL
+      : process.env.REACT_APP_BASE_URL;
+
   /**
    * This function calls for the /api/login/user/info endpoint to get the current logged in users information
    * Notable information includes:

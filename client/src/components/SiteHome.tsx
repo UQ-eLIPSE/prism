@@ -40,7 +40,7 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
   const fetchSettings = async (config: IConfiguration) => {
     try {
       const settingsData = await fetch(
-        `${window._env_? window._env_.API_URL : config.BASE_URL}/api/site/${
+        `${window._env_ ? window._env_.API_URL : config.BASE_URL}/api/site/${
           siteId ? siteId : allSites[0]._id
         }/settings`,
         {
