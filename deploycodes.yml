@@ -3,10 +3,6 @@
 
   tasks:
     # Client
-    - name: cp .env
-      command: cp .env.prod.example .env
-      args:
-        chdir: client/
 
     - name: Remove existing client directory on Zone
       file:
