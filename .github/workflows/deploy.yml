@@ -9,8 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest # The type of runner to use
-    container:
-      image: node:20
+    # container:
+    #   image: node:20
 
     steps:
       - name: Checkout repository
