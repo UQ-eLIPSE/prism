@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2 # This action checks out your repository code
         with:
-          ref: main # This specifies the branch to checkout
+          ref: feature/ELIPSE-843 # This specifies the branch to checkout
 
       - name: Setup SSH Key
         run: |
