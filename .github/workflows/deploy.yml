@@ -16,9 +16,9 @@ jobs:
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ecdsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_ecdsa
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_ecdsa.pub
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
           chmod 644 ~/.ssh/id_ecdsa.pub
 
       - name: Install Ansible
