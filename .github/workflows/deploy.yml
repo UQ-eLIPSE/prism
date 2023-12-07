@@ -9,8 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest # The type of runner to use
-    # container:
-    #   image: node:20
+    container:
+      image: node:20
 
     steps:
       - name: Checkout repository
@@ -28,8 +28,8 @@ jobs:
 
       - name: Install Ansible
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
+          apt-get update
+          apt-get install -y ansible
 
       - name: Conditionally add SSH key of the remote host to known_hosts
         run: |
@@ -39,19 +39,19 @@ jobs:
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
 
-      - name: Build front and back end codes
-        run: |
-          cd client
-          cp .env.prod.example .env
-          yarn
-          yarn build
-          tar -czvf build.tar.gz build
-          cd ..
-          cd server
-          yarn
-          yarn build
-          tar -czvf dist.tar.gz dist
-          cd ..
+      # - name: Build front and back end codes
+      #   run: |
+      #     cd client
+      #     cp .env.prod.example .env
+      #     yarn
+      #     yarn build
+      #     tar -czvf build.tar.gz build
+      #     cd ..
+      #     cd server
+      #     yarn
+      #     yarn build
+      #     tar -czvf dist.tar.gz dist
+      #     cd ..
 
       - name: Run Ansible Playbook to deploy
         run: |
