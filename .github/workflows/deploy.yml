@@ -4,7 +4,8 @@ on:
   #workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
-      - feature/ELIPSE-843
+      # - feature/ELIPSE-843
+      - develop
 
 jobs:
   deploy:
@@ -61,7 +62,7 @@ jobs:
           yarn build
           tar -czvf dist.tar.gz dist
           cd ..
-          
+
       - name: Run Ansible Playbook to deploy
         run: |
           ansible-playbook -vvv deploycodes.yml
