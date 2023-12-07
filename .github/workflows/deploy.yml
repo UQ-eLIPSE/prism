@@ -6,10 +6,11 @@ on:
     branches:
       - feature/ELIPSE-843
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest # The type of runner to use
+    container:
+      image: node:20
 
     steps:
       - name: Checkout repository
@@ -38,7 +39,21 @@ jobs:
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
 
-      - name: Run Ansible Playbook
+      - name: Build front and back end codes
+        run: |
+          cd client
+          cp .env.prod.example .env
+          yarn
+          yarn build
+          tar -czvf build.tar.gz build
+          cd ..
+          cd server
+          yarn
+          yarn build
+          tar -czvf dist.tar.gz dist
+          cd ..
+
+      - name: Run Ansible Playbook to deploy
         run: |
           ansible-playbook -vvv deploycodes.yml
         env:
