@@ -45,8 +45,11 @@ jobs:
       - name: Build front and back end codes
         run: |
           cd client
+          echo "Current directory: $(pwd)"
+          echo "Listing files in client directory:"
+          ls -l
+          cp .env.prod.example .env || echo "Failed to copy .env.prod.example"
           yarn
-          cp .env.prod.example .env
           yarn build
           tar -czvf build.tar.gz build
           cd ..
