@@ -12,7 +12,7 @@
 
     - name: Transfer client codes ./build.tar.gz to Zone
       copy:
-        src: client/build.tar.gz # !change this with your own directory
+        src: "{{localdir_client}}build.tar.gz" # !change this with your own directory
         dest: /var/www/client/build.tar.gz
 
     - name: Uncompress the file on the remote server
@@ -25,7 +25,7 @@
 
     - name: Transfer client <env-project>.js file to the zone
       copy:
-        src: "client/{{ env_project }}" # !change this with your own directory
+        src: "{{localdir_client}}{{ env_project }}" # !change this with your own directory
         dest: "/var/www/client/build/{{ env_project }}"
 
     - name: Rename env_example to env.js
@@ -35,12 +35,12 @@
 
     - name: Transfer package.json
       copy:
-        src: server/package.json # !change this with your own directory
+        src: "{{localdir_server}}package.json" # !change this with your own directory
         dest: /opt/server/package.json
 
     - name: Transfer yarn.lock
       copy:
-        src: server/yarn.lock # !change this with your own directory
+        src: "{{localdir_server}}yarn.lock" # !change this with your own directory
         dest: /opt/server/yarn.lock
 
     - name: Remove existing server directory on Zone
@@ -51,7 +51,7 @@
 
     - name: Transfer server codes ./dist.tar.gz to Zone
       copy:
-        src: server/dist.tar.gz # !change this with your own directory
+        src: "{{localdir_server}}dist.tar.gz" # !change this with your own directory
         dest: /opt/server/dist.tar.gz
 
     - name: Uncompress the file on the remote server
