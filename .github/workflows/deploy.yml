@@ -41,14 +41,17 @@ jobs:
           if ! grep -q "mango.eait.uq.edu.au" ~/.ssh/known_hosts; then
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
+      - name: Copy environment file
+        run: |
+          cd client || echo "no such directory client"
+          echo "inside client"
+          cp .env.prod.example .env || echo "Failed to copy .env.prod.example"
+          echo "copied file"
 
       - name: Build front and back end codes
         run: |
-          cd client
-          echo "Current directory: $(pwd)"
-          echo "Listing files in client directory:"
-          ls -l
-          cp .env.prod.example .env || echo "Failed to copy .env.prod.example"
+          cd client || echo "no such directory"
+          echo "inside client"
           yarn
           yarn build
           tar -czvf build.tar.gz build
@@ -58,7 +61,7 @@ jobs:
           yarn build
           tar -czvf dist.tar.gz dist
           cd ..
-
+          
       - name: Run Ansible Playbook to deploy
         run: |
           ansible-playbook -vvv deploycodes.yml
