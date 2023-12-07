@@ -1,0 +1,52 @@
+- hosts: mango
+  tasks:
+    - name: Create Triton instance
+      shell: "triton instance create --name=prism-022 --network=zones webproject z1-standard"
+
+    - name: Set Triton instance tags
+      shell: "triton instance tag set prism-022 'triton.cns.services'='prism-022-UAT' 'ci-deploy'=true"
+
+    - name: SCP project dump to Triton instance
+      shell: "scp -r /home/groups/elipse-projects/Prism/prism_mongodumps/anlb/andrew_liveris_mongodump_2023-11-20 root@prism-022:~/"
+
+- hosts: uatzones
+  tasks:
+    - name: Install n
+      shell: npm install -g n
+
+    - name: upgrade Node to 20
+      shell: n 20
+
+    - name: Enable mongodb
+      shell: "webprojctl enable mongodb"
+
+    - name: Install manta-sync
+      shell: npm install -g manta-sync
+
+    - name: Restore MongoDB database
+      shell: "mongorestore andrew_liveris_mongodump_2023-11-20"
+
+    - name: transfer app service to Zone
+      copy:
+        src: /home/joanna/elipse/ansible_prism/prism.service
+        dest: /etc/systemd/system/prism.service
+
+    - name: transfer nginx conf to Zone
+      copy:
+        src: /home/joanna/elipse/ansible_prism/prism.conf
+        dest: /etc/nginx/frameworks-enabled/prism.conf
+
+    - name: make directory opt/server
+      ansible.builtin.file:
+        path: /opt/server
+        state: directory
+
+    - name: transfer sever .env to Zone
+      copy:
+        src: /home/joanna/elipse/ansible_prism/.env
+        dest: /opt/server/.env
+
+    - name: make directory var/www/client
+      ansible.builtin.file:
+        path: /var/www/client
+        state: directory

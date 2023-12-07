@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  workflow_dispatch: # This allows manual triggering of the workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # The type of runner to use
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2 # This action checks out your repository code
+        with:
+          ref: main # This specifies the branch to checkout
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ecdsa
+          chmod 600 ~/.ssh/id_ecdsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_ecdsa.pub
+          chmod 644 ~/.ssh/id_ecdsa.pub
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Conditionally add SSH key of the remote host to known_hosts
+        run: |
+          mkdir -p ~/.ssh  # Ensure the .ssh directory exists
+          touch ~/.ssh/known_hosts  # Ensure the known_hosts file exists
+          if ! grep -q "mango.eait.uq.edu.au" ~/.ssh/known_hosts; then
+            ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
+          fi
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -vvv deploycodes.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking

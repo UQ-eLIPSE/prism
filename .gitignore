@@ -20,8 +20,8 @@ node_modules
 /dist
 /build
 .env
-build.tar.gz
-dist.tar.gz
+# build.tar.gz
+# dist.tar.gz
 
 /tests/e2e/videos/
 /tests/e2e/screenshots/
