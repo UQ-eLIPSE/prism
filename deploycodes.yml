@@ -5,23 +5,23 @@
     # Client
     - name: cp .env
       command: cp .env.prod.example .env
-        args:
-          chdir: client/
+      args:
+        chdir: client/
 
     - name: install yarn in client
       command: yarn
-        args:
-          chdir: client/
+      args:
+        chdir: client/
     
     - name: build client
       command: yarn build
-        args:
-          chdir: client/
+      args:
+        chdir: client/
     
     - name: compress client
       command: tar -czvf build.tar.gz build
-        args:
-          chdir: client/
+      args:
+        chdir: client/
     
     - name: Remove existing client directory on Zone
       file:
@@ -53,18 +53,18 @@
     # Backend
     - name: install yarn in server
       command: yarn
-        args:
-          chdir: server/
+      args:
+        chdir: server/
     
     - name: build server
       command: yarn build
-        args:
-          chdir: server/
+      args:
+        chdir: server/
     
     - name: compress server
       command: tar -czvf dist.tar.gz dist
-        args:
-          chdir: server/
+      args:
+        chdir: server/
 
     - name: Transfer package.json
       copy:
