@@ -9,8 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest # The type of runner to use
-    container:
-      image: node:20
+    # container:
+    #   image: node:20
 
     steps:
       - name: Checkout repository
@@ -28,8 +28,8 @@ jobs:
 
       - name: Install Ansible
         run: |
-          apt-get update
-          apt-get install -y ansible
+          sudo apt-get update
+          sudo apt-get install -y ansible
 
       - name: Conditionally add SSH key of the remote host to known_hosts
         run: |
