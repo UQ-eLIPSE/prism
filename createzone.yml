@@ -9,8 +9,17 @@
     - name: SCP project dump to Triton instance
       shell: "scp -r /home/groups/elipse-projects/Prism/prism_mongodumps/anlb/andrew_liveris_mongodump_2023-11-20 root@prism-022:~/"
 
-- hosts: uatzones
+- hosts: newuatzones
   tasks:
+    - name: Wait for instance to be ready
+      wait_for:
+        host: "prism-022.zones.eait.uq.edu.au" # TODO: find a way to use variables from last tasks on hosts mango
+        port: 22 # adjust if different
+        state: started
+        timeout: 300 # Adjust numbers of checks = (timeout-delay)/sleep
+        delay: 10 # Delay before first check
+        sleep: 5 # Interval between checks
+
     - name: Install n
       shell: npm install -g n
 
@@ -28,12 +37,12 @@
 
     - name: transfer app service to Zone
       copy:
-        src: /home/joanna/elipse/ansible_prism/prism.service
+        src: /home/joanna/elipse/ansible_prism/prism.service # get the file path from your own
         dest: /etc/systemd/system/prism.service
 
     - name: transfer nginx conf to Zone
       copy:
-        src: /home/joanna/elipse/ansible_prism/prism.conf
+        src: /home/joanna/elipse/ansible_prism/prism.conf # get the file path from your own
         dest: /etc/nginx/frameworks-enabled/prism.conf
 
     - name: make directory opt/server
@@ -43,10 +52,16 @@
 
     - name: transfer sever .env to Zone
       copy:
-        src: /home/joanna/elipse/ansible_prism/.env
+        src: /home/joanna/elipse/ansible_prism/.env # get the file path from your own
         dest: /opt/server/.env
 
     - name: make directory var/www/client
       ansible.builtin.file:
         path: /var/www/client
         state: directory
+
+    #TODO: cd /etc/nginx/conf.d
+    # vim auth.conf
+    # Change to allow public access:
+    # # default             "allow:user:*";
+    #default              "allow:*";

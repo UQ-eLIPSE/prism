@@ -1,5 +1,5 @@
 - name: Deploy React.js and Node.js/Express.js applications
-  hosts: webservers
+  hosts: uatzones
 
   tasks:
     # Client
