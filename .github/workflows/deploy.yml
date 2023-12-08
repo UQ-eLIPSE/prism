@@ -4,7 +4,7 @@ on:
   #workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
-      - develop
+      - feature/ELIPSE-843
 
 jobs:
   deploy:
