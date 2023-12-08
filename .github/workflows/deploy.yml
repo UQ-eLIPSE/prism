@@ -1,10 +1,9 @@
 name: Deploy
 
 on:
-  #workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
-      - feature/ELIPSE-843
+      - develop
 
 jobs:
   deploy:
@@ -14,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2 # This action checks out your repository code
         with:
-          ref: feature/ELIPSE-843 # This specifies the branch to checkout
+          ref: develop # This specifies the branch to checkout
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -41,17 +40,15 @@ jobs:
           if ! grep -q "mango.eait.uq.edu.au" ~/.ssh/known_hosts; then
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
+          
       - name: Copy environment file
         run: |
-          cd client || echo "no such directory client"
-          echo "inside client"
-          cp .env.prod.example .env || echo "Failed to copy .env.prod.example"
-          echo "copied file"
+          cd client
+          cp .env.prod.example .env
 
       - name: Build front and back end codes
         run: |
-          cd client || echo "no such directory"
-          echo "inside client"
+          cd client
           yarn
           yarn build
           tar -czvf build.tar.gz build
