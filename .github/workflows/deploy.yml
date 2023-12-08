@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - develop
+      - feature/ELIPSE-843
 
 jobs:
   deploy:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2 # This action checks out your repository code
         with:
-          ref: develop # This specifies the branch to checkout
+          ref: feature/ELIPSE-843 # This specifies the branch to checkout
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
