@@ -61,6 +61,6 @@ jobs:
 
       - name: Run Ansible Playbook to deploy
         run: |
-          ansible-playbook -vvv deploycodes.yml
+          ansible-playbook -vvv deploy-prism.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking
