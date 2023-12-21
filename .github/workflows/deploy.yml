@@ -2,6 +2,10 @@ name: Deploy
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
+  # push:
+  #   branches:
+  #     - feature/ELIPSE-xxx
+  # TODO: Possibly should have both manual triggering and automatic during git push/merge to any branch 
 
 jobs:
   deploy:
@@ -11,15 +15,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2 # This action checks out your repository code
         with:
-          ref: feature/ELIPSE-843 # This specifies the branch to checkout
+          ref: develop # This specifies the branch to checkout # TODO: could be feature branch/develop/main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
 
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ecdsa
-          chmod 600 ~/.ssh/id_ecdsa
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_ecdsa.pub
-          chmod 644 ~/.ssh/id_ecdsa.pub
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          chmod 644 ~/.ssh/id_rsa.pub
 
       - name: Install Ansible
         run: |
@@ -33,9 +42,27 @@ jobs:
           if ! grep -q "mango.eait.uq.edu.au" ~/.ssh/known_hosts; then
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
-
-      - name: Run Ansible Playbook
+          
+      - name: Copy environment file
         run: |
-          ansible-playbook -vvv deploycodes.yml
+          cd client
+          cp .env.prod.example .env
+
+      - name: Build front and back end codes
+        run: |
+          cd client
+          yarn
+          yarn build
+          tar -czvf build.tar.gz build
+          cd ..
+          cd server
+          yarn
+          yarn build
+          tar -czvf dist.tar.gz dist
+          cd ..
+
+      - name: Run Ansible Playbook to deploy
+        run: |
+          ansible-playbook -vvv deploy-prism.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking

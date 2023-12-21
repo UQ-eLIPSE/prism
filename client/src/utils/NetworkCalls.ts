@@ -29,6 +29,11 @@ export async function fetchWithCredentials(
 }
 
 export default class NetworkCalls {
+  private static window_api_url =
+    window._env_ && window._env_.API_URL
+      ? window._env_.API_URL
+      : process.env.REACT_APP_BASE_URL;
+
   /**
    * This function calls for the /api/login/user/info endpoint to get the current logged in users information
    * Notable information includes:
@@ -37,7 +42,7 @@ export default class NetworkCalls {
    */
   public static async getLoginUserInfo(): Promise<any> {
     const res = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/login/user/info`,
+      `${this.window_api_url}/api/login/user/info`,
     );
     if (!res.ok) {
       const message = `An error has occured: ${res.status}`;
@@ -54,7 +59,7 @@ export default class NetworkCalls {
 
   public static async userTypeInfo(): Promise<any> {
     const res = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/user/type`,
+      `${this.window_api_url}/api/user/type`,
     );
     if (!res.ok) {
       const message = `An error has occured: ${res.status}`;
@@ -74,7 +79,7 @@ export default class NetworkCalls {
     date: Date,
   ): Promise<NodeData[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
+      this.window_api_url +
         `/api/site/${siteId}/survey/details?floor=${floor}&date=${date.toISOString()}
                 `,
       { signal: abortController.signal },
@@ -101,7 +106,7 @@ export default class NetworkCalls {
    */
   public static async getSurveyExistence(siteId: string) {
     const resRaw = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/exists`,
+      this.window_api_url + `/api/site/${siteId}/exists`,
     );
 
     const res: apiResponse = await resRaw.json();
@@ -122,7 +127,7 @@ export default class NetworkCalls {
 
   public static async getFloorSurveyExistence(siteId: string, floor: number) {
     const resRaw = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/${floor}/exists`,
+      this.window_api_url + `/api/site/${siteId}/${floor}/exists`,
     );
 
     const res: apiResponse = await resRaw.json();
@@ -146,7 +151,7 @@ export default class NetworkCalls {
     date?: Date,
   ): Promise<any[]> {
     const resRaw = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
+      this.window_api_url +
         `/api/site/${siteId}/${floorId}/survey/minimapSingleSite${
           date && `?date=${date.toISOString()}`
         }`,
@@ -168,7 +173,7 @@ export default class NetworkCalls {
    */
   public static async getEmptyFloors(siteId: string) {
     const resRaw = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/emptyFloors`,
+      this.window_api_url + `/api/site/${siteId}/emptyFloors`,
     );
     const res: apiResponse = await resRaw.json();
 
@@ -201,7 +206,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/node/coords/${minimapNode}`,
+      `${this.window_api_url}/api/node/coords/${minimapNode}`,
       req,
     );
     const res = await resRaw.json();
@@ -231,7 +236,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/node/rotation/${minimapNode}`,
+      `${this.window_api_url}/api/node/rotation/${minimapNode}`,
       req,
     );
     const res = await resRaw.json();
@@ -248,7 +253,7 @@ export default class NetworkCalls {
     floor?: number,
   ): Promise<any[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
+      this.window_api_url +
         `/api/site/${siteId}/survey/details/compact${
           floor ? `?floor=${floor}` : ""
         }`,
@@ -315,8 +320,7 @@ export default class NetworkCalls {
     siteId: number,
   ): Promise<any[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
-        `/api/site/${siteId}/survey/details/compact`,
+      this.window_api_url + `/api/site/${siteId}/survey/details/compact`,
       {
         signal: abortController.signal,
       },
@@ -380,7 +384,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<HotspotDescription[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
+      this.window_api_url +
         `/api/site/${siteId}/hotspot/details?tilesId=${tilesId}`,
       {
         signal: abortController.signal,
@@ -408,7 +412,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<MinimapReturn> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
+      this.window_api_url +
         `/api/site/${siteId}/minimap/details?floor=${floor}`,
       {
         signal: abortController.signal,
@@ -442,7 +446,7 @@ export default class NetworkCalls {
 
   public static async fetchFloors(siteId: string): Promise<string> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/minimap/floors`,
+      this.window_api_url + `/api/site/${siteId}/minimap/floors`,
     );
     const data: { success: boolean; payload: any } = await res.json();
 
@@ -463,8 +467,7 @@ export default class NetworkCalls {
     floor: number,
   ): Promise<string> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL +
-        `/api/site/${siteId}/minimap/newFloor/${floor}`,
+      this.window_api_url + `/api/site/${siteId}/minimap/newFloor/${floor}`,
     );
     const data: { success: boolean; payload: any } = await res.json();
 
@@ -496,7 +499,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/site/${siteId}/minimap`,
+      `${this.window_api_url}/api/site/${siteId}/minimap`,
       req,
     );
 
@@ -514,7 +517,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<any[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/files/details?_id=${id}`,
+      this.window_api_url + `/api/files/details?_id=${id}`,
       {
         signal: abortController.signal,
       },
@@ -537,7 +540,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<any[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/files`,
+      this.window_api_url + `/api/site/${siteId}/files`,
       {
         signal: abortController.signal,
       },
@@ -556,7 +559,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<any[]> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/directories/details?_id=${id}`,
+      this.window_api_url + `/api/directories/details?_id=${id}`,
       {
         signal: abortController.signal,
       },
@@ -581,9 +584,8 @@ export default class NetworkCalls {
   ): Promise<any[]> {
     const res = await fetchWithCredentials(
       directoryName === undefined
-        ? process.env.REACT_APP_BASE_URL +
-            `/api/site/${siteId}/directories/root`
-        : process.env.REACT_APP_BASE_URL +
+        ? this.window_api_url + `/api/site/${siteId}/directories/root`
+        : this.window_api_url +
             `/api/site/${siteId}/directories/details?name=${directoryName}`,
       { signal: abortController.signal },
     );
@@ -600,7 +602,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<any> {
     const res = await fetchWithCredentials(
-      process.env.REACT_APP_BASE_URL + `/api/site/${siteId}/about`,
+      this.window_api_url + `/api/site/${siteId}/about`,
       {
         signal: abortController.signal,
       },
@@ -616,7 +618,7 @@ export default class NetworkCalls {
    */
   public static async deleteSitePin(siteId: string): Promise<any[]> {
     const res = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/map-pins/${siteId}`,
+      `${this.window_api_url}/api/map-pins/${siteId}`,
       {
         method: "DELETE",
       },
@@ -643,7 +645,7 @@ export default class NetworkCalls {
       body: JSON.stringify(newPin),
     };
     const res = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/map-pins/${newPin._id}`,
+      `${this.window_api_url}/api/map-pins/${newPin._id}`,
       req,
     );
     const data: apiResponse = await res.json();
@@ -662,7 +664,7 @@ export default class NetworkCalls {
     abortController: AbortController,
   ): Promise<any> {
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/map-pins`,
+      `${this.window_api_url}/api/map-pins`,
       {
         signal: abortController.signal,
       },
@@ -710,7 +712,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/map-pins`,
+      `${this.window_api_url}/api/map-pins`,
       req,
     );
     const res: apiResponse = await resRaw.json();
@@ -745,7 +747,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/map-pins/${pin._id}`,
+      `${this.window_api_url}/api/map-pins/${pin._id}`,
       req,
     );
     const res = await resRaw.json();
@@ -771,7 +773,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/map-pins/preview`,
+      `${this.window_api_url}/api/map-pins/preview`,
       req,
     );
     const res = await resRaw.json();
@@ -801,7 +803,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/site/${siteId}/sitemap?floor=${
+      `${this.window_api_url}/api/site/${siteId}/sitemap?floor=${
         floor ? `${floor}` : "0"
       }`,
       req,
@@ -837,7 +839,7 @@ export default class NetworkCalls {
       body: formData,
     };
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/site/${siteId}/${
+      `${this.window_api_url}/api/site/${siteId}/${
         floorId === -1 ? 0 : floorId
       }/addScenes`,
       req,
@@ -851,7 +853,7 @@ export default class NetworkCalls {
 
     if (floorId === -1) {
       const resAddFloorRaw = await fetchWithCredentials(
-        `${process.env.REACT_APP_BASE_URL}/api/site/${siteId}/minimap/newFloor/0`,
+        `${this.window_api_url}/api/site/${siteId}/minimap/newFloor/0`,
       );
       const resAddFloor = await resAddFloorRaw.json();
 
@@ -871,7 +873,7 @@ export default class NetworkCalls {
    */
   public static async getFullSiteSettings() {
     const response = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/settings`,
+      `${this.window_api_url}/api/settings`,
     );
 
     const responseJson = response.json();
@@ -884,7 +886,7 @@ export default class NetworkCalls {
    */
   public static async getFullSites() {
     const response = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/sites`,
+      `${this.window_api_url}/api/sites`,
     );
 
     const responseJson = response.json();
@@ -899,7 +901,7 @@ export default class NetworkCalls {
   public static async getFloors(siteId: string, date: Date) {
     const res = await fetchWithCredentials(
       `${
-        process.env.REACT_APP_BASE_URL
+        this.window_api_url
       }/api/site/${siteId}/survey/details/compact?date=${date.toISOString()}`,
       {},
     );
@@ -916,7 +918,7 @@ export default class NetworkCalls {
    */
   public static async getSiteMap(sitemapName?: string) {
     const res = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/site-map/${
+      `${this.window_api_url}/api/site-map/${
         sitemapName ? encodeURIComponent(sitemapName) : "default"
       }`,
     );
@@ -941,7 +943,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${process.env.REACT_APP_BASE_URL}/api/create-site-map`,
+      `${this.window_api_url}/api/create-site-map`,
       req,
     );
     const res: apiResponse = await resRaw.json();

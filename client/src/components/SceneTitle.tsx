@@ -47,7 +47,9 @@ const SceneTitle: React.FC<SceneTitleProps> = ({ siteId, mode, floor }) => {
   useEffect(() => {
     const getMapPins = async () => {
       const reqRaw = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/map-pins`,
+        `${
+          window._env_ ? window._env_.API_URL : process.env.REACT_APP_BASE_URL
+        }/api/map-pins`,
       );
       const req = await reqRaw.json();
       if (req.success) {
