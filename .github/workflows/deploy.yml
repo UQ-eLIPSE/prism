@@ -1,9 +1,11 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - feature/ELIPSE-843
+  workflow_dispatch: # This allows manual triggering of the workflow
+  # push:
+  #   branches:
+  #     - feature/ELIPSE-xxx
+  # TODO: Possibly should have both manual triggering and automatic during git push/merge to any branch 
 
 jobs:
   deploy:
@@ -13,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2 # This action checks out your repository code
         with:
-          ref: feature/ELIPSE-843 # This specifies the branch to checkout
+          ref: develop # This specifies the branch to checkout # TODO: could be feature branch/develop/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
