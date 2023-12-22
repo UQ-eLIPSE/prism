@@ -1,0 +1,99 @@
+- name: Mango
+  hosts: mango
+  tasks:
+    - name: Check if already deployed
+      debug:
+        msg: "Host {{ inventory_hostname }} is already deployed."
+      when: hostvars[inventory_hostname]['deployed'] | default(false) | bool
+
+    - name: End play if already deployed
+      meta: end_host
+      when: hostvars[inventory_hostname]['deployed'] | default(false) | bool
+
+    - name: Check, Create and Report triton instance status and tags
+      shell: |
+        if ! triton instance get {{ zone }}; then
+          echo "Triton instance does not exist, creating..."
+          triton instance create --name={{ zone }} --network=zones webproject z1-standard
+          echo "Triton instance created."
+          # triton instance tag set {{ zone }} {{ tags }}
+          # echo "Triton instance tags set."
+        else
+          echo "Triton instance already exists."
+        fi
+
+    - name: Wait for instance to be ready
+      wait_for:
+        host: "{{ zone }}.zones.eait.uq.edu.au"
+        port: 22 # adjust if different
+        state: started
+        timeout: 300 # Adjust numbers of checks = (timeout-delay)/sleep
+        delay: 10 # Delay before first check
+        sleep: 10 # Interval between checks
+
+    - name: SCP project dump to Triton instance
+      shell: "scp -o StrictHostKeyChecking=no -r {{ mongodump }} root@{{ zone }}.zones.eait.uq.edu.au:~/"
+
+- name: UAT zone
+  hosts: newuatzone
+  tasks:
+    - name: Check if already deployed
+      debug:
+        msg: "Host {{ inventory_hostname }} is already deployed."
+      when: hostvars[inventory_hostname]['deployed'] | default(false) | bool
+
+    - name: End play if already deployed
+      meta: end_host
+      when: hostvars[inventory_hostname]['deployed'] | default(false) | bool
+
+    - name: Install n
+      shell: npm install -g n
+
+    - name: upgrade Node to 20
+      shell: n 20
+
+    - name: Enable mongodb
+      shell: "webprojctl enable mongodb"
+
+    - name: Install manta-sync
+      shell: npm install -g manta-sync
+
+    - name: Restore MongoDB database
+      shell: "mongorestore {{ mongo_restore_dir }}"
+
+    - name: transfer app service to Zone
+      copy:
+        src: deployment/prism.service
+        dest: /etc/systemd/system/prism.service
+
+    - name: transfer nginx conf to Zone
+      copy:
+        src: deployment/prism.conf
+        dest: /etc/nginx/frameworks-enabled/prism.conf
+
+    - name: make directory opt/server
+      ansible.builtin.file:
+        path: /opt/server
+        state: directory
+
+    - name: transfer sever .env to Zone
+      copy:
+        src: deployment/{{ env }}
+        dest: /opt/server/.env
+
+    - name: make directory var/www/client
+      ansible.builtin.file:
+        path: /var/www/client
+        state: directory
+
+    - name: Comment out the default 'allow:user:*'
+      ansible.builtin.replace:
+        path: /etc/nginx/conf.d/auth.conf
+        regexp: '^(\s*)default(\s+)"allow:user:\*";'
+        replace: '\1#default\2"allow:user:*";'
+
+    - name: Uncomment 'default "allow:*"'
+      ansible.builtin.replace:
+        path: /etc/nginx/conf.d/auth.conf
+        regexp: '#\s*default(\s+)"allow:\*";'
+        replace: 'default\1"allow:*";'

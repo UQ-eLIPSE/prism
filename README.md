@@ -157,3 +157,18 @@ is prettied
   - AUTH_HOST - the zone site name (e.g 'prism-{tag}.uqcloud.net')
 
 Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
+
+## Creating a new PRISM UAT zone with Ansible
+
+Configure inventory.ini with new UAT zone in newuatzone and then run playbook.
+
+`ansible-playbook create-prism-zone.yml`
+
+If zone was created and deleted earlier then scp command in playbook could give warning
+`WARNING: POSSIBLE DNS SPOOFING DETECTED!`
+
+The solution to this is to remove the host from known hosts in mango
+`ssh-keygen -R prism-xxx.zones.eait.uq.edu.au`
+
+Once PRISM is deployed to the new UAT zone then update inventory.ini for the host as deployed
+`deployed=true`
