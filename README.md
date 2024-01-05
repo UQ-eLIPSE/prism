@@ -157,3 +157,39 @@ is prettied
   - AUTH_HOST - the zone site name (e.g 'prism-{tag}.uqcloud.net')
 
 Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
+
+## Deploying changes to PRISM UAT zone with Ansible
+
+Install ansible and run playbook.
+
+**Ubuntu**
+```bash
+sudo apt update
+sudo apt install ansible
+```
+
+**MacOS**
+
+`brew install ansible`
+
+**pip**
+
+`pip install ansible`
+
+To test site accessibility run
+
+`ansible all -m ping -i inventory.ini`
+
+or
+
+`ansible <server-group-name> -m ping -i inventory.ini`
+
+To deploy PRISM run ansible-playbook
+
+`export PROXY_JUMP_USER=<UQuser>@mango.eait.uq.edu.au`
+
+`ansible-playbook deploy-prism.yml`
+
+If need to build and compress in tar.gz file
+
+`ansible-playbook deploy-prism.yml --extra-vars "generate_compressed_build=true"`

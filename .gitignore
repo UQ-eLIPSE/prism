@@ -47,4 +47,6 @@ data
 *.sw?
 # ignore cypress screenshot
 atdd/cypress/screenshots/
-yarn.lock
+client/yarn.lock
+client/build.tar.gz
+server/dist.tar.gz
