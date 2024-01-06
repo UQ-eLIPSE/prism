@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2 # This action checks out your repository code
         with:
-          ref: develop # This specifies the branch to checkout # TODO: could be feature branch/develop/main
+          ref: feature/ELIPSE-866 # This specifies the branch to checkout # TODO: could be feature branch/develop/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -29,6 +29,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
           chmod 644 ~/.ssh/id_rsa.pub
+          if [ -n "${{ secrets.PROXY_JUMP_USER }}" ]; then
+            export PROXY_JUMP_USER="${{ secrets.PROXY_JUMP_USER }}"
+          fi
 
       - name: Install Ansible
         run: |
@@ -50,19 +53,22 @@ jobs:
 
       - name: Build front and back end codes
         run: |
-          cd client
-          yarn
-          yarn build
-          tar -czvf build.tar.gz build
-          cd ..
-          cd server
-          yarn
-          yarn build
-          tar -czvf dist.tar.gz dist
-          cd ..
+          (
+            cd client
+            yarn
+            yarn build
+            tar -czvf build.tar.gz build
+          ) &
+          (
+            cd server
+            yarn
+            yarn build
+            tar -czvf dist.tar.gz dist
+          ) &
+          wait
 
       - name: Run Ansible Playbook to deploy
         run: |
-          ansible-playbook -vvv deploy-prism.yml
+          ansible-playbook deploy-prism.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking
