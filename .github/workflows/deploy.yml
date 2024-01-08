@@ -2,10 +2,11 @@ name: Deploy
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
-  # push:
-  #   branches:
-  #     - feature/ELIPSE-xxx
-  # TODO: Possibly should have both manual triggering and automatic during git push/merge to any branch 
+  push:
+    branches:
+      - feature/ELIPSE-866
+  #   - feature/ELIPSE-xxx
+  #   - develop
 
 jobs:
   deploy:
