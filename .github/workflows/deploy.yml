@@ -2,9 +2,8 @@ name: Deploy
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
-  push:
-    branches:
-      - feature/ELIPSE-866
+  # push:
+  #  branches:
   #   - feature/ELIPSE-xxx
   #   - develop
 
