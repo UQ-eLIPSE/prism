@@ -16,8 +16,8 @@
           echo "Triton instance does not exist, creating..."
           triton instance create --name={{ zone }} --network=zones webproject z1-standard
           echo "Triton instance created."
-          # triton instance tag set {{ zone }} {{ tags }}
-          # echo "Triton instance tags set."
+          triton instance tag set {{ zone }} {{ tags }}
+          echo "Triton instance tags set."
         else
           echo "Triton instance already exists."
         fi

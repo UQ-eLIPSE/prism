@@ -160,9 +160,11 @@ Make sure before running this server, you have the `prism-tst-id_rsa` key in the
 
 ## Creating a new PRISM UAT zone with Ansible
 
-Configure inventory.ini with new UAT zone in newuatzone and then run playbook.
+First configure inventory.ini with new UAT zone in both mango and newuatzone.
+In other words replace prism-023 with the new instance prism-xxx to be created.
+Set deployed=false in both mango and newuatzone and then run playbook.
 
-`ansible-playbook create-prism-zone.yml`
+`ansible-playbook -i inventory/create_prism_zone/inventory.ini create-prism-zone.yml`
 
 If zone was created and deleted earlier then scp command in playbook could give warning
 `WARNING: POSSIBLE DNS SPOOFING DETECTED!`
