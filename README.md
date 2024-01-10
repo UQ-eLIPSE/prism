@@ -163,6 +163,9 @@ Make sure before running this server, you have the `prism-tst-id_rsa` key in the
 First configure inventory.ini with new UAT zone in both mango and newuatzone.
 In other words replace prism-023 with the new instance prism-xxx to be created.
 Set deployed=false in both mango and newuatzone sections to ensure a controlled deployment and then run playbook.
+Controlled deployment prevents immediate changes to the active environment. 
+This deliberate step allows deployment users to review and validate configurations before applying them, minimizing the risk of unintended disruptions.
+The flag is initially set to false to prioritize cautious deployment particularly in production or UAT environments.
 
 `ansible-playbook -i inventory/create_prism_zone/inventory.ini create-prism-zone.yml`
 
