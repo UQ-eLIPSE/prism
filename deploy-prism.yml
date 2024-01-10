@@ -1,91 +1,138 @@
+# Overview:
+# Deploys React.js and Node.js/Express.js apps to 'uatzones' servers.
+# Major Steps:
+# 1. Client Setup: Remove, build, and transfer React app.
+# 2. Server Setup: Build, transfer Node.js app, handle dependencies.
+# 3. Nginx: Configure and restart Nginx, start Node.js service.
+
+# To Run:
+# ansible-playbook -i </path/to/inventory> -l uatzones/<host>/<host1,host2..> <playbook>.yml
+
 - name: Deploy React.js and Node.js/Express.js applications
   hosts: uatzones
+  any_errors_fatal: true
 
   tasks:
-    # Client
+    - name: Check if zone directories exist
+      stat:
+        path: "{{ item }}"
+      register: zone_check
+      with_items:
+        - "/var/www/client/build"
+        - "/opt/server/dist"
 
-    - name: Remove existing client directory on Zone
-      file:
-        path: /var/www/client/build
-        state: absent
-      become: yes
+    - name: Create Prism
+      block:
+        - name: Create Prism (if zone doesn't exist or update flag is provided)
+          file:
+            path: /var/www/client/build
+            state: absent
+          become: yes
 
-    - name: Transfer client codes ./build.tar.gz to Zone
-      copy:
-        src: "{{localdir_client}}build.tar.gz" # !change this with your own directory
-        dest: /var/www/client/build.tar.gz
+        - name: Build client
+          shell: |
+            cd {{ localdir_client }} && \
+            yarn && \
+            yarn build && \
+            tar -czvf build.tar.gz build && \
+            cd ..
+          when: generate_compressed_build | default(false) | bool
+          delegate_to: localhost
+          run_once: true
 
-    - name: Uncompress the file on the remote server
-      command: tar -xzf /var/www/client/build.tar.gz -C /var/www/client/
+        - name: Transfer client codes ./build.tar.gz to Zone
+          copy:
+            src: "{{ localdir_client }}build.tar.gz"
+            dest: /var/www/client/build.tar.gz
 
-    - name: Remove the compressed file from the remote server
-      file:
-        path: /var/www/client/build.tar.gz
-        state: absent
+        - name: Uncompress the file on the remote server
+          command: tar -xzf /var/www/client/build.tar.gz -C /var/www/client/
 
-    - name: Transfer client <env-project>.js file to the zone
-      copy:
-        src: "{{localdir_client}}{{ env_project }}" # !change this with your own directory
-        dest: "/var/www/client/build/{{ env_project }}"
+        - name: Remove the compressed file from the remote server
+          file:
+            path: /var/www/client/build.tar.gz
+            state: absent
 
-    - name: Rename env_example to env.js
-      command: mv "/var/www/client/build/{{ env_project }}" /var/www/client/build/env.js
+        - name: Transfer client <env-project>.js file to the zone
+          copy:
+            src: "{{ localdir_client }}{{ env_project }}"
+            dest: "/var/www/client/build/{{ env_project }}"
 
-    # Backend
+        - name: Rename env_example to env.js
+          command: mv "/var/www/client/build/{{ env_project }}" /var/www/client/build/env.js
 
-    - name: Transfer package.json
-      copy:
-        src: "{{localdir_server}}package.json" # !change this with your own directory
-        dest: /opt/server/package.json
+        # Backend
 
-    - name: Transfer yarn.lock
-      copy:
-        src: "{{localdir_server}}yarn.lock" # !change this with your own directory
-        dest: /opt/server/yarn.lock
+        - name: Build server
+          shell: |
+            cd {{ localdir_server }} && \
+            yarn && \
+            yarn build && \
+            tar -czvf dist.tar.gz dist && \
+            cd ..
+          when: generate_compressed_build | default(false) | bool
+          delegate_to: localhost
+          run_once: true
 
-    - name: Remove existing server directory on Zone
-      file:
-        path: /opt/server/dist
-        state: absent
-      become: yes
+        - name: Transfer package.json
+          copy:
+            src: "{{ localdir_server }}package.json"
+            dest: /opt/server/package.json
 
-    - name: Transfer server codes ./dist.tar.gz to Zone
-      copy:
-        src: "{{localdir_server}}dist.tar.gz" # !change this with your own directory
-        dest: /opt/server/dist.tar.gz
+        - name: Transfer yarn.lock
+          copy:
+            src: "{{ localdir_server }}yarn.lock"
+            dest: /opt/server/yarn.lock
 
-    - name: Uncompress the file on the remote server
-      command: tar -xzf /opt/server/dist.tar.gz -C /opt/server/
+        - name: Remove existing server directory on Zone
+          file:
+            path: /opt/server/dist
+            state: absent
+          become: yes
 
-    - name: Remove the compressed file from the remote server
-      file:
-        path: /opt/server/dist.tar.gz
-        state: absent
+        - name: Transfer server codes ./dist.tar.gz to Zone
+          copy:
+            src: "{{ localdir_server }}dist.tar.gz"
+            dest: /opt/server/dist.tar.gz
 
-    - name: Copy exist env. to dist # TODO: introduce stat to check .env exist or not
-      command:
-        cmd: cp /opt/server/.env /opt/server/dist/.env
+        - name: Uncompress the file on the remote server
+          command: tar -xzf /opt/server/dist.tar.gz -C /opt/server/
 
-    - name: Install node modules using Yarn
-      command: yarn install
-      args:
-        chdir: /opt/server/
+        - name: Remove the compressed file from the remote server
+          file:
+            path: /opt/server/dist.tar.gz
+            state: absent
 
-    # Start server
-    - name: Enable and start prism service
-      systemd:
-        name: prism
-        enabled: yes
-        state: started
-      become: yes
+        - name: Copy existing env. to dist # TODO: introduce stat to check .env exist or not
+          command:
+            cmd: cp /opt/server/.env /opt/server/dist/.env
 
-    - name: Check Nginx configuration
-      command: nginx -t
-      register: nginx_test
-      ignore_errors: yes
-      become: yes
+        - name: Install node modules using Yarn
+          command: yarn install
+          args:
+            chdir: /opt/server/
 
-    - name: Fail if Nginx configuration test fails
-      fail:
-        msg: "Nginx configuration test failed"
-      when: nginx_test.rc != 0
+        # Start server
+        - name: Enable and start prism service
+          systemd:
+            name: prism
+            enabled: yes
+            state: started
+          become: yes
+
+        - name: Check Nginx configuration
+          command: nginx -t
+          register: nginx_test
+          ignore_errors: yes
+          become: yes
+
+        - name: Fail if Nginx configuration test fails
+          fail:
+            msg: "Nginx configuration test failed"
+          when: nginx_test.rc != 0
+
+        - name: Restart Nginx service
+          systemd:
+            name: nginx
+            state: restarted
+      when: not zone_check.results[0].stat.exists or update_prism | default(false) | bool

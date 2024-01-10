@@ -85,7 +85,16 @@ build_and_run() {
     build_flag=""
     [[ "$build_option" =~ ^[yY]$ ]] && build_flag="--build"
     COMPOSE_HTTP_TIMEOUT=500
-    sudo docker-compose -f ./server/docker-compose-server.yml up -d $build_flag
+
+    # Run Docker Compose without sudo
+    docker-compose -f ./server/docker-compose-server.yml up -d $build_flag
+
+    # Check the exit status of the previous command
+    if [ $? -ne 0 ]; then
+        # If the previous command failed, run with sudo
+        sudo docker-compose -f ./server/docker-compose-server.yml up -d $build_flag
+    fi
+
     restore_data
     echo "Container successfully running in the background. You can:"
     echo "1) Check its status with command: docker ps"

@@ -177,3 +177,57 @@ The solution to this is to remove the host from known hosts in mango
 
 Once PRISM is deployed to the new UAT zone then update inventory.ini for the host as deployed
 `deployed=true`
+
+## Deploying changes to PRISM UAT zone with Ansible
+
+Install ansible and run playbook.
+
+**Ubuntu**
+```bash
+sudo apt update
+sudo apt install ansible
+```
+
+**MacOS**
+
+`brew install ansible`
+
+**pip**
+
+`pip install ansible`
+
+To test site accessibility run
+
+`ansible all -m ping -i inventory/deploy/inventory.ini`
+
+or
+
+`ansible <server-group-name> -m ping -i inventory/deploy/inventory.ini`
+
+**Running ansible-playbook**
+
+To deploy PRISM on all uatzones
+
+`export PROXY_JUMP_USER=<UQuser>@mango.eait.uq.edu.au`
+
+`ansible-playbook -i inventory/deploy/inventory.ini deploy-prism.yml`
+
+To deploy PRISM on 1 or more uatzones
+
+`ansible-playbook -i inventory/deploy/inventory.ini -l prism-023.zones.eait.uq.edu.au deploy-prism.yml`
+
+`ansible-playbook -i inventory/deploy/inventory.ini -l prism-021.zones.eait.uq.edu.au,prism-023.zones.eait.uq.edu.au deploy-prism.yml`
+
+`ansible-playbook -i inventory/deploy/inventory.ini -l 'prism-02[13]*.zones.eait.uq.edu.au' deploy-prism.yml`
+
+To re-deploy PRISM with any updates
+
+`ansible-playbook -i inventory/deploy/inventory.ini -l prism-023.zones.eait.uq.edu.au deploy-prism.yml -e 'update_prism=true'`
+
+If need to build and compress in tar.gz file
+
+`ansible-playbook -i inventory/deploy/inventory.ini deploy-prism.yml -e "generate_compressed_build=true"`
+
+If need to build and compress in tar.gz file as well as re-deploy PRISM with any updates
+
+`ansible-playbook -i inventory/deploy/inventory.ini -l prism-023.zones.eait.uq.edu.au deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'`
