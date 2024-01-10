@@ -1,0 +1,17 @@
+[Unit]
+Description=Prism Server
+After=mongodb.service
+
+[Service]
+Type=simple
+User=root
+Environment=PORT=8000
+# Replace with the actual directory
+WorkingDirectory=/opt/server
+ExecStart=/usr/bin/node ./dist/main.js
+# Theoretically keeps trying indefinitely
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
