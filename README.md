@@ -158,6 +158,26 @@ is prettied
 
 Make sure before running this server, you have the `prism-tst-id_rsa` key in the `tmp/` folder in order to use the Manta functionality. The key can be found on Lastpass.
 
+## Creating a new PRISM UAT zone with Ansible
+
+First configure inventory.ini with new UAT zone in both mango and newuatzone.
+In other words replace prism-023 with the new instance prism-xxx to be created.
+Set deployed=false in both mango and newuatzone sections to ensure a controlled deployment and then run playbook.
+Controlled deployment prevents immediate changes to the active environment. 
+This deliberate step allows deployment users to review and validate configurations before applying them, minimizing the risk of unintended disruptions.
+The flag is initially set to false to prioritize cautious deployment particularly in production or UAT environments.
+
+`ansible-playbook -i inventory/create_prism_zone/inventory.ini create-prism-zone.yml`
+
+If zone was created and deleted earlier then scp command in playbook could give warning
+`WARNING: POSSIBLE DNS SPOOFING DETECTED!`
+
+The solution to this is to remove the host from known hosts in mango
+`ssh-keygen -R prism-xxx.zones.eait.uq.edu.au`
+
+Once PRISM is deployed to the new UAT zone then update inventory.ini for the host as deployed
+`deployed=true`
+
 ## Deploying changes to PRISM UAT zone with Ansible
 
 Install ansible and run playbook.
