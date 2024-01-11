@@ -610,16 +610,21 @@ export abstract class SurveyService {
       const saveMiniMap = await MinimapImages.findOneAndUpdate(
         { floor, site: site._id },
         {
-          image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-          image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
-          img_width: ImageSize(file.path).width,
-          img_height: ImageSize(file.path).height,
-          x_scale: 1,
-          y_scale: 1,
-          xy_flipped: false,
-          x_pixel_offset: 0,
-          y_pixel_offset: 0,
+          $set: {
+            image_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            image_large_url: `${MANTA_HOST_NAME}${MANTA_ROOT_FOLDER}/${file.filename}`,
+            img_width: ImageSize(file.path).width,
+            img_height: ImageSize(file.path).height,
+          },
+          $setOnInsert: {
+            x_scale: 1,
+            y_scale: 1,
+            xy_flipped: false,
+            x_pixel_offset: 0,
+            y_pixel_offset: 0,
+          },
         },
+        { upsert: true, new: true },
       );
 
       if (!saveMiniMap) throw new Error("Mini Map Cannot Be Saved");

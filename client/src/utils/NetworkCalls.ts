@@ -499,7 +499,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${this.window_api_url}/api/site/${siteId}/minimap`,
+      `${this.window_api_url}/api/site/${siteId}/sitemap`,
       req,
     );
 
@@ -803,7 +803,7 @@ export default class NetworkCalls {
     };
 
     const resRaw = await fetchWithCredentials(
-      `${this.window_api_url}/api/site/${siteId}/sitemap?floor=${
+      `${this.window_api_url}/api/site/${siteId}/minimap?floor=${
         floor ? `${floor}` : "0"
       }`,
       req,

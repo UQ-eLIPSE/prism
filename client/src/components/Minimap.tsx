@@ -473,6 +473,7 @@ function Minimap(props: Readonly<object> | any) {
                   {!props.minimapShown && <p>Floor Name</p>}
                   <input
                     value={floorName}
+                    data-cy="floor-name-input"
                     onChange={(e) => {
                       setFloorName(e.target.value);
                       if (
@@ -495,6 +496,7 @@ function Minimap(props: Readonly<object> | any) {
                   {!props.minimapShown && <p>Tag</p>}
                   <input
                     value={floorTag}
+                    data-cy="floor-tag-input"
                     onChange={(e) => {
                       if (e.target.value.length < 3) {
                         setFloorTag(e.target.value);
@@ -670,7 +672,10 @@ function Minimap(props: Readonly<object> | any) {
                       }
                     }}
                   />
-                  <label htmlFor="select-image">
+                  <label
+                    htmlFor="select-image"
+                    data-cy="upload-minimap-img-label"
+                  >
                     {imageUrl ? "Update" : "Upload"} Minimap
                   </label>
                 </div>
