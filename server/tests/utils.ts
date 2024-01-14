@@ -1,4 +1,10 @@
-// Maximum Connection Time for Request
+/**
+ * Fetches a URL with a timeout.
+ * If the request takes longer than the specified timeout period, it gets rejected with a timeout error.
+ *
+ * @param {string} input - The URL to fetch.
+ * @returns {Promise<Response>} - A promise that resolves to the response of the fetch request.
+ */
 const timeOutMillis = 120 * 1000;
 async function fetchWithTimeout(input: string): Promise<Response> {
   return (await Promise.race([
@@ -10,6 +16,17 @@ async function fetchWithTimeout(input: string): Promise<Response> {
 }
 
 // ValidateURL
+/**
+ * Validates the HTTP response status of a given URL. It checks if the URL
+ * returns any unacceptable error statuses (e.g., 404) or network errors
+ * If the URL encounters any of these issues, the function returns false,
+ * indicating an invalid or problematic URL. Otherwise, it returns true.
+ *
+ * @param {string} input - The URL to be validated.
+ * @returns {Promise<boolean>} - A promise that resolves to `true` if the URL
+ * response is acceptable, or `false` if the URL encounters unacceptable
+ * errors or statuses.
+ */
 export const validateURLResponse = async (input: string) => {
   try {
     const response = await fetchWithTimeout(input);

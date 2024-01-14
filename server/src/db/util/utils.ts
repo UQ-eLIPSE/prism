@@ -29,7 +29,17 @@ async function fetchWithTimeout(input: string): Promise<Response> {
   ])) as Response;
 }
 
-// ValidateURL
+/**
+ * Validates the HTTP response of a given URL. This function uses the
+ * `fetchWithTimeout` function to send a request to the URL and then checks
+ * the response status. If the status is within the unacceptable range (e.g., 404),
+ * or if network-related errors occur (e.g., ENOTFOUND, UNABLE_TO_VERIFY_LEAF_SIGNATURE,
+ * or a timeout), it logs the error and records it in a CSV file.
+ *
+ * @param {string} input - The URL to be validated.
+ * @returns {Promise<boolean>} - A promise that resolves to `false` if the URL
+ *   encounters unacceptable errors or statuses, and `true` otherwise.
+ */
 export const validateURLResponse = async (input: string) => {
   try {
     const response = await fetchWithTimeout(input);

@@ -1,12 +1,19 @@
 import { MongoClient, Collection } from "mongodb";
 import { validateURLResponse } from "./utils";
 
-interface Resource {
+interface LinkResource {
   manta_link: string;
   tiles_id: string;
 }
 
-// Test main Function
+/**
+ * Tests the links contained within a collection of resources, which retrieves from the given MongoDB collection,
+ * constructs a URL from its `manta_link` and `tiles_id` fields,
+ * validates this URL using the `validateURLResponse` function.
+ * @param {Collection} resourceCollection - The MongoDB collection containing
+ *   the resource documents to be tested. Each document should have `manta_link`
+ *   and `tiles_id` fields.
+ */
 const testResourcesLinks = async (resourceCollection: Collection) => {
   const resources = (
     await resourceCollection
@@ -15,7 +22,7 @@ const testResourcesLinks = async (resourceCollection: Collection) => {
   ).map((doc) => ({
     manta_link: doc.manta_link,
     tiles_id: doc.tiles_id,
-  })) as Resource[];
+  })) as LinkResource[];
 
   const resourceLinkVerification = resources.map(async (resource) => {
     const concatenatedLink = `${resource.manta_link}${resource.tiles_id}`;
@@ -26,10 +33,10 @@ const testResourcesLinks = async (resourceCollection: Collection) => {
   console.info("\u2713 Broken links step: Resources");
 };
 
-//Run Main function
+//Connect MongDB and Run Main function: testResourcesLinks
 const runUrlLinkValidator = async () => {
   // Connect to database TODO: implement Anisble Variable: DATABASE_URL to this Script
-  const databaseUrl = "mongodb://localhost:27017/urban_water";
+  const databaseUrl = "mongodb://localhost:27017";
   const databaseName = "urban_water";
   const client = new MongoClient(databaseUrl);
   await client.connect();
