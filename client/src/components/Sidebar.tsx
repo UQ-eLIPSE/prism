@@ -75,12 +75,12 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     //   text: "Media",
     //   dataCy: "sb-media",
     // };
-    const homeLink = {
-      link: "/",
-      icon: "fas fa-map-marked-alt fa-2x",
-      text: "Home",
-      dataCy: "sb-home",
-    };
+    // const homeLink = {
+    //   link: "/",
+    //   icon: "fas fa-map-marked-alt fa-2x",
+    //   text: "Home",
+    //   dataCy: "sb-home",
+    // };
 
     const aboutLink = {
       link: "/about",
@@ -107,8 +107,8 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
 
     // If the user is an admin then enable addScene link
     process.env.REACT_APP_USE_SSO === "false" || user?.isAdmin
-      ? createLinks.push(homeLink, siteLink, addScene)
-      : createLinks.push(homeLink, siteLink);
+      ? createLinks.push(siteLink, addScene)
+      : createLinks.push(siteLink);
 
     props.config &&
       props.config.enable.documentation &&
@@ -165,7 +165,6 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
   };
 
   return (
-    //https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/urban_water/uq_logo.png
     <aside data-cy="sb" className="sidebar">
       <div className="prism-logo-nolink">
         <img className="prismLogo" src={uq_logo} alt="Prism by eLIPSE" />
@@ -245,6 +244,8 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
           <div className="prism-logo">
             <img className="prismLogo" src={prism_logo} alt="Prism by eLIPSE" />
           </div>
+          <h3 className="prism-subtitle">Prism</h3>
+          <h5 className="prism-subheading">by eLIPSE</h5>
         </a>
       </div>
     </aside>
