@@ -77,7 +77,7 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     const homeLink = {
       link: "/",
       icon: prism_logo,
-      text: "Home",
+      text: "",
       dataCy: "sb-home",
     };
 

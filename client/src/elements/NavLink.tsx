@@ -22,7 +22,7 @@ export const NavLink = (props: Props): React.ReactElement => {
       })}
     >
       <div className="nav-icon-container">
-        {props.value.text === "Home" && (
+        {props.value.text === "" && (
           <img className="prismLogo" src={props.value.icon} alt="" />
         )}
         <span
@@ -32,11 +32,9 @@ export const NavLink = (props: Props): React.ReactElement => {
         >
           <i className={props.value.icon} />
         </span>
-        {!(props.value.text === "Home") && (
-          <span className={"nav-text"} data-cy="sb-text">
-            {props.value.text}
-          </span>
-        )}
+        <span className={"nav-text"} data-cy="sb-text">
+          {props.value.text}
+        </span>
       </div>
     </Link>
   );
