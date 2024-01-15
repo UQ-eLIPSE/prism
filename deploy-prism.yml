@@ -32,6 +32,7 @@
         - name: Build client
           shell: |
             cd {{ localdir_client }} && \
+            cp .env.prod.example .env
             yarn && \
             yarn build && \
             tar -czvf build.tar.gz build && \
