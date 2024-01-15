@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "../elements/NavLink";
-import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router";
 import NetworkCalls from "../utils/NetworkCalls";
 import prism_logo from "../img/prism-logo.svg";
+import uq_logo from "../img/uq_logo.png";
 import { useUserContext } from "../context/UserContext";
 import { useSettingsContext } from "../context/SettingsContext";
 import { ISettings } from "../typings/settings";
@@ -164,17 +164,11 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     setModuleWindowOpen(true);
   };
 
-  const navigate = useNavigate();
   return (
+    //https://stluc.manta.uqcloud.net/elipse/public/PRISM/prod/urban_water/uq_logo.png
     <aside data-cy="sb" className="sidebar">
-      <div className="prism-logo">
-        <a
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          <img className="prismLogo" src={prism_logo} alt="Prism by eLIPSE" />
-        </a>
+      <div className="prism-logo-nolink">
+        <img className="prismLogo" src={uq_logo} alt="Prism by eLIPSE" />
       </div>
       {moduleWindowOpen && (
         <ModuleWindow
@@ -248,8 +242,9 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
       </div>
       <div className="prism-label">
         <a onClick={() => window.open("https://www.elipse.uq.edu.au/")}>
-          <h3 className="prism-subtitle">Prism</h3>
-          <h5 className="prism-subheading">by eLIPSE</h5>
+          <div className="prism-logo">
+            <img className="prismLogo" src={prism_logo} alt="Prism by eLIPSE" />
+          </div>
         </a>
       </div>
     </aside>
