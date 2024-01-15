@@ -6,8 +6,11 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.accessZone(zone);
     });
 
-    it(`Testing in each Zone: should compare elements with .hotspot-tooltip and .linkNodeNames on the first landing view`, () => {
-      cy.get("div.prism-logo .prismLogo").should("exist");
+    it(`Testing in each Zone: check logo`, () => {
+      cy.get("img.prismLogo").should("exist");
     });
   });
 });
+// describe("a dummy test", () => {
+//   it("test nothing", () => {});
+// });
