@@ -20,9 +20,9 @@
     "paths": {
       "*": ["src/types/*", "node_modules/*"]
     },
-    "types":["jest"]
+    "types": ["jest"]
   },
   "files": ["src/main.ts"],
   "exclude": ["node_modules/*"],
-  "include": ["./src/**/*.ts", "./tests/**/*.ts"],
+  "include": ["./src/**/*.ts", "./tests/**/*.ts"]
 }

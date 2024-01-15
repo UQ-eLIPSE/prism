@@ -30,15 +30,19 @@ const testResourcesLinks = async (resourceCollection: Collection) => {
   });
 
   await Promise.all(resourceLinkVerification);
-  console.info("\u2713 Broken links step: Resources");
 };
 
 //Connect MongDB and Run Main function: testResourcesLinks
-const runUrlLinkValidator = async () => {
-  // Connect to database TODO: implement Anisble Variable: DATABASE_URL to this Script
+// Initialize Database Connection
+const initializeDatabaseConnection = () => {
   const databaseUrl = "mongodb://localhost:27017";
   const databaseName = "urban_water";
   const client = new MongoClient(databaseUrl);
+  return { client, databaseName };
+};
+const runUrlLinkValidator = async () => {
+  // Connect to database TODO: implement Anisble Variable: DATABASE_URL to this Script
+  const { client, databaseName } = initializeDatabaseConnection();
   await client.connect();
   try {
     if (!client) throw new Error("Database connection error");
