@@ -1,7 +1,7 @@
 import { testEachZone } from "../testutils";
 
 testEachZone((zone: Cypress.PrismZone) => {
-  describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view", () => {
+  describe("Test case:prism Logo", () => {
     beforeEach(() => {
       cy.accessZone(zone);
     });
