@@ -88,20 +88,7 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
 
         {config ? (
           <Routes>
-            {!settings?.enableMultiSite ? (
-              <Route
-                path="/"
-                element={
-                  <Site
-                    config={config}
-                    siteId={
-                      siteId || (allSites.length !== 0 && allSites[0]._id)
-                    }
-                    updateFloor={(floor: number) => setFloorId(floor)}
-                  />
-                }
-              />
-            ) : (
+            {!settings?.enableMultiSite && (
               <Route
                 exact
                 path="/"
