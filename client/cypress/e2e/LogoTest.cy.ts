@@ -11,6 +11,3 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
   });
 });
-// describe("a dummy test", () => {
-//   it("test nothing", () => {});
-// });
