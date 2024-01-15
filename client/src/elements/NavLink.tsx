@@ -22,6 +22,9 @@ export const NavLink = (props: Props): React.ReactElement => {
       })}
     >
       <div className="nav-icon-container">
+        {props.value.text === "" && (
+          <img className="prismLogo" src={props.value.icon} alt="" />
+        )}
         <span
           className="nav-icon"
           data-title={props.value.text}

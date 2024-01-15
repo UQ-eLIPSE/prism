@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "../elements/NavLink";
-import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router";
 import NetworkCalls from "../utils/NetworkCalls";
 import prism_logo from "../img/prism-logo.svg";
@@ -77,8 +76,8 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     // };
     const homeLink = {
       link: "/",
-      icon: "fas fa-map-marked-alt fa-2x",
-      text: "Home",
+      icon: prism_logo,
+      text: "",
       dataCy: "sb-home",
     };
 
@@ -164,18 +163,8 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     setModuleWindowOpen(true);
   };
 
-  const navigate = useNavigate();
   return (
     <aside data-cy="sb" className="sidebar">
-      <div className="prism-logo">
-        <a
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          <img className="prismLogo" src={prism_logo} alt="Prism by eLIPSE" />
-        </a>
-      </div>
       {moduleWindowOpen && (
         <ModuleWindow
           contentType={moduleWindowContent.contentType}
