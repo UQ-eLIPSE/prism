@@ -29,6 +29,12 @@
             state: absent
           become: yes
 
+        - name: Copy .env.prod.example.j2 to client directory
+          local_action:
+            module: template
+            src: deployment/.env.prod.example.j2
+            dest: client/.env.prod.example
+
         - name: Build client
           shell: |
             cd {{ localdir_client }} && \
@@ -53,14 +59,6 @@
           file:
             path: /var/www/client/build.tar.gz
             state: absent
-
-        - name: Transfer client <env-project>.js file to the zone
-          copy:
-            src: "{{ localdir_client }}{{ env_project }}"
-            dest: "/var/www/client/build/{{ env_project }}"
-
-        - name: Rename env_example to env.js
-          command: mv "/var/www/client/build/{{ env_project }}" /var/www/client/build/env.js
 
         # Backend
 
