@@ -32,7 +32,7 @@
         sleep: 10 # Interval between checks
 
     - name: SCP project dump to Triton instance
-      shell: "scp -o ConnectTimeout=60 -o StrictHostKeyChecking=no -r {{ mongodump }} root@{{ zone }}.zones.eait.uq.edu.au:~/"
+      shell: "scp -o StrictHostKeyChecking=no -r {{ mongodump }} root@{{ zone }}.zones.eait.uq.edu.au:~/"
 
 - name: UAT zone
   hosts: newuatzone
