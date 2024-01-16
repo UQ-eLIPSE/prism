@@ -168,6 +168,7 @@ This deliberate step allows deployment users to review and validate configuratio
 The flag is initially set to false to prioritize cautious deployment particularly in production or UAT environments.
 
 `export PROXY_JUMP_USER=<UQuser>@mango.eait.uq.edu.au`
+
 `ansible-playbook -i inventory/create_prism_zone/inventory.ini create-prism-zone.yml`
 
 If zone was created and deleted earlier then scp command in playbook could give warning
