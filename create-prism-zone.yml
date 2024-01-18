@@ -76,9 +76,9 @@
         path: /opt/server
         state: directory
 
-    - name: transfer sever .env to Zone
-      copy:
-        src: deployment/{{ env }}
+    - name: Copy .env.j2 to server directory
+      template:
+        src: deployment/env.j2
         dest: /opt/server/.env
 
     - name: make directory var/www/client

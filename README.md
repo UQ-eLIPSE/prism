@@ -167,6 +167,8 @@ Controlled deployment prevents immediate changes to the active environment.
 This deliberate step allows deployment users to review and validate configurations before applying them, minimizing the risk of unintended disruptions.
 The flag is initially set to false to prioritize cautious deployment particularly in production or UAT environments.
 
+`export PROXY_JUMP_USER=<UQuser>@mango.eait.uq.edu.au`
+
 `ansible-playbook -i inventory/create_prism_zone/inventory.ini create-prism-zone.yml`
 
 If zone was created and deleted earlier then scp command in playbook could give warning
