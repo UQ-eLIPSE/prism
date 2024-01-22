@@ -102,16 +102,19 @@ function Minimap(props: Readonly<object> | any) {
     if (editing && !selectedNode) {
       setSelectedNode(node);
       setX(
-        (((!props.minimapData.xy_flipped ? node.x : node.y) +
-          props.minimapData.x_pixel_offset) /
-          props.minimapData.img_width) *
-          100,
+        (props.minimapData.x_scale *
+          ((!props.minimapData.xy_flipped ? node.x : node.y) +
+            props.minimapData.x_pixel_offset) *
+          100) /
+          props.minimapData.img_width,
       );
+
       setY(
-        (((!props.minimapData.xy_flipped ? node.y : node.x) +
-          props.minimapData.y_pixel_offset) /
-          props.minimapData.img_height) *
-          100,
+        (props.minimapData.y_scale *
+          ((!props.minimapData.xy_flipped ? node.y : node.x) +
+            props.minimapData.y_pixel_offset) *
+          100) /
+          props.minimapData.img_height,
       );
       setRotation(Math.round(node.rotation * 57.2958) % 360);
     } else if (!editing && !selectedNode) {
@@ -257,11 +260,15 @@ function Minimap(props: Readonly<object> | any) {
   async function updateNodeInfo() {
     try {
       const newX: number =
-        (props.minimapData.img_width * x) / 100 -
-        props.minimapData.x_pixel_offset;
+        props.minimapData.x_scale !== 1
+          ? x
+          : (props.minimapData.img_width * x) / 100 -
+            props.minimapData.x_pixel_offset;
       const newY: number =
-        (props.minimapData.img_height * y) / 100 -
-        props.minimapData.y_pixel_offset;
+        props.minimapData.y_scale !== 1
+          ? y
+          : (props.minimapData.img_height * y) / 100 -
+            props.minimapData.y_pixel_offset;
 
       await NetworkCalls.updateNodeCoordinates(
         // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
