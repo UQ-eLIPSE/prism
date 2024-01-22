@@ -260,15 +260,13 @@ function Minimap(props: Readonly<object> | any) {
   async function updateNodeInfo() {
     try {
       const newX: number =
-        props.minimapData.x_scale !== 1
-          ? x
-          : (props.minimapData.img_width * x) / 100 -
-            props.minimapData.x_pixel_offset;
+        ((props.minimapData.img_width * x) / 100 -
+          props.minimapData.x_pixel_offset) /
+        props.minimapData.x_scale;
       const newY: number =
-        props.minimapData.y_scale !== 1
-          ? y
-          : (props.minimapData.img_height * y) / 100 -
-            props.minimapData.y_pixel_offset;
+        ((props.minimapData.img_height * y) / 100 -
+          props.minimapData.y_pixel_offset) /
+        props.minimapData.y_scale;
 
       await NetworkCalls.updateNodeCoordinates(
         // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
