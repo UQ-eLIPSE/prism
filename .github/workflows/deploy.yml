@@ -1,11 +1,7 @@
-name: Deploy
+name: Deploy manually to UAT
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
-  # push:
-  #   branches:
-  #     - feature/ELIPSE-xxx
-  # TODO: Possibly should have both manual triggering and automatic during git push/merge to any branch 
 
 jobs:
   deploy:
@@ -13,9 +9,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2 # This action checks out your repository code
-        with:
-          ref: develop # This specifies the branch to checkout # TODO: could be feature branch/develop/main
+        uses: actions/checkout@v2
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -30,11 +24,6 @@ jobs:
           echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
           chmod 644 ~/.ssh/id_rsa.pub
 
-      - name: Install Ansible
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
-
       - name: Conditionally add SSH key of the remote host to known_hosts
         run: |
           mkdir -p ~/.ssh  # Ensure the .ssh directory exists
@@ -42,28 +31,24 @@ jobs:
           if ! grep -q "mango.eait.uq.edu.au" ~/.ssh/known_hosts; then
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
-          
-      - name: Copy environment file
-        run: |
-          cd client
-          cp .env.prod.example .env
 
-      - name: Build front and back end codes
+      - name: Substitute placeholders in inventory file
         run: |
-          cd client
-          yarn
-          yarn build
-          tar -czvf build.tar.gz build
-          cd ..
-          cd server
-          yarn
-          yarn build
-          tar -czvf dist.tar.gz dist
-          cd ..
+          sed -i "s|<instance_placeholder>|${{ vars.UAT_ZONE }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<project_title_placeholder>|${{ vars.UAT_PROJECT_TITLE }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<url_placeholder>|${{ vars.UAT_URL }}|g" inventory/deploy/inventory.ini
+
+      - name: Display modified inventory file (for verification)
+        run: cat inventory/deploy/inventory.ini
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
 
       - name: Run Ansible Playbook to deploy
         run: |
-          ansible-playbook -i inventory/deploy/inventory.ini -vvv deploy-prism.yml
+          ansible-playbook -vvv -i inventory/deploy/inventory.ini -l ${{ vars.UAT_ZONE }} deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'
         env:
           ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking
           PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
