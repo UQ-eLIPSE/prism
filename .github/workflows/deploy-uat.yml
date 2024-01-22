@@ -3,7 +3,7 @@ name: Deploy to UAT
 on:
   push:
     branches:
-      - ${{ secrets.UAT_BRANCH }}
+      - dummy-develop
 
 jobs:
   deploy:
