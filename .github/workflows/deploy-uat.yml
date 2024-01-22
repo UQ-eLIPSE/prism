@@ -1,0 +1,51 @@
+name: Deploy to UAT
+
+on:
+  push:
+    branches:
+      - dummy-develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # The type of runner to use
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          chmod 644 ~/.ssh/id_rsa.pub
+
+      - name: Conditionally add SSH key of the remote host to known_hosts
+        run: |
+          mkdir -p ~/.ssh  # Ensure the .ssh directory exists
+          touch ~/.ssh/known_hosts  # Ensure the known_hosts file exists
+          if ! grep -q "mango.eait.uq.edu.au" ~/.ssh/known_hosts; then
+            ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
+          fi
+
+      - name: Substitute placeholders in inventory file
+        run: |
+          sed -i "s|<instance_placeholder>|${{ secrets.UAT_ZONE }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<project_title_placeholder>|${{ secrets.UAT_PROJECT_TITLE }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<url_placeholder>|${{ secrets.UAT_URL }}|g" inventory/deploy/inventory.ini
+
+      - name: Display modified inventory file (for verification)
+        run: cat inventory/deploy/inventory.ini
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Run Ansible Playbook to deploy
+        run: |
+          ansible-playbook -vvv -i inventory/deploy/inventory.ini -l ${{ secrets.UAT_ZONE }} deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'`
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking
+          PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
