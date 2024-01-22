@@ -1,6 +1,7 @@
 name: Deploy to UAT
 
 on:
+  workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
       - develop
