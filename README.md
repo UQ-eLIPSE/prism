@@ -233,3 +233,5 @@ If need to build and compress in tar.gz file
 If need to build and compress in tar.gz file as well as re-deploy PRISM with any updates
 
 `ansible-playbook -i inventory/deploy/inventory.ini -l prism-023.zones.eait.uq.edu.au deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'`
+
+TO DELETE: Testing deployment. Pls delete this line later.
