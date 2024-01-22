@@ -3,7 +3,7 @@ name: Deploy to UAT
 on:
   push:
     branches:
-      - dummy-develop
+      - develop
 
 jobs:
   deploy:
@@ -12,6 +12,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
 
       - name: Setup SSH Key
         run: |
@@ -31,9 +36,9 @@ jobs:
 
       - name: Substitute placeholders in inventory file
         run: |
-          sed -i "s|<instance_placeholder>|${{ secrets.UAT_ZONE }}|g" inventory/deploy/inventory.ini
-          sed -i "s|<project_title_placeholder>|${{ secrets.UAT_PROJECT_TITLE }}|g" inventory/deploy/inventory.ini
-          sed -i "s|<url_placeholder>|${{ secrets.UAT_URL }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<instance_placeholder>|${{ vars.UAT_ZONE }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<project_title_placeholder>|${{ vars.UAT_PROJECT_TITLE }}|g" inventory/deploy/inventory.ini
+          sed -i "s|<url_placeholder>|${{ vars.UAT_URL }}|g" inventory/deploy/inventory.ini
 
       - name: Display modified inventory file (for verification)
         run: cat inventory/deploy/inventory.ini
@@ -45,7 +50,7 @@ jobs:
 
       - name: Run Ansible Playbook to deploy
         run: |
-          ansible-playbook -vvv -i inventory/deploy/inventory.ini -l ${{ secrets.UAT_ZONE }} deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'`
+          ansible-playbook -vvv -i inventory/deploy/inventory.ini -l ${{ vars.UAT_ZONE }} deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'
         env:
           ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking
           PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
