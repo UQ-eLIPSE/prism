@@ -1,9 +1,10 @@
-name: Deploy to UAT
+name: Test Deploy to UAT
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
+      - feature/TEAM24-29
       - dummy-develop
 
 jobs:
