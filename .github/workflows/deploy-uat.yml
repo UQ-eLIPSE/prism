@@ -1,4 +1,4 @@
-name: Deploy to UAT
+name: Deploy to UAT1
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
