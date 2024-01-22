@@ -1,3 +1,4 @@
+# This workflow is to be used for testing only.
 # Please don't delete comments below until we are familiar with manually trigerring Github Actions.
 # This workflow(deploy.yml) is in main branch and hence available in all branches to test manually.
 # To test a new workflow in a branch, just add the workflow code here without deleting these comments.
@@ -5,6 +6,7 @@
 # Clicking Run Workflow button will run this workflow manually.
 # Once the new workflow is tested in its branch, pls add the workflow to a new file in .github/workflow dir.
 # Once the new workflow file is merged to main branch, it will be avaiable as a new Action in github Actions UI.
+# After testing, comment all lines in this workflow so that it doesn't trigger any deployments.
 
 name: Deployment Test
 
