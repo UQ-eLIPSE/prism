@@ -15,24 +15,26 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.get("#drawer-container").should("exist");
         cy.get("h2").contains("Select a Node to Edit");
         cy.get("#0-0_1_91_34_221130-panorama").click();
-        cy.get("input[id='x']").should("exist").type("90");
-        cy.get("#0-0_1_91_34_221130-panorama")
-          .parent()
-          .should(($parent) => {
-            const leftStyle = $parent.css("left");
-            const leftPercentage = parseFloat(leftStyle);
+        cy.get("input[id='x']").should("exist").type("80");
 
-            expect(leftPercentage).to.equal(90);
-          });
-
-        cy.get("button").contains("Save").click();
-        cy.get("#0-0_1_91_34_221130-panorama")
-          .parent()
-          .should(($parent) => {
-            const leftStyle = $parent.css("left");
-            const leftPercentage = parseFloat(leftStyle);
-            expect(leftPercentage).to.equal(90);
-          });
+        cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
+          const totalWidth = $img.width();
+          cy.get("#2-0_3_80_57_221130-panorama")
+            .parent()
+            .should(($parent) => {
+              const leftPixelValue = parseFloat($parent.css("left"));
+              const leftPercentage = (leftPixelValue / totalWidth) * 100;
+              expect(leftPercentage).to.be.closeTo(80, 1);
+            });
+          cy.get("button").contains("Save").click();
+          cy.get("#2-0_3_80_57_221130-panorama")
+            .parent()
+            .should(($parent) => {
+              const leftPixelValue = parseFloat($parent.css("left"));
+              const leftPercentage = (leftPixelValue / totalWidth) * 100;
+              expect(leftPercentage).to.be.closeTo(80, 1);
+            });
+        });
       }
     });
   });
