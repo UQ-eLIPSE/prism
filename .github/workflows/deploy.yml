@@ -48,11 +48,9 @@ jobs:
             ssh-keyscan -t rsa,dsa,ecdsa,ed25519 mango.eait.uq.edu.au >> ~/.ssh/known_hosts
           fi
 
-      - name: Substitute placeholders in inventory file
+      - name: Set inventory
         run: |
-          sed -i "s|<instance_placeholder>|${{ vars.UAT_ZONE }}|g" inventory/deploy/inventory.ini
-          sed -i "s|<project_title_placeholder>|${{ vars.UAT_PROJECT_TITLE }}|g" inventory/deploy/inventory.ini
-          sed -i "s|<url_placeholder>|${{ vars.UAT_URL }}|g" inventory/deploy/inventory.ini
+          echo "${{ vars.UAT_INVENTORY }}" > inventory/deploy/inventory.ini
 
       - name: Display modified inventory file (for verification)
         run: cat inventory/deploy/inventory.ini
