@@ -17,7 +17,7 @@ on:
   workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
-      - dummy-develop
+      - ramon-rahul-test
 
 jobs:
   deploy:
