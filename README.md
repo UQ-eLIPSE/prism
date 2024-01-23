@@ -233,3 +233,21 @@ If need to build and compress in tar.gz file
 If need to build and compress in tar.gz file as well as re-deploy PRISM with any updates
 
 `ansible-playbook -i inventory/deploy/inventory.ini -l prism-023.zones.eait.uq.edu.au deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'`
+
+## Running workflow with Github Actions
+
+Currently Github Actions UI displays Actions in the default branch ie main branch or Actions that have been triggered as a result of a push.
+
+If a new workflow is added in .github/workflow dir and pushed in a new feature branch, we might not be able to view it in Github Actions.
+To view and test a new workflow in a feature branch, ensure workflow gets trigerred when changes are pushed to feature branch.
+```
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - <feature_branch_placeholder>
+```
+`workflow_dispatch:` ensures manual triggering of the workflow is also possible.
+Run Workflow button will be available as long as workflow_dispatch is present.
+Clicking Run Workflow button after selecting feature branch will run this workflow manually from feature branch.
+We might have a scenario where we want to run workflow without pushing to branch and in such cases its helpful.
