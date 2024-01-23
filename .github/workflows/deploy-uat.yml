@@ -1,31 +1,10 @@
-<<<<<<<< HEAD:.github/workflows/deploy-uat.yml
 name: Deploy to UAT
-========
-# Please don't delete comments below until we are familiar with manually trigerring Github Actions.
-# This workflow is to be used for testing only.
-# Currently github Actions UI only displays Actions in the default branch ie main branch.
-# If a new workflow is added in .github/workflow dir and pushed in a new branch, it can't be tested.
-# But we can use this workaround to test it.
-# This workflow(deploy.yml) is in main branch and hence available in all branches to test manually.
-# To test a new workflow in a branch, just add the workflow code here without deleting these comments.
-# Run Workflow button will be avaialble as long as workflow_dispatch is present.
-# Clicking Run Workflow button after selecting feature branch will run this workflow manually from feature branch.
-# Once the new workflow is tested in its branch, pls add the workflow to a new file in .github/workflow dir.
-# Once the new workflow file is merged to main branch, it will be avaiable as a new Action in github Actions UI.
-# After testing, comment all lines in this workflow so that it doesn't trigger any deployments.
-
-name: Deployment Test
->>>>>>>> develop:.github/workflows/deploy.yml
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
-<<<<<<<< HEAD:.github/workflows/deploy-uat.yml
       - develop
-========
-      - ramon-rahul-test
->>>>>>>> develop:.github/workflows/deploy.yml
 
 jobs:
   deploy:
