@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../sass/App.scss";
 import "../utils/Marzipano/Marzipano.scss";
-import Dotenv, { IConfiguration } from "../utils/Dotenv";
 import Sidebar from "./Sidebar";
 import Site from "./Site";
 import Documentation from "./Documentation";
@@ -22,8 +21,6 @@ interface SiteSelectorProps {
 }
 
 const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
-  const configSetting = Dotenv;
-
   const { siteId } = useParams();
   const [config, setConfig] = useState<ISettings>();
   const [floorId, setFloorId] = useState<number>(-1);
@@ -35,12 +32,11 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
    * FetchSettings
    * Retrieves the settings using the settings endpoint and assign it
    * to the config state
-   * @param config - ENV setting used to get the API address
    */
-  const fetchSettings = async (config: IConfiguration) => {
+  const fetchSettings = async () => {
     try {
       const settingsData = await fetch(
-        `${window._env_ ? window._env_.API_URL : config.BASE_URL}/api/site/${
+        `${window._env_.API_URL}/api/site/${
           siteId ? siteId : allSites[0]._id
         }/settings`,
         {
@@ -73,7 +69,7 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
 
   useEffect(() => {
     if (!config && allSites.length !== 0) {
-      fetchSettings(configSetting);
+      fetchSettings();
     }
   }, [allSites]);
   return (
@@ -149,7 +145,7 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
                 <UploadFiles
                   siteId={siteId || (allSites.length !== 0 && allSites[0]._id)}
                   mode={"addScene"}
-                  fetchSettings={() => fetchSettings(configSetting)}
+                  fetchSettings={() => fetchSettings()}
                   timeline={config.enable.timeline}
                   floor={floorId}
                 />
@@ -162,7 +158,7 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
               <UploadFiles
                 siteId={siteId || (allSites.length !== 0 && allSites[0]._id)}
                 mode={"addNewSite"}
-                fetchSettings={() => fetchSettings(configSetting)}
+                fetchSettings={() => fetchSettings()}
               />
             )}
           </>
