@@ -30,12 +30,6 @@
             state: absent
           become: yes
 
-        - name: Copy .env.prod.example.j2 to client directory
-          local_action:
-            module: template
-            src: deployment/.env.prod.example.j2
-            dest: client/.env.prod.example
-
         - name: Build client
           shell: |
             cd {{ localdir_client }} && \
@@ -54,6 +48,11 @@
 
         - name: Uncompress the file on the remote server
           command: tar -xzf /var/www/client/build.tar.gz -C /var/www/client/
+
+        - name: Copy env.js.j2 to build directory
+          template:
+            src: deployment/env.js.j2
+            dest: /var/www/client/build/env.js
 
         - name: Remove the compressed file from the remote server
           file:
