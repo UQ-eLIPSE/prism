@@ -33,13 +33,13 @@
         - name: Build client
           shell: |
             cd {{ localdir_client }} && \
-            cp .env.prod.example .env
             yarn && \
             yarn build && \
             tar -czvf build.tar.gz build && \
             cd ..
           when: generate_compressed_build | default(false) | bool
           delegate_to: localhost
+          run_once: true
 
         - name: Transfer client codes ./build.tar.gz to Zone
           copy:
