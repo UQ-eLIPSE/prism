@@ -10,7 +10,6 @@
 
 - name: Deploy React.js and Node.js/Express.js applications
   hosts: uatzones
-  serial: 1
   any_errors_fatal: true
 
   tasks:
@@ -70,6 +69,7 @@
             cd ..
           when: generate_compressed_build | default(false) | bool
           delegate_to: localhost
+          run_once: true
 
         - name: Transfer package.json
           copy:
