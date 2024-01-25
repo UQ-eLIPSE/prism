@@ -262,6 +262,9 @@ function Minimap(props: Readonly<object> | any) {
         newX,
         newY,
       );
+
+      setSelectedNode(null);
+      setEditing(false);
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
     }
@@ -321,8 +324,6 @@ function Minimap(props: Readonly<object> | any) {
 
             if (editing && selectedNode) {
               updateNodeInfo();
-              setSelectedNode(null);
-              setEditing(false);
             }
           }}
           className={`editButton ${
@@ -434,8 +435,6 @@ function Minimap(props: Readonly<object> | any) {
                 <button
                   onClick={(e): void => {
                     e.preventDefault();
-                    setSelectedNode(null);
-                    setEditing(false);
                     updateNodeInfo();
                   }}
                 >
