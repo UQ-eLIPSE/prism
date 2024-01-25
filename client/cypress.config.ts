@@ -12,7 +12,7 @@ export default defineConfig({
         hotspots: true,
         timeline: false,
         // if REACT_APP_USE_SSO is false, set this to true.
-        adminUser: true
+        adminUser: true,
       },
     ],
   },

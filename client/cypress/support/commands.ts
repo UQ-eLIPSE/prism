@@ -6,10 +6,10 @@ Cypress.Commands.add("accessZone", (zone: Cypress.PrismZone): void => {
     cy.get(".pin.enabled.enabled.false.bottom.enabled").click({
       force: true,
     });
-    if(zone.adminUser){
-      cy.contains('Go to Site').click({
+    if (zone.adminUser) {
+      cy.contains("Go to Site").click({
         force: true,
-      });    
+      });
     }
   }
 });
