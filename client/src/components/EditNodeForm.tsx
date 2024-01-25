@@ -8,6 +8,8 @@ interface EditNoteFormProps {
   setXPositionValue: (xPosition: number) => void;
   yPositionValue: number;
   setYPositionValue: (yPosition: number) => void;
+  resetSelectedNode: () => void;
+  updateNode: () => Promise<void>;
 }
 const [ROTATION_MIN, ROTATION_MAX] = [0, 360];
 const [POSITION_MIN, POSITION_MAX] = [0, 100];
@@ -62,8 +64,33 @@ const EditNodeForm = (props: EditNoteFormProps) => {
     }
   };
 
+  /**
+   * Handles form submission to update rotation and position of the targeted node.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e Submit event object
+   * @param {Function} updateCallbackFn The function that handles the update of node.
+   * @returns {void}
+   */
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    updateCallbackFn: () => Promise<void>,
+  ): Promise<void> => {
+    e.preventDefault();
+    props.resetSelectedNode();
+
+    updateCallbackFn();
+  };
+
+  /**
+   * Cancels form submission.
+   * @returns {void}
+   */
+  const handleCancelClick = () => {
+    props.resetSelectedNode();
+  };
+
   return (
-    <form>
+    <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
       <span>
         <label htmlFor={rotationInputConfig.label}>Orientation</label>
         <div>
@@ -115,6 +142,15 @@ const EditNodeForm = (props: EditNoteFormProps) => {
             );
           },
         )}
+      </span>
+
+      <span>
+        <div className="buttons">
+          <button type="button" onClick={handleCancelClick}>
+            Cancel
+          </button>
+          <button type="submit">Save</button>
+        </div>
       </span>
     </form>
   );

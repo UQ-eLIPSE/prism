@@ -333,6 +333,11 @@ function Minimap(props: Readonly<object> | any) {
     }
   }
 
+  function resetSelectedNode(): void {
+    setSelectedNode(null);
+    setEditing(false);
+  }
+
   return (
     <>
       {editing && !selectedNode && (
@@ -384,6 +389,8 @@ function Minimap(props: Readonly<object> | any) {
             setXPositionValue={setX}
             yPositionValue={y}
             setYPositionValue={setY}
+            resetSelectedNode={resetSelectedNode}
+            updateNode={updateNodeInfo}
           />
           <form>
             <span>
