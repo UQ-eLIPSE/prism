@@ -74,6 +74,8 @@ const EditNodeForm = (props: EditNoteFormProps) => {
             id={rotationInputConfig.label}
             value={rotationInputConfig.value}
             step={rotationInputConfig?.step}
+            min={ROTATION_MIN}
+            max={ROTATION_MAX}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               handleInputChange(
                 e,
@@ -106,6 +108,8 @@ const EditNodeForm = (props: EditNoteFormProps) => {
                       POSITION_MAX,
                     );
                   }}
+                  min={POSITION_MIN}
+                  max={POSITION_MAX}
                 />
               </div>
             );
