@@ -6,6 +6,7 @@ import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
 import { InfoHotspot } from "../interfaces/NodeData";
+import EditNodeForm from "./EditNodeForm";
 
 interface NewNode {
   floor: number;
@@ -376,6 +377,10 @@ function Minimap(props: Readonly<object> | any) {
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
+          <EditNodeForm
+            rotationValue={rotation}
+            setRotationValue={setRotation}
+          />
           <form>
             <span>
               <p>Orientation</p>
