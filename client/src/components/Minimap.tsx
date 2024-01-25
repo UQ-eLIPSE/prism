@@ -171,19 +171,12 @@ function Minimap(props: Readonly<object> | any) {
             100) /
           props.minimapData.img_height;
 
-        // ERROR: This fails when an offset is used, broken logic!!
-        //      let x_position: number = config.X_SCALE
-        //        * (((!config.XY_FLIPPED ? node.xPixelOffset : node.yPixelOffset) / config.IMG_WIDTH) * 100
-        //          + config.X_PIXEL_OFFSET);
-        //      let y_position: number = config.Y_SCALE
-        //        * (((!config.XY_FLIPPED ? node.yPixelOffset : node.xPixelOffset) / config.IMG_HEIGHT) * 100
-        //          + config.Y_PIXEL_OFFSET);
-
         if (x_position > 100) {
           x_position = 95;
         } else if (x_position < 0) {
           x_position = 5;
         }
+
         if (y_position > 100) {
           y_position = 95;
         } else if (y_position < 0) {
@@ -191,7 +184,6 @@ function Minimap(props: Readonly<object> | any) {
         }
 
         const isMapEnlarged = props.minimapEnlarged;
-        // const isInfoNode = (node.info_hotspots?.length ?? 0) > 0;
         const nodeTitle = node.tiles_name;
 
         return (
@@ -242,12 +234,6 @@ function Minimap(props: Readonly<object> | any) {
                   left: `${node == selectedNode ? x : x_position}%`,
                 }}
               >
-                {/* Commented out as it may be needed with future infoNode functionality. */}
-                {/* {isInfoNode && (
-                  <div className={MinimapStyles.infoIcon}>
-                    <i className="fas fa-info-circle" />
-                  </div>
-                )} */}
                 {nodeTitle}
               </div>
             )}
