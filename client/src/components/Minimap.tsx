@@ -23,6 +23,20 @@ interface NewNode {
   info_hotspots: InfoHotspot[] | [];
 }
 
+/**
+ * This interface represents the current node's position and rotation in the minimap.
+ * It is used to update the node's position and rotation in the database.
+ * @interface NodeConfiguration
+ * @property {number} x_position 0 - 100 horizontal percentage position of the node.
+ * @property {number} y_position 0 - 100 vertical percentage position of the node.
+ * @property {number} rotation 0 - 360 degrees rotation of the node.
+ */
+interface NodeConfiguration {
+  x_position: number;
+  y_position: number;
+  rotation: number;
+}
+
 function Minimap(props: Readonly<object> | any) {
   const config: ISettings = props.config;
   const [user] = useUserContext();
@@ -45,9 +59,18 @@ function Minimap(props: Readonly<object> | any) {
   // State for controlling editing of node position and rotation.
   const [editing, setEditing] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<NewNode | null>();
+
   const [rotation, setRotation] = useState<number>(0);
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [nodeState, setNodeState] = useState<NodeConfiguration>({
+    x_position: 0,
+    y_position: 0,
+    rotation: 0,
+  });
+
   const [nodes, editNodes] = useState<NewNode[]>([]);
 
   useEffect(() => {
