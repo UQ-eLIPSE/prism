@@ -1,5 +1,6 @@
 import React from "react";
 import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
+import EditNodePositionInput from "./EditNodePositionInput";
 
 interface EditNoteFormProps {
   rotationValue: number;
@@ -11,16 +12,24 @@ interface EditNoteFormProps {
   resetSelectedNode: () => void;
   updateNode: () => Promise<void>;
 }
+
+// The minimum and maximum values for the rotation and position inputs.
 const [ROTATION_MIN, ROTATION_MAX] = [0, 360];
 const [POSITION_MIN, POSITION_MAX] = [0, 100];
 
 const EditNodeForm = (props: EditNoteFormProps) => {
+  // Input configurations for the form. Please note that the label
+  // for each must be unique since it is used as the input's id.
   const rotationInputConfig: EditNodeInput = {
     label: "orientation",
     value: props.rotationValue,
     setValue: props.setRotationValue,
     step: 15,
     symbol: <i className="fa-solid fa-rotate-right"></i>,
+    bounds: {
+      min: ROTATION_MIN,
+      max: ROTATION_MAX,
+    },
   };
 
   const xPositionInputConfig: EditNodeInput = {
@@ -28,14 +37,21 @@ const EditNodeForm = (props: EditNoteFormProps) => {
     value: props.xPositionValue,
     setValue: props.setXPositionValue,
     symbol: <i className="fa-solid fa-arrows-left-right"></i>,
+    bounds: {
+      min: POSITION_MIN,
+      max: POSITION_MAX,
+    },
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const yPositionInputConfig: EditNodeInput = {
     label: "y",
     value: props.yPositionValue,
     setValue: props.setYPositionValue,
     symbol: <i className="fa-solid fa-arrows-up-down"></i>,
+    bounds: {
+      min: POSITION_MIN,
+      max: POSITION_MAX,
+    },
   };
 
   /**
@@ -83,6 +99,7 @@ const EditNodeForm = (props: EditNoteFormProps) => {
 
   /**
    * Cancels form submission.
+   *
    * @returns {void}
    */
   const handleCancelClick = () => {
@@ -94,23 +111,9 @@ const EditNodeForm = (props: EditNoteFormProps) => {
       <span>
         <label htmlFor={rotationInputConfig.label}>Orientation</label>
         <div>
-          {rotationInputConfig.symbol}
-          <input
-            type="number"
-            name={rotationInputConfig.label}
-            id={rotationInputConfig.label}
-            value={rotationInputConfig.value}
-            step={rotationInputConfig?.step}
-            min={ROTATION_MIN}
-            max={ROTATION_MAX}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              handleInputChange(
-                e,
-                rotationInputConfig.setValue,
-                ROTATION_MIN,
-                ROTATION_MAX,
-              );
-            }}
+          <EditNodePositionInput
+            inputConfiguration={rotationInputConfig}
+            handleInputChange={handleInputChange}
           />
         </div>
       </span>
@@ -121,22 +124,9 @@ const EditNodeForm = (props: EditNoteFormProps) => {
           (inputConfig, idx) => {
             return (
               <div className="coords" key={idx}>
-                {inputConfig.symbol}
-                <input
-                  type="number"
-                  name={inputConfig.label}
-                  id={inputConfig.label}
-                  value={Math.round(inputConfig.value)}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    handleInputChange(
-                      e,
-                      inputConfig.setValue,
-                      POSITION_MIN,
-                      POSITION_MAX,
-                    );
-                  }}
-                  min={POSITION_MIN}
-                  max={POSITION_MAX}
+                <EditNodePositionInput
+                  inputConfiguration={inputConfig}
+                  handleInputChange={handleInputChange}
                 />
               </div>
             );

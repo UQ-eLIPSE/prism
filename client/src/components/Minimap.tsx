@@ -6,7 +6,7 @@ import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
 import { InfoHotspot } from "../interfaces/NodeData";
-import EditNodeForm from "./EditNodeForm";
+import EditNodeForm from "./EditNodePositionForm";
 
 interface NewNode {
   floor: number;
