@@ -36,6 +36,7 @@ const EditNodePositionInput = ({
         }}
         min={min}
         max={max}
+        step={inputConfiguration.step ? inputConfiguration.step.toString() : 1}
       />
     </>
   );
