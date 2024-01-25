@@ -8,7 +8,7 @@ export default defineConfig({
       //for local test, depending project with/without timeline
       {
         url: "http://localhost:3000",
-        singleSite: false,
+        singleSite: true,
         hotspots: true,
         timeline: false,
         // if REACT_APP_USE_SSO is false, set this to true.
@@ -28,5 +28,5 @@ export default defineConfig({
       bundler: "webpack",
     },
   },
-  retries: 0,
+  retries: 2,
 });

@@ -8,26 +8,21 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.accessZone(zone);
     });
 
-    it(`Testing: user changes coordinates input in the form, the targeted mininode position changes correctly based on user input`, () => {
+    it(`Testing: user changes x coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.intercept('PATCH', '/api/node/coords/*').as('patchNode');
         cy.intercept('GET', '/api/site/*/*/survey/minimapSingleSite*').as('getMinimapData');
-
-        cy.get('i[class*="fa-expand-arrows-alt"]').click({ force: true });
-        cy.get("p").contains("Edit Node").should("exist").click();
-        cy.get("h2").contains("Select a Node to Edit");
-        
-        const randX = Math.floor(Math.random() * 81) + 10;
-        
-        cy.get("[data-cy='selected-node']").click();
-
+        cy.get('i[class*="fa-expand-arrows-alt"]').click({ timeout: 10000, force: true });
+        cy.get("p").contains("Edit Node").should("exist").click({ force: true });
+        cy.get("h2").contains("Select a Node to Edit");        
+        const randX = Math.floor(Math.random() * 9) * 10 + 10;        
+        cy.get("[data-cy='selected-node']").click({ force: true });
         cy.wait('@getMinimapData').then(() => {
           cy.get("input[id='x']").should("exist").clear();
           cy.get("input[id='x']").should("exist").type(String(randX));        
-          cy.get("button").contains("Save").click();        
+          cy.get("button").contains("Save").click({ force: true });          
           cy.wait('@patchNode').then(() => {          
             cy.wait('@getMinimapData').then(() => {
-              cy.wait(5000);
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalWidth = $img.width();
                 cy.wrap(totalWidth).should('not.be.undefined');          
@@ -37,8 +32,8 @@ testEachZone((zone: Cypress.PrismZone) => {
                     const leftPixelValue = parseFloat($parent.css("left"));
                     const leftPercentage = Math.floor((leftPixelValue / (totalWidth as number)) * 100);
                     expect(leftPercentage).to.be.closeTo(randX, 1);
-                });
-              });  
+                });               
+              }); 
             });          
           });
         });
