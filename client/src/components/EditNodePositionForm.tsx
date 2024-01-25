@@ -109,7 +109,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
    *
    * @returns {void}
    */
-  const handleCancelClick = () => {
+  const handleCancelClick = (): void => {
     props.resetSelectedNode();
   };
 
