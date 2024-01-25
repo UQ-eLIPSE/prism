@@ -129,7 +129,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
       <span>
         <label htmlFor={xPositionInputConfig.label}>Coordinates</label>
         {[xPositionInputConfig, yPositionInputConfig].map(
-          (inputConfig, idx) => (
+          (inputConfig: EditNodeInput, idx: number) => (
             <div className="coords" key={idx}>
               <EditNodePositionInput
                 inputConfiguration={inputConfig}
