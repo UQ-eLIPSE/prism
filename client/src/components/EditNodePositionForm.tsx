@@ -2,6 +2,7 @@ import React from "react";
 import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
 
+// * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
   rotationValue: number;
   setRotationValue: (rotation: number) => void;
@@ -9,7 +10,7 @@ interface EditNodeFormProps {
   setXPositionValue: (xPosition: number) => void;
   yPositionValue: number;
   setYPositionValue: (yPosition: number) => void;
-  resetSelectedNode: () => void;
+  resetSelectedNode: () => void; // Clears selected node and sets editing to false.
   updateNode: () => Promise<void>;
 }
 
@@ -20,7 +21,7 @@ const [POSITION_MIN, POSITION_MAX] = [0, 100];
 /**
  * Form component for editing the position of a node.
  *
- * @param {EditNode} props
+ * @param {EditNodeFormProps} props
  * @returns {JSX.Element}
  */
 const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
@@ -67,8 +68,8 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
    *
    * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event object.
    * @param {function} setStateValue - The state setter function to update the value.
-   * @param {number} min - The minimum value.
-   * @param {number} max - The maximum value.
+   * @param {number} min - The minimum allowable value.
+   * @param {number} max - The maximum allowable value.
    * @returns {void}
    */
   const handleInputChange = (

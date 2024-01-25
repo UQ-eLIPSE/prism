@@ -334,6 +334,9 @@ function Minimap(props: Readonly<object> | any) {
     }
   }
 
+  /**
+   * Clears selected node and force toggle edit state to false.
+   */
   function resetSelectedNode(): void {
     setSelectedNode(null);
     setEditing(false);
