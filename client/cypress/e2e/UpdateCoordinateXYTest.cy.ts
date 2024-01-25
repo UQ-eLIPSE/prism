@@ -14,24 +14,24 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.get("p").contains("Edit Node").should("exist").click();
         cy.get("#drawer-container").should("exist");
         cy.get("h2").contains("Select a Node to Edit");
-        cy.get("#0-0_1_91_34_221130-panorama").click();
+        cy.get("[data-cy='seleted-node']").click();
         cy.get("input[id='x']").should("exist").type("80");
 
         cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
           const totalWidth = $img.width();
-          cy.get("#2-0_3_80_57_221130-panorama")
+          cy.get("[data-cy='selected-node']")
             .parent()
             .should(($parent) => {
-              const leftPixelValue = parseFloat($parent.css("left"));
-              const leftPercentage = (leftPixelValue / totalWidth) * 100;
+              // const leftPixelValue = parseFloat($parent.css("left"));
+              // const leftPercentage = (leftPixelValue / totalWidth) * 100;
+              const leftPercentage = percentageCal($parent, totalWidth);
               expect(leftPercentage).to.be.closeTo(80, 1);
             });
           cy.get("button").contains("Save").click();
-          cy.get("#2-0_3_80_57_221130-panorama")
+          cy.get("[data-cy='selected-node']")
             .parent()
             .should(($parent) => {
-              const leftPixelValue = parseFloat($parent.css("left"));
-              const leftPercentage = (leftPixelValue / totalWidth) * 100;
+              const leftPercentage = percentageCal($parent, totalWidth);
               expect(leftPercentage).to.be.closeTo(80, 1);
             });
         });
@@ -39,3 +39,9 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
   });
 });
+
+const percentageCal = (node: any, imgSize: number): number => {
+  const pixelValue = parseFloat(node.css("left"));
+  const percentage = (pixelValue / imgSize) * 100;
+  return percentage;
+};
