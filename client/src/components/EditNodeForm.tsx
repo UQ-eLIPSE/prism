@@ -4,8 +4,13 @@ import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
 interface EditNoteFormProps {
   rotationValue: number;
   setRotationValue: (rotation: number) => void;
+  xPositionValue: number;
+  setXPositionValue: (xPosition: number) => void;
+  yPositionValue: number;
+  setYPositionValue: (yPosition: number) => void;
 }
 const [ROTATION_MIN, ROTATION_MAX] = [0, 360];
+const [POSITION_MIN, POSITION_MAX] = [0, 100];
 
 const EditNodeForm = (props: EditNoteFormProps) => {
   const rotationInputConfig: EditNodeInput = {
@@ -13,6 +18,22 @@ const EditNodeForm = (props: EditNoteFormProps) => {
     value: props.rotationValue,
     setValue: props.setRotationValue,
     step: 15,
+    symbol: <i className="fa-solid fa-rotate-right"></i>,
+  };
+
+  const xPositionInputConfig: EditNodeInput = {
+    label: "x",
+    value: props.xPositionValue,
+    setValue: props.setXPositionValue,
+    symbol: <i className="fa-solid fa-arrows-left-right"></i>,
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const yPositionInputConfig: EditNodeInput = {
+    label: "y",
+    value: props.yPositionValue,
+    setValue: props.setYPositionValue,
+    symbol: <i className="fa-solid fa-arrows-up-down"></i>,
   };
 
   /**
@@ -46,7 +67,7 @@ const EditNodeForm = (props: EditNoteFormProps) => {
       <span>
         <label htmlFor={rotationInputConfig.label}>Orientation</label>
         <div>
-          <i className="fa-solid fa-rotate-right"></i>
+          {rotationInputConfig.symbol}
           <input
             type="number"
             name={rotationInputConfig.label}
@@ -63,6 +84,33 @@ const EditNodeForm = (props: EditNoteFormProps) => {
             }}
           />
         </div>
+      </span>
+
+      <span>
+        <label htmlFor={xPositionInputConfig.label}>Coordinates</label>
+        {[xPositionInputConfig, yPositionInputConfig].map(
+          (inputConfig, idx) => {
+            return (
+              <div className="coords" key={idx}>
+                {inputConfig.symbol}
+                <input
+                  type="number"
+                  name={inputConfig.label}
+                  id={inputConfig.label}
+                  value={Math.round(inputConfig.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    handleInputChange(
+                      e,
+                      inputConfig.setValue,
+                      POSITION_MIN,
+                      POSITION_MAX,
+                    );
+                  }}
+                />
+              </div>
+            );
+          },
+        )}
       </span>
     </form>
   );

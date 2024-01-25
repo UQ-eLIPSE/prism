@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 /**
  * An interface to represent each input field in the EditNode component.
  * The specific input type should be a number.
@@ -12,4 +14,5 @@ export interface EditNodeInput {
   value: number;
   setValue: (value: number) => void;
   step?: number;
+  symbol?: ReactNode;
 }

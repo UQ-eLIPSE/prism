@@ -380,6 +380,10 @@ function Minimap(props: Readonly<object> | any) {
           <EditNodeForm
             rotationValue={rotation}
             setRotationValue={setRotation}
+            xPositionValue={x}
+            setXPositionValue={setX}
+            yPositionValue={y}
+            setYPositionValue={setY}
           />
           <form>
             <span>
