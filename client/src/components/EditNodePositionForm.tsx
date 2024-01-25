@@ -2,7 +2,7 @@ import React from "react";
 import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
 
-interface EditNoteFormProps {
+interface EditNodeFormProps {
   rotationValue: number;
   setRotationValue: (rotation: number) => void;
   xPositionValue: number;
@@ -17,7 +17,13 @@ interface EditNoteFormProps {
 const [ROTATION_MIN, ROTATION_MAX] = [0, 360];
 const [POSITION_MIN, POSITION_MAX] = [0, 100];
 
-const EditNodeForm = (props: EditNoteFormProps) => {
+/**
+ * Form component for editing the position of a node.
+ *
+ * @param {EditNode} props
+ * @returns {JSX.Element}
+ */
+const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
   // Input configurations for the form. Please note that the label
   // for each must be unique since it is used as the input's id.
   const rotationInputConfig: EditNodeInput = {
@@ -56,7 +62,8 @@ const EditNodeForm = (props: EditNoteFormProps) => {
 
   /**
    * Handles the input change event for a text input field.
-   * Updates the state value based on the input value, with cycling behavior between the minimum and maximum values.
+   * Updates the state value based on the input value, with cycling behavior
+   * between the minimum and maximum values.
    *
    * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event object.
    * @param {function} setStateValue - The state setter function to update the value.
@@ -75,8 +82,8 @@ const EditNodeForm = (props: EditNoteFormProps) => {
       setStateValue(max);
     } else if (parsedValue >= max) {
       setStateValue(min);
-    } else if (parseInt(e.target.value) < 360) {
-      setStateValue(parseInt(e.target.value));
+    } else if (parsedValue < 360) {
+      setStateValue(parsedValue);
     }
   };
 
@@ -94,7 +101,7 @@ const EditNodeForm = (props: EditNoteFormProps) => {
     e.preventDefault();
     props.resetSelectedNode();
 
-    updateCallbackFn();
+    await updateCallbackFn();
   };
 
   /**
@@ -121,16 +128,14 @@ const EditNodeForm = (props: EditNoteFormProps) => {
       <span>
         <label htmlFor={xPositionInputConfig.label}>Coordinates</label>
         {[xPositionInputConfig, yPositionInputConfig].map(
-          (inputConfig, idx) => {
-            return (
-              <div className="coords" key={idx}>
-                <EditNodePositionInput
-                  inputConfiguration={inputConfig}
-                  handleInputChange={handleInputChange}
-                />
-              </div>
-            );
-          },
+          (inputConfig, idx) => (
+            <div className="coords" key={idx}>
+              <EditNodePositionInput
+                inputConfiguration={inputConfig}
+                handleInputChange={handleInputChange}
+              />
+            </div>
+          ),
         )}
       </span>
 

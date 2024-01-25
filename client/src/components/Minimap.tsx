@@ -65,6 +65,7 @@ function Minimap(props: Readonly<object> | any) {
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
 
+  // * temporary
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [nodeState, setNodeState] = useState<NodeConfiguration>({
     x_position: 0,

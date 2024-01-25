@@ -11,10 +11,17 @@ interface EditNodePositionInputProps {
   ) => void;
 }
 
+/**
+ * Helper component that encapsulates the input element for
+ * editing node position.
+ *
+ * @param {EditNodePositionInputProps} props
+ * @returns {JSX.Element}
+ */
 const EditNodePositionInput = ({
   inputConfiguration,
   handleInputChange,
-}: EditNodePositionInputProps) => {
+}: EditNodePositionInputProps): JSX.Element => {
   const { min, max } = inputConfiguration.bounds;
   return (
     <>
