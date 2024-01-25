@@ -23,6 +23,14 @@ interface NewNode {
   info_hotspots: InfoHotspot[] | [];
 }
 
+const PERCENTAGE = 100;
+const ROTATION = 57.2958;
+const DEGREE = 360;
+const UPPER_BOUND = 100;
+const LOWER_BOUND = 0;
+const UPPER_ADJUST = 95;
+const LOWER_ADJUST = 5;
+
 function Minimap(props: Readonly<object> | any) {
   const config: ISettings = props.config;
   const [user] = useUserContext();
@@ -93,6 +101,22 @@ function Minimap(props: Readonly<object> | any) {
     }
   }, [props.minimapEnlarged]);
 
+  // Calculates a scaled position as a percentage of an image's dimension.
+  function calculateXY(
+    nodeCoordinate1: number,
+    nodeCoordinate2: number,
+    flipped: boolean,
+    offset: number,
+    scale: number,
+    imageHeightorWidth: number,
+  ): number {
+    return (
+      ((((flipped ? nodeCoordinate2 : nodeCoordinate1) + offset) * scale) /
+        imageHeightorWidth) *
+      PERCENTAGE
+    );
+  }
+
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     node: NewNode,
@@ -102,18 +126,27 @@ function Minimap(props: Readonly<object> | any) {
     if (editing && !selectedNode) {
       setSelectedNode(node);
       setX(
-        (((!props.minimapData.xy_flipped ? node.x : node.y) +
-          props.minimapData.x_pixel_offset) /
-          props.minimapData.img_width) *
-          100,
+        calculateXY(
+          node.x,
+          node.y,
+          props.minimapData.xy_flipped,
+          props.minimapData.x_pixel_offset,
+          1,
+          props.minimapData.img_width,
+        ),
       );
       setY(
-        (((!props.minimapData.xy_flipped ? node.y : node.x) +
-          props.minimapData.y_pixel_offset) /
-          props.minimapData.img_height) *
-          100,
+        calculateXY(
+          node.y,
+          node.x,
+          props.minimapData.xy_flipped,
+          props.minimapData.y_pixel_offset,
+          1,
+          props.minimapData.img_height,
+        ),
       );
-      setRotation(Math.round(node.rotation * 57.2958) % 360);
+
+      setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
     } else if (!editing && !selectedNode) {
       props.updateMinimapEnlarged(false);
       props.onClickNode(node.tiles_id);
@@ -139,7 +172,7 @@ function Minimap(props: Readonly<object> | any) {
     }
 
     if (node == selectedNode) {
-      return `rotate(${rotation / 57.2958}rad)`;
+      return `rotate(${rotation / ROTATION}rad)`;
     } else {
       const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
       const sum = [
@@ -155,37 +188,34 @@ function Minimap(props: Readonly<object> | any) {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
         // Element Position = Scale * (Position within map + Offset)
-        let x_position: number =
-          (props.minimapData.x_scale *
-            ((!props.minimapData.xy_flipped ? node.x : node.y) +
-              props.minimapData.x_pixel_offset) *
-            100) /
-          props.minimapData.img_width;
-        let y_position: number =
-          (props.minimapData.y_scale *
-            ((!props.minimapData.xy_flipped ? node.y : node.x) +
-              props.minimapData.y_pixel_offset) *
-            100) /
-          props.minimapData.img_height;
+        let x_position: number = calculateXY(
+          node.x,
+          node.y,
+          props.minimapData.xy_flipped,
+          props.minimapData.x_pixel_offset,
+          props.minimapData.x_scale,
+          props.minimapData.img_width,
+        );
+        let y_position: number = calculateXY(
+          node.y,
+          node.x,
+          props.minimapData.xy_flipped,
+          props.minimapData.y_pixel_offset,
+          props.minimapData.y_scale,
+          props.minimapData.img_height,
+        );
 
-        // ERROR: This fails when an offset is used, broken logic!!
-        //      let x_position: number = config.X_SCALE
-        //        * (((!config.XY_FLIPPED ? node.xPixelOffset : node.yPixelOffset) / config.IMG_WIDTH) * 100
-        //          + config.X_PIXEL_OFFSET);
-        //      let y_position: number = config.Y_SCALE
-        //        * (((!config.XY_FLIPPED ? node.yPixelOffset : node.xPixelOffset) / config.IMG_HEIGHT) * 100
-        //          + config.Y_PIXEL_OFFSET);
+        function adjustPosition(position: number) {
+          if (position > UPPER_BOUND) {
+            return UPPER_ADJUST;
+          } else if (position < LOWER_BOUND) {
+            return LOWER_ADJUST;
+          }
+          return position;
+        }
 
-        if (x_position > 100) {
-          x_position = 95;
-        } else if (x_position < 0) {
-          x_position = 5;
-        }
-        if (y_position > 100) {
-          y_position = 95;
-        } else if (y_position < 0) {
-          y_position = 5;
-        }
+        x_position = adjustPosition(x_position);
+        y_position = adjustPosition(y_position);
 
         const isMapEnlarged = props.minimapEnlarged;
         // const isInfoNode = (node.info_hotspots?.length ?? 0) > 0;
@@ -254,14 +284,26 @@ function Minimap(props: Readonly<object> | any) {
     );
   }
 
+  function calculateNewXY(
+    imageHeightorWidth: number,
+    coordinate: number,
+    offset: number,
+  ): number {
+    return (imageHeightorWidth * coordinate) / 100 - offset;
+  }
+
   async function updateNodeInfo() {
     try {
-      const newX: number =
-        (props.minimapData.img_width * x) / 100 -
-        props.minimapData.x_pixel_offset;
-      const newY: number =
-        (props.minimapData.img_height * y) / 100 -
-        props.minimapData.y_pixel_offset;
+      const newX: number = calculateNewXY(
+        props.minimapData.img_width,
+        x,
+        props.minimapData.x_pixel_offset,
+      );
+      const newY: number = calculateNewXY(
+        props.minimapData.img_width,
+        x,
+        props.minimapData.x_pixel_offset,
+      );
 
       await NetworkCalls.updateNodeCoordinates(
         // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
@@ -280,7 +322,7 @@ function Minimap(props: Readonly<object> | any) {
         // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
 
         selectedNode?.survey_node,
-        rotation / 57.2958,
+        rotation / ROTATION,
       );
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Rotation \n ${e}`);
@@ -309,6 +351,18 @@ function Minimap(props: Readonly<object> | any) {
     }
   }
 
+  function handleCoordinateChange(
+    setCoordinate: (value: number) => void,
+    value: string,
+  ) {
+    if (value === "0") {
+      setCoordinate(UPPER_BOUND);
+    } else if (value === "100" || value === "") {
+      setCoordinate(LOWER_BOUND);
+    } else if (parseInt(value) <= UPPER_BOUND) {
+      setCoordinate(parseInt(value));
+    }
+  }
   return (
     <>
       {editing && !selectedNode && (
@@ -365,9 +419,9 @@ function Minimap(props: Readonly<object> | any) {
                   value={rotation}
                   onChange={(e) => {
                     if (e.target.value === "0" || e.target.value === "") {
-                      setRotation(360);
+                      setRotation(DEGREE);
                     } else if (e.target.value === "360") {
-                      setRotation(0);
+                      setRotation(LOWER_BOUND);
                     } else if (parseInt(e.target.value) <= 360) {
                       setRotation(parseInt(e.target.value));
                     }
@@ -388,18 +442,7 @@ function Minimap(props: Readonly<object> | any) {
                   name="x"
                   id="x"
                   value={Math.round(x)}
-                  onChange={(e) => {
-                    if (e.target.value === "0") {
-                      setX(100);
-                    } else if (
-                      e.target.value === "100" ||
-                      e.target.value === ""
-                    ) {
-                      setX(0);
-                    } else if (parseInt(e.target.value) <= 100) {
-                      setX(parseInt(e.target.value));
-                    }
-                  }}
+                  onChange={(e) => handleCoordinateChange(setX, e.target.value)}
                   min="0"
                   max="100"
                 />
@@ -411,18 +454,9 @@ function Minimap(props: Readonly<object> | any) {
                   name="y"
                   id="y"
                   value={Math.round(y)}
-                  onChange={(e): void => {
-                    if (e.target.value === "0") {
-                      setY(100);
-                    } else if (
-                      e.target.value === "100" ||
-                      e.target.value === ""
-                    ) {
-                      setY(0);
-                    } else if (parseInt(e.target.value) <= 100) {
-                      setY(parseInt(e.target.value));
-                    }
-                  }}
+                  onChange={(e): void =>
+                    handleCoordinateChange(setY, e.target.value)
+                  }
                   min="0"
                   max="100"
                 />
