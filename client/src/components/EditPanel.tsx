@@ -162,6 +162,7 @@ const EditPanel: React.FC<EditPanelProps> = ({
             )}
 
             <button
+              data-testid="redirectButton"
               onClick={() => {
                 setEditState(EditingFunctions.REDIRECT);
                 if (selectedSite.external_url?.includes("https://")) {

@@ -19,38 +19,12 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("SiteHome Component", () => {
-  const originalEnv = global.window._env_;
-
-  beforeAll(() => {
-    global.window._env_ = {
-      API_URL: "https://example.com",
-      PROJECT_TITLE: "Test Project",
-      USE_SSO: true,
-    };
-  });
-
-  afterAll(() => {
-    global.window._env_ = originalEnv;
-  });
-
-  beforeEach(() => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: jest.fn().mockResolvedValue({ key: "value" }),
-    }) as jest.MockedFunction<typeof fetch>;
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   it("should use API URL from window._env_", async () => {
     render(
       <Router>
         <SiteHome onButtonClick={() => {}} />
       </Router>,
     );
-
     await waitFor(() => {
       expect(screen.getByText(/Prism/)).toBeInTheDocument();
       const urlCalled = (global.fetch as jest.Mock).mock.calls[0][0];
