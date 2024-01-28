@@ -4,6 +4,7 @@ declare namespace Cypress {
     singleSite: boolean;
     hotspots: boolean;
     timeline: boolean;
+    adminUser: boolean;
   }
 
   interface Chainable<> {

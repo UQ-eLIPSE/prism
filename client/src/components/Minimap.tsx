@@ -126,6 +126,7 @@ function Minimap(props: Readonly<object> | any) {
     if (editing && !selectedNode) {
       setSelectedNode(node);
       setX(
+<<<<<<< HEAD
         calculateXY(
           node.x,
           node.y,
@@ -134,8 +135,17 @@ function Minimap(props: Readonly<object> | any) {
           1,
           props.minimapData.img_width,
         ),
+=======
+        (props.minimapData.x_scale *
+          ((!props.minimapData.xy_flipped ? node.x : node.y) +
+            props.minimapData.x_pixel_offset) *
+          100) /
+          props.minimapData.img_width,
+>>>>>>> origin/develop
       );
+
       setY(
+<<<<<<< HEAD
         calculateXY(
           node.y,
           node.x,
@@ -144,6 +154,13 @@ function Minimap(props: Readonly<object> | any) {
           1,
           props.minimapData.img_height,
         ),
+=======
+        (props.minimapData.y_scale *
+          ((!props.minimapData.xy_flipped ? node.y : node.x) +
+            props.minimapData.y_pixel_offset) *
+          100) /
+          props.minimapData.img_height,
+>>>>>>> origin/develop
       );
 
       setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
@@ -188,6 +205,7 @@ function Minimap(props: Readonly<object> | any) {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
         // Element Position = Scale * (Position within map + Offset)
+<<<<<<< HEAD
         let x_position: number = calculateXY(
           node.x,
           node.y,
@@ -212,13 +230,37 @@ function Minimap(props: Readonly<object> | any) {
             return LOWER_ADJUST;
           }
           return position;
+=======
+        let x_position: number =
+          (props.minimapData.x_scale *
+            ((!props.minimapData.xy_flipped ? node.x : node.y) +
+              props.minimapData.x_pixel_offset) *
+            100) /
+          props.minimapData.img_width;
+        let y_position: number =
+          (props.minimapData.y_scale *
+            ((!props.minimapData.xy_flipped ? node.y : node.x) +
+              props.minimapData.y_pixel_offset) *
+            100) /
+          props.minimapData.img_height;
+
+        if (x_position > 100) {
+          x_position = 95;
+        } else if (x_position < 0) {
+          x_position = 5;
+        }
+
+        if (y_position > 100) {
+          y_position = 95;
+        } else if (y_position < 0) {
+          y_position = 5;
+>>>>>>> origin/develop
         }
 
         x_position = adjustPosition(x_position);
         y_position = adjustPosition(y_position);
 
         const isMapEnlarged = props.minimapEnlarged;
-        // const isInfoNode = (node.info_hotspots?.length ?? 0) > 0;
         const nodeTitle = node.tiles_name;
 
         return (
@@ -269,12 +311,6 @@ function Minimap(props: Readonly<object> | any) {
                   left: `${node == selectedNode ? x : x_position}%`,
                 }}
               >
-                {/* Commented out as it may be needed with future infoNode functionality. */}
-                {/* {isInfoNode && (
-                  <div className={MinimapStyles.infoIcon}>
-                    <i className="fas fa-info-circle" />
-                  </div>
-                )} */}
                 {nodeTitle}
               </div>
             )}
@@ -313,6 +349,9 @@ function Minimap(props: Readonly<object> | any) {
         newX,
         newY,
       );
+
+      setSelectedNode(null);
+      setEditing(false);
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
     }
@@ -384,8 +423,6 @@ function Minimap(props: Readonly<object> | any) {
 
             if (editing && selectedNode) {
               updateNodeInfo();
-              setSelectedNode(null);
-              setEditing(false);
             }
           }}
           className={`editButton ${
@@ -477,8 +514,6 @@ function Minimap(props: Readonly<object> | any) {
                 <button
                   onClick={(e): void => {
                     e.preventDefault();
-                    setSelectedNode(null);
-                    setEditing(false);
                     updateNodeInfo();
                   }}
                 >
