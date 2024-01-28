@@ -127,16 +127,19 @@ function Minimap(props: Readonly<object> | any) {
     if (editing && !selectedNode) {
       setSelectedNode(node);
       setX(
-        (((!props.minimapData.xy_flipped ? node.x : node.y) +
-          props.minimapData.x_pixel_offset) /
-          props.minimapData.img_width) *
-          100,
+        (props.minimapData.x_scale *
+          ((!props.minimapData.xy_flipped ? node.x : node.y) +
+            props.minimapData.x_pixel_offset) *
+          100) /
+          props.minimapData.img_width,
       );
+
       setY(
-        (((!props.minimapData.xy_flipped ? node.y : node.x) +
-          props.minimapData.y_pixel_offset) /
-          props.minimapData.img_height) *
-          100,
+        (props.minimapData.y_scale *
+          ((!props.minimapData.xy_flipped ? node.y : node.x) +
+            props.minimapData.y_pixel_offset) *
+          100) /
+          props.minimapData.img_height,
       );
       setRotation(Math.round(node.rotation * 57.2958) % 360);
     } else if (!editing && !selectedNode) {
@@ -193,19 +196,12 @@ function Minimap(props: Readonly<object> | any) {
             100) /
           props.minimapData.img_height;
 
-        // ERROR: This fails when an offset is used, broken logic!!
-        //      let x_position: number = config.X_SCALE
-        //        * (((!config.XY_FLIPPED ? node.xPixelOffset : node.yPixelOffset) / config.IMG_WIDTH) * 100
-        //          + config.X_PIXEL_OFFSET);
-        //      let y_position: number = config.Y_SCALE
-        //        * (((!config.XY_FLIPPED ? node.yPixelOffset : node.xPixelOffset) / config.IMG_HEIGHT) * 100
-        //          + config.Y_PIXEL_OFFSET);
-
         if (x_position > 100) {
           x_position = 95;
         } else if (x_position < 0) {
           x_position = 5;
         }
+
         if (y_position > 100) {
           y_position = 95;
         } else if (y_position < 0) {
@@ -213,7 +209,6 @@ function Minimap(props: Readonly<object> | any) {
         }
 
         const isMapEnlarged = props.minimapEnlarged;
-        // const isInfoNode = (node.info_hotspots?.length ?? 0) > 0;
         const nodeTitle = node.tiles_name;
 
         return (
@@ -264,12 +259,6 @@ function Minimap(props: Readonly<object> | any) {
                   left: `${node == selectedNode ? x : x_position}%`,
                 }}
               >
-                {/* Commented out as it may be needed with future infoNode functionality. */}
-                {/* {isInfoNode && (
-                  <div className={MinimapStyles.infoIcon}>
-                    <i className="fas fa-info-circle" />
-                  </div>
-                )} */}
                 {nodeTitle}
               </div>
             )}
@@ -282,11 +271,13 @@ function Minimap(props: Readonly<object> | any) {
   async function updateNodeInfo() {
     try {
       const newX: number =
-        (props.minimapData.img_width * x) / 100 -
-        props.minimapData.x_pixel_offset;
+        ((props.minimapData.img_width * x) / 100 -
+          props.minimapData.x_pixel_offset) /
+        props.minimapData.x_scale;
       const newY: number =
-        (props.minimapData.img_height * y) / 100 -
-        props.minimapData.y_pixel_offset;
+        ((props.minimapData.img_height * y) / 100 -
+          props.minimapData.y_pixel_offset) /
+        props.minimapData.y_scale;
 
       await NetworkCalls.updateNodeCoordinates(
         // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
@@ -296,6 +287,9 @@ function Minimap(props: Readonly<object> | any) {
         newX,
         newY,
       );
+
+      setSelectedNode(null);
+      setEditing(false);
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
     }
@@ -363,8 +357,6 @@ function Minimap(props: Readonly<object> | any) {
 
             if (editing && selectedNode) {
               updateNodeInfo();
-              setSelectedNode(null);
-              setEditing(false);
             }
           }}
           className={`editButton ${
