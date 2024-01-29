@@ -302,12 +302,14 @@ function Minimap(props: Readonly<object> | any) {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function calculateNewXY(
     imageHeightorWidth: number,
     coordinate: number,
     offset: number,
+    scale: number,
   ): number {
-    return (imageHeightorWidth * coordinate) / 100 - offset;
+    return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
   }
 
   async function updateNodeInfo() {
@@ -316,11 +318,13 @@ function Minimap(props: Readonly<object> | any) {
         props.minimapData.img_width,
         x,
         props.minimapData.x_pixel_offset,
+        props.minimapData.x_scale,
       );
       const newY: number = calculateNewXY(
         props.minimapData.img_width,
-        x,
+        y,
         props.minimapData.x_pixel_offset,
+        props.minimapData.y_scale,
       );
 
       await NetworkCalls.updateNodeCoordinates(
