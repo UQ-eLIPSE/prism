@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "lint": "eslint . --ext .ts",
-    "link-validator": "ts-node src/db/util/urlLinkValidator.test.ts",
+    "link-validator": "ts-node src/db/util/urlLinkValidator.ts",
     "test": "jest --detectOpenHandles",
     "start": "node ./dist/main.js",
     "watch": "nodemon src/main.ts",
