@@ -1,79 +1,38 @@
 ///<reference types="cypress" />
 
 import { testEachZone } from "../testutils";
-
-interface MiniMapAction {
-  url: string;
-  method: string;
-  alias: string;
-}
-interface MiniMapActions {
-  patchRequest: MiniMapAction;
-  getRequest: MiniMapAction;
-}
-
-const actions: MiniMapActions = {
-  patchRequest: {
-    url: "/api/node/coords/*",
-    method: "PATCH",
-    alias: "patchNode",
-  },
-  getRequest: {
-    url: "/api/site/*/*/survey/minimapSingleSite*",
-    method: "GET",
-    alias: "getMinimapData",
-  },
-};
+import {
+  interceptMinimapData,
+  expandMiniMap,
+  editSelectedNode,
+  editNodePosition,
+  actions,
+} from "../support/minimapUtils";
 
 testEachZone((zone: Cypress.PrismZone) => {
-  describe("Test case: When user selected a mininode on minimap, should be able to update coordinates via input form", () => {
+  describe("Test case: When user has selected a mininode on the minimap, should be able to update coordinates via input form", () => {
+    let getReqAlias: string;
+    let patchReqAlias: string;
+
     beforeEach(() => {
       cy.accessZone(zone);
+      if (!zone.adminUser) return;
+      [getReqAlias, patchReqAlias] = interceptMinimapData(
+        actions.getRequest,
+        actions.patchRequest,
+      );
+      expandMiniMap();
+      editSelectedNode();
     });
-
-    /**
-     * Helper function to intercept the minimap data and return the alias for each action
-     * @param {MiniMapAction[]} actions - list of actions to intercept. i.e. PATCH, GET
-     * @returns {string[]} - list of alias for each action starting with "@"
-     */
-    const interceptMinimapData = (...actions: MiniMapAction[]): string[] => {
-      return actions.map((action) => {
-        cy.intercept(action.method, action.url).as(action.alias);
-        return `@${action.alias}`;
-      });
-    };
-
-    const expandMiniMap = (): void => {
-      cy.get('i[class*="fa-expand-arrows-alt"]').click({
-        timeout: 10000,
-        force: true,
-      });
-    };
-
-    const editSelectedNode = (): void => {
-      cy.get("p").contains("Edit Node").should("exist").click({ force: true });
-      cy.get("h2").contains("Select a Node to Edit");
-      cy.get("[data-cy='selected-node']").click({ force: true });
-    };
-
-    const editNodePosition = (coordId: string, coordValue: string): void => {
-      cy.get(`input[id='${coordId}']`).should("exist").clear();
-      cy.get(`input[id='${coordId}']`).should("exist").type(coordValue);
-    };
 
     it(`Testing: user changes x coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
-        const [getReqAlias, patchReqAlias] = interceptMinimapData(
-          actions.getRequest,
-          actions.patchRequest,
-        );
-        expandMiniMap();
-        editSelectedNode();
-
         cy.wait(getReqAlias).then(() => {
           const randX = Math.floor(Math.random() * 9) * 10 + 10;
           editNodePosition("x", String(randX));
-          cy.get("button").contains("Save").click({ force: true });
+
+          cy.get("button").contains("Save").click({ force: true }); // submit to save
+
           cy.wait(patchReqAlias).then(() => {
             cy.wait("@getMinimapData").then(() => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
@@ -97,17 +56,12 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
-        const [getReqAlias, patchReqAlias] = interceptMinimapData(
-          actions.getRequest,
-          actions.patchRequest,
-        );
-        expandMiniMap();
-        editSelectedNode();
-
         cy.wait(getReqAlias).then(() => {
           const randY = Math.floor(Math.random() * 9) * 10 + 10;
           editNodePosition("y", String(randY));
-          cy.get("button").contains("Save").click({ force: true });
+
+          cy.get("button").contains("Save").click({ force: true }); // submit to save
+
           cy.wait(patchReqAlias).then(() => {
             cy.wait("@getMinimapData").then(() => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
@@ -128,13 +82,21 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+  });
+
+  describe(`Test case: 'Value should not be saved when user cancels form submission'`, () => {
+    let getReqAlias: string;
+
+    beforeEach(() => {
+      cy.accessZone(zone);
+      if (!zone.adminUser) return;
+      [getReqAlias] = interceptMinimapData(actions.getRequest);
+      expandMiniMap();
+      editSelectedNode();
+    });
 
     it(`Testing: x-coordinates should not change when user cancels form submission`, () => {
       if (!zone.adminUser) return;
-
-      const [getReqAlias] = interceptMinimapData(actions.getRequest);
-      expandMiniMap();
-      editSelectedNode();
 
       cy.wait(getReqAlias).then(() => {
         cy.get("input[id='x']").then(($input) => {
@@ -158,10 +120,6 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: y-coordinates should not change when user cancels form submission`, () => {
       if (!zone.adminUser) return;
 
-      const [getReqAlias] = interceptMinimapData(actions.getRequest);
-      expandMiniMap();
-      editSelectedNode();
-
       cy.wait(getReqAlias).then(() => {
         cy.get("input[id='y']").then(($input) => {
           const originalY = $input.val();
@@ -180,16 +138,27 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       });
     });
+  });
 
-    it(`Testing: x-coordinates should be saved when user submits a different value`, () => {
+  describe(`Test case: Value should be changed and saved when user submits a different value, and reopens the same form`, () => {
+    let getReqAlias: string;
+    let patchReqAlias: string;
+
+    beforeEach(() => {
+      cy.accessZone(zone);
+
       if (!zone.adminUser) return;
 
-      const [getReqAlias, patchReqAlias] = interceptMinimapData(
+      [getReqAlias, patchReqAlias] = interceptMinimapData(
         actions.getRequest,
         actions.patchRequest,
       );
       expandMiniMap();
       editSelectedNode();
+    });
+
+    it(`Testing: x-coordinates should be saved when user submits a different value`, () => {
+      if (!zone.adminUser) return;
 
       cy.wait(getReqAlias).then(() => {
         cy.get("input[id='x']").then(($input) => {
@@ -215,13 +184,6 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: y-coordinates should be saved when user submits a different value`, () => {
       if (!zone.adminUser) return;
 
-      const [getReqAlias, patchReqAlias] = interceptMinimapData(
-        actions.getRequest,
-        actions.patchRequest,
-      );
-      expandMiniMap();
-      editSelectedNode();
-
       cy.wait(getReqAlias).then(() => {
         cy.get("input[id='y']").then(($input) => {
           const originalY = $input.val();
@@ -236,6 +198,42 @@ testEachZone((zone: Cypress.PrismZone) => {
             cy.wait(getReqAlias).then(() => {
               cy.get("input[id='y']").should(($input) => {
                 expect($input.val()).to.eq(String(randY));
+              });
+            });
+          });
+        });
+      });
+    });
+
+    it(`Testing: x and y coordinates should be both saved when user submits a different value`, () => {
+      if (!zone.adminUser) return;
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='x']").then(($input) => {
+          const originalX = $input.val();
+          expect(originalX).to.not.be.undefined;
+
+          // Generate a random value for x
+          const randX = Math.floor(Math.random() * 9) * 10 + 10;
+          editNodePosition("x", String(randX));
+
+          cy.get("input[id='y']").then(($input) => {
+            const originalY = $input.val();
+            expect(originalY).to.not.be.undefined;
+
+            // Generate a random value for y
+            const randY = Math.floor(Math.random() * 9) * 10 + 10;
+            editNodePosition("y", String(randY));
+
+            cy.get("button").contains("Save").click({ force: true });
+            cy.wait(patchReqAlias).then(() => {
+              cy.wait(getReqAlias).then(() => {
+                cy.get("input[id='x']").should(($input) => {
+                  expect($input.val()).to.eq(String(randX));
+                });
+                cy.get("input[id='y']").should(($input) => {
+                  expect($input.val()).to.eq(String(randY));
+                });
               });
             });
           });
