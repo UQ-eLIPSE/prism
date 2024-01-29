@@ -2,11 +2,46 @@
 
 import { testEachZone } from "../testutils";
 
+interface MiniMapAction {
+  url: string;
+  method: string;
+  alias: string;
+}
+interface MiniMapActions {
+  patchRequest: MiniMapAction;
+  getRequest: MiniMapAction;
+}
+
+const actions: MiniMapActions = {
+  patchRequest: {
+    url: "/api/node/coords/*",
+    method: "PATCH",
+    alias: "patchNode",
+  },
+  getRequest: {
+    url: "/api/site/*/*/survey/minimapSingleSite*",
+    method: "GET",
+    alias: "getMinimapData",
+  },
+};
+
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: When user selected a mininode on minimap, should be able to update coordinates via input form", () => {
     beforeEach(() => {
       cy.accessZone(zone);
     });
+
+    /**
+     * Helper function to intercept the minimap data and return the alias for each action
+     * @param {MiniMapAction[]} actions - list of actions to intercept. i.e. PATCH, GET
+     * @returns {string[]} - list of alias for each action starting with "@"
+     */
+    const interceptMinimapData = (...actions: MiniMapAction[]): string[] => {
+      return actions.map((action) => {
+        cy.intercept(action.method, action.url).as(action.alias);
+        return `@${action.alias}`;
+      });
+    };
 
     const expandMiniMap = (): void => {
       cy.get('i[class*="fa-expand-arrows-alt"]').click({
@@ -21,24 +56,25 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.get("[data-cy='selected-node']").click({ force: true });
     };
 
-    const editNodePosition = (coordId: string, coordValue: string) => {
+    const editNodePosition = (coordId: string, coordValue: string): void => {
       cy.get(`input[id='${coordId}']`).should("exist").clear();
       cy.get(`input[id='${coordId}']`).should("exist").type(coordValue);
     };
 
     it(`Testing: user changes x coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
-        cy.intercept("PATCH", "/api/node/coords/*").as("patchNode");
-        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
-          "getMinimapData",
+        const [getReqAlias, patchReqAlias] = interceptMinimapData(
+          actions.getRequest,
+          actions.patchRequest,
         );
         expandMiniMap();
         editSelectedNode();
-        cy.wait("@getMinimapData").then(() => {
+
+        cy.wait(getReqAlias).then(() => {
           const randX = Math.floor(Math.random() * 9) * 10 + 10;
           editNodePosition("x", String(randX));
           cy.get("button").contains("Save").click({ force: true });
-          cy.wait("@patchNode").then(() => {
+          cy.wait(patchReqAlias).then(() => {
             cy.wait("@getMinimapData").then(() => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalWidth = $img.width();
@@ -58,20 +94,21 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
-        cy.intercept("PATCH", "/api/node/coords/*").as("patchNode");
-        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
-          "getMinimapData",
+        const [getReqAlias, patchReqAlias] = interceptMinimapData(
+          actions.getRequest,
+          actions.patchRequest,
         );
         expandMiniMap();
         editSelectedNode();
 
-        cy.wait("@getMinimapData").then(() => {
+        cy.wait(getReqAlias).then(() => {
           const randY = Math.floor(Math.random() * 9) * 10 + 10;
           editNodePosition("y", String(randY));
           cy.get("button").contains("Save").click({ force: true });
-          cy.wait("@patchNode").then(() => {
+          cy.wait(patchReqAlias).then(() => {
             cy.wait("@getMinimapData").then(() => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalHeight = $img.height();
@@ -91,5 +128,9 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+
+    // it(`Should not change the x coordinate if user clicks cancel button`. () => {
+
+    // })
   });
 });
