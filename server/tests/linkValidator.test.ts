@@ -10,7 +10,7 @@ describe("Manta Resource URLlink Validator", () => {
   let db: Db;
 
   beforeAll(async () => {
-    client = await MongoClient.connect("mongodb://mongodb:27017"); // change link to mongodb://localhost:27017 when docker not running
+    client = await MongoClient.connect("mongodb://localhost:27017");
     db = client.db(process.env.DATABASE_URL?.split("27017/")[1]);
   });
   afterAll(async () => {
