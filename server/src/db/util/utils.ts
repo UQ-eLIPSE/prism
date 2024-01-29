@@ -3,7 +3,7 @@ import * as path from "path";
 
 // This Section is config log files
 const parentDir = path.dirname(__dirname);
-const resourcesLinksLogs = `${parentDir}/broken-links-logs.csv`;
+const resourcesLinksLogs = `${parentDir}/logs/broken-links-logs.csv`;
 const headers = "brokenLink,errorCode\n";
 // Utility function to write headers to CSV
 async function writeCsvHeaders(

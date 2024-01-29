@@ -8,7 +8,7 @@ import { LinkResource } from "../src/db/util/testResourcesLinks";
 import { testResourcesLinks } from "../src/db/util/testResourcesLinks";
 
 const parentDir = path.dirname(__dirname);
-const resourcesLinksLogs: string = `${parentDir}/src/db/broken-links-logs.csv`;
+const resourcesLinksLogs: string = `${parentDir}/src/db/logs/broken-links-logs.csv`;
 
 async function readBrokenLinksFromCSV(filePath: string) {
   return new Promise<string[]>((resolve, reject) => {
@@ -33,7 +33,7 @@ async function readBrokenLinksFromCSV(filePath: string) {
 }
 
 describe("Manta Resource URLlink Validator", () => {
-  const resourceCollection: LinkResource[] = [
+  const workingLinkResource: LinkResource[] = [
     {
       manta_link:
         "https://stluc.manta.uqcloud.net/elipse/public/PRISM/agco360/boomaroo-002/site/",
@@ -41,7 +41,7 @@ describe("Manta Resource URLlink Validator", () => {
     },
   ];
 
-  const resourceCollection_error: LinkResource[] = [
+  const brokenLinkResource: LinkResource[] = [
     {
       manta_link:
         "https://stluc.manta.uqcloud.net/elipse/public/PRISM/agco360/boomaroo-002/site/",
@@ -50,13 +50,13 @@ describe("Manta Resource URLlink Validator", () => {
   ];
 
   test("Links receives an accurate web response", async () => {
-    const result = await testResourcesLinks(resourceCollection);
+    const result = await testResourcesLinks(workingLinkResource);
 
     expect(result).toBe(true);
   });
 
   test("Links receives an error web response", async () => {
-    const result = await testResourcesLinks(resourceCollection_error);
+    const result = await testResourcesLinks(brokenLinkResource);
     expect(result).toBe(false);
 
     const fileExists = fs.existsSync(resourcesLinksLogs);

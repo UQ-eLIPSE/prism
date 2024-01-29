@@ -36,7 +36,7 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 data
-broken-links-logs.csv
+server/src/db/logs/*
 
 # Editor directories and files
 .idea
