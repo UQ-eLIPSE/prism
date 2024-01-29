@@ -129,8 +129,118 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    // it(`Should not change the x coordinate if user clicks cancel button`. () => {
+    it(`Testing: x-coordinates should not change when user cancels form submission`, () => {
+      if (!zone.adminUser) return;
 
-    // })
+      const [getReqAlias] = interceptMinimapData(actions.getRequest);
+      expandMiniMap();
+      editSelectedNode();
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='x']").then(($input) => {
+          const originalX = $input.val();
+          expect(originalX).to.not.be.undefined;
+
+          // Generate a random value for x
+          const randX = Math.floor(Math.random() * 9) * 10 + 10;
+          editNodePosition("x", String(randX));
+
+          cy.get("button").contains("Cancel").click({ force: true });
+          editSelectedNode();
+
+          cy.get("input[id='x']").should(($input) => {
+            expect($input.val()).to.eq(originalX);
+          });
+        });
+      });
+    });
+
+    it(`Testing: y-coordinates should not change when user cancels form submission`, () => {
+      if (!zone.adminUser) return;
+
+      const [getReqAlias] = interceptMinimapData(actions.getRequest);
+      expandMiniMap();
+      editSelectedNode();
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='y']").then(($input) => {
+          const originalY = $input.val();
+          expect(originalY).to.not.be.undefined;
+
+          // Generate a random value for y
+          const randY = Math.floor(Math.random() * 9) * 10 + 10;
+          editNodePosition("y", String(randY));
+
+          cy.get("button").contains("Cancel").click({ force: true });
+          editSelectedNode();
+
+          cy.get("input[id='y']").should(($input) => {
+            expect($input.val()).to.eq(originalY);
+          });
+        });
+      });
+    });
+
+    it(`Testing: x-coordinates should be saved when user submits a different value`, () => {
+      if (!zone.adminUser) return;
+
+      const [getReqAlias, patchReqAlias] = interceptMinimapData(
+        actions.getRequest,
+        actions.patchRequest,
+      );
+      expandMiniMap();
+      editSelectedNode();
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='x']").then(($input) => {
+          const originalX = $input.val();
+          expect(originalX).to.not.be.undefined;
+
+          // Generate a random value for x
+          const randX = Math.floor(Math.random() * 9) * 10 + 10;
+          editNodePosition("x", String(randX));
+
+          cy.get("button").contains("Save").click({ force: true });
+          cy.wait(patchReqAlias).then(() => {
+            cy.wait(getReqAlias).then(() => {
+              cy.get("input[id='x']").should(($input) => {
+                expect($input.val()).to.eq(String(randX));
+              });
+            });
+          });
+        });
+      });
+    });
+
+    it(`Testing: y-coordinates should be saved when user submits a different value`, () => {
+      if (!zone.adminUser) return;
+
+      const [getReqAlias, patchReqAlias] = interceptMinimapData(
+        actions.getRequest,
+        actions.patchRequest,
+      );
+      expandMiniMap();
+      editSelectedNode();
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='y']").then(($input) => {
+          const originalY = $input.val();
+          expect(originalY).to.not.be.undefined;
+
+          // Generate a random value for y
+          const randY = Math.floor(Math.random() * 9) * 10 + 10;
+          editNodePosition("y", String(randY));
+
+          cy.get("button").contains("Save").click({ force: true });
+          cy.wait(patchReqAlias).then(() => {
+            cy.wait(getReqAlias).then(() => {
+              cy.get("input[id='y']").should(($input) => {
+                expect($input.val()).to.eq(String(randY));
+              });
+            });
+          });
+        });
+      });
+    });
   });
 });
