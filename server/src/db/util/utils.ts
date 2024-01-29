@@ -16,16 +16,25 @@ async function writeCsvHeaders(
 async function logError(errorLog: string, message: string): Promise<void> {
   await fs.appendFile(errorLog, message + "\n");
 }
-
-// Maximum Connection Time for Request
-const timeOutMillis = 120 * 1000;
+//Set Timeout
 async function fetchWithTimeout(input: string): Promise<Response> {
-  return (await Promise.race([
-    fetch(input, { method: "HEAD" }),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Request timed out.")), timeOutMillis),
-    ),
-  ])) as Response;
+  let timeoutId;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    const timeOutMillis = 120 * 1000;
+    timeoutId = setTimeout(() => {
+      reject(new Error("Request timed out."));
+    }, timeOutMillis);
+  });
+
+  try {
+    return (await Promise.race([
+      fetch(input, { method: "HEAD" }),
+      timeoutPromise,
+    ])) as Response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /**
