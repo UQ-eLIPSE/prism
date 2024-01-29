@@ -50,6 +50,8 @@ describe("EditPanel Component", () => {
     const redirectButton = getByTestId("redirectButton");
     fireEvent.click(redirectButton);
     await waitFor(() => {
+      // The .calls property is an array that contains all the calls that have been made to the mock function.
+      // The first [0] gets the first call, and the second [0] gets the URL to which the request is made.
       const urlCalled = (global.fetch as jest.Mock).mock.calls[0][0];
       expect(urlCalled).toBe("https://example.com/api/site/exampleSite/exists");
     });
