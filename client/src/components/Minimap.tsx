@@ -135,9 +135,10 @@ function Minimap(props: Readonly<object> | any) {
     imageHeightorWidth: number,
   ): number {
     return (
-      ((((flipped ? nodeCoordinate2 : nodeCoordinate1) + offset) * scale) /
-        imageHeightorWidth) *
-      PERCENTAGE
+      (scale *
+        ((!flipped ? nodeCoordinate1 : nodeCoordinate2) + offset) *
+        PERCENTAGE) /
+      imageHeightorWidth
     );
   }
 
@@ -155,7 +156,7 @@ function Minimap(props: Readonly<object> | any) {
           node.y,
           props.minimapData.xy_flipped,
           props.minimapData.x_pixel_offset,
-          1,
+          props.minimapData.x_scale,
           props.minimapData.img_width,
         ),
       );
@@ -166,7 +167,7 @@ function Minimap(props: Readonly<object> | any) {
           node.x,
           props.minimapData.xy_flipped,
           props.minimapData.y_pixel_offset,
-          1,
+          props.minimapData.y_scale,
           props.minimapData.img_height,
         ),
       );
@@ -306,8 +307,9 @@ function Minimap(props: Readonly<object> | any) {
     imageHeightorWidth: number,
     coordinate: number,
     offset: number,
+    scale: number,
   ): number {
-    return (imageHeightorWidth * coordinate) / 100 - offset;
+    return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
   }
 
   async function updateNodeInfo() {
@@ -316,11 +318,13 @@ function Minimap(props: Readonly<object> | any) {
         props.minimapData.img_width,
         x,
         props.minimapData.x_pixel_offset,
+        props.minimapData.x_scale,
       );
       const newY: number = calculateNewXY(
-        props.minimapData.img_width,
-        x,
-        props.minimapData.x_pixel_offset,
+        props.minimapData.img_height,
+        y,
+        props.minimapData.y_pixel_offset,
+        props.minimapData.y_scale,
       );
 
       await NetworkCalls.updateNodeCoordinates(

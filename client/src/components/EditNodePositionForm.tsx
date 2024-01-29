@@ -78,13 +78,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     min: number,
     max: number,
   ): void => {
-    const parsedValue = parseInt(e.target.value);
-    if (parsedValue <= min || e.target.value === "") {
-      setStateValue(max);
-    } else if (parsedValue >= max) {
-      setStateValue(min);
-    } else if (parsedValue < 360) {
-      setStateValue(parsedValue);
+    if (e.target.value === min.toString()) {
+      setStateValue(100);
+    } else if (e.target.value === max.toString() || e.target.value === "") {
+      setStateValue(0);
+    } else if (parseInt(e.target.value) <= 100) {
+      setStateValue(parseInt(e.target.value));
     }
   };
 
@@ -95,14 +94,13 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
    * @param {Function} updateCallbackFn The function that handles the update of node.
    * @returns {void}
    */
-  const handleSubmit = async (
+  const handleSubmit = (
     e: React.FormEvent<HTMLFormElement>,
     updateCallbackFn: () => Promise<void>,
-  ): Promise<void> => {
+  ): void => {
     e.preventDefault();
-    props.resetSelectedNode();
 
-    await updateCallbackFn();
+    updateCallbackFn();
   };
 
   /**

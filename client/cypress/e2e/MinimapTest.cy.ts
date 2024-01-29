@@ -49,5 +49,41 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+
+    it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly`, () => {
+      if (zone.adminUser) {
+        cy.intercept("PATCH", "/api/node/coords/*").as("patchNode");
+        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
+          "getMinimapData",
+        );
+        cy.get('i[class*="fa-expand-arrows-alt"]').click({
+          timeout: 10000,
+          force: true,
+        });
+        cy.get("p")
+          .contains("Edit Node")
+          .should("exist")
+          .click({ force: true });
+        cy.get("h2").contains("Select a Node to Edit");
+        const randOrientation = Math.floor(Math.random() * 100);
+        cy.get("[data-cy='selected-node']").click({ force: true });
+        cy.wait("@getMinimapData").then(() => {
+          cy.get("input[id='orientation']").should("exist").clear();
+          cy.get("input[id='orientation']")
+            .should("exist")
+            .type(String(randOrientation));
+          cy.get("button").contains("Save").click({ force: true });
+          cy.wait("@patchNode").then(() => {
+            cy.get("[data-cy='selected-node']")
+              .parent()
+              .should("have.attr", "style")
+              .should(
+                "contain",
+                `transform: rotate(${(randOrientation / 57.2958).toFixed(4)}rad)`,
+              );
+          });
+        });
+      }
+    });
   });
 });
