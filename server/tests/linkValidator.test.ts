@@ -5,7 +5,7 @@ import { LinkResource } from "../src/db/util/testResourcesLinks";
 import { testResourcesLinks } from "../src/db/util/testResourcesLinks";
 
 const parentDir = path.dirname(__dirname);
-const resourcesLinksLogs = `${parentDir}/src/db/logs.csv`;
+const resourcesLinksLogs = `${parentDir}/src/db/broken-links-logs.csv`;
 
 describe("Manta Resource URLlink Validator", () => {
   const resourceCollection: LinkResource[] = [

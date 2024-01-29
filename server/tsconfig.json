@@ -27,6 +27,6 @@
   "include": [
     "./src/**/*.ts",
     "./tests/**/*.ts",
-    "src/db/util/urlLinkValidator.test.j2"
+    "./src/db/util/*.ts"
   ]
 }
