@@ -4,8 +4,8 @@ import * as path from "path";
 // This Section is config log files
 const parentDir = path.dirname(__dirname);
 const linksTestingLogs = `${parentDir}/urlData/links-testing-logs`;
-const resourcesLinksLogs = `${linksTestingLogs}/resources_links_logs.csv`;
-const headers = "brokenLink,errorMessage,errorCode\n";
+const resourcesLinksLogs = `${linksTestingLogs}/logs.csv`;
+const headers = "brokenLink,errorCode\n";
 // Utility function to write headers to CSV
 async function writeCsvHeaders(
   filePath: string,
@@ -48,7 +48,7 @@ export const validateURLResponse = async (input: string) => {
 
     if (unacceptableErrors.includes(status)) {
       const errorMessage = `Invalid url - Unexpected status code: "${input}",Status code:${status}`;
-      console.error("Invalid url - Unexpected response: ", input);
+      // console.error("Invalid url - Unexpected response: ", input);
       await writeCsvHeaders(resourcesLinksLogs, headers);
       await logError(resourcesLinksLogs, errorMessage);
       return false;
@@ -61,7 +61,7 @@ export const validateURLResponse = async (input: string) => {
       error.message.includes("timed out");
     if (isUnacceptableError) {
       const errorMessage = `Invalid url - Unexpected response: "${input}", Error: ${error.message}`;
-      console.error(errorMessage);
+      // console.error(errorMessage);
       await writeCsvHeaders(resourcesLinksLogs, headers);
       await logError(resourcesLinksLogs, errorMessage);
       return false;
