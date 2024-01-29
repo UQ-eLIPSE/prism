@@ -34,7 +34,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           cy.get("button").contains("Save").click({ force: true }); // submit to save
 
           cy.wait(patchReqAlias).then(() => {
-            cy.wait("@getMinimapData").then(() => {
+            cy.wait(getReqAlias).then(() => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalWidth = $img.width();
                 cy.wrap(totalWidth).should("not.be.undefined");
@@ -63,7 +63,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           cy.get("button").contains("Save").click({ force: true }); // submit to save
 
           cy.wait(patchReqAlias).then(() => {
-            cy.wait("@getMinimapData").then(() => {
+            cy.wait(getReqAlias).then(() => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalHeight = $img.height();
                 cy.wrap(totalHeight).should("not.be.undefined");
