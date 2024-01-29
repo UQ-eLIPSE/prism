@@ -372,18 +372,6 @@ function Minimap(props: Readonly<object> | any) {
     }
   }
 
-  function handleCoordinateChange(
-    setCoordinate: (value: number) => void,
-    value: string,
-  ) {
-    if (value === "0") {
-      setCoordinate(UPPER_BOUND);
-    } else if (value === "100" || value === "") {
-      setCoordinate(LOWER_BOUND);
-    } else if (parseInt(value) <= UPPER_BOUND) {
-      setCoordinate(parseInt(value));
-    }
-  }
   /**
    * Clears selected node and force toggle edit state to false.
    */
