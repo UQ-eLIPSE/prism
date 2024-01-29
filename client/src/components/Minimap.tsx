@@ -6,6 +6,7 @@ import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
 import { InfoHotspot } from "../interfaces/NodeData";
+import EditNodeForm from "./EditNodePositionForm";
 
 interface NewNode {
   floor: number;
@@ -30,6 +31,19 @@ const UPPER_BOUND = 100;
 const LOWER_BOUND = 0;
 const UPPER_ADJUST = 95;
 const LOWER_ADJUST = 5;
+/**
+ * This interface represents the current node's position and rotation in the minimap.
+ * It is used to update the node's position and rotation in the database.
+ * @interface NodeConfiguration
+ * @property {number} x_position 0 - 100 horizontal percentage position of the node.
+ * @property {number} y_position 0 - 100 vertical percentage position of the node.
+ * @property {number} rotation 0 - 360 degrees rotation of the node.
+ */
+interface NodeConfiguration {
+  x_position: number;
+  y_position: number;
+  rotation: number;
+}
 
 function Minimap(props: Readonly<object> | any) {
   const config: ISettings = props.config;
@@ -53,9 +67,19 @@ function Minimap(props: Readonly<object> | any) {
   // State for controlling editing of node position and rotation.
   const [editing, setEditing] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<NewNode | null>();
+
   const [rotation, setRotation] = useState<number>(0);
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
+
+  // * temporary
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [nodeState, setNodeState] = useState<NodeConfiguration>({
+    x_position: 0,
+    y_position: 0,
+    rotation: 0,
+  });
+
   const [nodes, editNodes] = useState<NewNode[]>([]);
 
   useEffect(() => {
@@ -360,6 +384,14 @@ function Minimap(props: Readonly<object> | any) {
       setCoordinate(parseInt(value));
     }
   }
+  /**
+   * Clears selected node and force toggle edit state to false.
+   */
+  function resetSelectedNode(): void {
+    setSelectedNode(null);
+    setEditing(false);
+  }
+
   return (
     <>
       {editing && !selectedNode && (
@@ -402,84 +434,16 @@ function Minimap(props: Readonly<object> | any) {
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
-          <form>
-            <span>
-              <p>Orientation</p>
-              <div>
-                <i className="fa-solid fa-rotate-right"></i>
-                <input
-                  type="number"
-                  name="orientation"
-                  id="orientation"
-                  value={rotation}
-                  onChange={(e) => {
-                    if (e.target.value === "0" || e.target.value === "") {
-                      setRotation(DEGREE);
-                    } else if (e.target.value === "360") {
-                      setRotation(LOWER_BOUND);
-                    } else if (parseInt(e.target.value) <= 360) {
-                      setRotation(parseInt(e.target.value));
-                    }
-                  }}
-                  min="0"
-                  max="360"
-                  step="15"
-                />
-              </div>
-            </span>
-
-            <span>
-              <p>Coordinates</p>
-              <div className="coords">
-                <i className="fa-solid fa-arrows-left-right"></i>
-                <input
-                  type="number"
-                  name="x"
-                  id="x"
-                  value={Math.round(x)}
-                  onChange={(e) => handleCoordinateChange(setX, e.target.value)}
-                  min="0"
-                  max="100"
-                />
-              </div>
-              <div className="coords">
-                <i className="fa-solid fa-arrows-up-down"></i>
-                <input
-                  type="number"
-                  name="y"
-                  id="y"
-                  value={Math.round(y)}
-                  onChange={(e): void =>
-                    handleCoordinateChange(setY, e.target.value)
-                  }
-                  min="0"
-                  max="100"
-                />
-              </div>
-            </span>
-
-            <span>
-              <div className="buttons">
-                <button
-                  onClick={(e): void => {
-                    e.preventDefault();
-                    setSelectedNode(null);
-                    setEditing(false);
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={(e): void => {
-                    e.preventDefault();
-                    updateNodeInfo();
-                  }}
-                >
-                  Save
-                </button>
-              </div>
-            </span>
-          </form>
+          <EditNodeForm
+            rotationValue={rotation}
+            setRotationValue={setRotation}
+            xPositionValue={x}
+            setXPositionValue={setX}
+            yPositionValue={y}
+            setYPositionValue={setY}
+            resetSelectedNode={resetSelectedNode}
+            updateNode={updateNodeInfo}
+          />
         </div>
       </div>
 
