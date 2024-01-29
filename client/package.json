@@ -38,6 +38,8 @@
     "start": "BROWSER=none GENERATE_SOURCEMAP=false react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "cypress:run": "cypress run",
+    "cypress:run:local-agco360": "cypress run --env projectName=local-agco360",
+    "cypress:run:local-uwmt": "cypress run --env projectName=local-uwmt",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:pretty": "yarn lint --fix && prettier . --write",
