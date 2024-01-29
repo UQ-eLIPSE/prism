@@ -38,4 +38,3 @@ is prettied
 
 1. navigate to test folder: `cd prism/client/`
 2. start tests:`yarn cypress:run` or `yarn cypress run --headed --no-exit` (optional: `--spec <path/to/specific/testfilename>`)
-
