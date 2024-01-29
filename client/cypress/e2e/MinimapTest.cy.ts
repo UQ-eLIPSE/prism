@@ -49,5 +49,46 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+    it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
+      if (zone.adminUser) {
+        cy.intercept("PATCH", "/api/node/coords/*").as("patchNode");
+        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
+          "getMinimapData",
+        );
+        cy.get('i[class*="fa-expand-arrows-alt"]').click({
+          timeout: 10000,
+          force: true,
+        });
+        cy.get("p")
+          .contains("Edit Node")
+          .should("exist")
+          .click({ force: true });
+        cy.get("h2").contains("Select a Node to Edit");
+        const randY = Math.floor(Math.random() * 9) * 10 + 10;
+        cy.get("[data-cy='selected-node']").click({ force: true });
+        cy.wait("@getMinimapData").then(() => {
+          cy.get("input[id='y']").should("exist").clear();
+          cy.get("input[id='y']").should("exist").type(String(randY));
+          cy.get("button").contains("Save").click({ force: true });
+          cy.wait("@patchNode").then(() => {
+            cy.wait("@getMinimapData").then(() => {
+              cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
+                const totalHeight = $img.height();
+                cy.wrap(totalHeight).should("not.be.undefined");
+                cy.get("[data-cy='selected-node']")
+                  .parent()
+                  .should(($parent) => {
+                    const topPixelValue = parseFloat($parent.css("top"));
+                    const topPercentage = Math.floor(
+                      (topPixelValue / (totalHeight as number)) * 100,
+                    );
+                    expect(topPercentage).to.be.closeTo(randY, 1);
+                  });
+              });
+            });
+          });
+        });
+      }
+    });
   });
 });

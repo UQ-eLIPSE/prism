@@ -321,9 +321,9 @@ function Minimap(props: Readonly<object> | any) {
         props.minimapData.x_scale,
       );
       const newY: number = calculateNewXY(
-        props.minimapData.img_width,
+        props.minimapData.img_height,
         y,
-        props.minimapData.x_pixel_offset,
+        props.minimapData.y_pixel_offset,
         props.minimapData.y_scale,
       );
 
