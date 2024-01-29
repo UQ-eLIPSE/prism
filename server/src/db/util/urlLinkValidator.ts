@@ -7,8 +7,7 @@ import { LinkResource } from "./testResourcesLinks";
 // Initialize Database Connection
 const initializeDatabaseConnection = () => {
   const databaseUrl = "mongodb://localhost:27017";
-  const databaseName =
-    process.env.DATABASE_URL?.split("27017/")[1] || "camphill";
+  const databaseName = process.env.DATABASE_URL?.split("27017/")[1];
   const client = new MongoClient(databaseUrl);
   return { client, databaseName };
 };

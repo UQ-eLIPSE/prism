@@ -1,4 +1,3 @@
-// import { Collection } from "mongodb";
 import { validateURLResponse } from "./utils";
 
 export interface LinkResource {
