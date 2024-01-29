@@ -2,9 +2,6 @@ import "dotenv/config";
 import { MongoClient, Db } from "mongodb";
 import { testResourcesLinks } from "../src/db/util/testResourcesLinks";
 
-// const dbList: string[] = ["camphill"]; // List of databases
-
-// dbList.forEach(() => {
 describe("Manta Resource URLlink Validator", () => {
   let client: MongoClient;
   let db: Db;
@@ -24,4 +21,3 @@ describe("Manta Resource URLlink Validator", () => {
     expect(result).toBe(true);
   });
 });
-// });
