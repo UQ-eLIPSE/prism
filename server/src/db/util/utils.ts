@@ -55,7 +55,7 @@ export const validateURLResponse = async (input: string) => {
     const unacceptableErrors = [404];
 
     if (unacceptableErrors.includes(status)) {
-      const errorMessage = `Invalid url - Unexpected status code: "${input}",Status code:${status}`;
+      const errorMessage = `"${input}",Status code:${status}`;
       console.error("Invalid url - Unexpected response: ", input);
       await writeCsvHeaders(resourcesLinksLogs, headers);
       await logError(resourcesLinksLogs, errorMessage);
