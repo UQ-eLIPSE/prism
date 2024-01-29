@@ -84,6 +84,33 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
   });
 
+  describe(`Test case: Form should disappear upon submission or cancellation`, () => {
+    beforeEach(() => {
+      cy.accessZone(zone);
+      if (!zone.adminUser) return;
+      expandMiniMap();
+      editSelectedNode();
+    });
+
+    it(`Testing: Form should disappear upon cancellation`, () => {
+      if (!zone.adminUser) return;
+
+      cy.get("div.controls.visible").should("exist");
+      cy.get("button").contains("Cancel").click({ force: true });
+      cy.get("div.controls.visible").should("not.exist");
+      cy.get("div.controls").should("exist");
+    });
+
+    it(`Testing: Form should disappear upon submission`, () => {
+      if (!zone.adminUser) return;
+
+      cy.get("div.controls.visible").should("exist");
+      cy.get("button").contains("Save").click({ force: true });
+      cy.get("div.controls.visible").should("not.exist");
+      cy.get("div.controls").should("exist");
+    });
+  });
+
   describe(`Test case: 'Value should not be saved when user cancels form submission'`, () => {
     let getReqAlias: string;
 
