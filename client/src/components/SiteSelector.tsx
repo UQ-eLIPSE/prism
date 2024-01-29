@@ -543,12 +543,7 @@ function SiteSelector({ onButtonClick }: SiteSelectorProps) {
                 src={prism_logo}
                 alt="prism logo"
               />
-              <h1>
-                {(window._env_
-                  ? window._env_.PROJECT_TITLE
-                  : (process.env.REACT_APP_PROJECT_TITLE as string)) ||
-                  "PROJECT TITLE"}
-              </h1>
+              <h1>{window._env_.PROJECT_TITLE || "PROJECT TITLE"}</h1>
             </div>
           </span>
 
@@ -607,8 +602,7 @@ function SiteSelector({ onButtonClick }: SiteSelectorProps) {
           />
 
           {/* Side editing panel */}
-          {(process.env.REACT_APP_USE_SSO === "false" ||
-            (user && user.isAdmin)) && (
+          {(window._env_.USE_SSO === false || (user && user.isAdmin)) && (
             <div className="edit-flex-box">
               <EditPanel
                 selectedSite={selectedSite}

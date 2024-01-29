@@ -105,7 +105,7 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
     const createLinks: ISidebarLink[] = [];
 
     // If the user is an admin then enable addScene link
-    process.env.REACT_APP_USE_SSO === "false" || user?.isAdmin
+    window._env_.USE_SSO === false || user?.isAdmin
       ? createLinks.push(homeLink, siteLink, addScene)
       : createLinks.push(homeLink, siteLink);
 

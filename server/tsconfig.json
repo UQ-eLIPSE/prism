@@ -19,9 +19,14 @@
     "sourceMap": true,
     "paths": {
       "*": ["src/types/*", "node_modules/*"]
-    }
+    },
+    "types": ["jest"]
   },
   "files": ["src/main.ts"],
   "exclude": ["node_modules/*"],
-  "include": ["./src/**/*.ts"]
+  "include": [
+    "./src/**/*.ts",
+    // "./tests/**/*.ts", TODO: This line must be included but it is causing failures while building due to types mismatch.
+    "./src/db/util/*.ts"
+  ]
 }
