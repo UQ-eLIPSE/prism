@@ -95,13 +95,13 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
    * @param {Function} updateCallbackFn The function that handles the update of node.
    * @returns {void}
    */
-  const handleSubmit = async (
+  const handleSubmit = (
     e: React.FormEvent<HTMLFormElement>,
     updateCallbackFn: () => Promise<void>,
-  ): Promise<void> => {
+  ): void => {
     e.preventDefault();
 
-    await updateCallbackFn();
+    updateCallbackFn();
   };
 
   /**
