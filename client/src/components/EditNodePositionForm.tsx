@@ -79,10 +79,10 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     max: number,
   ): void => {
     if (e.target.value === min.toString()) {
-      setStateValue(100);
+      setStateValue(max);
     } else if (e.target.value === max.toString() || e.target.value === "") {
-      setStateValue(0);
-    } else if (parseInt(e.target.value) <= 100) {
+      setStateValue(min);
+    } else if (parseInt(e.target.value) <= max) {
       setStateValue(parseInt(e.target.value));
     }
   };
