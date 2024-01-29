@@ -100,7 +100,6 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     updateCallbackFn: () => Promise<void>,
   ): Promise<void> => {
     e.preventDefault();
-    props.resetSelectedNode();
 
     await updateCallbackFn();
   };
