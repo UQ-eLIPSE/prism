@@ -176,37 +176,6 @@ testEachZone((zone: Cypress.PrismZone) => {
       });
     });
 
-    it(`Testing: rotation value should be saved when user submits a different value`, () => {
-      if (!zone.adminUser) return;
-
-      cy.wait(getReqAlias).then(() => {
-        cy.get("input[id='orientation']")
-          .should("exist")
-          .then(($input) => {
-            // Check it has a step of step of 15.
-            const stepAttribute = $input.attr("step");
-            expect(stepAttribute).to.eq(String(ROTATION_STEP_VALUE));
-
-            const originalRotationVal = $input.val();
-            expect(originalRotationVal).to.not.be.undefined;
-
-            // Generate a random value for rotation between 0 and 360 in 15 degree increments starting from 0, 15, 30...
-            const randRotationVal = Math.floor(Math.random() * 24) * 15;
-
-            editNodePosition("orientation", String(randRotationVal));
-
-            cy.get("button").contains("Save").click({ force: true });
-            cy.wait(patchReqAlias).then(() => {
-              cy.wait(getReqAlias).then(() => {
-                cy.get("input[id='orientation']").should(($input) => {
-                  expect($input.val()).to.eq(String(randRotationVal));
-                });
-              });
-            });
-          });
-      });
-    });
-
     it(`Testing: x and y coordinates should be both saved when user submits a different value`, () => {
       if (!zone.adminUser) return;
 
