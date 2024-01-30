@@ -413,6 +413,7 @@ function Minimap(props: Readonly<object> | any) {
                 ? "editing"
                 : ""
           }`}
+          data-cy="edit-save-button"
         >
           <i
             className={`fa-solid ${
