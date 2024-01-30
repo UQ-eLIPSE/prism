@@ -1,7 +1,7 @@
 declare namespace Cypress {
   interface PrismZone {
     project: string;
-    url: string;
+    url: { local: string; uat: string; product: string };
     singleSite: boolean;
     hotspots: boolean;
     timeline: boolean;
