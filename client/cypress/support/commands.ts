@@ -1,19 +1,21 @@
 Cypress.Commands.add("accessZone", (zone: Cypress.PrismZone): void => {
   const test = Cypress.env("testurl");
-  console.log(test);
   if (zone.singleSite) {
-    if (test === "local") {
-      cy.visit(`${zone.url.local}/site`);
-    } else if (test === "UAT") {
-      cy.visit(zone.url.uat);
-    }
+    cy.visit(
+      test === "local"
+        ? `${zone.url.local}/site`
+        : test === "UAT"
+          ? `${zone.url.uat}/site`
+          : `${zone.url.product}/site`,
+    );
   } else {
-    if (test === "local") {
-      cy.visit(zone.url.local);
-    } else if (test === "UAT") {
-      cy.visit(zone.url.uat);
-    }
-
+    cy.visit(
+      test === "local"
+        ? `${zone.url.local}`
+        : test === "UAT"
+          ? zone.url.uat
+          : zone.url.product,
+    );
     cy.get(".pin.enabled.enabled.false.bottom.enabled").click({
       force: true,
     });

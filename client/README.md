@@ -37,4 +37,24 @@ is prettied
 ## Running Cypress Tests
 
 1. navigate to test folder: `cd prism/client/`
-2. start tests:`yarn cypress:run` or `yarn cypress run --headed --no-exit` (optional: `--spec <path/to/specific/testfilename>`)
+2. start tests:
+
+- for local test run:
+  `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:local-agco360`: for project AGCO360
+  `yarn cypress:run:local-uwmt`: for project Urbane Water
+- for UAT test run:
+  `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:local-agco360`: for project AGCO360
+  `yarn cypress:run:local-uwmt`: for project Urbane Water
+- for UAT test run:
+  `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:local-agco360`: for project AGCO360
+  `yarn cypress:run:local-uwmt`: for project Urbane Water
+
+Optional:
+
+- launch browsers: `-headed`, `-browser chrome`
+- `no-exit`,
+- `--spec <path/to/specific/testfilename>`
+  refer to https://docs.cypress.io/guides/guides/command-line
