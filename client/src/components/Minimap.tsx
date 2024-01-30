@@ -5,8 +5,8 @@ import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
-import { InfoHotspot, NodeData } from "../interfaces/NodeData";
-import { MinimapReturn } from "./Site";
+import { InfoHotspot } from "../interfaces/NodeData";
+import { MinimapProps } from "../interfaces/MinimapProps";
 
 interface NewNode {
   floor: number;
@@ -24,29 +24,7 @@ interface NewNode {
   info_hotspots: InfoHotspot[] | [];
 }
 
-interface MiniMapProps {
-  currPanoId: string;
-  onClickNode: (nodeId: string) => void;
-  currRotation: number;
-  minimapEnlarged: boolean;
-  updateMinimapEnlarged: (isEnlarged: boolean) => void;
-  nodeData: NodeData[];
-  sideNavOpened: boolean;
-  config: ISettings;
-  linkNodeFunction: (state: boolean) => void;
-  timelineOpen: boolean;
-  closeTimelineFunction: (isOpen: boolean) => void;
-  minimapData: MinimapReturn | null | undefined;
-  floor: number;
-  siteId: string;
-  getMinimapImage: (floor: number) => Promise<void>;
-  updateFloorTag: (inputValue: string) => void;
-  minimapShown: boolean;
-  currDate: Date;
-}
-
-// function Minimap(props: Readonly<object> | any) {
-function Minimap(props: MiniMapProps) {
+function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
   const [user] = useUserContext();
   const [mapHover, setMapHover] = useState<boolean>(false);
