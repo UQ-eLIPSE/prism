@@ -91,7 +91,6 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-<<<<<<< HEAD
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save node" button`, () => {
       if (zone.adminUser) {
         cy.intercept("PATCH", "/api/node/coords/*").as("patchNodeCoords");
@@ -144,7 +143,6 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-=======
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
@@ -173,6 +171,5 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
->>>>>>> origin/feature/TEAM24-53
   });
 });
