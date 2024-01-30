@@ -87,7 +87,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    it.only(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save node" button`, () => {
+    it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save node" button`, () => {
       if (zone.adminUser) {
         cy.intercept("PATCH", "/api/node/coords/*").as("patchNodeCoords");
         cy.intercept("PATCH", "/api/node/rotation/*").as("patchNodeRoration");
@@ -113,7 +113,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    it.only(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save" button`, () => {
+    it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save" button`, () => {
       if (zone.adminUser) {
         cy.intercept("PATCH", "/api/node/coords/*").as("patchNodeCoords");
         cy.intercept("PATCH", "/api/node/rotation/*").as("patchNodeRoration");
