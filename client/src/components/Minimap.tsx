@@ -32,6 +32,7 @@ const UPPER_BOUND = 100;
 const LOWER_BOUND = 0;
 const UPPER_ADJUST = 95;
 const LOWER_ADJUST = 5;
+
 /**
  * This interface represents the current node's position and rotation in the minimap.
  * It is used to update the node's position and rotation in the database.

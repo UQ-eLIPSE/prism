@@ -9,15 +9,6 @@ import {
   actions,
 } from "../support/minimapUtils";
 
-function editNode() {
-  cy.get('i[class*="fa-expand-arrows-alt"]').click({
-    timeout: 10000,
-    force: true,
-  });
-  cy.get("p").contains("Edit Node").should("exist").click({ force: true });
-  cy.get("h2").contains("Select a Node to Edit");
-}
-
 function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").clear();
   cy.get("input[id='orientation']").should("exist").type(String(rotation));
@@ -95,7 +86,7 @@ testEachZone((zone: Cypress.PrismZone) => {
         );
 
         const randTuple =
-        rotationValues[Math.floor(Math.random() * rotationValues.length)];
+          rotationValues[Math.floor(Math.random() * rotationValues.length)];
         cy.wait("@getMinimapData").then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='edit-save-button']").contains("Save").click();
@@ -118,7 +109,7 @@ testEachZone((zone: Cypress.PrismZone) => {
         );
 
         const randTuple =
-        rotationValues[Math.floor(Math.random() * rotationValues.length)];
+          rotationValues[Math.floor(Math.random() * rotationValues.length)];
         cy.wait("@getMinimapData").then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='submit-button']").contains("Save").click();
