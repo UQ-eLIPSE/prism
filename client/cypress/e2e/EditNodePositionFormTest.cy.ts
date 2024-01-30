@@ -13,27 +13,36 @@ testEachZone((zone: Cypress.PrismZone) => {
   describe(`Test case: Form should disappear upon submission or cancellation`, () => {
     beforeEach(() => {
       cy.accessZone(zone);
-      if (!zone.adminUser) return;
+      cy.wrap(zone.adminUser).should("be.true");
       expandMiniMap();
       editSelectedNode();
     });
 
-    it(`Testing: Form should disappear upon cancellation`, () => {
-      if (!zone.adminUser) return;
+    /**
+     * Helper function to check visibilithy of form after submission or cancellation
+     * @param {string} submitBtnText Text of the button to click
+     * @param {boolean} formShouldBeVisible True if form should be visible, false otherwise
+     * @param {string} checkControlsVisible query selector for the controls
+     */
+    const submitAndCheckFormVisibility = (
+      submitBtnText: string,
+      formShouldBeVisible: boolean,
+      checkControlsVisible: string,
+    ): void => {
+      cy.get("button").contains(submitBtnText).click({ force: true });
+      formShouldBeVisible
+        ? cy.get(checkControlsVisible).should("exist")
+        : cy.get(checkControlsVisible).should("not.exist");
+    };
 
+    it(`Testing: Form should disappear upon cancellation`, () => {
       cy.get("div.controls.visible").should("exist");
-      cy.get("button").contains("Cancel").click({ force: true });
-      cy.get("div.controls.visible").should("not.exist");
-      cy.get("div.controls").should("exist");
+      submitAndCheckFormVisibility("Cancel", false, "div.controls.visible");
     });
 
     it(`Testing: Form should disappear upon submission`, () => {
-      if (!zone.adminUser) return;
-
       cy.get("div.controls.visible").should("exist");
-      cy.get("button").contains("Save").click({ force: true });
-      cy.get("div.controls.visible").should("not.exist");
-      cy.get("div.controls").should("exist");
+      submitAndCheckFormVisibility("Save", false, "div.controls.visible");
     });
   });
 
