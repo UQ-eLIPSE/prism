@@ -63,4 +63,7 @@ export interface ISettings {
 
   //number of floors, used for multi-story buildings generally 0
   num_floors: number;
+
+  // siteId
+  site: string;
 }
