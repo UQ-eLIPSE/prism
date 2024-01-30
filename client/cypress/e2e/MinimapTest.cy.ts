@@ -115,6 +115,31 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
+    it.only(`Testing: rotation coordinate should not change when user cancels form submission`, () => {
+      if (!zone.adminUser) return;
+
+
+        cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='orientation']").then(($input) => {
+          const originalR = $input.val();
+          expect(originalR).to.not.be.undefined;
+
+          // Generate a random value for rotation
+          const randTuple =
+          rotationValues[Math.floor(Math.random() * rotationValues.length)];
+          editNodePosition("orientation", String(randTuple.degrees));
+          
+          cy.get("button").contains("Cancel").click({ force: true });
+            cy.wait(getReqAlias).then(() => {
+            editSelectedNode();
+            cy.get("input[id='orientation']").should(($input) => {
+              expect($input.val()).to.eq(originalR);
+            });
+          });
+        });
+      });
+    });
+
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {

@@ -24,8 +24,8 @@ export const actions: MiniMapActions = {
   getRotationRequest: {
     url: "/api/node/rotation/*",
     method: "PATCH",
-    alias:"patchNodeRotation"
-  }
+    alias: "patchNodeRotation",
+  },
 };
 
 /**
