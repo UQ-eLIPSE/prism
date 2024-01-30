@@ -5,6 +5,7 @@ declare namespace Cypress {
     singleSite: boolean;
     hotspots: boolean;
     timeline: boolean;
+    floors: boolean;
     adminUser: boolean;
   }
 

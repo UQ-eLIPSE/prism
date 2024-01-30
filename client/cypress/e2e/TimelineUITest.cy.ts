@@ -16,11 +16,13 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing: Timeline section should not contain box-shadow ${zone.url}`, () => {
       if (zone.timeline) {
-        cy.get("[class*='MuiPaper-elevation1']").each(($el) => {
-          const style = window.getComputedStyle($el[0]);
-          const boxShadow = style.boxShadow;
-          expect(boxShadow).to.be.oneOf(["none", ""]);
-        });
+        cy.get("[class*='MuiPaper-elevation0']")
+          .should("exist")
+          .each(($el) => {
+            const style = window.getComputedStyle($el[0]);
+            const boxShadow = style.boxShadow;
+            expect(boxShadow).to.be.oneOf(["none", ""]);
+          });
       }
     });
   });

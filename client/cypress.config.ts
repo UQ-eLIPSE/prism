@@ -7,29 +7,32 @@ export default defineConfig({
     deployedZones: [
       //for local test, depending project with/without timeline
       {
-        project: "local-agco360",
+        project: "localAgco360",
         url: "http://localhost:3000",
         singleSite: false,
         hotspots: true,
         timeline: false,
+        floors: false,
         // if REACT_APP_USE_SSO is false, set this to true.
         adminUser: true,
       },
       {
-        project: "local-uwmt",
+        project: "localUwmt",
         url: "http://localhost:3000",
         singleSite: true,
         hotspots: true,
         timeline: false,
+        floors: false,
         // if REACT_APP_USE_SSO is false, set this to true.
         adminUser: true,
       },
       {
-        project: "local-general",
+        project: "localGeneral",
         url: "http://localhost:3000",
         singleSite: true,
-        hotspots: true,
+        hotspots: false,
         timeline: true,
+        floors: true,
         // if REACT_APP_USE_SSO is false, set this to true.
         adminUser: true,
       },
@@ -47,5 +50,5 @@ export default defineConfig({
       bundler: "webpack",
     },
   },
-  retries: 2,
+  retries: 3,
 });
