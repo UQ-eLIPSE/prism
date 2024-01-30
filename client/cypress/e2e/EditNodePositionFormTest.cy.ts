@@ -9,8 +9,6 @@ import {
   actions,
 } from "../support/minimapUtils";
 
-const ROTATION_STEP_VALUE = 15;
-
 testEachZone((zone: Cypress.PrismZone) => {
   describe(`Test case: Form should disappear upon submission or cancellation`, () => {
     beforeEach(() => {
