@@ -56,5 +56,6 @@ Optional:
 
 - launch browsers: `-headed`, `-browser chrome`
 - `no-exit`,
-- `--spec <path/to/specific/testfilename>`
+- `--spec cypress/e2e/<testfilename>`
   refer to https://docs.cypress.io/guides/guides/command-line
+  ** Note ** : for some project, you may need run --spec if only this test failed 

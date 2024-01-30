@@ -23,7 +23,7 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.intercept("PATCH", "/api/site/*/sitemap").as("MinimapFloorTagPatch");
         cy.get('[data-cy="floor-tag-input"]').click();
         cy.get('[data-cy="floor-tag-input"]').clear();
-        cy.get('[data-cy="floor-tag-input"]').type("0");
+        cy.get('[data-cy="floor-tag-input"]').type("test");
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorTagPatch")
           .its("response.statusCode")
