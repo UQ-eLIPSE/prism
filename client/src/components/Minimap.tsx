@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
