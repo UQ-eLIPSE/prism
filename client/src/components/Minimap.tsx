@@ -157,7 +157,8 @@ function Minimap(props: Readonly<object> | any) {
           props.minimapData.x_pixel_offset,
           props.minimapData.x_scale,
           props.minimapData.img_width,
-      ));
+        ),
+      );
       setY(
         calculateXY(
           node.y,
@@ -166,7 +167,8 @@ function Minimap(props: Readonly<object> | any) {
           props.minimapData.y_pixel_offset,
           props.minimapData.y_scale,
           props.minimapData.img_height,
-      ));
+        ),
+      );
 
       setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
     } else if (!editing && !selectedNode) {

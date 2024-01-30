@@ -14,18 +14,13 @@ function editNode() {
     timeout: 10000,
     force: true,
   });
-  cy.get("p")
-    .contains("Edit Node")
-    .should("exist")
-    .click({ force: true });
+  cy.get("p").contains("Edit Node").should("exist").click({ force: true });
   cy.get("h2").contains("Select a Node to Edit");
 }
 
-function typeRotation(rotation:number) {
+function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").clear();
-  cy.get("input[id='orientation']")
-    .should("exist")
-    .type(String(rotation));
+  cy.get("input[id='orientation']").should("exist").type(String(rotation));
 }
 
 function checkStyleContains(styleString: string) {
@@ -39,11 +34,11 @@ const rotationValues = [
   { degrees: 30, cssValue: "rotate(0.523599rad)" }, // degrees / 57.2958 = rad
   { degrees: 60, cssValue: "rotate(1.0472rad)" },
   { degrees: 90, cssValue: "rotate(1.5708rad)" },
-  { degrees: 120, cssValue: "rotate(2.09439rad)"},
-  { degrees: 150, cssValue: "rotate(2.61799rad)"},
-  { degrees: 180, cssValue: "rotate(3.14159rad)"},
-  { degrees: 210, cssValue: "rotate(3.66519rad)"},
-  { degrees: 240, cssValue: "rotate(4.18879rad)"},
+  { degrees: 120, cssValue: "rotate(2.09439rad)" },
+  { degrees: 150, cssValue: "rotate(2.61799rad)" },
+  { degrees: 180, cssValue: "rotate(3.14159rad)" },
+  { degrees: 210, cssValue: "rotate(3.66519rad)" },
+  { degrees: 240, cssValue: "rotate(4.18879rad)" },
 ];
 
 testEachZone((zone: Cypress.PrismZone) => {
@@ -99,11 +94,8 @@ testEachZone((zone: Cypress.PrismZone) => {
           "getMinimapData",
         );
 
-        editNode();
-
-        const randTuple = rotationValues[Math.floor(Math.random() * rotationValues.length)];
-
-        cy.get("[data-cy='selected-node']").click({ force: true });
+        const randTuple =
+        rotationValues[Math.floor(Math.random() * rotationValues.length)];
         cy.wait("@getMinimapData").then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='edit-save-button']").contains("Save").click();
@@ -125,11 +117,8 @@ testEachZone((zone: Cypress.PrismZone) => {
           "getMinimapData",
         );
 
-        editNode();
-
-        const randTuple = rotationValues[Math.floor(Math.random() * rotationValues.length)];
-
-        cy.get("[data-cy='selected-node']").click({ force: true });
+        const randTuple =
+        rotationValues[Math.floor(Math.random() * rotationValues.length)];
         cy.wait("@getMinimapData").then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='submit-button']").contains("Save").click();
