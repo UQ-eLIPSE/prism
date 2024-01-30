@@ -9,6 +9,8 @@ import {
   actions,
 } from "../support/minimapUtils";
 
+const ROTATION_STEP_VALUE = 15;
+
 testEachZone((zone: Cypress.PrismZone) => {
   describe(`Test case: Form should disappear upon submission or cancellation`, () => {
     beforeEach(() => {
@@ -30,6 +32,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       checkControlsVisible: string,
     ): void => {
       cy.get("button").contains(submitBtnText).click({ force: true });
+
       formShouldBeVisible
         ? cy.get(checkControlsVisible).should("exist")
         : cy.get(checkControlsVisible).should("not.exist");
@@ -69,11 +72,13 @@ testEachZone((zone: Cypress.PrismZone) => {
           const randX = Math.floor(Math.random() * 9) * 10 + 10;
           editNodePosition("x", String(randX));
 
-          cy.get("button").contains("Cancel").click({ force: true });
-          editSelectedNode();
+          cy.wait(getReqAlias).then(() => {
+            cy.get("button").contains("Cancel").click({ force: true });
+            editSelectedNode();
 
-          cy.get("input[id='x']").should(($input) => {
-            expect($input.val()).to.eq(originalX);
+            cy.get("input[id='x']").should(($input) => {
+              expect($input.val()).to.eq(originalX);
+            });
           });
         });
       });
@@ -123,23 +128,25 @@ testEachZone((zone: Cypress.PrismZone) => {
       if (!zone.adminUser) return;
 
       cy.wait(getReqAlias).then(() => {
-        cy.get("input[id='x']").then(($input) => {
-          const originalX = $input.val();
-          expect(originalX).to.not.be.undefined;
+        cy.get("input[id='x']")
+          .should("exist")
+          .then(($input) => {
+            const originalX = $input.val();
+            expect(originalX).to.not.be.undefined;
 
-          // Generate a random value for x
-          const randX = Math.floor(Math.random() * 9) * 10 + 10;
-          editNodePosition("x", String(randX));
+            // Generate a random value for x
+            const randX = Math.floor(Math.random() * 9) * 10 + 10;
+            editNodePosition("x", String(randX));
 
-          cy.get("button").contains("Save").click({ force: true });
-          cy.wait(patchReqAlias).then(() => {
-            cy.wait(getReqAlias).then(() => {
-              cy.get("input[id='x']").should(($input) => {
-                expect($input.val()).to.eq(String(randX));
+            cy.get("button").contains("Save").click({ force: true });
+            cy.wait(patchReqAlias).then(() => {
+              cy.wait(getReqAlias).then(() => {
+                cy.get("input[id='x']").should(($input) => {
+                  expect($input.val()).to.eq(String(randX));
+                });
               });
             });
           });
-        });
       });
     });
 
@@ -147,23 +154,56 @@ testEachZone((zone: Cypress.PrismZone) => {
       if (!zone.adminUser) return;
 
       cy.wait(getReqAlias).then(() => {
-        cy.get("input[id='y']").then(($input) => {
-          const originalY = $input.val();
-          expect(originalY).to.not.be.undefined;
+        cy.get("input[id='y']")
+          .should("exist")
+          .then(($input) => {
+            const originalY = $input.val();
+            expect(originalY).to.not.be.undefined;
 
-          // Generate a random value for y
-          const randY = Math.floor(Math.random() * 9) * 10 + 10;
-          editNodePosition("y", String(randY));
+            // Generate a random value for y
+            const randY = Math.floor(Math.random() * 9) * 10 + 10;
+            editNodePosition("y", String(randY));
 
-          cy.get("button").contains("Save").click({ force: true });
-          cy.wait(patchReqAlias).then(() => {
-            cy.wait(getReqAlias).then(() => {
-              cy.get("input[id='y']").should(($input) => {
-                expect($input.val()).to.eq(String(randY));
+            cy.get("button").contains("Save").click({ force: true });
+            cy.wait(patchReqAlias).then(() => {
+              cy.wait(getReqAlias).then(() => {
+                cy.get("input[id='y']").should(($input) => {
+                  expect($input.val()).to.eq(String(randY));
+                });
               });
             });
           });
-        });
+      });
+    });
+
+    it(`Testing: rotation value should be saved when user submits a different value`, () => {
+      if (!zone.adminUser) return;
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='orientation']")
+          .should("exist")
+          .then(($input) => {
+            // Check it has a step of step of 15.
+            const stepAttribute = $input.attr("step");
+            expect(stepAttribute).to.eq(String(ROTATION_STEP_VALUE));
+
+            const originalRotationVal = $input.val();
+            expect(originalRotationVal).to.not.be.undefined;
+
+            // Generate a random value for rotation between 0 and 360 in 15 degree increments starting from 0, 15, 30...
+            const randRotationVal = Math.floor(Math.random() * 24) * 15;
+
+            editNodePosition("orientation", String(randRotationVal));
+
+            cy.get("button").contains("Save").click({ force: true });
+            cy.wait(patchReqAlias).then(() => {
+              cy.wait(getReqAlias).then(() => {
+                cy.get("input[id='orientation']").should(($input) => {
+                  expect($input.val()).to.eq(String(randRotationVal));
+                });
+              });
+            });
+          });
       });
     });
 
