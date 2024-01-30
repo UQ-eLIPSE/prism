@@ -126,7 +126,16 @@ function Minimap(props: MinimapProps) {
     }
   }, [props.minimapEnlarged]);
 
-  // Calculates a scaled position as a percentage of an image's dimension.
+  /**
+   * Calculates a scaled position for the node as a percentage.
+   * @param nodeCoordinate1 Either the x coordinate or the y coordinate of the node
+   * @param nodeCoordinate2 Either the x coordinate or the y coordinate of the node
+   * @param flipped Boolean value to check if the node is flipped
+   * @param offset offset value for the node
+   * @param scale a scale value for the node
+   * @param imageHeightorWidth Either the image height or the width
+   * @returns the node position on the map
+   */
   function calculateXY(
     nodeCoordinate1: number,
     nodeCoordinate2: number,
@@ -303,6 +312,14 @@ function Minimap(props: MinimapProps) {
     );
   }
 
+  /**
+   * Updating the information of the node after pressing save
+   * @param imageHeightorWidth Either the image height or width
+   * @param coordinate Either the x or the y coordinate
+   * @param offset the offset of the node
+   * @param scale the scale value of the node
+   * @returns the saved coordinate of the node
+   */
   function calculateNewXY(
     imageHeightorWidth: number,
     coordinate: number,
