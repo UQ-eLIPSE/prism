@@ -149,26 +149,58 @@ function Minimap(props: Readonly<object> | any) {
 
     if (editing && !selectedNode) {
       setSelectedNode(node);
+      // setX(
+      //   calculateXY(
+      //     node.x,
+      //     node.y,
+      //     props.minimapData.xy_flipped,
+      //     props.minimapData.x_pixel_offset,
+      //     1,
+      //     props.minimapData.img_width,
+      //   ),
+      // );
       setX(
+<<<<<<< HEAD
         calculateXY(
           node.x,
           node.y,
           props.minimapData.xy_flipped,
           props.minimapData.x_pixel_offset,
           props.minimapData.x_scale,
+=======
+        (props.minimapData.x_scale *
+          ((!props.minimapData.xy_flipped ? node.x : node.y) +
+            props.minimapData.x_pixel_offset) *
+          100) /
+>>>>>>> origin/feature/TEAM24-53
           props.minimapData.img_width,
-        ),
       );
 
+      // setY(
+      //   calculateXY(
+      //     node.y,
+      //     node.x,
+      //     props.minimapData.xy_flipped,
+      //     props.minimapData.y_pixel_offset,
+      //     1,
+      //     props.minimapData.img_height,
+      //   ),
+      // );
       setY(
+<<<<<<< HEAD
         calculateXY(
           node.y,
           node.x,
           props.minimapData.xy_flipped,
           props.minimapData.y_pixel_offset,
           props.minimapData.y_scale,
+=======
+        (props.minimapData.y_scale *
+          ((!props.minimapData.xy_flipped ? node.y : node.x) +
+            props.minimapData.y_pixel_offset) *
+          100) /
+>>>>>>> origin/feature/TEAM24-53
           props.minimapData.img_height,
-        ),
       );
 
       setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
