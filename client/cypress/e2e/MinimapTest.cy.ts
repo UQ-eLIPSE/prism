@@ -115,7 +115,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    it.only(`Testing: rotation coordinate should not change when user cancels form submission`, () => {
+    it(`Testing: rotation coordinate should not change when user cancels form submission`, () => {
       if (!zone.adminUser) return;
 
 
