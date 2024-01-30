@@ -14,7 +14,7 @@ export interface MinimapProps {
   linkNodeFunction: (state: boolean) => void;
   timelineOpen: boolean;
   closeTimelineFunction: (open: boolean) => void;
-  minimapData: MinimapReturn | null | undefined;
+  minimapData: MinimapReturn;
   floor: number;
   siteId: string;
   getMinimapImage: (floor: number) => Promise<void>;

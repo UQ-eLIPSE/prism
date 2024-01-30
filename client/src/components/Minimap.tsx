@@ -100,7 +100,7 @@ function Minimap(props: MinimapProps) {
   ): void {
     e.stopPropagation();
 
-    if (!props.minimapData) throw new Error("Minimap data is undefined");
+    // if (!props.minimapData) throw new Error("Minimap data is undefined");
 
     if (editing && !selectedNode) {
       setSelectedNode(node);
@@ -160,7 +160,7 @@ function Minimap(props: MinimapProps) {
   function getNodesJSX(nodeData: NewNode[]): React.ReactElement[] {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
-        if (!props.minimapData) throw new Error("Minimap data is undefined");
+        // if (!props.minimapData) throw new Error("Minimap data is undefined");
 
         // Element Position = Scale * (Position within map + Offset)
         let x_position: number =
@@ -250,7 +250,7 @@ function Minimap(props: MinimapProps) {
 
   async function updateNodeInfo() {
     try {
-      if (!props.minimapData) throw new Error("Minimap data is undefined");
+      // if (!props.minimapData) throw new Error("Minimap data is undefined");
 
       const newX: number =
         ((props.minimapData.img_width * x) / 100 -
@@ -290,7 +290,7 @@ function Minimap(props: MinimapProps) {
 
   // Update floor name and tag in database
   async function updateNames() {
-    if (!props.minimapData) throw new Error("Minimap data is undefined");
+    // if (!props.minimapData) throw new Error("Minimap data is undefined");
     if (!floorTag) setFloorTag(String(props.minimapData.floor));
     if (!floorName) setFloorName(`Floor ${props.minimapData.floor}`);
 
