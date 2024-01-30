@@ -99,7 +99,6 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     updateCallbackFn: () => Promise<void>,
   ): void => {
     e.preventDefault();
-
     updateCallbackFn();
   };
 

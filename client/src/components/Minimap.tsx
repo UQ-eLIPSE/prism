@@ -120,8 +120,7 @@ function Minimap(props: Readonly<object> | any) {
 
   useEffect(() => {
     if (props.minimapEnlarged === false) {
-      setSelectedNode(null);
-      setEditing(false);
+      resetSelectedNode();
     }
   }, [props.minimapEnlarged]);
 
@@ -335,9 +334,6 @@ function Minimap(props: Readonly<object> | any) {
         newX,
         newY,
       );
-
-      setSelectedNode(null);
-      setEditing(false);
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
     }
@@ -352,6 +348,8 @@ function Minimap(props: Readonly<object> | any) {
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Rotation \n ${e}`);
     }
+
+    resetSelectedNode();
   }
 
   // Update floor name and tag in database

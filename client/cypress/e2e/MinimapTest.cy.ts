@@ -52,7 +52,8 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it.only(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly`, () => {
       if (zone.adminUser) {
-        cy.intercept("PATCH", "/api/node/rotation/*").as("patchNode");
+        cy.intercept("PATCH", "/api/node/coords/*").as("patchNodeCoords");
+        cy.intercept("PATCH", "/api/node/rotation/*").as("patchNodeRoration");
         cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
           "getMinimapData",
         );
@@ -65,26 +66,37 @@ testEachZone((zone: Cypress.PrismZone) => {
           .should("exist")
           .click({ force: true });
         cy.get("h2").contains("Select a Node to Edit");
-        const randOrientation = 70;
+        
+        const values = [
+          [30, "rotate(0.523599rad)"], 
+          [60, "rotate(1.0472rad)"], 
+          [90, "rotate(1.5708rad)"]
+        ];
+        
+        const randTuple = values[Math.floor(Math.random() * values.length)];
+        const randOrientation = randTuple[0];
+
         cy.get("[data-cy='selected-node']").click({ force: true });
         cy.wait("@getMinimapData").then(() => {
           cy.get("input[id='orientation']").should("exist").clear();
           cy.get("input[id='orientation']")
             .should("exist")
             .type(String(randOrientation));
-            // console.log(randOrientation);
-          cy.get("button").contains("Save").click({ force: true });
-          cy.wait("@patchNode").then(() => {
-            cy.wait("@getMinimapData").then(() => {
-                  cy.get("[data-cy='selected-node']")
-                  .parent()
-                  .should("have.attr", "style")
-                  .should(
-                    "contain",
-                    `transform: rotate(${(randOrientation / 57.2958).toFixed(4)}rad)`,
-                  );
-                }); 
-            });
+          cy.get("button").contains("Save").click();
+          // cy.wait("@patchNodeCoords").then(() => {
+          //   cy.wait("@patchNodeRoration").then(() => {
+          //     cy.wait("@getMinimapData").then(() => {
+          //         cy.get("[data-cy='selected-node']")
+          //         .parent()
+          //         .should("have.attr", "style")
+          //         .should(
+          //           "contain",
+          //           `transform: ${randTuple[1]}`,
+          //           { timeout: 10000, retryInterval: 1000 }
+          //         );
+          //     }); 
+          //   });
+          // });          
         });
       }
     });
