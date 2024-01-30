@@ -7,7 +7,7 @@ import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
 import { InfoHotspot } from "../interfaces/NodeData";
 import EditNodeForm from "./EditNodePositionForm";
-import { MinimapProps } from "../interfaces/MinimapProps";
+import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 
 interface NewNode {
   floor: number;
