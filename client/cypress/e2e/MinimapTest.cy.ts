@@ -36,13 +36,15 @@ testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: When user has selected a mininode on the minimap, should be able to update coordinates via input form", () => {
     let getReqAlias: string;
     let patchReqAlias: string;
+    let patchReqRotAlias: string;
 
     beforeEach(() => {
       cy.accessZone(zone);
       if (!zone.adminUser) return;
-      [getReqAlias, patchReqAlias] = interceptMinimapData(
+      [getReqAlias, patchReqAlias, patchReqRotAlias] = interceptMinimapData(
         actions.getRequest,
         actions.patchRequest,
+        actions.getRotationRequest,
       );
       expandMiniMap();
       editSelectedNode();
@@ -79,20 +81,15 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save node" button`, () => {
       if (zone.adminUser) {
-        cy.intercept("PATCH", "/api/node/coords/*").as("patchNodeCoords");
-        cy.intercept("PATCH", "/api/node/rotation/*").as("patchNodeRoration");
-        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
-          "getMinimapData",
-        );
-
+        
         const randTuple =
           rotationValues[Math.floor(Math.random() * rotationValues.length)];
-        cy.wait("@getMinimapData").then(() => {
+        cy.wait(getReqAlias).then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='edit-save-button']").contains("Save").click();
-          cy.wait("@patchNodeCoords")
-            .wait("@patchNodeRoration")
-            .wait("@getMinimapData")
+          cy.wait(patchReqAlias)
+            .wait(patchReqRotAlias)
+            .wait(getReqAlias)
             .then(() => {
               checkStyleContains(`transform: ${randTuple.cssValue}`);
             });
@@ -102,20 +99,15 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save" button`, () => {
       if (zone.adminUser) {
-        cy.intercept("PATCH", "/api/node/coords/*").as("patchNodeCoords");
-        cy.intercept("PATCH", "/api/node/rotation/*").as("patchNodeRoration");
-        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite*").as(
-          "getMinimapData",
-        );
-
+    
         const randTuple =
           rotationValues[Math.floor(Math.random() * rotationValues.length)];
-        cy.wait("@getMinimapData").then(() => {
+        cy.wait(getReqAlias).then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='submit-button']").contains("Save").click();
-          cy.wait("@patchNodeCoords")
-            .wait("@patchNodeRoration")
-            .wait("@getMinimapData")
+          cy.wait(patchReqAlias)
+            .wait(patchReqRotAlias)
+            .wait(getReqAlias)
             .then(() => {
               checkStyleContains(`transform: ${randTuple.cssValue}`);
             });
