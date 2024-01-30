@@ -29,8 +29,29 @@ export interface MinimapReturn {
   img_height: number;
   xy_flipped: boolean;
   __v: number;
-}
 
+  floor_name: string;
+  floor_tag: string;
+  image: string;
+}
+const MinimapInitial = {
+  image_url: "",
+  floor: 0,
+  site: "",
+  image_large_url: "",
+  x_pixel_offset: 0,
+  y_pixel_offset: 0,
+  x_scale: 1,
+  y_scale: 1,
+  img_width: 1,
+  img_height: 1,
+  xy_flipped: false,
+  __v: 0,
+
+  floor_name: "",
+  floor_tag: "",
+  image: "",
+};
 interface SiteInterface {
   siteId: string;
   config: ISettings;
@@ -78,7 +99,7 @@ function Site(props: SiteInterface) {
   const [hotspotDictionary, setHotspotDictionary] = useState<
     HotspotDescription[]
   >([]);
-  const [minimap, setMinimap] = useState<MinimapReturn | null>();
+  const [minimap, setMinimap] = useState<MinimapReturn>(MinimapInitial);
   const [floorTag, setFloorTag] = useState<string>("");
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
 
@@ -297,7 +318,7 @@ function Site(props: SiteInterface) {
       }
     } catch {
       setCurrFloor(floor);
-      setMinimap(null);
+      setMinimap(MinimapInitial);
     }
   }
 
@@ -352,7 +373,7 @@ function Site(props: SiteInterface) {
       }
     } catch (e) {
       // Corrupted MinimapImage, replace with empty.
-      setMinimap(null);
+      setMinimap(MinimapInitial);
     }
   }
 

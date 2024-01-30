@@ -7,6 +7,7 @@ import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
 import { InfoHotspot } from "../interfaces/NodeData";
 import EditNodeForm from "./EditNodePositionForm";
+import { MinimapProps } from "../interfaces/MinimapProps";
 
 interface NewNode {
   floor: number;
@@ -45,14 +46,14 @@ interface NodeConfiguration {
   rotation: number;
 }
 
-function Minimap(props: Readonly<object> | any) {
+function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
   const [user] = useUserContext();
   const [mapHover, setMapHover] = useState<boolean>(false);
 
   // State for controlling minimap upload
-  const [imageUrl, setImageUrl] = useState<string | undefined>(
-    props.minimapData,
+  const [imageUrl, setImageUrl] = useState<string>(
+    props.minimapData ? props.minimapData.image_url : "",
   );
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [pendingUpload, setPendingUpload] = useState<boolean>(false);
@@ -87,7 +88,7 @@ function Minimap(props: Readonly<object> | any) {
       try {
         const minimapNodeData = await NetworkCalls.getMinimapNodeInformation(
           props.config.site,
-          props.floor,
+          String(props.floor),
           props.currDate,
         );
 
@@ -114,7 +115,7 @@ function Minimap(props: Readonly<object> | any) {
       editNodes([]);
       setFloorName("");
       setFloorTag("");
-      setImageUrl(undefined);
+      setImageUrl("");
     }
   }, [props.config.site, props.minimapData, props.nodeData, selectedNode]);
 
@@ -353,7 +354,7 @@ function Minimap(props: Readonly<object> | any) {
 
   // Update floor name and tag in database
   async function updateNames() {
-    if (!floorTag) setFloorTag(props.minimapData.floor);
+    if (!floorTag) setFloorTag(String(props.minimapData.floor));
     if (!floorName) setFloorName(`Floor ${props.minimapData.floor}`);
 
     try {
@@ -463,6 +464,7 @@ function Minimap(props: Readonly<object> | any) {
                           e.target.value) ||
                         (floorTag &&
                           e.target.value &&
+                          props.minimapData &&
                           (floorTag != props.minimapData.floor_tag ||
                             e.target.value !== props.minimapData.floor_name))
                       ) {
@@ -488,6 +490,7 @@ function Minimap(props: Readonly<object> | any) {
                             e.target.value) ||
                           (e.target.value &&
                             floorName &&
+                            props.minimapData &&
                             (e.target.value != props.minimapData.floor_tag ||
                               floorName !== props.minimapData.floor_name))
                         ) {
@@ -678,7 +681,7 @@ function Minimap(props: Readonly<object> | any) {
                   onClick={() => {
                     setSelectedImage(undefined);
                     setImageUrl(
-                      props.minimapData ? props.minimapData.image : undefined,
+                      props.minimapData ? props.minimapData.image : "",
                     );
                     setPendingUpload(false);
                   }}
