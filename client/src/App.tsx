@@ -26,7 +26,7 @@ const MainContent: React.FC = () => {
           : userInfo,
       );
 
-    if (process.env.REACT_APP_USE_SSO === "false") {
+    if (window._env_.USE_SSO === false) {
       updateTestContext({
         ...userInfo,
         isAdmin: true,

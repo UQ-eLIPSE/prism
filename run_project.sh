@@ -102,8 +102,6 @@ build_and_run() {
 }
 
 build_and_run_client(){
-    cp ./client/.env.develop.example ./client/.env
-    echo "created client env file!"
     cd ./client
     read -p "Before start client, do you need install with yarn (please choose yes for a first run)? (y/n): " yarn_option
     [[ "$yarn_option" =~ ^[yY]$ ]] && sudo yarn   

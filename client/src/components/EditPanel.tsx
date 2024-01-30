@@ -11,7 +11,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { PinData, EditingFunctions } from "./SiteSelector";
 import { useNavigate } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
-import Dotenv, { IConfiguration } from "../utils/Dotenv";
 import AddSitemapButton from "./AddSitemapButton";
 
 /**
@@ -70,7 +69,6 @@ const EditPanel: React.FC<EditPanelProps> = ({
 }) => {
   const navigate = useNavigate();
   const messages = useIntl();
-  const configSetting = Dotenv;
 
   /**
    * This function checks if a site scenes already exist, if so then they are shown the scenes instead of an
@@ -78,12 +76,10 @@ const EditPanel: React.FC<EditPanelProps> = ({
    * @param siteId the site id
    * @param config the file for whatever the base url is
    */
-  const checkScenesExists = async (siteId: string, config: IConfiguration) => {
+  const checkScenesExists = async (siteId: string) => {
     try {
       const siteData = await fetch(
-        `${
-          window._env_ ? window._env_.API_URL : config.BASE_URL
-        }/api/site/${siteId}/exists`,
+        `${window._env_.API_URL}/api/site/${siteId}/exists`,
         {
           method: "GET",
         },
@@ -166,6 +162,7 @@ const EditPanel: React.FC<EditPanelProps> = ({
             )}
 
             <button
+              data-testid="redirectButton"
               onClick={() => {
                 setEditState(EditingFunctions.REDIRECT);
                 if (selectedSite.external_url?.includes("https://")) {
@@ -178,7 +175,7 @@ const EditPanel: React.FC<EditPanelProps> = ({
                 }
                 //check if the the site is already populated with scenes
                 !selectedSite.external_url &&
-                  checkScenesExists(selectedSite.site, configSetting);
+                  checkScenesExists(selectedSite.site);
               }}
             >
               <LocationOnIcon />
