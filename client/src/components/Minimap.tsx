@@ -30,8 +30,8 @@ function Minimap(props: MinimapProps) {
   const [mapHover, setMapHover] = useState<boolean>(false);
 
   // State for controlling minimap upload
-  const [imageUrl, setImageUrl] = useState<string | undefined>(
-    props.minimapData ? props.minimapData.image_url : undefined,
+  const [imageUrl, setImageUrl] = useState<string>(
+    props.minimapData ? props.minimapData.image_url : "",
   );
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [pendingUpload, setPendingUpload] = useState<boolean>(false);
@@ -83,7 +83,7 @@ function Minimap(props: MinimapProps) {
       editNodes([]);
       setFloorName("");
       setFloorTag("");
-      setImageUrl(undefined);
+      setImageUrl("");
     }
   }, [props.config.site, props.minimapData, props.nodeData, selectedNode]);
 
@@ -689,7 +689,7 @@ function Minimap(props: MinimapProps) {
                   onClick={() => {
                     setSelectedImage(undefined);
                     setImageUrl(
-                      props.minimapData ? props.minimapData.image : undefined,
+                      props.minimapData ? props.minimapData.image : "",
                     );
                     setPendingUpload(false);
                   }}
