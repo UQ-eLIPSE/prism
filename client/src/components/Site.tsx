@@ -29,6 +29,10 @@ export interface MinimapReturn {
   img_height: number;
   xy_flipped: boolean;
   __v: number;
+
+  floor_name: string;
+  floor_tag: string;
+  image: string;
 }
 
 interface SiteInterface {

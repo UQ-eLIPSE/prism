@@ -436,6 +436,9 @@ export default class NetworkCalls {
         img_height: 0,
         xy_flipped: false,
         __v: 0,
+        floor_name: "",
+        floor_tag: "",
+        image: "",
       };
     }
     return data.payload;

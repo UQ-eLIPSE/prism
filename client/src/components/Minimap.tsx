@@ -39,7 +39,7 @@ interface MiniMapProps {
   minimapData: MinimapReturn | null | undefined;
   floor: number;
   siteId: string;
-  getMiniMapImage: (floor: number) => Promise<void>;
+  getMinimapImage: (floor: number) => Promise<void>;
   updateFloorTag: (inputValue: string) => void;
   minimapShown: boolean;
   currDate: Date;
@@ -53,7 +53,7 @@ function Minimap(props: MiniMapProps) {
 
   // State for controlling minimap upload
   const [imageUrl, setImageUrl] = useState<string | undefined>(
-    props.minimapData,
+    props.minimapData ? props.minimapData.image_url : undefined,
   );
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [pendingUpload, setPendingUpload] = useState<boolean>(false);
@@ -78,7 +78,7 @@ function Minimap(props: MiniMapProps) {
       try {
         const minimapNodeData = await NetworkCalls.getMinimapNodeInformation(
           props.config.site,
-          props.floor,
+          String(props.floor),
           props.currDate,
         );
 
@@ -121,6 +121,8 @@ function Minimap(props: MiniMapProps) {
     node: NewNode,
   ): void {
     e.stopPropagation();
+
+    if (!props.minimapData) throw new Error("Minimap data is undefined");
 
     if (editing && !selectedNode) {
       setSelectedNode(node);
@@ -180,6 +182,8 @@ function Minimap(props: MiniMapProps) {
   function getNodesJSX(nodeData: NewNode[]): React.ReactElement[] {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
+        if (!props.minimapData) throw new Error("Minimap data is undefined");
+
         // Element Position = Scale * (Position within map + Offset)
         let x_position: number =
           (props.minimapData.x_scale *
@@ -268,6 +272,8 @@ function Minimap(props: MiniMapProps) {
 
   async function updateNodeInfo() {
     try {
+      if (!props.minimapData) throw new Error("Minimap data is undefined");
+
       const newX: number =
         ((props.minimapData.img_width * x) / 100 -
           props.minimapData.x_pixel_offset) /
@@ -306,7 +312,8 @@ function Minimap(props: MiniMapProps) {
 
   // Update floor name and tag in database
   async function updateNames() {
-    if (!floorTag) setFloorTag(props.minimapData.floor);
+    if (!props.minimapData) throw new Error("Minimap data is undefined");
+    if (!floorTag) setFloorTag(String(props.minimapData.floor));
     if (!floorName) setFloorName(`Floor ${props.minimapData.floor}`);
 
     try {
@@ -494,6 +501,7 @@ function Minimap(props: MiniMapProps) {
                           e.target.value) ||
                         (floorTag &&
                           e.target.value &&
+                          props.minimapData &&
                           (floorTag != props.minimapData.floor_tag ||
                             e.target.value !== props.minimapData.floor_name))
                       ) {
@@ -519,6 +527,7 @@ function Minimap(props: MiniMapProps) {
                             e.target.value) ||
                           (e.target.value &&
                             floorName &&
+                            props.minimapData &&
                             (e.target.value != props.minimapData.floor_tag ||
                               floorName !== props.minimapData.floor_name))
                         ) {
