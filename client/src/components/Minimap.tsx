@@ -66,7 +66,7 @@ function Minimap(props: Readonly<object> | any) {
 
   // State for controlling editing of node position and rotation.
   const [editing, setEditing] = useState<boolean>(false);
-  const [selectedNode, setSelectedNode] = useState<NewNode | null>();
+  const [selectedNode, setSelectedNode] = useState<NewNode | null>(null);
 
   const [rotation, setRotation] = useState<number>(0);
   const [x, setX] = useState<number>(0);
@@ -399,7 +399,8 @@ function Minimap(props: Readonly<object> | any) {
         <button
           onClick={(): void => {
             setEditing((editing) => !editing);
-            setSelectedNode(null);
+
+            if (!editing) setSelectedNode(null);
 
             if (editing && selectedNode) {
               updateNodeInfo();

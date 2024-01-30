@@ -66,13 +66,13 @@ testEachZone((zone: Cypress.PrismZone) => {
           .should("exist")
           .click({ force: true });
         cy.get("h2").contains("Select a Node to Edit");
-        
+
         const values = [
-          [30, "rotate(0.523599rad)"], 
-          [60, "rotate(1.0472rad)"], 
-          [90, "rotate(1.5708rad)"]
+          [30, "rotate(0.523599rad)"],
+          [60, "rotate(1.0472rad)"],
+          [90, "rotate(1.5708rad)"],
         ];
-        
+
         const randTuple = values[Math.floor(Math.random() * values.length)];
         const randOrientation = randTuple[0];
 
@@ -83,20 +83,18 @@ testEachZone((zone: Cypress.PrismZone) => {
             .should("exist")
             .type(String(randOrientation));
           cy.get("button").contains("Save").click();
-          // cy.wait("@patchNodeCoords").then(() => {
-          //   cy.wait("@patchNodeRoration").then(() => {
-          //     cy.wait("@getMinimapData").then(() => {
-          //         cy.get("[data-cy='selected-node']")
-          //         .parent()
-          //         .should("have.attr", "style")
-          //         .should(
-          //           "contain",
-          //           `transform: ${randTuple[1]}`,
-          //           { timeout: 10000, retryInterval: 1000 }
-          //         );
-          //     }); 
-          //   });
-          // });          
+          cy.wait("@patchNodeCoords")
+            .wait("@patchNodeRoration")
+            .wait("@getMinimapData")
+            .then(() => {
+              cy.get("[data-cy='selected-node']")
+                .parent()
+                .should("have.attr", "style")
+                .should("contain", `transform: ${randTuple[1]}`, {
+                  timeout: 10000,
+                  retryInterval: 1000,
+                });
+            });
         });
       }
     });
