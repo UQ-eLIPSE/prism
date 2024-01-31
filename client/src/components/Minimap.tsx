@@ -7,9 +7,11 @@ import { useUserContext } from "../context/UserContext";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
+import MinimapUtils from "../utils/MinimapUtils";
 
 const PERCENTAGE = 100;
 const ROTATION = 57.2958;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DEGREE = 360;
 const UPPER_BOUND = 100;
 const LOWER_BOUND = 0;
@@ -141,34 +143,18 @@ function Minimap(props: MinimapProps) {
   ): void {
     e.stopPropagation();
 
-    if (editing && !selectedNode) {
-      setSelectedNode(node);
-      setX(
-        calculateXY(
-          node.x,
-          node.y,
-          props.minimapData.xy_flipped,
-          props.minimapData.x_pixel_offset,
-          props.minimapData.x_scale,
-          props.minimapData.img_width,
-        ),
-      );
-      setY(
-        calculateXY(
-          node.y,
-          node.x,
-          props.minimapData.xy_flipped,
-          props.minimapData.y_pixel_offset,
-          props.minimapData.y_scale,
-          props.minimapData.img_height,
-        ),
-      );
-
-      setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
-    } else if (!editing && !selectedNode) {
-      props.updateMinimapEnlarged(false);
-      props.onClickNode(node.tiles_id);
-    }
+    MinimapUtils.setNodeSelected(
+      editing,
+      selectedNode,
+      node,
+      props.minimapData,
+      setSelectedNode,
+      setX,
+      setY,
+      setRotation,
+      props.updateMinimapEnlarged,
+      props.onClickNode,
+    );
   }
 
   async function performMinimapUpload() {
