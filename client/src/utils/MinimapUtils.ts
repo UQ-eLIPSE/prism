@@ -18,9 +18,35 @@ export enum MinimapConstants {
   /**
    * Signifies the conversion factor from radians to degrees.
    */
-  DEGREES_TO_RADIANS = 57.2958,
+  DEGREES_TO_RADIANS_ROTATION = 57.2958,
+
+  /**
+   * Represents the upper limit for the node to be placed in the map.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+  UPPER_BOUND = 100,
+
+  /**
+   * Represents the lower limit for the node to be placed in the map.
+   */
+  LOWER_BOUND = 0,
+
+  /**
+   * Adjusts the node's position when it reaches the upper limit to this value.
+   */
+  UPPER_ADJUST = 95,
+
+  /**
+   * Adjusts the node's position when it reaches the lower limit to this value.
+   */
+  LOWER_ADJUST = 5,
 }
 
+/**
+ * Interface for basic node coordinates but scaled based on the minimapData's configuration.
+ * @property {number} nodeXScaledCoordinate The scaled x coordinate
+ * @property {number} nodeYScaledCoordinate The scaled y coordinate
+ */
 interface xAndYScaledCoordinates {
   nodeXScaledCoordinate: number;
   nodeYScaledCoordinate: number;
@@ -59,16 +85,18 @@ function calculateXY(
  */
 function convertDegreesToRadians(degrees: number): number {
   return (
-    Math.round(degrees * MinimapConstants.DEGREES_TO_RADIANS) %
+    Math.round(degrees * MinimapConstants.DEGREES_TO_RADIANS_ROTATION) %
     MinimapConstants.DEGREE
   );
 }
 
 /**
  * Helper function to obtain the new x and y scaled coordinates based on the minimapData and a newNode.
+ *
+ * Basically utilises calculateXY applied on both x and y to calculate the new scaled coordinates.
  * @param {MinimapReturn} minimapData Data configuration from the minimap.
- * @param {NewNode} node The new node to be selected
- * @returns {object} The new x and y scaled coordinates.
+ * @param {NewNode} node The node for its coordinates to be scaled.
+ * @returns {xAndYScaledCoordinates} The new x and y scaled coordinates.
  */
 const getScaledNodeCoordinates = (
   minimapData: MinimapReturn,
@@ -147,4 +175,4 @@ const setNodeSelected = (
   }
 };
 
-export default { setNodeSelected };
+export default { getScaledNodeCoordinates, setNodeSelected };

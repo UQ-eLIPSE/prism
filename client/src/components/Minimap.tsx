@@ -7,16 +7,7 @@ import { useUserContext } from "../context/UserContext";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
-import MinimapUtils from "../utils/MinimapUtils";
-
-const PERCENTAGE = 100;
-const ROTATION = 57.2958;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DEGREE = 360;
-const UPPER_BOUND = 100;
-const LOWER_BOUND = 0;
-const UPPER_ADJUST = 95;
-const LOWER_ADJUST = 5;
+import MinimapUtils, { MinimapConstants } from "../utils/MinimapUtils";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -111,32 +102,6 @@ function Minimap(props: MinimapProps) {
     }
   }, [props.minimapEnlarged]);
 
-  /**
-   * Calculates a scaled position for the node as a percentage.
-   * @param nodeCoordinate1 Either the x coordinate or the y coordinate of the node
-   * @param nodeCoordinate2 Either the x coordinate or the y coordinate of the node
-   * @param flipped Boolean value to check if the node is flipped
-   * @param offset offset value for the node
-   * @param scale a scale value for the node
-   * @param imageHeightorWidth Either the image height or the width
-   * @returns the node position on the map
-   */
-  function calculateXY(
-    nodeCoordinate1: number,
-    nodeCoordinate2: number,
-    flipped: boolean,
-    offset: number,
-    scale: number,
-    imageHeightorWidth: number,
-  ): number {
-    return (
-      (scale *
-        ((!flipped ? nodeCoordinate1 : nodeCoordinate2) + offset) *
-        PERCENTAGE) /
-      imageHeightorWidth
-    );
-  }
-
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     node: NewNode,
@@ -176,7 +141,7 @@ function Minimap(props: MinimapProps) {
     }
 
     if (node == selectedNode) {
-      return `rotate(${rotation / ROTATION}rad)`;
+      return `rotate(${rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION}rad)`;
     } else {
       const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
       const sum = [
@@ -192,34 +157,26 @@ function Minimap(props: MinimapProps) {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
         // Element Position = Scale * (Position within map + Offset)
-        let x_position: number = calculateXY(
-          node.x,
-          node.y,
-          props.minimapData.xy_flipped,
-          props.minimapData.x_pixel_offset,
-          props.minimapData.x_scale,
-          props.minimapData.img_width,
-        );
-        let y_position: number = calculateXY(
-          node.y,
-          node.x,
-          props.minimapData.xy_flipped,
-          props.minimapData.y_pixel_offset,
-          props.minimapData.y_scale,
-          props.minimapData.img_height,
+        const scaledCoordinates = MinimapUtils.getScaledNodeCoordinates(
+          props.minimapData,
+          node,
         );
 
         function adjustPosition(position: number) {
-          if (position > UPPER_BOUND) {
-            return UPPER_ADJUST;
-          } else if (position < LOWER_BOUND) {
-            return LOWER_ADJUST;
+          if (position > MinimapConstants.UPPER_BOUND) {
+            return MinimapConstants.UPPER_ADJUST;
+          } else if (position < MinimapConstants.LOWER_BOUND) {
+            return MinimapConstants.LOWER_ADJUST;
           }
           return position;
         }
 
-        x_position = adjustPosition(x_position);
-        y_position = adjustPosition(y_position);
+        const x_position: number = adjustPosition(
+          scaledCoordinates.nodeXScaledCoordinate,
+        );
+        const y_position: number = adjustPosition(
+          scaledCoordinates.nodeYScaledCoordinate,
+        );
 
         const isMapEnlarged = props.minimapEnlarged;
         const nodeTitle = node.tiles_name;
@@ -330,7 +287,7 @@ function Minimap(props: MinimapProps) {
         // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
 
         selectedNode?.survey_node,
-        rotation / ROTATION,
+        rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION,
       );
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Rotation \n ${e}`);
