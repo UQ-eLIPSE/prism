@@ -7,7 +7,10 @@ import { useUserContext } from "../context/UserContext";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
-import MinimapUtils, { MinimapConstants } from "../utils/MinimapUtils";
+import MinimapUtils, {
+  FloorIdentifier,
+  MinimapConstants,
+} from "../utils/MinimapUtils";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -273,21 +276,21 @@ function Minimap(props: MinimapProps) {
     if (!floorTag) setFloorTag(String(props.minimapData.floor));
     if (!floorName) setFloorName(`Floor ${props.minimapData.floor}`);
 
-    try {
-      const call = await NetworkCalls.updateMinimapNames(
-        props.minimapData.floor,
-        props.siteId,
-        floorTag,
-        floorName,
-      );
-      if (call.success === true) {
-        setSubmitVisibility(false);
-      }
+    const floorInfo: FloorIdentifier = {
+      floorName,
+      floorTag,
+    };
 
-      props.updateFloorTag(floorTag);
-    } catch (e) {
-      window.alert(`Error! \n\n Failed to Update Floor Details \n ${e}`);
-    }
+    const success = await MinimapUtils.updateFloorTagAndNameAPI(
+      props.minimapData.floor,
+      props.siteId,
+      floorInfo,
+      "Error! \n\n Failed to Update Floor Details \n",
+    );
+
+    success && setSubmitVisibility(false);
+
+    props.updateFloorTag(floorTag);
   }
 
   /**

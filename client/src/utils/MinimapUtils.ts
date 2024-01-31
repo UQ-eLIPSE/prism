@@ -54,6 +54,14 @@ interface xAndYScaledCoordinates {
 }
 
 /**
+ * Interface representing the floor's tag and name.
+ */
+export interface FloorIdentifier {
+  floorTag: string;
+  floorName: string;
+}
+
+/**
  * Calculates a scaled position for the node as a percentage.
  * @param nodeCoordinate1 Either the x coordinate or the y coordinate of the node
  * @param nodeCoordinate2 Either the x coordinate or the y coordinate of the node
@@ -228,10 +236,34 @@ const updateNodeRotationAPI = async (
   }
 };
 
+const updateFloorTagAndNameAPI = async (
+  floorId: number,
+  siteId: string,
+  floorInfo: FloorIdentifier,
+  windowAlertMessage: string,
+): Promise<boolean> => {
+  const { floorTag, floorName } = floorInfo;
+
+  try {
+    const call = await NetworkCalls.updateMinimapNames(
+      floorId,
+      siteId,
+      floorTag,
+      floorName,
+    );
+
+    return call.success === true;
+  } catch (e) {
+    window.alert(`${windowAlertMessage}: ${e}`);
+    return false;
+  }
+};
+
 export default {
   getScaledNodeCoordinates,
   setNodeSelected,
   calculateNewXY,
   updateNodeCoordinateAPI,
   updateNodeRotationAPI,
+  updateFloorTagAndNameAPI,
 };
