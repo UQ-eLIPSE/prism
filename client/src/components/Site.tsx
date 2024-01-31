@@ -87,7 +87,7 @@ function Site(props: SiteInterface) {
   );
   const [floors, setFloors] = useState<number[]>([]);
 
-  const [floorExists, setFloorExists] = useState<boolean>(false);
+  const [floorExists, setFloorExists] = useState<boolean>(true);
   const [infoPanelId, setInfoPanelId] = useState<string>("");
   const [infoPanelOpen, setInfoPanelOpen] = useState<boolean>(false);
   const [minimapEnlarged, setMinimapEnlarged] = useState<boolean>(false);
@@ -227,7 +227,7 @@ function Site(props: SiteInterface) {
 
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
-          if (!marzipano.current) {
+          if (!marzipano.current && floorExists) {
             marzipano.current = new Marzipano(
               nodesData,
               getInfoHotspot,
