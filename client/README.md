@@ -48,10 +48,14 @@ is prettied
   `yarn cypress:run:uat-agco360`: for project AGCO360
   `yarn cypress:run:uat-uwmt`: for project Urban Water
 
-Optional:
+3. trouble-shooting:
+   To watch cypress run on browser, you can use:
 
 - launch browsers: `-headed`, `-browser chrome`
-- `no-exit`,
+- with `no-exit`, you can stay on current test case in browsers to debug
+
+** Note ** : for some project, you may need run --spec if only one test failed, to just run this specific test case, you can use:
+
 - `--spec cypress/e2e/<testfilename>`
-  refer to https://docs.cypress.io/guides/guides/command-line
-  ** Note ** : for some project, you may need run --spec if only this test failed
+
+(refer to https://docs.cypress.io/guides/guides/command-line)
