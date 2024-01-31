@@ -44,7 +44,8 @@ export enum MinimapConstants {
 }
 
 /**
- * Interface for basic node coordinates but scaled based on the minimapData's configuration.
+ * Interface for basic node coordinates but scaled based on the minimapData's
+ *  configuration.
  * @property {number} nodeXScaledCoordinate The scaled x coordinate
  * @property {number} nodeYScaledCoordinate The scaled y coordinate
  */
@@ -55,6 +56,8 @@ interface xAndYScaledCoordinates {
 
 /**
  * Interface representing the floor's tag and name.
+ * @property {string} floorTag The floor's tag
+ * @property {string} floorName The floor's name
  */
 export interface FloorIdentifier {
   floorTag: string;
@@ -100,9 +103,11 @@ function convertDegreesToRadians(degrees: number): number {
 }
 
 /**
- * Helper function to obtain the new x and y scaled coordinates based on the minimapData and a newNode.
+ * Helper function to obtain the new x and y scaled coordinates based on
+ *  the minimapData and a newNode.
  *
- * Basically utilises calculateXY applied on both x and y to calculate the new scaled coordinates.
+ * Basically utilises calculateXY applied on both x and y to calculate the
+ *  new scaled coordinates.
  * @param {MinimapReturn} minimapData Data configuration from the minimap.
  * @param {NewNode} node The node for its coordinates to be scaled.
  * @returns {xAndYScaledCoordinates} The new x and y scaled coordinates.
@@ -177,7 +182,8 @@ const setNodeSelected = (
     handleSetXCoordinate(nodeXScaledCoordinate);
     handleSetYCoordinate(nodeYScaledCoordinate);
 
-    handleSetRotation(convertDegreesToRadians(newNode.rotation));
+    const rotationInRadians = convertDegreesToRadians(newNode.rotation);
+    handleSetRotation(rotationInRadians);
   } else if (!editing && !currentSelectedNode) {
     updateMiniMapEnlarged(false);
     handleMinimapOnClickNode(newNode.tiles_id);
@@ -201,6 +207,16 @@ function calculateNewXY(
   return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
 }
 
+/**
+ * Updates the node's coordinates in the database.
+ * The newX and newY coordinate is calculated using the MinimapUtils.calculateNewXY() function.
+ *
+ * @param selectedNode The current selected node
+ * @param newX The new x coordinate
+ * @param newY The new y coordinate
+ * @param windowAlertMessage Will be displayed if the API call fails
+ * @returns {Promise<void>}
+ */
 const updateNodeCoordinateAPI = async (
   selectedNode: NewNode | null,
   newX: number,
@@ -209,7 +225,8 @@ const updateNodeCoordinateAPI = async (
 ): Promise<void> => {
   try {
     await NetworkCalls.updateNodeCoordinates(
-      // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
+      // Converts x and y percentage coordinates to pixel coordinates in
+      // relation to image height and width.
       // I.e., x = 50 means 50% from left, therefore, 50% of image width since 50 / 100 = 0.5.
 
       selectedNode?.survey_node,
@@ -221,6 +238,13 @@ const updateNodeCoordinateAPI = async (
   }
 };
 
+/**
+ * Updates the node's rotation in the database.
+ * @param selectedNode The current selected node
+ * @param newRotation The new rotation value in degrees
+ * @param windowAlertMessage Will be displayed if the API call fails
+ * @returns {Promise<void>}
+ */
 const updateNodeRotationAPI = async (
   selectedNode: NewNode | null,
   newRotation: number,
@@ -236,6 +260,14 @@ const updateNodeRotationAPI = async (
   }
 };
 
+/**
+ * Updates the floor's tag and name in the database.
+ * @param floorId Specified floor id
+ * @param siteId Specified site id
+ * @param floorInfo Floor's tag and name
+ * @param windowAlertMessage Will be displayed if the API call fails
+ * @returns {Promise<boolean>} True if the API call is successful, false otherwise.
+ */
 const updateFloorTagAndNameAPI = async (
   floorId: number,
   siteId: string,
