@@ -420,7 +420,7 @@ export class ResourceController {
     const { siteId } = req.params;
     if (!siteId) return CommonUtil.failResponse(res, "Site Id is not provided");
     const allDocumentation = await Files.find({
-      site: new ObjectId(siteId),
+      //site: new ObjectId(siteId), TODO: Documents under files collection should have siteId
     });
     return CommonUtil.successResponse(res, "", allDocumentation);
   }
@@ -478,7 +478,7 @@ export class ResourceController {
 
       const dirObject = await Directories.findOne({
         parent: { $exists: false },
-        site: new ObjectId(siteId),
+        // site: new ObjectId(siteId), TODO: Documents under files collection should have siteId
       });
 
       if (!dirObject) throw new Error("dirObject not found.");
