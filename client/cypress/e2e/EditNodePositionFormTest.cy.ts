@@ -107,16 +107,16 @@ testEachZone((zone: Cypress.PrismZone) => {
 
   describe(`Test case: Value should be changed and saved when user submits a different value, and reopens the same form`, () => {
     let getReqAlias: string;
-    let patchReqAlias: string;
+    let patchReqCoordinatesAlias: string;
 
     beforeEach(() => {
       cy.accessZone(zone);
 
       if (!zone.adminUser) return;
 
-      [getReqAlias, patchReqAlias] = interceptMinimapData(
+      [getReqAlias, patchReqCoordinatesAlias] = interceptMinimapData(
         actions.getRequest,
-        actions.patchRequest,
+        actions.patchCoordinatesRequest,
       );
       expandMiniMap();
       editSelectedNode();
@@ -137,7 +137,7 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("x", String(randX));
 
             cy.get("button").contains("Save").click({ force: true });
-            cy.wait(patchReqAlias).then(() => {
+            cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
                 cy.get("input[id='x']").should(($input) => {
                   expect($input.val()).to.eq(String(randX));
@@ -163,7 +163,7 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("y", String(randY));
 
             cy.get("button").contains("Save").click({ force: true });
-            cy.wait(patchReqAlias).then(() => {
+            cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
                 cy.get("input[id='y']").should(($input) => {
                   expect($input.val()).to.eq(String(randY));
@@ -195,7 +195,7 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("y", String(randY));
 
             cy.get("button").contains("Save").click({ force: true });
-            cy.wait(patchReqAlias).then(() => {
+            cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
                 cy.get("input[id='x']").should(($input) => {
                   expect($input.val()).to.eq(String(randX));

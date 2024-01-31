@@ -5,13 +5,13 @@ export interface MiniMapAction {
 }
 
 export interface MiniMapActions {
-  patchRequest: MiniMapAction;
+  patchCoordinatesRequest: MiniMapAction;
   getRequest: MiniMapAction;
-  getRotationRequest: MiniMapAction;
+  patchRotationRequest: MiniMapAction;
 }
 
 export const actions: MiniMapActions = {
-  patchRequest: {
+  patchCoordinatesRequest: {
     url: "/api/node/coords/*",
     method: "PATCH",
     alias: "patchNode",
@@ -21,7 +21,7 @@ export const actions: MiniMapActions = {
     method: "GET",
     alias: "getMinimapData",
   },
-  getRotationRequest: {
+  patchRotationRequest: {
     url: "/api/node/rotation/*",
     method: "PATCH",
     alias: "patchNodeRotation",

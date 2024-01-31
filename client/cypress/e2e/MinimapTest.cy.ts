@@ -43,8 +43,8 @@ testEachZone((zone: Cypress.PrismZone) => {
       if (!zone.adminUser) return;
       [getReqAlias, patchReqAlias, patchReqRotAlias] = interceptMinimapData(
         actions.getRequest,
-        actions.patchRequest,
-        actions.getRotationRequest,
+        actions.patchCoordinatesRequest,
+        actions.patchRotationRequest,
       );
       expandMiniMap();
       editSelectedNode();
