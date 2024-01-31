@@ -5,20 +5,47 @@ export default defineConfig({
     username: process.env.CYPRESS_USERNAME,
     password: process.env.CYPRESS_PASSWORD,
     deployedZones: [
-      //for local test, depending project with/without timeline
       {
-        url: "http://localhost:3000",
+        project: "agco360",
+        url: {
+          local: "http://localhost:3000",
+          uat: "https://prism-uat.uqcloud.net",
+        },
+        singleSite: false,
+        hotspots: true,
+        timeline: false,
+        floors: false,
+        adminUser: true,
+      },
+      {
+        project: "uwmt",
+        url: {
+          local: "http://localhost:3000",
+          uat: "https://prism-uat.uqcloud.net",
+        },
         singleSite: true,
         hotspots: true,
         timeline: false,
-        // if REACT_APP_USE_SSO is false, set this to true.
+        floors: false,
+        adminUser: true,
+      },
+      {
+        project: "general",
+        url: {
+          local: "http://localhost:3000",
+          uat: "https://prism-uat.uqcloud.net",
+        },
+        singleSite: true,
+        hotspots: false,
+        timeline: true,
+        floors: true,
         adminUser: true,
       },
     ],
   },
   e2e: {
     specPattern: "cypress/e2e/**/*.cy.{js,ts}",
-    baseUrl: "https://prism-023.uqcloud.net",
+    baseUrl: "https://prism-uat.uqcloud.net",
     supportFile: "cypress/support/index.ts",
     screenshotOnRunFailure: false,
   },
@@ -28,5 +55,5 @@ export default defineConfig({
       bundler: "webpack",
     },
   },
-  retries: 2,
+  retries: 3,
 });

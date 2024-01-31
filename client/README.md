@@ -37,4 +37,25 @@ is prettied
 ## Running Cypress Tests
 
 1. navigate to test folder: `cd prism/client/`
-2. start tests:`yarn cypress:run` or `yarn cypress run --headed --no-exit` (optional: `--spec <path/to/specific/testfilename>`)
+2. start tests:
+
+- for local test run:
+  `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:local-agco360`: for project AGCO360
+  `yarn cypress:run:local-uwmt`: for project Urban Water
+- for UAT test run:
+  `yarn cypress:run:uat`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:uat-agco360`: for project AGCO360
+  `yarn cypress:run:uat-uwmt`: for project Urban Water
+
+3. trouble-shooting:
+   To watch cypress run on browser, you can use:
+
+- launch browsers: `-headed`, `-browser chrome`
+- with `no-exit`, you can stay on current test case in browsers to debug
+
+** Note ** : for some project, you may need run --spec if only one test failed, to just run this specific test case, you can use:
+
+- `--spec cypress/e2e/<testfilename>`
+
+(refer to https://docs.cypress.io/guides/guides/command-line)
