@@ -297,7 +297,7 @@ function Minimap(props: MinimapProps) {
   }
 
   // Update floor name and tag in database
-  async function handleUpdateFloorTagAndName() {
+  async function updateFloorTagAndName() {
     if (!floorTag) setFloorTag(String(props.minimapData.floor));
     if (!floorName) setFloorName(`Floor ${props.minimapData.floor}`);
 
@@ -452,7 +452,7 @@ function Minimap(props: MinimapProps) {
             {submitVisibility && (
               <div
                 className="submit-update"
-                onClick={() => handleUpdateFloorTagAndName()}
+                onClick={() => updateFloorTagAndName()}
               >
                 <span>Save</span>
               </div>
