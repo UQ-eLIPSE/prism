@@ -21,9 +21,9 @@ export enum MinimapConstants {
   DEGREES_TO_RADIANS = 57.2958,
 }
 
-interface newScaledCoordinates {
-  newNodeXScaledCoordinate: number;
-  newNodeYScaledCoordinate: number;
+interface xAndYScaledCoordinates {
+  nodeXScaledCoordinate: number;
+  nodeYScaledCoordinate: number;
 }
 
 /**
@@ -73,7 +73,7 @@ function convertDegreesToRadians(degrees: number): number {
 const getScaledNodeCoordinates = (
   minimapData: MinimapReturn,
   node: NewNode,
-): newScaledCoordinates => {
+): xAndYScaledCoordinates => {
   const {
     xy_flipped,
     x_pixel_offset,
@@ -84,7 +84,7 @@ const getScaledNodeCoordinates = (
     img_height,
   } = minimapData;
 
-  const newNodeXScaledCoordinate = calculateXY(
+  const nodeXScaledCoordinate = calculateXY(
     node.x,
     node.y,
     xy_flipped,
@@ -93,7 +93,7 @@ const getScaledNodeCoordinates = (
     img_width,
   );
 
-  const newNodeYScaledCoordinate = calculateXY(
+  const nodeYScaledCoordinate = calculateXY(
     node.y,
     node.x,
     xy_flipped,
@@ -102,7 +102,7 @@ const getScaledNodeCoordinates = (
     img_height,
   );
 
-  return { newNodeXScaledCoordinate, newNodeYScaledCoordinate };
+  return { nodeXScaledCoordinate, nodeYScaledCoordinate };
 };
 
 /**
@@ -133,12 +133,12 @@ const setNodeSelected = (
   if (editing && !currentSelectedNode) {
     handleSetSelectedNode(newNode);
 
-    const { newNodeXScaledCoordinate, newNodeYScaledCoordinate } =
+    const { nodeXScaledCoordinate, nodeYScaledCoordinate } =
       getScaledNodeCoordinates(minimapData, newNode);
 
     // Set new selected node to have the new scaled coordinates calculated above.
-    handleSetXCoordinate(newNodeXScaledCoordinate);
-    handleSetYCoordinate(newNodeYScaledCoordinate);
+    handleSetXCoordinate(nodeXScaledCoordinate);
+    handleSetYCoordinate(nodeYScaledCoordinate);
 
     handleSetRotation(convertDegreesToRadians(newNode.rotation));
   } else if (!editing && !currentSelectedNode) {
