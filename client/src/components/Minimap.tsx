@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
@@ -6,7 +5,8 @@ import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
 import { InfoHotspot } from "../interfaces/NodeData";
-import { MinimapProps } from "../interfaces/MinimapProps";
+import EditNodeForm from "./EditNodePositionForm";
+import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 
 interface NewNode {
   floor: number;
@@ -22,6 +22,28 @@ interface NewNode {
   rotation: number;
   minimapShown?: boolean;
   info_hotspots: InfoHotspot[] | [];
+}
+
+const PERCENTAGE = 100;
+const ROTATION = 57.2958;
+const DEGREE = 360;
+const UPPER_BOUND = 100;
+const LOWER_BOUND = 0;
+const UPPER_ADJUST = 95;
+const LOWER_ADJUST = 5;
+
+/**
+ * This interface represents the current node's position and rotation in the minimap.
+ * It is used to update the node's position and rotation in the database.
+ * @interface NodeConfiguration
+ * @property {number} x_position 0 - 100 horizontal percentage position of the node.
+ * @property {number} y_position 0 - 100 vertical percentage position of the node.
+ * @property {number} rotation 0 - 360 degrees rotation of the node.
+ */
+interface NodeConfiguration {
+  x_position: number;
+  y_position: number;
+  rotation: number;
 }
 
 function Minimap(props: MinimapProps) {
@@ -45,10 +67,20 @@ function Minimap(props: MinimapProps) {
 
   // State for controlling editing of node position and rotation.
   const [editing, setEditing] = useState<boolean>(false);
-  const [selectedNode, setSelectedNode] = useState<NewNode | null>();
+  const [selectedNode, setSelectedNode] = useState<NewNode | null>(null);
+
   const [rotation, setRotation] = useState<number>(0);
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
+
+  // * temporary
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [nodeState, setNodeState] = useState<NodeConfiguration>({
+    x_position: 0,
+    y_position: 0,
+    rotation: 0,
+  });
+
   const [nodes, editNodes] = useState<NewNode[]>([]);
 
   useEffect(() => {
@@ -89,10 +121,35 @@ function Minimap(props: MinimapProps) {
 
   useEffect(() => {
     if (props.minimapEnlarged === false) {
-      setSelectedNode(null);
-      setEditing(false);
+      resetSelectedNode();
     }
   }, [props.minimapEnlarged]);
+
+  /**
+   * Calculates a scaled position for the node as a percentage.
+   * @param nodeCoordinate1 Either the x coordinate or the y coordinate of the node
+   * @param nodeCoordinate2 Either the x coordinate or the y coordinate of the node
+   * @param flipped Boolean value to check if the node is flipped
+   * @param offset offset value for the node
+   * @param scale a scale value for the node
+   * @param imageHeightorWidth Either the image height or the width
+   * @returns the node position on the map
+   */
+  function calculateXY(
+    nodeCoordinate1: number,
+    nodeCoordinate2: number,
+    flipped: boolean,
+    offset: number,
+    scale: number,
+    imageHeightorWidth: number,
+  ): number {
+    return (
+      (scale *
+        ((!flipped ? nodeCoordinate1 : nodeCoordinate2) + offset) *
+        PERCENTAGE) /
+      imageHeightorWidth
+    );
+  }
 
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -103,21 +160,27 @@ function Minimap(props: MinimapProps) {
     if (editing && !selectedNode) {
       setSelectedNode(node);
       setX(
-        (props.minimapData.x_scale *
-          ((!props.minimapData.xy_flipped ? node.x : node.y) +
-            props.minimapData.x_pixel_offset) *
-          100) /
+        calculateXY(
+          node.x,
+          node.y,
+          props.minimapData.xy_flipped,
+          props.minimapData.x_pixel_offset,
+          props.minimapData.x_scale,
           props.minimapData.img_width,
+        ),
+      );
+      setY(
+        calculateXY(
+          node.y,
+          node.x,
+          props.minimapData.xy_flipped,
+          props.minimapData.y_pixel_offset,
+          props.minimapData.y_scale,
+          props.minimapData.img_height,
+        ),
       );
 
-      setY(
-        (props.minimapData.y_scale *
-          ((!props.minimapData.xy_flipped ? node.y : node.x) +
-            props.minimapData.y_pixel_offset) *
-          100) /
-          props.minimapData.img_height,
-      );
-      setRotation(Math.round(node.rotation * 57.2958) % 360);
+      setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
     } else if (!editing && !selectedNode) {
       props.updateMinimapEnlarged(false);
       props.onClickNode(node.tiles_id);
@@ -143,7 +206,7 @@ function Minimap(props: MinimapProps) {
     }
 
     if (node == selectedNode) {
-      return `rotate(${rotation / 57.2958}rad)`;
+      return `rotate(${rotation / ROTATION}rad)`;
     } else {
       const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
       const sum = [
@@ -159,30 +222,34 @@ function Minimap(props: MinimapProps) {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
         // Element Position = Scale * (Position within map + Offset)
-        let x_position: number =
-          (props.minimapData.x_scale *
-            ((!props.minimapData.xy_flipped ? node.x : node.y) +
-              props.minimapData.x_pixel_offset) *
-            100) /
-          props.minimapData.img_width;
-        let y_position: number =
-          (props.minimapData.y_scale *
-            ((!props.minimapData.xy_flipped ? node.y : node.x) +
-              props.minimapData.y_pixel_offset) *
-            100) /
-          props.minimapData.img_height;
+        let x_position: number = calculateXY(
+          node.x,
+          node.y,
+          props.minimapData.xy_flipped,
+          props.minimapData.x_pixel_offset,
+          props.minimapData.x_scale,
+          props.minimapData.img_width,
+        );
+        let y_position: number = calculateXY(
+          node.y,
+          node.x,
+          props.minimapData.xy_flipped,
+          props.minimapData.y_pixel_offset,
+          props.minimapData.y_scale,
+          props.minimapData.img_height,
+        );
 
-        if (x_position > 100) {
-          x_position = 95;
-        } else if (x_position < 0) {
-          x_position = 5;
+        function adjustPosition(position: number) {
+          if (position > UPPER_BOUND) {
+            return UPPER_ADJUST;
+          } else if (position < LOWER_BOUND) {
+            return LOWER_ADJUST;
+          }
+          return position;
         }
 
-        if (y_position > 100) {
-          y_position = 95;
-        } else if (y_position < 0) {
-          y_position = 5;
-        }
+        x_position = adjustPosition(x_position);
+        y_position = adjustPosition(y_position);
 
         const isMapEnlarged = props.minimapEnlarged;
         const nodeTitle = node.tiles_name;
@@ -244,16 +311,37 @@ function Minimap(props: MinimapProps) {
     );
   }
 
+  /**
+   * Updating the information of the node after pressing save
+   * @param imageHeightorWidth Either the image height or width
+   * @param coordinate Either the x or the y coordinate
+   * @param offset the offset of the node
+   * @param scale the scale value of the node
+   * @returns the saved coordinate of the node
+   */
+  function calculateNewXY(
+    imageHeightorWidth: number,
+    coordinate: number,
+    offset: number,
+    scale: number,
+  ): number {
+    return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
+  }
+
   async function updateNodeInfo() {
     try {
-      const newX: number =
-        ((props.minimapData.img_width * x) / 100 -
-          props.minimapData.x_pixel_offset) /
-        props.minimapData.x_scale;
-      const newY: number =
-        ((props.minimapData.img_height * y) / 100 -
-          props.minimapData.y_pixel_offset) /
-        props.minimapData.y_scale;
+      const newX: number = calculateNewXY(
+        props.minimapData.img_width,
+        x,
+        props.minimapData.x_pixel_offset,
+        props.minimapData.x_scale,
+      );
+      const newY: number = calculateNewXY(
+        props.minimapData.img_height,
+        y,
+        props.minimapData.y_pixel_offset,
+        props.minimapData.y_scale,
+      );
 
       await NetworkCalls.updateNodeCoordinates(
         // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
@@ -263,9 +351,6 @@ function Minimap(props: MinimapProps) {
         newX,
         newY,
       );
-
-      setSelectedNode(null);
-      setEditing(false);
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
     }
@@ -275,11 +360,13 @@ function Minimap(props: MinimapProps) {
         // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
 
         selectedNode?.survey_node,
-        rotation / 57.2958,
+        rotation / ROTATION,
       );
     } catch (e) {
       window.alert(`Error! \n\n Failed to Update Node Rotation \n ${e}`);
     }
+
+    resetSelectedNode();
   }
 
   // Update floor name and tag in database
@@ -304,6 +391,14 @@ function Minimap(props: MinimapProps) {
     }
   }
 
+  /**
+   * Clears selected node and force toggle edit state to false.
+   */
+  function resetSelectedNode(): void {
+    setSelectedNode(null);
+    setEditing(false);
+  }
+
   return (
     <>
       {editing && !selectedNode && (
@@ -321,7 +416,8 @@ function Minimap(props: MinimapProps) {
         <button
           onClick={(): void => {
             setEditing((editing) => !editing);
-            setSelectedNode(null);
+
+            if (!editing) setSelectedNode(null);
 
             if (editing && selectedNode) {
               updateNodeInfo();
@@ -334,6 +430,7 @@ function Minimap(props: MinimapProps) {
                 ? "editing"
                 : ""
           }`}
+          data-cy="edit-save-button"
         >
           <i
             className={`fa-solid ${
@@ -346,104 +443,16 @@ function Minimap(props: MinimapProps) {
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
-          <form>
-            <span>
-              <p>Orientation</p>
-              <div>
-                <i className="fa-solid fa-rotate-right"></i>
-                <input
-                  type="number"
-                  name="orientation"
-                  id="orientation"
-                  value={rotation}
-                  onChange={(e) => {
-                    if (e.target.value === "0" || e.target.value === "") {
-                      setRotation(360);
-                    } else if (e.target.value === "360") {
-                      setRotation(0);
-                    } else if (parseInt(e.target.value) <= 360) {
-                      setRotation(parseInt(e.target.value));
-                    }
-                  }}
-                  min="0"
-                  max="360"
-                  step="15"
-                />
-              </div>
-            </span>
-
-            <span>
-              <p>Coordinates</p>
-              <div className="coords">
-                <i className="fa-solid fa-arrows-left-right"></i>
-                <input
-                  type="number"
-                  name="x"
-                  id="x"
-                  value={Math.round(x)}
-                  onChange={(e) => {
-                    if (e.target.value === "0") {
-                      setX(100);
-                    } else if (
-                      e.target.value === "100" ||
-                      e.target.value === ""
-                    ) {
-                      setX(0);
-                    } else if (parseInt(e.target.value) <= 100) {
-                      setX(parseInt(e.target.value));
-                    }
-                  }}
-                  min="0"
-                  max="100"
-                />
-              </div>
-              <div className="coords">
-                <i className="fa-solid fa-arrows-up-down"></i>
-                <input
-                  type="number"
-                  name="y"
-                  id="y"
-                  value={Math.round(y)}
-                  onChange={(e): void => {
-                    if (e.target.value === "0") {
-                      setY(100);
-                    } else if (
-                      e.target.value === "100" ||
-                      e.target.value === ""
-                    ) {
-                      setY(0);
-                    } else if (parseInt(e.target.value) <= 100) {
-                      setY(parseInt(e.target.value));
-                    }
-                  }}
-                  min="0"
-                  max="100"
-                />
-              </div>
-            </span>
-
-            <span>
-              <div className="buttons">
-                <button
-                  onClick={(e): void => {
-                    e.preventDefault();
-                    setSelectedNode(null);
-                    setEditing(false);
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={(e): void => {
-                    e.preventDefault();
-                    updateNodeInfo();
-                  }}
-                >
-                  Save
-                </button>
-              </div>
-            </span>
-          </form>
+          <EditNodeForm
+            rotationValue={rotation}
+            setRotationValue={setRotation}
+            xPositionValue={x}
+            setXPositionValue={setX}
+            yPositionValue={y}
+            setYPositionValue={setY}
+            resetSelectedNode={resetSelectedNode}
+            updateNode={updateNodeInfo}
+          />
         </div>
       </div>
 

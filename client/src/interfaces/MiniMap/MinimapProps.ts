@@ -1,6 +1,6 @@
-import { MinimapReturn } from "../components/Site";
-import { ISettings } from "../typings/settings";
-import { NodeData } from "./NodeData";
+import { MinimapReturn } from "../../components/Site";
+import { ISettings } from "../../typings/settings";
+import { NodeData } from "../NodeData";
 
 export interface MinimapProps {
   currPanoId: string;
