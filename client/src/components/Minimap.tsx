@@ -255,7 +255,7 @@ function Minimap(props: MinimapProps) {
     return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
   }
 
-  async function updateNodeInfo() {
+  async function handleUpdateNodeInfo() {
     try {
       const newX: number = calculateNewXY(
         props.minimapData.img_width,
@@ -347,7 +347,7 @@ function Minimap(props: MinimapProps) {
             if (!editing) setSelectedNode(null);
 
             if (editing && selectedNode) {
-              updateNodeInfo();
+              handleUpdateNodeInfo();
             }
           }}
           className={`editButton ${
@@ -378,7 +378,7 @@ function Minimap(props: MinimapProps) {
             yPositionValue={y}
             setYPositionValue={setY}
             resetSelectedNode={resetSelectedNode}
-            updateNode={updateNodeInfo}
+            updateNode={handleUpdateNodeInfo}
           />
         </div>
       </div>

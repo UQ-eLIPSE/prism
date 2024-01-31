@@ -139,10 +139,10 @@ const getScaledNodeCoordinates = (
  * @param currentSelectedNode Currently selected node
  * @param newNode New node to be selected
  * @param minimapData Data configuration from the minimap
- * @param handleSetSelectedNode Function to handle setting the selected node
- * @param handleSetXCoordinate Handle setting the x coordinate
- * @param handleSetYCoordinate Handle setting the y coordinate
- * @param handleSetRotation Handle setting the rotation
+ * @param handleSetSelectedNode Function to handle setting the selected node state
+ * @param handleSetXCoordinate Handle setting the x coordinate state
+ * @param handleSetYCoordinate Handle setting the y coordinate state
+ * @param handleSetRotation Handle setting the rotation state
  * @param updateMiniMapEnlarged To handle updating the minimap enlargement status
  * @param handleMinimapOnClickNode Handle clicking on a node in the minimap
  */
