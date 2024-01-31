@@ -227,7 +227,7 @@ function Site(props: SiteInterface) {
 
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
-          if (!marzipano.current) {
+          if (!marzipano.current && floorExists) {
             marzipano.current = new Marzipano(
               nodesData,
               getInfoHotspot,
