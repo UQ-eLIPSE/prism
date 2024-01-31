@@ -87,7 +87,7 @@ function Site(props: SiteInterface) {
   );
   const [floors, setFloors] = useState<number[]>([]);
 
-  const [floorExists, setFloorExists] = useState<boolean>(true);
+  const [floorExists, setFloorExists] = useState<boolean>(false);
   const [infoPanelId, setInfoPanelId] = useState<string>("");
   const [infoPanelOpen, setInfoPanelOpen] = useState<boolean>(false);
   const [minimapEnlarged, setMinimapEnlarged] = useState<boolean>(false);
