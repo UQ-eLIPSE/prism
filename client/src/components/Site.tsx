@@ -495,21 +495,19 @@ function Site(props: SiteInterface) {
           />
         )}
       </div>
-      {config.enable.timeline && (
-        <Timeline
-          timelineOpen={timelineOpen}
-          floor={currfloor}
-          changeFloor={changeFloor}
-          date={currDate}
-          changeDate={changeDate}
-          closeTimelineFunction={changeTimelineOpen}
-          siteId={siteId}
-          updateAvailableFloors={updateAvailableFloors}
-          availableFloors={availableFloors}
-          floorExists={floorExists}
-          updateFloors={updateFloors}
-        />
-      )}
+      <Timeline
+        timelineOpen={timelineOpen}
+        floor={currfloor}
+        changeFloor={changeFloor}
+        date={currDate}
+        changeDate={changeDate}
+        closeTimelineFunction={changeTimelineOpen}
+        siteId={siteId}
+        updateAvailableFloors={updateAvailableFloors}
+        availableFloors={availableFloors}
+        floorExists={floorExists}
+        updateFloors={updateFloors}
+      />
     </div>
   );
 }
