@@ -6,11 +6,10 @@ export default defineConfig({
     password: process.env.CYPRESS_PASSWORD,
     deployedZones: [
       {
-        project: "localAgco360",
+        project: "agco360",
         url: {
           local: "http://localhost:3000",
           uat: "https://prism-023.uqcloud.net",
-          product: "",
         },
         singleSite: false,
         hotspots: true,
@@ -19,11 +18,10 @@ export default defineConfig({
         adminUser: true,
       },
       {
-        project: "localUwmt",
+        project: "uwmt",
         url: {
           local: "http://localhost:3000",
           uat: "https://prism-023.uqcloud.net",
-          product: "",
         },
         singleSite: true,
         hotspots: true,
@@ -32,11 +30,10 @@ export default defineConfig({
         adminUser: true,
       },
       {
-        project: "localGeneral",
+        project: "general",
         url: {
           local: "http://localhost:3000",
           uat: "https://prism-023.uqcloud.net",
-          product: "",
         },
         singleSite: true,
         hotspots: false,

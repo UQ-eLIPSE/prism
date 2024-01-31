@@ -42,15 +42,11 @@ is prettied
 - for local test run:
   `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
   `yarn cypress:run:local-agco360`: for project AGCO360
-  `yarn cypress:run:local-uwmt`: for project Urbane Water
+  `yarn cypress:run:local-uwmt`: for project Urban Water
 - for UAT test run:
-  `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
-  `yarn cypress:run:local-agco360`: for project AGCO360
-  `yarn cypress:run:local-uwmt`: for project Urbane Water
-- for UAT test run:
-  `yarn cypress:run:local`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
-  `yarn cypress:run:local-agco360`: for project AGCO360
-  `yarn cypress:run:local-uwmt`: for project Urbane Water
+  `yarn cypress:run:uat`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:uat-agco360`: for project AGCO360
+  `yarn cypress:run:uat-uwmt`: for project Urban Water
 
 Optional:
 
@@ -58,4 +54,4 @@ Optional:
 - `no-exit`,
 - `--spec cypress/e2e/<testfilename>`
   refer to https://docs.cypress.io/guides/guides/command-line
-  ** Note ** : for some project, you may need run --spec if only this test failed 
+  ** Note ** : for some project, you may need run --spec if only this test failed
