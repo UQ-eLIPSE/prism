@@ -9,7 +9,7 @@ export default defineConfig({
         project: "agco360",
         url: {
           local: "http://localhost:3000",
-          uat: "https://prism-023.uqcloud.net",
+          uat: "https://prism-uat.uqcloud.net",
         },
         singleSite: false,
         hotspots: true,
@@ -21,7 +21,7 @@ export default defineConfig({
         project: "uwmt",
         url: {
           local: "http://localhost:3000",
-          uat: "https://prism-023.uqcloud.net",
+          uat: "https://prism-uat.uqcloud.net",
         },
         singleSite: true,
         hotspots: true,
@@ -33,7 +33,7 @@ export default defineConfig({
         project: "general",
         url: {
           local: "http://localhost:3000",
-          uat: "https://prism-023.uqcloud.net",
+          uat: "https://prism-uat.uqcloud.net",
         },
         singleSite: true,
         hotspots: false,
@@ -45,7 +45,7 @@ export default defineConfig({
   },
   e2e: {
     specPattern: "cypress/e2e/**/*.cy.{js,ts}",
-    baseUrl: "https://prism-023.uqcloud.net",
+    baseUrl: "https://prism-uat.uqcloud.net",
     supportFile: "cypress/support/index.ts",
     screenshotOnRunFailure: false,
   },
