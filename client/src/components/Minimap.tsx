@@ -4,25 +4,9 @@ import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
-import { InfoHotspot } from "../interfaces/NodeData";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
-
-interface NewNode {
-  floor: number;
-  node_number: number;
-  site: string;
-  survey_node: string;
-  tiles_id: string;
-  tiles_name: string;
-  x: number;
-  x_scale: number;
-  y: number;
-  y_scale: number;
-  rotation: number;
-  minimapShown?: boolean;
-  info_hotspots: InfoHotspot[] | [];
-}
+import { NewNode } from "../interfaces/MiniMap/NewNode";
 
 const PERCENTAGE = 100;
 const ROTATION = 57.2958;
