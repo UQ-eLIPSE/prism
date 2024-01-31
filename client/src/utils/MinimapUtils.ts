@@ -233,8 +233,8 @@ const updateNodeCoordinateAPI = async (
       newX,
       newY,
     );
-  } catch (e) {
-    window.alert(`${windowAlertMessage}: ${e}`);
+  } catch (error) {
+    window.alert(`${windowAlertMessage}: ${error}`);
   }
 };
 
@@ -255,8 +255,8 @@ const updateNodeRotationAPI = async (
       selectedNode?.survey_node,
       newRotation,
     );
-  } catch (e) {
-    window.alert(`${windowAlertMessage}: ${e}`);
+  } catch (error) {
+    window.alert(`${windowAlertMessage}: ${error}`);
   }
 };
 
@@ -285,8 +285,8 @@ const updateFloorTagAndNameAPI = async (
     );
 
     return call.success === true;
-  } catch (e) {
-    window.alert(`${windowAlertMessage}: ${e}`);
+  } catch (error) {
+    window.alert(`${windowAlertMessage}: ${error}`);
     return false;
   }
 };
