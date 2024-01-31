@@ -238,60 +238,32 @@ function Minimap(props: MinimapProps) {
     );
   }
 
-  /**
-   * Updating the information of the node after pressing save
-   * @param imageHeightorWidth Either the image height or width
-   * @param coordinate Either the x or the y coordinate
-   * @param offset the offset of the node
-   * @param scale the scale value of the node
-   * @returns the saved coordinate of the node
-   */
-  function calculateNewXY(
-    imageHeightorWidth: number,
-    coordinate: number,
-    offset: number,
-    scale: number,
-  ): number {
-    return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
-  }
-
   async function updateNodeInfo() {
-    try {
-      const newX: number = calculateNewXY(
-        props.minimapData.img_width,
-        x,
-        props.minimapData.x_pixel_offset,
-        props.minimapData.x_scale,
-      );
-      const newY: number = calculateNewXY(
-        props.minimapData.img_height,
-        y,
-        props.minimapData.y_pixel_offset,
-        props.minimapData.y_scale,
-      );
+    const newX: number = MinimapUtils.calculateNewXY(
+      props.minimapData.img_width,
+      x,
+      props.minimapData.x_pixel_offset,
+      props.minimapData.x_scale,
+    );
+    const newY: number = MinimapUtils.calculateNewXY(
+      props.minimapData.img_height,
+      y,
+      props.minimapData.y_pixel_offset,
+      props.minimapData.y_scale,
+    );
 
-      await NetworkCalls.updateNodeCoordinates(
-        // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
-        // I.e., x = 50 means 50% from left, therefore, 50% of image width since 50 / 100 = 0.5.
+    await MinimapUtils.updateNodeCoordinateAPI(
+      selectedNode,
+      newX,
+      newY,
+      "Error! \n\n Failed to Update Node Coordinates \n",
+    );
 
-        selectedNode?.survey_node,
-        newX,
-        newY,
-      );
-    } catch (e) {
-      window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
-    }
-
-    try {
-      await NetworkCalls.updateNodeRotation(
-        // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
-
-        selectedNode?.survey_node,
-        rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION,
-      );
-    } catch (e) {
-      window.alert(`Error! \n\n Failed to Update Node Rotation \n ${e}`);
-    }
+    await MinimapUtils.updateNodeRotationAPI(
+      selectedNode,
+      rotation,
+      "Error! \n\n Failed to Update Node Rotation",
+    );
 
     resetSelectedNode();
   }

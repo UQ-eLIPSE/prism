@@ -1,5 +1,6 @@
 import { MinimapReturn } from "../components/Site";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
+import NetworkCalls from "./NetworkCalls";
 
 /**
  * Constants related to the Minimap.
@@ -175,4 +176,62 @@ const setNodeSelected = (
   }
 };
 
-export default { getScaledNodeCoordinates, setNodeSelected };
+/**
+ * Updating the information of the node after pressing save
+ * @param imageHeightorWidth Either the image height or width
+ * @param coordinate Either the x or the y coordinate
+ * @param offset the offset of the node
+ * @param scale the scale value of the node
+ * @returns the saved coordinate of the node
+ */
+function calculateNewXY(
+  imageHeightorWidth: number,
+  coordinate: number,
+  offset: number,
+  scale: number,
+): number {
+  return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
+}
+
+const updateNodeCoordinateAPI = async (
+  selectedNode: NewNode | null,
+  newX: number,
+  newY: number,
+  windowAlertMessage: string,
+): Promise<void> => {
+  try {
+    await NetworkCalls.updateNodeCoordinates(
+      // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
+      // I.e., x = 50 means 50% from left, therefore, 50% of image width since 50 / 100 = 0.5.
+
+      selectedNode?.survey_node,
+      newX,
+      newY,
+    );
+  } catch (e) {
+    window.alert(`${windowAlertMessage}: ${e}`);
+  }
+};
+
+const updateNodeRotationAPI = async (
+  selectedNode: NewNode | null,
+  newRotation: number,
+  windowAlertMessage: string,
+): Promise<void> => {
+  try {
+    await NetworkCalls.updateNodeRotation(
+      selectedNode?.survey_node,
+      newRotation,
+    );
+  } catch (e) {
+    window.alert(`${windowAlertMessage}: ${e}`);
+  }
+};
+
+export default {
+  getScaledNodeCoordinates,
+  setNodeSelected,
+  calculateNewXY,
+  updateNodeCoordinateAPI,
+  updateNodeRotationAPI,
+};
