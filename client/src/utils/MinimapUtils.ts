@@ -1,6 +1,8 @@
 import { MinimapReturn } from "../components/Site";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
 import NetworkCalls from "./NetworkCalls";
+import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
+import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 
 /**
  * Constants related to the Minimap.
@@ -41,27 +43,6 @@ export enum MinimapConstants {
    * Adjusts the node's position when it reaches the lower limit to this value.
    */
   LOWER_ADJUST = 5,
-}
-
-/**
- * Interface for basic node coordinates but scaled based on the minimapData's
- *  configuration.
- * @property {number} nodeXScaledCoordinate The scaled x coordinate
- * @property {number} nodeYScaledCoordinate The scaled y coordinate
- */
-interface xAndYScaledCoordinates {
-  nodeXScaledCoordinate: number;
-  nodeYScaledCoordinate: number;
-}
-
-/**
- * Interface representing the floor's tag and name.
- * @property {string} floorTag The floor's tag
- * @property {string} floorName The floor's name
- */
-export interface FloorIdentifier {
-  floorTag: string;
-  floorName: string;
 }
 
 /**

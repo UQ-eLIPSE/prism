@@ -7,10 +7,8 @@ import { useUserContext } from "../context/UserContext";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
-import MinimapUtils, {
-  FloorIdentifier,
-  MinimapConstants,
-} from "../utils/MinimapUtils";
+import MinimapUtils, { MinimapConstants } from "../utils/MinimapUtils";
+import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -268,7 +266,7 @@ function Minimap(props: MinimapProps) {
       "Error! \n\n Failed to Update Node Rotation",
     );
 
-    resetSelectedNode();
+    resetSelectedNode(); // reset selected node and toggle edit state to false
   }
 
   // Update floor name and tag in database
@@ -281,14 +279,14 @@ function Minimap(props: MinimapProps) {
       floorTag,
     };
 
-    const success = await MinimapUtils.updateFloorTagAndNameAPI(
+    const updateSuccess = await MinimapUtils.updateFloorTagAndNameAPI(
       props.minimapData.floor,
       props.siteId,
       floorInfo,
       "Error! \n\n Failed to Update Floor Details \n",
     );
 
-    success && setSubmitVisibility(false);
+    updateSuccess && setSubmitVisibility(false);
 
     props.updateFloorTag(floorTag);
   }
