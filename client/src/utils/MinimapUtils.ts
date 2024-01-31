@@ -70,7 +70,7 @@ function convertDegreesToRadians(degrees: number): number {
  * @param {NewNode} newNode The new node to be selected
  * @returns {object} The new x and y scaled coordinates.
  */
-const getNewNodeCoordinates = (
+const getNewScaledNodeCoordinates = (
   minimapData: MinimapReturn,
   newNode: NewNode,
 ): newScaledCoordinates => {
@@ -134,7 +134,7 @@ const setNodeSelected = (
     handleSetSelectedNode(newNode);
 
     const { newNodeXScaledCoordinate, newNodeYScaledCoordinate } =
-      getNewNodeCoordinates(minimapData, newNode);
+      getNewScaledNodeCoordinates(minimapData, newNode);
 
     // Set new selected node to have the new scaled coordinates calculated above.
     handleSetXCoordinate(newNodeXScaledCoordinate);
