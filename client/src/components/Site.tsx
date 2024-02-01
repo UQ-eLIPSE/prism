@@ -120,14 +120,6 @@ function Site(props: SiteInterface) {
     console.log("cuirr floor, ", currfloor);
     updateFloors();
     updateSurveys();
-    // changeDate(allSurveys[0]?.dates[0]?.date);
-    // (async () => {
-    // await updateFloors();
-    // await updateSurveys();
-    // await changeDateFormatted(allSurveys[0]?.dates[0]?.date);
-    // })();
-    console.log("curr floor useffect running");
-    console.log("all surveys", allSurveys);
   }, [currfloor, currDate]);
 
   const updateFloors = async (): Promise<void> => {
@@ -161,12 +153,10 @@ function Site(props: SiteInterface) {
         surveyAbortController,
         siteId,
       );
-      console.log("hey", fetchSiteSurveys);
+
       setSurveys(surveyWithFloors);
       setAllSurveys(fetchSiteSurveys);
-      console.log("CHANGING DATE FORMATTED");
       changeDateFormatted(fetchSiteSurveys[0]?.dates[0]?.date);
-      console.log("After", allSurveys);
     } catch (error) {
       console.error("Failed to fetch surveys:", error);
     }
@@ -326,6 +316,7 @@ function Site(props: SiteInterface) {
   function changeDate(date: Date): void {
     setCurrDate(date);
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function changeDateFormatted(date: Date): Promise<void> {
     if (date.toISOString() === currDate.toISOString()) return;

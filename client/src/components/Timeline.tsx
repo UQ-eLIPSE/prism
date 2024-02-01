@@ -51,16 +51,6 @@ function Timeline(props: Props) {
 
   useEffect(() => {
     const fetchingSurveys = async () => {
-      // const surveyWithFloors = await NetworkCalls.fetchSurveys(
-      //   abortController,
-      //   props.siteId,
-      //   props.floor,
-      // );
-      // const fetchSiteSurveys = await NetworkCalls.fetchSurveys(
-      //   abortController,
-      //   props.siteId,
-      // );
-
       setSurveys(props.surveyWithFloors);
       await props.updateFloors();
       setCurrentMonthName(
@@ -79,9 +69,7 @@ function Timeline(props: Props) {
           top: 50 * positioningMonthIndex - scrollControl.clientHeight / 2,
         });
       }
-      // console.log(surveys);
-      // console.log(fetchSiteSurveys);
-      console.log("New", props.fetchSiteSurveys);
+
       setAllSurveys(props.fetchSiteSurveys);
       const months = [];
       for (const survey of props.fetchSiteSurveys) {
@@ -344,7 +332,6 @@ function Timeline(props: Props) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeDate = async (date: Date): Promise<void> => {
     if (date.toISOString() === props.date.toISOString()) return;
-    // props.changeDate(date, props.updateFloors);
     props.changeDate(date);
     await props.updateFloors();
     props.updateAvailableFloors(floors);
