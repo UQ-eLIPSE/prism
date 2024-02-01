@@ -1,5 +1,6 @@
 declare namespace Cypress {
   interface PrismZone {
+    rotation: boolean;
     project: string;
     url: { local: string; uat: string };
     singleSite: boolean;
