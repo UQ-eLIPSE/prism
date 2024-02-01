@@ -80,7 +80,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save node" button`, () => {
-      if (zone.adminUser) {
+      if (zone.adminUser && zone.rotation) {
         const randTuple =
           rotationValues[Math.floor(Math.random() * rotationValues.length)];
         cy.wait(getReqAlias).then(() => {
@@ -97,7 +97,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save" button`, () => {
-      if (zone.adminUser) {
+      if (zone.adminUser && zone.rotation) {
         const randTuple =
           rotationValues[Math.floor(Math.random() * rotationValues.length)];
         cy.wait(getReqAlias).then(() => {
