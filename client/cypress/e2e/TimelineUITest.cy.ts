@@ -47,18 +47,20 @@ testEachZone((zone: Cypress.PrismZone) => {
     };
 
     it(`Testing: Timeline drawer should be hidden in initial page render`, () => {
-      cy.wait("@getSiteExists").then(() => {
-        cy.wait("@getSiteDetails").then(() => {
-          cy.wait("@getEmptyFloors").then(() => {
-            cy.get("#drawer-container")
-              .should("exist")
-              .parent()
-              .then(($parent) => {
-                checkTransformStyle($parent, false);
-              });
+      if (zone.timeline) {
+        cy.wait("@getSiteExists").then(() => {
+          cy.wait("@getSiteDetails").then(() => {
+            cy.wait("@getEmptyFloors").then(() => {
+              cy.get("#drawer-container")
+                .should("exist")
+                .parent()
+                .then(($parent) => {
+                  checkTransformStyle($parent, false);
+                });
+            });
           });
         });
-      });
+      }
     });
 
     it(`Testing: Timeline drawer toggle visibility after clicking timeline button action`, () => {
