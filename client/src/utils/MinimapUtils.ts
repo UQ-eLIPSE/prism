@@ -219,9 +219,10 @@ const updateNodeRotationAPI = async (
   windowAlertMessage: string,
 ): Promise<void> => {
   try {
+    // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
     await NetworkCalls.updateNodeRotation(
       selectedNode?.survey_node,
-      newRotation,
+      newRotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION, //api takes in radians
     );
   } catch (error) {
     window.alert(`${windowAlertMessage}: ${error}`);
