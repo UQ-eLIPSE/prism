@@ -16,6 +16,7 @@ export default defineConfig({
         timeline: false,
         floors: false,
         adminUser: true,
+        rotation: true,
       },
       {
         project: "uwmt",
@@ -28,6 +29,7 @@ export default defineConfig({
         timeline: false,
         floors: false,
         adminUser: true,
+        rotation: false,
       },
       {
         project: "general",
@@ -40,6 +42,7 @@ export default defineConfig({
         timeline: true,
         floors: true,
         adminUser: true,
+        rotation: true,
       },
     ],
   },
