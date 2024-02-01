@@ -130,45 +130,32 @@ const getScaledNodeCoordinates = (
 
 /**
  * Sets the selected node based on the editing mode and current selected node.
- * @param editing Boolean value indicating if the editing mode is active
- * @param currentSelectedNode Currently selected node
  * @param newNode New node to be selected
  * @param minimapData Data configuration from the minimap
  * @param handleSetSelectedNode Function to handle setting the selected node state
  * @param handleSetXCoordinate Handle setting the x coordinate state
  * @param handleSetYCoordinate Handle setting the y coordinate state
  * @param handleSetRotation Handle setting the rotation state
- * @param updateMiniMapEnlarged To handle updating the minimap enlargement status
- * @param handleMinimapOnClickNode Handle clicking on a node in the minimap
  */
 const setNodeSelected = (
-  editing: boolean,
-  currentSelectedNode: NewNode | null,
   newNode: NewNode,
   minimapData: MinimapReturn,
   handleSetSelectedNode: (value: React.SetStateAction<NewNode | null>) => void,
   handleSetXCoordinate: (value: React.SetStateAction<number>) => void,
   handleSetYCoordinate: (value: React.SetStateAction<number>) => void,
   handleSetRotation: (value: React.SetStateAction<number>) => void,
-  updateMiniMapEnlarged: (minimapEnlarged: boolean) => void,
-  handleMinimapOnClickNode: (panoId: string) => void,
-) => {
-  if (editing && !currentSelectedNode) {
-    handleSetSelectedNode(newNode);
+): void => {
+  handleSetSelectedNode(newNode);
 
-    const { nodeXScaledCoordinate, nodeYScaledCoordinate } =
-      getScaledNodeCoordinates(minimapData, newNode);
+  const { nodeXScaledCoordinate, nodeYScaledCoordinate } =
+    getScaledNodeCoordinates(minimapData, newNode);
 
-    // Set new selected node to have the new scaled coordinates calculated above.
-    handleSetXCoordinate(nodeXScaledCoordinate);
-    handleSetYCoordinate(nodeYScaledCoordinate);
+  // Set new selected node to have the new scaled coordinates calculated above.
+  handleSetXCoordinate(nodeXScaledCoordinate);
+  handleSetYCoordinate(nodeYScaledCoordinate);
 
-    const rotationInRadians = convertDegreesToRadians(newNode.rotation);
-    handleSetRotation(rotationInRadians);
-  } else if (!editing && !currentSelectedNode) {
-    updateMiniMapEnlarged(false);
-    handleMinimapOnClickNode(newNode.tiles_id);
-  }
+  const rotationInRadians = convertDegreesToRadians(newNode.rotation);
+  handleSetRotation(rotationInRadians);
 };
 
 /**

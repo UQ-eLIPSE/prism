@@ -9,6 +9,7 @@ import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
 import MinimapUtils, { MinimapConstants } from "../utils/MinimapUtils";
 import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
+import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -109,21 +110,22 @@ function Minimap(props: MinimapProps) {
   ): void {
     e.stopPropagation();
 
-    MinimapUtils.setNodeSelected(
-      editing,
-      selectedNode,
-      node,
-      props.minimapData,
-      setSelectedNode,
-      setX,
-      setY,
-      setRotation,
-      props.updateMinimapEnlarged,
-      props.onClickNode,
-    );
+    if (editing && !selectedNode) {
+      MinimapUtils.setNodeSelected(
+        node,
+        props.minimapData,
+        setSelectedNode,
+        setX,
+        setY,
+        setRotation,
+      );
+    } else if (!editing && !selectedNode) {
+      props.updateMinimapEnlarged(false);
+      props.onClickNode(node.tiles_id);
+    }
   }
 
-  async function performMinimapUpload() {
+  async function performMinimapUpload(): Promise<void> {
     try {
       await NetworkCalls.updateMinimapImage(
         selectedImage,
@@ -158,12 +160,10 @@ function Minimap(props: MinimapProps) {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
         // Element Position = Scale * (Position within map + Offset)
-        const scaledCoordinates = MinimapUtils.getScaledNodeCoordinates(
-          props.minimapData,
-          node,
-        );
+        const scaledCoordinates: xAndYScaledCoordinates =
+          MinimapUtils.getScaledNodeCoordinates(props.minimapData, node);
 
-        function adjustPosition(position: number) {
+        function adjustPosition(position: number): number {
           if (position > MinimapConstants.UPPER_BOUND) {
             return MinimapConstants.UPPER_ADJUST;
           } else if (position < MinimapConstants.LOWER_BOUND) {
@@ -172,10 +172,10 @@ function Minimap(props: MinimapProps) {
           return position;
         }
 
-        const x_position: number = adjustPosition(
+        const xPosition: number = adjustPosition(
           scaledCoordinates.nodeXScaledCoordinate,
         );
-        const y_position: number = adjustPosition(
+        const yPosition: number = adjustPosition(
           scaledCoordinates.nodeYScaledCoordinate,
         );
 
@@ -190,8 +190,8 @@ function Minimap(props: MinimapProps) {
             <div
               className={MinimapStyles.nodeContainer}
               style={{
-                top: `${node == selectedNode ? y : y_position}%`,
-                left: `${node == selectedNode ? x : x_position}%`,
+                top: `${node == selectedNode ? y : yPosition}%`,
+                left: `${node == selectedNode ? x : xPosition}%`,
                 transform: configureRotation(node),
               }}
               key={node.tiles_id}
@@ -226,8 +226,8 @@ function Minimap(props: MinimapProps) {
               <div
                 className={MinimapStyles.nodeTitle}
                 style={{
-                  top: `${node == selectedNode ? y : y_position}%`,
-                  left: `${node == selectedNode ? x : x_position}%`,
+                  top: `${node == selectedNode ? y : yPosition}%`,
+                  left: `${node == selectedNode ? x : xPosition}%`,
                 }}
               >
                 {nodeTitle}
