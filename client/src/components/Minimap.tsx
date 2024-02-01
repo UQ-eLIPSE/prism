@@ -99,7 +99,7 @@ function Minimap(props: MinimapProps) {
   }, [props.config.site, props.minimapData, props.nodeData, selectedNode]);
 
   useEffect(() => {
-    if (props.minimapEnlarged === false) {
+    if (!props.minimapEnlarged) {
       resetSelectedNode();
     }
   }, [props.minimapEnlarged]);
@@ -239,7 +239,7 @@ function Minimap(props: MinimapProps) {
     );
   }
 
-  async function updateNodeInfo() {
+  async function updateNodeInfo(): Promise<void> {
     const newX: number = MinimapUtils.calculateNewXY(
       props.minimapData.img_width,
       x,
@@ -279,14 +279,14 @@ function Minimap(props: MinimapProps) {
       floorTag,
     };
 
-    const updateSuccess = await MinimapUtils.updateFloorTagAndNameAPI(
+    const updateSuccess: boolean = await MinimapUtils.updateFloorTagAndNameAPI(
       props.minimapData.floor,
       props.siteId,
       floorInfo,
       "Error! \n\n Failed to Update Floor Details \n",
     );
 
-    updateSuccess && setSubmitVisibility(false);
+    updateSuccess && setSubmitVisibility(false); // hide form if update is successful
 
     props.updateFloorTag(floorTag);
   }
