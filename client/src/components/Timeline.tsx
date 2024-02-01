@@ -39,6 +39,7 @@ interface Props {
 }
 
 function Timeline(props: Props) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const floors: number[] = [];
   const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
   const [currentMonthName, setCurrentMonthName] = useState<string>("");
@@ -340,9 +341,11 @@ function Timeline(props: Props) {
     setCurrentMonthName(month.monthName);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeDate = async (date: Date): Promise<void> => {
     if (date.toISOString() === props.date.toISOString()) return;
-    props.changeDate(date, props.updateFloors);
+    // props.changeDate(date, props.updateFloors);
+    props.changeDate(date);
     await props.updateFloors();
     props.updateAvailableFloors(floors);
     setCurrentMonthName(
