@@ -15,6 +15,7 @@ import { ISettings } from "../typings/settings";
 import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
+import { SurveyMonth } from "./Timeline";
 
 export interface MinimapReturn {
   image_url: string;
@@ -65,6 +66,7 @@ function Site(props: SiteInterface) {
 
   const enableTimeline = config.enable.timeline;
   const abortController: AbortController[] = [];
+  const surveyAbortController = new AbortController();
   const hotspotAbortController = new AbortController();
   const minimapImagesAbortController = new AbortController();
   const panoRef = useRef<HTMLDivElement>(null);
@@ -86,6 +88,9 @@ function Site(props: SiteInterface) {
     config.initial_settings.floor,
   );
   const [floors, setFloors] = useState<number[]>([]);
+
+  const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
+  const [allSurveys, setAllSurveys] = useState<SurveyMonth[]>([]);
 
   const [floorExists, setFloorExists] = useState<boolean>(true);
   const [infoPanelId, setInfoPanelId] = useState<string>("");
@@ -110,10 +115,12 @@ function Site(props: SiteInterface) {
     getSurveyNodes(currfloor);
     getFloorExistence(currfloor);
     updateFloor(currfloor);
-
-    (async () => {
-      await updateFloors();
-    })();
+    updateFloors();
+    updateSurveys();
+    // (async () => {
+    // await updateFloors();
+    // await updateSurveys();
+    // })();
   }, [currfloor, currDate]);
 
   const updateFloors = async (): Promise<void> => {
@@ -126,7 +133,6 @@ function Site(props: SiteInterface) {
           ...empty.emptyFloors,
         ]);
         setFloors([...Array.from(usableFloors)]);
-
         if (!usableFloors.has(currfloor)) {
           changeFloor(Math.min(...floors));
           updateAvailableFloors(floors);
@@ -134,6 +140,26 @@ function Site(props: SiteInterface) {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const updateSurveys = async (): Promise<void> => {
+    try {
+      const surveyWithFloors = await NetworkCalls.fetchSurveys(
+        surveyAbortController,
+        siteId,
+        currfloor,
+      );
+      const fetchSiteSurveys = await NetworkCalls.fetchSurveys(
+        surveyAbortController,
+        siteId,
+      );
+      console.log("hey", fetchSiteSurveys);
+      setSurveys(surveyWithFloors);
+      setAllSurveys(fetchSiteSurveys);
+      console.log("After", allSurveys);
+    } catch (error) {
+      console.error("Failed to fetch surveys:", error);
     }
   };
 
@@ -495,19 +521,23 @@ function Site(props: SiteInterface) {
           />
         )}
       </div>
-      <Timeline
-        timelineOpen={timelineOpen}
-        floor={currfloor}
-        changeFloor={changeFloor}
-        date={currDate}
-        changeDate={changeDate}
-        closeTimelineFunction={changeTimelineOpen}
-        siteId={siteId}
-        updateAvailableFloors={updateAvailableFloors}
-        availableFloors={availableFloors}
-        floorExists={floorExists}
-        updateFloors={updateFloors}
-      />
+      {enableTimeline && (
+        <Timeline
+          timelineOpen={timelineOpen}
+          floor={currfloor}
+          changeFloor={changeFloor}
+          date={currDate}
+          changeDate={changeDate}
+          closeTimelineFunction={changeTimelineOpen}
+          siteId={siteId}
+          updateAvailableFloors={updateAvailableFloors}
+          availableFloors={availableFloors}
+          floorExists={floorExists}
+          updateFloors={updateFloors}
+          surveyWithFloors={surveys}
+          fetchSiteSurveys={allSurveys}
+        />
+      )}
     </div>
   );
 }
