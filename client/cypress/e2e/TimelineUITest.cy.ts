@@ -69,12 +69,14 @@ testEachZone((zone: Cypress.PrismZone) => {
           cy.wait("@getSiteDetails").then(() => {
             cy.wait("@getEmptyFloors").then(() => {
               cy.get("[class^='_timelineButton']").click({ force: true });
+              cy.wait(1000);
               cy.get("#drawer-container")
                 .should("exist")
                 .parent()
                 .then(($parent) => {
                   checkTransformStyle($parent, true);
                   cy.get("[class^='_timelineButton']").click({ force: true });
+                  cy.wait(1000);
                   cy.get("#drawer-container")
                     .should("exist")
                     .parent()
