@@ -325,12 +325,9 @@ function Minimap(props: MinimapProps) {
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
           <EditNodeForm
-            rotationValue={rotation}
-            setRotationValue={setRotation}
-            xPositionValue={x}
-            setXPositionValue={setX}
-            yPositionValue={y}
-            setYPositionValue={setY}
+            rotationState={{ value: rotation, setFn: setRotation }}
+            xPositionState={{ value: x, setFn: setX }}
+            yPositionState={{ value: y, setFn: setY }}
             resetSelectedNode={resetSelectedNode}
             updateNode={updateNodeInfo}
           />
