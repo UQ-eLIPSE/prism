@@ -84,23 +84,23 @@ const getScaledNodeCoordinates = (
     img_height,
   } = minimapData;
 
-  const nodeXScaledCoordinate = calculateXY(
-    node.x,
-    node.y,
-    xy_flipped,
-    x_pixel_offset,
-    x_scale,
-    img_width,
-  );
+  const nodeXScaledCoordinate = calculateXY({
+    nodeCoordinate1: node.x,
+    nodeCoordinate2: node.y,
+    flipped: xy_flipped,
+    offset: x_pixel_offset,
+    scale: x_scale,
+    imageHeightorWidth: img_width,
+  });
 
-  const nodeYScaledCoordinate = calculateXY(
-    node.y,
-    node.x,
-    xy_flipped,
-    y_pixel_offset,
-    y_scale,
-    img_height,
-  );
+  const nodeYScaledCoordinate = calculateXY({
+    nodeCoordinate1: node.y,
+    nodeCoordinate2: node.x,
+    flipped: xy_flipped,
+    offset: y_pixel_offset,
+    scale: y_scale,
+    imageHeightorWidth: img_height,
+  });
 
   return { nodeXScaledCoordinate, nodeYScaledCoordinate };
 };
