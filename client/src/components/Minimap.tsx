@@ -12,6 +12,7 @@ import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
 import { MinimapConstants } from "../utils/MinimapConstants.d";
 import FloorDetailsForm from "./FloorDetailsForm";
+import ToggleEditNodeButton from "./ToggleEditNodeButton";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -344,6 +345,13 @@ function Minimap(props: MinimapProps) {
 
           <p>{`${editing && selectedNode ? "Save" : "Edit"} Node`}</p>
         </button>
+        <ToggleEditNodeButton
+          editing={editing}
+          selectedNode={selectedNode}
+          setEditing={setEditing}
+          setSelectedNode={setSelectedNode}
+          updateNodeInfo={updateNodeInfo}
+        />
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
