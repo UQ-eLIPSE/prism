@@ -1,26 +1,12 @@
 import React from "react";
-
-interface StateObject<T> {
-  value: T;
-  setFn: React.Dispatch<React.SetStateAction<T>>;
-}
+import { StateObject } from "../interfaces/StateObject";
 
 // This is needed to check if the tag or name has been changed
 type TagOrNameIdentifier = "tag" | "name";
 
-interface FloorDetailsFormProps {
-  minimapShown: boolean;
-  minimapData: {
-    floor_tag?: string;
-    floor_name?: string;
-  };
-  floorNameState: StateObject<string>;
-  floorTagState: StateObject<string>;
-  submitVisibilityState: StateObject<boolean>;
-
-  handleUpdateFloorTagAndName: () => Promise<void>;
-}
-
+/**
+ * Configuration / settings to be used for the floor tag and name input elements.
+ */
 interface InputConfig {
   label: string;
   value: string;
@@ -31,6 +17,22 @@ interface InputConfig {
   otherValue: string;
 }
 
+interface FloorDetailsFormProps {
+  minimapShown: boolean;
+  minimapData: {
+    floor_tag?: string;
+    floor_name?: string;
+  };
+  floorNameState: StateObject<string>;
+  floorTagState: StateObject<string>;
+  submitVisibilityState: StateObject<boolean>;
+  handleUpdateFloorTagAndName: () => Promise<void>;
+}
+
+/**
+ * Component that handles the inputs and submissions for the floor tag and name.
+ * @returns {JSX.Element}
+ */
 const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
   minimapShown,
   minimapData,
