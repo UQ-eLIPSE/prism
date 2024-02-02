@@ -26,7 +26,7 @@ interface Props {
   updateFloors: Function;
   surveyWithFloors: SurveyMonth[]; //The surveyWithFloors variable is for fetching survey data limited to a specific floor
   siteSurveys: SurveyMonth[]; // siteSurveys fetches all surveys for the entire site without floor restriction
-  changeDateAndUpdateFloors: Function;
+  changeDateAndUpdateFloors: (date: Date) => Promise<void>;
 }
 
 function Timeline(props: Props) {
