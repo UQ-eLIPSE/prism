@@ -11,6 +11,7 @@ import MinimapUtils from "../utils/MinimapUtils";
 import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
 import { MinimapConstants } from "../utils/MinimapConstants.d";
+import FloorDetailsForm from "./FloorDetailsForm";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -270,6 +271,8 @@ function Minimap(props: MinimapProps) {
     resetSelectedNode(); // reset selected node and toggle edit state to false
   }
 
+  console.log("User is admin: ", user?.isAdmin);
+
   // Update floor name and tag in database
   async function updateFloorTagAndName() {
     if (!floorTag) setFloorTag(String(props.minimapData.floor));
@@ -366,6 +369,22 @@ function Minimap(props: MinimapProps) {
         onDragLeave={(e) => e.preventDefault()}
         onDrop={(e) => e.preventDefault()}
       >
+        {!props.minimapEnlarged && props.minimapData && user?.isAdmin && (
+          <FloorDetailsForm
+            minimapShown={props.minimapShown}
+            minimapData={{
+              floor_tag: props.minimapData.floor_tag,
+              floor_name: props.minimapData.floor_name,
+            }}
+            floorNameState={{ value: floorName, setFn: setFloorName }}
+            floorTagState={{ value: floorTag, setFn: setFloorTag }}
+            submitVisibilityState={{
+              value: submitVisibility,
+              setFn: setSubmitVisibility,
+            }}
+            handleUpdateFloorTagAndName={updateFloorTagAndName}
+          />
+        )}
         {!props.minimapEnlarged && props.minimapData && user?.isAdmin && (
           <>
             <span className="inlineLabels">
