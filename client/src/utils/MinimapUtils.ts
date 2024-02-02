@@ -149,7 +149,12 @@ function calculateNewXY(
   offset: number,
   scale: number,
 ): number {
-  return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
+  return (
+    // Converts the percentage coordinate to pixel coordinate
+    // Needs to be divided by 100 (MinimapConstants.PERCENTAGE) to get the percentage
+    ((imageHeightorWidth * coordinate) / MinimapConstants.PERCENTAGE - offset) /
+    scale
+  );
 }
 
 /**
