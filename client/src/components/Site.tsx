@@ -114,6 +114,7 @@ function Site(props: SiteInterface) {
     if (marzipano.current) {
       marzipano.current = undefined;
     }
+    // <<<<<<< HEAD
     getSurveyNodes(currfloor);
     getFloorExistence(currfloor);
     updateFloor(currfloor);
@@ -121,6 +122,22 @@ function Site(props: SiteInterface) {
     updateFloors();
     updateSurveys();
   }, [currfloor, currDate]);
+  // =======
+  //     const getNodesAndFloorData = async () => {
+  //       await getFloorExistence(currfloor);
+  //       getSurveyNodes(currfloor);
+  //     };
+
+  //     (async () => {
+  //       // Firstly check if the floor exists and obtain survey nodes.
+  //       await getNodesAndFloorData();
+
+  //       // Update correspondingly floors based on prior async data.
+  //       updateFloor(currfloor);
+  //       await updateFloors();
+  //     })();
+  //   }, [currfloor, currDate, floorExists]);
+  // >>>>>>> origin/develop
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -172,7 +189,10 @@ function Site(props: SiteInterface) {
         } = await NetworkCalls.getFloorSurveyExistence(siteId, floor);
 
         if (floorSurveyExists) {
-          await setFloorExists(floorSurveyExists.floorPopulated);
+          setFloorExists((prev: boolean) => {
+            prev = floorSurveyExists.floorPopulated;
+            return prev;
+          });
           if (config.enable.timeline && !floorExists) setTimelineOpen(false);
         } else {
           throw new Error("Floor information could not be found");
