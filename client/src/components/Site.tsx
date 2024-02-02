@@ -65,7 +65,6 @@ function Site(props: SiteInterface) {
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
-  console.log("Initial site render timeline is enabled: ", enableTimeline);
 
   const abortController: AbortController[] = [];
   const surveyAbortController = new AbortController();
@@ -114,7 +113,6 @@ function Site(props: SiteInterface) {
     if (marzipano.current) {
       marzipano.current = undefined;
     }
-
     const getNodesAndFloorData = async () => {
       await getFloorExistence(currfloor);
       getSurveyNodes(currfloor);
@@ -126,10 +124,16 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
+
       await updateFloors();
-      await updateSurveys();
     })();
   }, [currfloor, currDate, floorExists]);
+
+  useEffect(() => {
+    (async () => {
+      await updateSurveys();
+    })();
+  }, [currDate]);
 
   const updateFloors = async (): Promise<void> => {
     try {
