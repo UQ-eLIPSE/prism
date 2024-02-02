@@ -4,33 +4,13 @@ import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import { ISettings } from "../typings/settings";
 import NetworkCalls from "../utils/NetworkCalls";
 import { useUserContext } from "../context/UserContext";
-import { InfoHotspot } from "../interfaces/NodeData";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
-
-interface NewNode {
-  floor: number;
-  node_number: number;
-  site: string;
-  survey_node: string;
-  tiles_id: string;
-  tiles_name: string;
-  x: number;
-  x_scale: number;
-  y: number;
-  y_scale: number;
-  rotation: number;
-  minimapShown?: boolean;
-  info_hotspots: InfoHotspot[] | [];
-}
-
-const PERCENTAGE = 100;
-const ROTATION = 57.2958;
-const DEGREE = 360;
-const UPPER_BOUND = 100;
-const LOWER_BOUND = 0;
-const UPPER_ADJUST = 95;
-const LOWER_ADJUST = 5;
+import { NewNode } from "../interfaces/MiniMap/NewNode";
+import MinimapUtils from "../utils/MinimapUtils";
+import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
+import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
+import { MinimapConstants } from "../utils/MinimapConstants.d";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -120,36 +100,10 @@ function Minimap(props: MinimapProps) {
   }, [props.config.site, props.minimapData, props.nodeData, selectedNode]);
 
   useEffect(() => {
-    if (props.minimapEnlarged === false) {
+    if (!props.minimapEnlarged) {
       resetSelectedNode();
     }
   }, [props.minimapEnlarged]);
-
-  /**
-   * Calculates a scaled position for the node as a percentage.
-   * @param nodeCoordinate1 Either the x coordinate or the y coordinate of the node
-   * @param nodeCoordinate2 Either the x coordinate or the y coordinate of the node
-   * @param flipped Boolean value to check if the node is flipped
-   * @param offset offset value for the node
-   * @param scale a scale value for the node
-   * @param imageHeightorWidth Either the image height or the width
-   * @returns the node position on the map
-   */
-  function calculateXY(
-    nodeCoordinate1: number,
-    nodeCoordinate2: number,
-    flipped: boolean,
-    offset: number,
-    scale: number,
-    imageHeightorWidth: number,
-  ): number {
-    return (
-      (scale *
-        ((!flipped ? nodeCoordinate1 : nodeCoordinate2) + offset) *
-        PERCENTAGE) /
-      imageHeightorWidth
-    );
-  }
 
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -158,36 +112,21 @@ function Minimap(props: MinimapProps) {
     e.stopPropagation();
 
     if (editing && !selectedNode) {
-      setSelectedNode(node);
-      setX(
-        calculateXY(
-          node.x,
-          node.y,
-          props.minimapData.xy_flipped,
-          props.minimapData.x_pixel_offset,
-          props.minimapData.x_scale,
-          props.minimapData.img_width,
-        ),
+      MinimapUtils.setNodeSelected(
+        node,
+        props.minimapData,
+        setSelectedNode,
+        setX,
+        setY,
+        setRotation,
       );
-      setY(
-        calculateXY(
-          node.y,
-          node.x,
-          props.minimapData.xy_flipped,
-          props.minimapData.y_pixel_offset,
-          props.minimapData.y_scale,
-          props.minimapData.img_height,
-        ),
-      );
-
-      setRotation(Math.round(node.rotation * ROTATION) % DEGREE);
     } else if (!editing && !selectedNode) {
       props.updateMinimapEnlarged(false);
       props.onClickNode(node.tiles_id);
     }
   }
 
-  async function performMinimapUpload() {
+  async function performMinimapUpload(): Promise<void> {
     try {
       await NetworkCalls.updateMinimapImage(
         selectedImage,
@@ -206,7 +145,7 @@ function Minimap(props: MinimapProps) {
     }
 
     if (node == selectedNode) {
-      return `rotate(${rotation / ROTATION}rad)`;
+      return `rotate(${rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION}rad)`;
     } else {
       const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
       const sum = [
@@ -222,34 +161,24 @@ function Minimap(props: MinimapProps) {
     return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
       (node, index) => {
         // Element Position = Scale * (Position within map + Offset)
-        let x_position: number = calculateXY(
-          node.x,
-          node.y,
-          props.minimapData.xy_flipped,
-          props.minimapData.x_pixel_offset,
-          props.minimapData.x_scale,
-          props.minimapData.img_width,
-        );
-        let y_position: number = calculateXY(
-          node.y,
-          node.x,
-          props.minimapData.xy_flipped,
-          props.minimapData.y_pixel_offset,
-          props.minimapData.y_scale,
-          props.minimapData.img_height,
-        );
+        const scaledCoordinates: xAndYScaledCoordinates =
+          MinimapUtils.getScaledNodeCoordinates(props.minimapData, node);
 
-        function adjustPosition(position: number) {
-          if (position > UPPER_BOUND) {
-            return UPPER_ADJUST;
-          } else if (position < LOWER_BOUND) {
-            return LOWER_ADJUST;
+        function adjustPosition(position: number): number {
+          if (position > MinimapConstants.UPPER_BOUND) {
+            return MinimapConstants.UPPER_ADJUST;
+          } else if (position < MinimapConstants.LOWER_BOUND) {
+            return MinimapConstants.LOWER_ADJUST;
           }
           return position;
         }
 
-        x_position = adjustPosition(x_position);
-        y_position = adjustPosition(y_position);
+        const xPosition: number = adjustPosition(
+          scaledCoordinates.nodeXScaledCoordinate,
+        );
+        const yPosition: number = adjustPosition(
+          scaledCoordinates.nodeYScaledCoordinate,
+        );
 
         const isMapEnlarged = props.minimapEnlarged;
         const nodeTitle = node.tiles_name;
@@ -262,8 +191,8 @@ function Minimap(props: MinimapProps) {
             <div
               className={MinimapStyles.nodeContainer}
               style={{
-                top: `${node == selectedNode ? y : y_position}%`,
-                left: `${node == selectedNode ? x : x_position}%`,
+                top: `${node == selectedNode ? y : yPosition}%`,
+                left: `${node == selectedNode ? x : xPosition}%`,
                 transform: configureRotation(node),
               }}
               key={node.tiles_id}
@@ -298,8 +227,8 @@ function Minimap(props: MinimapProps) {
               <div
                 className={MinimapStyles.nodeTitle}
                 style={{
-                  top: `${node == selectedNode ? y : y_position}%`,
-                  left: `${node == selectedNode ? x : x_position}%`,
+                  top: `${node == selectedNode ? y : yPosition}%`,
+                  left: `${node == selectedNode ? x : xPosition}%`,
                 }}
               >
                 {nodeTitle}
@@ -311,84 +240,56 @@ function Minimap(props: MinimapProps) {
     );
   }
 
-  /**
-   * Updating the information of the node after pressing save
-   * @param imageHeightorWidth Either the image height or width
-   * @param coordinate Either the x or the y coordinate
-   * @param offset the offset of the node
-   * @param scale the scale value of the node
-   * @returns the saved coordinate of the node
-   */
-  function calculateNewXY(
-    imageHeightorWidth: number,
-    coordinate: number,
-    offset: number,
-    scale: number,
-  ): number {
-    return ((imageHeightorWidth * coordinate) / 100 - offset) / scale;
-  }
+  async function updateNodeInfo(): Promise<void> {
+    const newX: number = MinimapUtils.calculateNewXY(
+      props.minimapData.img_width,
+      x,
+      props.minimapData.x_pixel_offset,
+      props.minimapData.x_scale,
+    );
+    const newY: number = MinimapUtils.calculateNewXY(
+      props.minimapData.img_height,
+      y,
+      props.minimapData.y_pixel_offset,
+      props.minimapData.y_scale,
+    );
 
-  async function updateNodeInfo() {
-    try {
-      const newX: number = calculateNewXY(
-        props.minimapData.img_width,
-        x,
-        props.minimapData.x_pixel_offset,
-        props.minimapData.x_scale,
-      );
-      const newY: number = calculateNewXY(
-        props.minimapData.img_height,
-        y,
-        props.minimapData.y_pixel_offset,
-        props.minimapData.y_scale,
-      );
+    await MinimapUtils.updateNodeCoordinateAPI(
+      selectedNode,
+      newX,
+      newY,
+      "Error! \n\n Failed to Update Node Coordinates \n",
+    );
 
-      await NetworkCalls.updateNodeCoordinates(
-        // Converts x and y percentage coordinates to pixel coordinates in relation to image height and width.
-        // I.e., x = 50 means 50% from left, therefore, 50% of image width since 50 / 100 = 0.5.
+    await MinimapUtils.updateNodeRotationAPI(
+      selectedNode,
+      rotation,
+      "Error! \n\n Failed to Update Node Rotation",
+    );
 
-        selectedNode?.survey_node,
-        newX,
-        newY,
-      );
-    } catch (e) {
-      window.alert(`Error! \n\n Failed to Update Node Coordinates \n ${e}`);
-    }
-
-    try {
-      await NetworkCalls.updateNodeRotation(
-        // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
-
-        selectedNode?.survey_node,
-        rotation / ROTATION,
-      );
-    } catch (e) {
-      window.alert(`Error! \n\n Failed to Update Node Rotation \n ${e}`);
-    }
-
-    resetSelectedNode();
+    resetSelectedNode(); // reset selected node and toggle edit state to false
   }
 
   // Update floor name and tag in database
-  async function updateNames() {
+  async function updateFloorTagAndName() {
     if (!floorTag) setFloorTag(String(props.minimapData.floor));
     if (!floorName) setFloorName(`Floor ${props.minimapData.floor}`);
 
-    try {
-      const call = await NetworkCalls.updateMinimapNames(
-        props.minimapData.floor,
-        props.siteId,
-        floorTag,
-        floorName,
-      );
-      if (call.success === true) {
-        setSubmitVisibility(false);
-      }
+    const floorInfo: FloorIdentifier = {
+      floorName,
+      floorTag,
+    };
 
-      props.updateFloorTag(floorTag);
-    } catch (e) {
-      window.alert(`Error! \n\n Failed to Update Floor Details \n ${e}`);
-    }
+    const updateSuccess: boolean = await MinimapUtils.updateFloorTagAndNameAPI(
+      props.minimapData.floor,
+      props.siteId,
+      floorInfo,
+      "Error! \n\n Failed to Update Floor Details \n",
+    );
+
+    updateSuccess && setSubmitVisibility(false); // hide form if update is successful
+
+    props.updateFloorTag(floorTag);
   }
 
   /**
@@ -523,7 +424,10 @@ function Minimap(props: MinimapProps) {
             </span>
 
             {submitVisibility && (
-              <div className="submit-update" onClick={() => updateNames()}>
+              <div
+                className="submit-update"
+                onClick={() => updateFloorTagAndName()}
+              >
                 <span>Save</span>
               </div>
             )}
