@@ -8,11 +8,15 @@ interface ToggleEditNodeButtonProps {
   updateNodeInfo: () => Promise<void>;
 }
 
+/**
+ * Button to toggle the edit state of a node.
+ * @returns {JSX.Element}
+ */
 const ToggleEditNodeButton: React.FC<ToggleEditNodeButtonProps> = ({
   isEditingState,
   selectedNodeState,
   updateNodeInfo,
-}) => {
+}): JSX.Element => {
   const [isEditing, setIsEditing] = [
     isEditingState.value,
     isEditingState.setFn,
