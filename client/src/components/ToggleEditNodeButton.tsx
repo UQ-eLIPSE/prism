@@ -1,35 +1,44 @@
 import React from "react";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
+import { StateObject } from "../interfaces/StateObject";
 
 interface ToggleEditNodeButtonProps {
-  editing: boolean;
-  selectedNode: NewNode | null; // Replace 'any' with the actual type of the node
-  setEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedNode: React.Dispatch<React.SetStateAction<NewNode | null>>;
-  updateNodeInfo: () => void;
+  isEditingState: StateObject<boolean>;
+  selectedNodeState: StateObject<NewNode | null>;
+  updateNodeInfo: () => Promise<void>;
 }
 
 const ToggleEditNodeButton: React.FC<ToggleEditNodeButtonProps> = ({
-  editing,
-  selectedNode,
-  setEditing,
-  setSelectedNode,
+  isEditingState,
+  selectedNodeState,
   updateNodeInfo,
 }) => {
-  const canEdit: boolean = !!(editing && selectedNode);
+  const [isEditing, setIsEditing] = [
+    isEditingState.value,
+    isEditingState.setFn,
+  ];
+  const [selectedNode, setSelectedNode] = [
+    selectedNodeState.value,
+    selectedNodeState.setFn,
+  ];
 
-  const handleClick = (): void => {
-    setEditing((editing) => !editing);
+  const canEdit: boolean = !!(isEditing && selectedNode);
 
-    if (!editing) setSelectedNode(null);
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ): void => {
+    e.preventDefault();
+    setIsEditing((isEditing: boolean) => !isEditing);
 
-    if (editing && selectedNode) {
+    if (!isEditing) setSelectedNode(null);
+
+    if (isEditing && selectedNode) {
       updateNodeInfo();
     }
   };
 
   const buttonClass =
-    editing && !selectedNode ? "selecting" : canEdit ? "editing" : "";
+    isEditing && !selectedNode ? "selecting" : canEdit ? "editing" : "";
 
   const iconClass = canEdit ? "fa-floppy-disk" : "fa-pen-to-square";
   const buttonText = `${canEdit ? "Save" : "Edit"} Node`;

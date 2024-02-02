@@ -272,8 +272,6 @@ function Minimap(props: MinimapProps) {
     resetSelectedNode(); // reset selected node and toggle edit state to false
   }
 
-  console.log("User is admin: ", user?.isAdmin);
-
   // Update floor name and tag in database
   async function updateFloorTagAndName() {
     if (!floorTag) setFloorTag(String(props.minimapData.floor));
@@ -318,38 +316,9 @@ function Minimap(props: MinimapProps) {
           props.minimapEnlarged && user?.isAdmin ? "visible" : ""
         }`}
       >
-        <button
-          onClick={(): void => {
-            setEditing((editing) => !editing);
-
-            if (!editing) setSelectedNode(null);
-
-            if (editing && selectedNode) {
-              updateNodeInfo();
-            }
-          }}
-          className={`editButton ${
-            editing && !selectedNode
-              ? "selecting"
-              : editing && selectedNode
-                ? "editing"
-                : ""
-          }`}
-          data-cy="edit-save-button"
-        >
-          <i
-            className={`fa-solid ${
-              editing && selectedNode ? "fa-floppy-disk" : "fa-pen-to-square"
-            }`}
-          ></i>
-
-          <p>{`${editing && selectedNode ? "Save" : "Edit"} Node`}</p>
-        </button>
         <ToggleEditNodeButton
-          editing={editing}
-          selectedNode={selectedNode}
-          setEditing={setEditing}
-          setSelectedNode={setSelectedNode}
+          isEditingState={{ value: editing, setFn: setEditing }}
+          selectedNodeState={{ value: selectedNode, setFn: setSelectedNode }}
           updateNodeInfo={updateNodeInfo}
         />
 
@@ -377,22 +346,23 @@ function Minimap(props: MinimapProps) {
         onDragLeave={(e) => e.preventDefault()}
         onDrop={(e) => e.preventDefault()}
       >
-        {!props.minimapEnlarged && props.minimapData && user?.isAdmin && (
-          <FloorDetailsForm
-            minimapShown={props.minimapShown}
-            minimapData={{
-              floor_tag: props.minimapData.floor_tag,
-              floor_name: props.minimapData.floor_name,
-            }}
-            floorNameState={{ value: floorName, setFn: setFloorName }}
-            floorTagState={{ value: floorTag, setFn: setFloorTag }}
-            submitVisibilityState={{
-              value: submitVisibility,
-              setFn: setSubmitVisibility,
-            }}
-            handleUpdateFloorTagAndName={updateFloorTagAndName}
-          />
-        )}
+        <FloorDetailsForm
+          showForm={
+            !props.minimapEnlarged && props.minimapData && user?.isAdmin
+          }
+          minimapShown={props.minimapShown}
+          minimapData={{
+            floor_tag: props.minimapData.floor_tag,
+            floor_name: props.minimapData.floor_name,
+          }}
+          floorNameState={{ value: floorName, setFn: setFloorName }}
+          floorTagState={{ value: floorTag, setFn: setFloorTag }}
+          submitVisibilityState={{
+            value: submitVisibility,
+            setFn: setSubmitVisibility,
+          }}
+          handleUpdateFloorTagAndName={updateFloorTagAndName}
+        />
 
         {props.minimapShown && (
           <>

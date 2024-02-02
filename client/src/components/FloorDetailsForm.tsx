@@ -18,6 +18,7 @@ interface InputConfig {
 }
 
 interface FloorDetailsFormProps {
+  showForm?: boolean;
   minimapShown: boolean;
   minimapData: {
     floor_tag?: string;
@@ -31,16 +32,21 @@ interface FloorDetailsFormProps {
 
 /**
  * Component that handles the inputs and submissions for the floor tag and name.
+ * Render depends on showForm condition. Default true if not provided.
  * @returns {JSX.Element}
  */
 const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
+  showForm,
   minimapShown,
   minimapData,
   handleUpdateFloorTagAndName,
   floorNameState,
   floorTagState,
   submitVisibilityState,
-}) => {
+}): JSX.Element => {
+  if (showForm === undefined) showForm = true;
+  if (!showForm) return <></>;
+
   const [floorName, setFloorName] = [
     floorNameState.value,
     floorNameState.setFn,
