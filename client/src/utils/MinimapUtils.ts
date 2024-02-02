@@ -6,23 +6,40 @@ import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 import { MinimapConstants } from "./MinimapConstants.d";
 
 /**
- * Calculates a scaled position for the node as a percentage.
- * @param nodeCoordinate1 Either the x coordinate or the y coordinate of the node
- * @param nodeCoordinate2 Either the x coordinate or the y coordinate of the node
- * @param flipped Boolean value to check if the node is flipped
- * @param offset offset value for the node
- * @param scale a scale value for the node
- * @param imageHeightorWidth Either the image height or the width
- * @returns the node position on the map
+ * Interface for parameters needed to calculate X and Y coordinates for a minimap.
+ *
+ * @interface
+ * @property {number} nodeCoordinate1 - The first node coordinate.
+ * @property {number} nodeCoordinate2 - The second node coordinate.
+ * @property {boolean} flipped - Indicates whether the coordinates are flipped.
+ * @property {number} offset - The offset to be applied to the coordinates.
+ * @property {number} scale - The scale factor for the minimap.
+ * @property {number} imageHeightorWidth - The height or width of the image, depending on whether X or Y is being calculated.
  */
-function calculateXY(
-  nodeCoordinate1: number,
-  nodeCoordinate2: number,
-  flipped: boolean,
-  offset: number,
-  scale: number,
-  imageHeightorWidth: number,
-): number {
+interface CalculateXYConfigParams {
+  nodeCoordinate1: number;
+  nodeCoordinate2: number;
+  flipped: boolean;
+  offset: number;
+  scale: number;
+  imageHeightorWidth: number;
+}
+
+/**
+ * Calculates a scaled position for the node as a percentage.
+ *
+ * @param {CalculateXYConfigParams} calculateXYConfig - The parameters needed to calculate the X or Y coordinate.
+ * @returns {number} the node position on the map
+ */
+function calculateXY(calculateXYConfig: CalculateXYConfigParams): number {
+  const {
+    nodeCoordinate1,
+    nodeCoordinate2,
+    flipped,
+    offset,
+    scale,
+    imageHeightorWidth,
+  } = calculateXYConfig;
   return (
     (scale *
       ((!flipped ? nodeCoordinate1 : nodeCoordinate2) + offset) *
