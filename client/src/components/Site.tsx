@@ -94,7 +94,7 @@ function Site(props: SiteInterface) {
   const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
   const [allSurveys, setAllSurveys] = useState<SurveyMonth[]>([]);
 
-  const [floorExists, setFloorExists] = useState<boolean>(true);
+  const [floorExists, setFloorExists] = useState<boolean>(false);
   const [infoPanelId, setInfoPanelId] = useState<string>("");
   const [infoPanelOpen, setInfoPanelOpen] = useState<boolean>(false);
   const [minimapEnlarged, setMinimapEnlarged] = useState<boolean>(false);
@@ -114,21 +114,31 @@ function Site(props: SiteInterface) {
     if (marzipano.current) {
       marzipano.current = undefined;
     }
-    getSurveyNodes(currfloor);
-    getFloorExistence(currfloor);
-    updateFloor(currfloor);
-    console.log("cuirr floor, ", currfloor);
-    updateFloors();
-    updateSurveys();
-    // changeDate(allSurveys[0]?.dates[0]?.date);
-    // (async () => {
-    // await updateFloors();
-    // await updateSurveys();
-    // await changeDateFormatted(allSurveys[0]?.dates[0]?.date);
-    // })();
-    console.log("curr floor useffect running");
-    console.log("all surveys", allSurveys);
-  }, [currfloor, currDate]);
+    const getNodesAndFloorData = async () => {
+      await getFloorExistence(currfloor);
+      getSurveyNodes(currfloor);
+    };
+
+    (async () => {
+      // Firstly check if the floor exists and obtain survey nodes.
+      await getNodesAndFloorData();
+
+      // Update correspondingly floors based on prior async data.
+      updateFloor(currfloor);
+
+      console.log("updating floors...");
+      await updateFloors();
+
+      // await updateSurveys();
+    })();
+  }, [currfloor, currDate, floorExists]);
+
+  useEffect(() => {
+    (async () => {
+      console.log("Fetching surveys...");
+      await updateSurveys();
+    })();
+  }, [currDate]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -164,7 +174,10 @@ function Site(props: SiteInterface) {
       console.log("hey", fetchSiteSurveys);
       setSurveys(surveyWithFloors);
       setAllSurveys(fetchSiteSurveys);
-      console.log("CHANGING DATE FORMATTED");
+      console.log(
+        "Rendering image based on the date:",
+        fetchSiteSurveys[0]?.dates[0]?.date,
+      );
       changeDateFormatted(fetchSiteSurveys[0]?.dates[0]?.date);
       console.log("After", allSurveys);
     } catch (error) {
@@ -182,7 +195,10 @@ function Site(props: SiteInterface) {
         } = await NetworkCalls.getFloorSurveyExistence(siteId, floor);
 
         if (floorSurveyExists) {
-          await setFloorExists(floorSurveyExists.floorPopulated);
+          setFloorExists((prev: boolean) => {
+            prev = floorSurveyExists.floorPopulated;
+            return prev;
+          });
           if (config.enable.timeline && !floorExists) setTimelineOpen(false);
         } else {
           throw new Error("Floor information could not be found");

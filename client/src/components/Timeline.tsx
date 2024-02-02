@@ -341,10 +341,8 @@ function Timeline(props: Props) {
     setCurrentMonthName(month.monthName);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeDate = async (date: Date): Promise<void> => {
     if (date.toISOString() === props.date.toISOString()) return;
-    // props.changeDate(date, props.updateFloors);
     props.changeDate(date);
     await props.updateFloors();
     props.updateAvailableFloors(floors);
