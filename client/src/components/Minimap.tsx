@@ -7,9 +7,10 @@ import { useUserContext } from "../context/UserContext";
 import EditNodeForm from "./EditNodePositionForm";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
-import MinimapUtils, { MinimapConstants } from "../utils/MinimapUtils";
+import MinimapUtils from "../utils/MinimapUtils";
 import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
+import { MinimapConstants } from "../utils/MinimapConstants.d";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
