@@ -94,7 +94,7 @@ function Site(props: SiteInterface) {
   const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
   const [allSurveys, setAllSurveys] = useState<SurveyMonth[]>([]);
 
-  const [floorExists, setFloorExists] = useState<boolean>(true);
+  const [floorExists, setFloorExists] = useState<boolean>(false);
   const [infoPanelId, setInfoPanelId] = useState<string>("");
   const [infoPanelOpen, setInfoPanelOpen] = useState<boolean>(false);
   const [minimapEnlarged, setMinimapEnlarged] = useState<boolean>(false);
@@ -114,30 +114,22 @@ function Site(props: SiteInterface) {
     if (marzipano.current) {
       marzipano.current = undefined;
     }
-    // <<<<<<< HEAD
-    getSurveyNodes(currfloor);
-    getFloorExistence(currfloor);
-    updateFloor(currfloor);
-    console.log("cuirr floor, ", currfloor);
-    updateFloors();
-    updateSurveys();
-  }, [currfloor, currDate]);
-  // =======
-  //     const getNodesAndFloorData = async () => {
-  //       await getFloorExistence(currfloor);
-  //       getSurveyNodes(currfloor);
-  //     };
 
-  //     (async () => {
-  //       // Firstly check if the floor exists and obtain survey nodes.
-  //       await getNodesAndFloorData();
+    const getNodesAndFloorData = async () => {
+      await getFloorExistence(currfloor);
+      getSurveyNodes(currfloor);
+    };
 
-  //       // Update correspondingly floors based on prior async data.
-  //       updateFloor(currfloor);
-  //       await updateFloors();
-  //     })();
-  //   }, [currfloor, currDate, floorExists]);
-  // >>>>>>> origin/develop
+    (async () => {
+      // Firstly check if the floor exists and obtain survey nodes.
+      await getNodesAndFloorData();
+
+      // Update correspondingly floors based on prior async data.
+      updateFloor(currfloor);
+      await updateFloors();
+      await updateSurveys();
+    })();
+  }, [currfloor, currDate, floorExists]);
 
   const updateFloors = async (): Promise<void> => {
     try {
