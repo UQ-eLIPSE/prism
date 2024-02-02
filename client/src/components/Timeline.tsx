@@ -8,19 +8,9 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from "@material-ui/core";
-// import NetworkCalls from "../utils/NetworkCalls";
 import TimelineStyles from "../sass/partials/_timeline.module.scss";
 import classNames from "classnames";
-
-export interface SurveyDate {
-  survey_name: string;
-  date: Date;
-}
-
-export interface SurveyMonth {
-  monthName: string;
-  dates: SurveyDate[];
-}
+import { SurveyMonth, SurveyDate } from "../interfaces/NodeData";
 
 interface Props {
   timelineOpen: boolean;
@@ -34,19 +24,17 @@ interface Props {
   availableFloors: number[];
   floorExists: boolean;
   updateFloors: Function;
-  surveyWithFloors: SurveyMonth[];
-  fetchSiteSurveys: SurveyMonth[];
+  surveyWithFloors: SurveyMonth[]; //The surveyWithFloors variable is for fetching survey data limited to a specific floor
+  siteSurveys: SurveyMonth[]; // siteSurveys fetches all surveys for the entire site without floor restriction
+  changeDateAndUpdateFloors: Function;
 }
 
 function Timeline(props: Props) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const floors: number[] = [];
   const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
   const [currentMonthName, setCurrentMonthName] = useState<string>("");
   const [expandedAccordian, setExpandedAccordian] = useState<string>("");
   const [, setIsExpanded] = useState<boolean>(true);
   const [allSurveys, setAllSurveys] = useState<SurveyMonth[]>([]);
-  // const abortController = new AbortController();
   const drawerContainerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
@@ -61,7 +49,7 @@ function Timeline(props: Props) {
       );
       const scrollControl = drawerContainerRef.current;
       let positioningMonthIndex = 0;
-      for (const [i, survey] of props.fetchSiteSurveys.entries()) {
+      for (const [i, survey] of props.siteSurveys.entries()) {
         if (survey.monthName === currentMonthName) positioningMonthIndex = i;
       }
       if (scrollControl) {
@@ -70,23 +58,23 @@ function Timeline(props: Props) {
         });
       }
 
-      setAllSurveys(props.fetchSiteSurveys);
+      setAllSurveys(props.siteSurveys);
       const months = [];
-      for (const survey of props.fetchSiteSurveys) {
+      for (const survey of props.siteSurveys) {
         for (const date of survey.dates) {
           months.push(date.date.toISOString());
         }
       }
       if (
         !months.includes(props.date.toISOString()) &&
-        props.fetchSiteSurveys.length > 0
+        props.siteSurveys.length > 0
       )
-        changeDate(props.fetchSiteSurveys[0].dates[0].date);
+        changeDate(props.siteSurveys[0].dates[0].date);
       switchSurveys();
     };
 
     fetchingSurveys();
-  }, [props.fetchSiteSurveys]);
+  }, [props.siteSurveys]);
 
   const getMonthJSX = (month: SurveyMonth): React.ReactElement[] => {
     return month.dates.map((date: SurveyDate) => {
@@ -330,10 +318,7 @@ function Timeline(props: Props) {
   };
 
   const changeDate = async (date: Date): Promise<void> => {
-    if (date.toISOString() === props.date.toISOString()) return;
-    props.changeDate(date);
-    await props.updateFloors();
-    props.updateAvailableFloors(floors);
+    props.changeDateAndUpdateFloors(date);
     setCurrentMonthName(
       date.toLocaleString("en-us", { month: "short", year: "numeric" }),
     );

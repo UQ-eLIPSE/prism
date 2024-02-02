@@ -15,7 +15,7 @@ import { ISettings } from "../typings/settings";
 import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
-import { SurveyMonth } from "./Timeline";
+import { SurveyMonth } from "../interfaces/NodeData";
 
 export interface MinimapReturn {
   image_url: string;
@@ -129,6 +129,8 @@ function Site(props: SiteInterface) {
     })();
   }, [currfloor, currDate, floorExists]);
 
+  //The second useEffect is necessary because it isolates survey data updates to occur only when `currDate` changes,
+  // ensuring that these updates are decoupled from floor-related operations.
   useEffect(() => {
     (async () => {
       await updateSurveys();
@@ -155,6 +157,21 @@ function Site(props: SiteInterface) {
     }
   };
 
+  const updateSurveyData = (
+    surveyWithFloors: SurveyMonth[],
+    siteSurveys: SurveyMonth[],
+  ): void => {
+    setSurveys(surveyWithFloors); // Set the surveys with floor information
+    setAllSurveys(siteSurveys); // Set all surveys
+    try {
+      //The changeDateAndUpdateFloors function is crucial within updateSurveyData as it ensures the application's state aligns with the selected survey date,
+      // triggering necessary updates like floor information refreshment.
+      changeDateAndUpdateFloors(siteSurveys[0]?.dates[0]?.date);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const updateSurveys = async (): Promise<void> => {
     try {
       const surveyWithFloors = await NetworkCalls.fetchSurveys(
@@ -162,14 +179,12 @@ function Site(props: SiteInterface) {
         siteId,
         currfloor,
       );
-      const fetchSiteSurveys = await NetworkCalls.fetchSurveys(
+      const siteSurveys = await NetworkCalls.fetchSurveys(
         surveyAbortController,
         siteId,
       );
 
-      setSurveys(surveyWithFloors);
-      setAllSurveys(fetchSiteSurveys);
-      changeDateFormatted(fetchSiteSurveys[0]?.dates[0]?.date);
+      updateSurveyData(surveyWithFloors, siteSurveys);
     } catch (error) {
       console.error("Failed to fetch surveys:", error);
     }
@@ -333,8 +348,7 @@ function Site(props: SiteInterface) {
     setCurrDate(date);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async function changeDateFormatted(date: Date): Promise<void> {
+  async function changeDateAndUpdateFloors(date: Date): Promise<void> {
     if (date.toISOString() === currDate.toISOString()) return;
     changeDate(date);
     await updateFloors();
@@ -558,7 +572,8 @@ function Site(props: SiteInterface) {
           floorExists={floorExists}
           updateFloors={updateFloors}
           surveyWithFloors={surveys}
-          fetchSiteSurveys={allSurveys}
+          siteSurveys={allSurveys}
+          changeDateAndUpdateFloors={changeDateAndUpdateFloors}
         />
       )}
     </div>
