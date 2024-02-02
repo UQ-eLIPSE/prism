@@ -13,6 +13,7 @@ import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordin
 import { MinimapConstants } from "../utils/MinimapConstants.d";
 import FloorDetailsForm from "./FloorDetailsForm";
 import ToggleEditNodeButton from "./ToggleEditNodeButton";
+import MinimapImage from "./MiniMapImage";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -398,22 +399,16 @@ function Minimap(props: MinimapProps) {
                 </button>
               )}
               {imageUrl ? (
-                <img
-                  className={classNames(
-                    "small-map-img",
-                    MinimapStyles.minimapImage,
-                    MinimapStyles.smallMapImg,
-                    {
-                      [MinimapStyles.minimapImgHover]: !mapHover,
-                    },
-                  )}
-                  onClick={(): void => {
-                    props.updateMinimapEnlarged(!props.minimapEnlarged);
-                  }}
-                  src={imageUrl}
-                  alt="Facility Minimap"
-                  style={{
+                <MinimapImage
+                  mapHoverStyleCondition={!mapHover}
+                  imageUrl={imageUrl}
+                  imageAlt="Facility Minimap"
+                  imageStyle={{
                     display: !props.minimapEnlarged ? "block" : "none",
+                  }}
+                  additionalImgClasses="small-map-img"
+                  handleOnClick={(): void => {
+                    props.updateMinimapEnlarged(!props.minimapEnlarged);
                   }}
                 />
               ) : (
@@ -467,17 +462,11 @@ function Minimap(props: MinimapProps) {
               )}
 
               {props.minimapData && imageUrl && (
-                <img
-                  className={classNames(
-                    MinimapStyles.minimapImage,
-                    MinimapStyles.largeMapImg,
-                    {
-                      [MinimapStyles.minimapImgHover]: mapHover,
-                    },
-                  )}
-                  src={imageUrl}
-                  alt="Facility Minimap with Index"
-                  style={{
+                <MinimapImage
+                  mapHoverStyleCondition={mapHover}
+                  imageUrl={imageUrl}
+                  imageAlt="Facility Minimap with Index"
+                  imageStyle={{
                     display: props.minimapEnlarged ? "block" : "none",
                   }}
                 />
