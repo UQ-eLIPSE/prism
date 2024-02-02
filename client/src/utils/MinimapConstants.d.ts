@@ -1,3 +1,11 @@
+// The Minimap's boundaries
+const maxMapBoundary: number = 100;
+const minMapBoundary: number = 0;
+
+// Don't want to render the node on the edge of the minimap.
+// This value will help offset the rendering placement of the node.
+const nodeOffset: number = 5;
+
 /**
  * Constants related to the Minimap.
  */
@@ -20,21 +28,20 @@ export enum MinimapConstants {
   /**
    * Represents the upper limit for the node to be placed in the map.
    */
-  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
-  UPPER_BOUND = 100,
+  UPPER_BOUND = maxMapBoundary,
 
   /**
    * Represents the lower limit for the node to be placed in the map.
    */
-  LOWER_BOUND = 0,
+  LOWER_BOUND = minMapBoundary,
 
   /**
    * Adjusts the node's position when it reaches the upper limit to this value.
    */
-  UPPER_ADJUST = 95,
+  UPPER_ADJUST = maxMapBoundary - nodeOffset,
 
   /**
    * Adjusts the node's position when it reaches the lower limit to this value.
    */
-  LOWER_ADJUST = 5,
+  LOWER_ADJUST = minMapBoundary + nodeOffset,
 }
