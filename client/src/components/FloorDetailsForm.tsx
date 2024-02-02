@@ -5,6 +5,9 @@ interface StateObject<T> {
   setFn: React.Dispatch<React.SetStateAction<T>>;
 }
 
+// This is needed to check if the tag or name has been changed
+type TagOrNameIdentifier = "tag" | "name";
+
 interface FloorDetailsFormProps {
   minimapShown: boolean;
   minimapData: {
@@ -15,7 +18,17 @@ interface FloorDetailsFormProps {
   floorTagState: StateObject<string>;
   submitVisibilityState: StateObject<boolean>;
 
-  handleUpdateFloorTagAndName: () => void;
+  handleUpdateFloorTagAndName: () => Promise<void>;
+}
+
+interface InputConfig {
+  label: string;
+  value: string;
+  tagOrName: TagOrNameIdentifier;
+  setter: React.Dispatch<React.SetStateAction<string>>;
+  id: string;
+  cy: string;
+  otherValue: string;
 }
 
 const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
@@ -37,68 +50,99 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
     submitVisibilityState.setFn,
   ];
 
+  const inputs: InputConfig[] = [
+    {
+      label: "Floor Name",
+      value: floorName,
+      tagOrName: "name",
+      setter: setFloorName,
+      id: "floor-name-input",
+      cy: "floor-name-input",
+      otherValue: floorTag,
+    },
+    {
+      label: "Tag",
+      value: floorTag,
+      tagOrName: "tag",
+      setter: setFloorTag,
+      id: "floor-tag-input",
+      cy: "floor-tag-input",
+      otherValue: floorName,
+    },
+  ];
+
+  /**
+   * Handles the input change event for both the floor name and floor tag inputs.
+   *
+   * @param e - The input change event.
+   * @param setFnState - The state setter function for the input's value.
+   * @param tagOrName - An identifier to distinguish between the floor name and
+   *  floor tag inputs.
+   * @param otherValue - The value of the other input. i.e. if e.target.value is "tag", this should be "name".
+   * @param currentTag - The current value of the floor tag (from minimapData).
+   * @param currentName - The current value of the floor name (from minimapData).
+   */
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFunction: React.Dispatch<React.SetStateAction<string>>,
+    setFnState: React.Dispatch<React.SetStateAction<string>>,
+    tagOrName: TagOrNameIdentifier,
     otherValue: string,
     currentTag?: string,
     currentName?: string,
   ) => {
     const newValue = e.target.value;
-    setFunction(newValue);
 
-    const isTagChanged = newValue !== currentTag;
-    const isNameChanged = otherValue !== currentName;
+    setFnState(newValue);
 
-    // If either the tag or name has been changed, show the submit button
+    /**
+     * Checks if the input value has changed compared to the current value.
+     * This looks complicated, but it's just a way to compare the new input
+     *  value with the current value.
+     */
+    const isChanged = (
+      identifier: TagOrNameIdentifier,
+      value: string,
+      currValue?: string,
+    ) => {
+      return tagOrName === identifier
+        ? value !== currValue
+        : otherValue !== currValue;
+    };
+
+    const isTagChanged = isChanged("tag", newValue, currentTag);
+    const isNameChanged = isChanged("name", newValue, currentName);
+
+    // If either the floor tag or floor name has changed, show the submit button.
     handleSetSubmitVisibility(isTagChanged || isNameChanged);
   };
 
   return (
     <>
-      <span className="inlineLabels">
+      <form className="inlineLabels">
         <div className="nameInput">
-          <span>
-            {!minimapShown && (
-              <label htmlFor="floor-name-input">Floor Name</label>
-            )}
-            <input
-              value={floorName}
-              data-cy="floor-name-input"
-              id="floor-name-input"
-              name="floor-name-input"
-              onChange={(e) =>
-                handleInputChange(
-                  e,
-                  setFloorName,
-                  floorTag,
-                  minimapData?.floor_tag,
-                  minimapData?.floor_name,
-                )
-              }
-            ></input>
-          </span>
-
-          <span>
-            {!minimapShown && <label htmlFor="floor-tag-input">Tag</label>}
-            <input
-              value={floorTag}
-              data-cy="floor-tag-input"
-              id="floor-tag-input"
-              name="floor-tag-input"
-              onChange={(e) =>
-                handleInputChange(
-                  e,
-                  setFloorTag,
-                  floorName,
-                  minimapData?.floor_tag,
-                  minimapData?.floor_name,
-                )
-              }
-            ></input>
-          </span>
+          {inputs.map((input) => (
+            <span key={input.id}>
+              {!minimapShown && <label htmlFor={input.id}>{input.label}</label>}
+              <input
+                value={input.value}
+                data-cy={input.cy}
+                id={input.id}
+                name={input.id}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange(
+                    e,
+                    input.setter,
+                    input.tagOrName,
+                    input.otherValue,
+                    minimapData?.floor_tag,
+                    minimapData?.floor_name,
+                  )
+                }
+              ></input>
+            </span>
+          ))}
         </div>
-      </span>
+      </form>
 
       {submitVisibility && (
         <div className="submit-update" onClick={handleUpdateFloorTagAndName}>
