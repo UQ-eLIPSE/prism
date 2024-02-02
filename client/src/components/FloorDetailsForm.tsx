@@ -36,6 +36,24 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
     submitVisibilityState.value,
     submitVisibilityState.setFn,
   ];
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFunction: React.Dispatch<React.SetStateAction<string>>,
+    otherValue: string,
+    currentTag?: string,
+    currentName?: string,
+  ) => {
+    const newValue = e.target.value;
+    setFunction(newValue);
+
+    const isTagChanged = newValue !== currentTag;
+    const isNameChanged = otherValue !== currentName;
+
+    // If either the tag or name has been changed, show the submit button
+    handleSetSubmitVisibility(isTagChanged || isNameChanged);
+  };
+
   return (
     <>
       <span className="inlineLabels">
@@ -49,22 +67,15 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
               data-cy="floor-name-input"
               id="floor-name-input"
               name="floor-name-input"
-              onChange={(e) => {
-                setFloorName(e.target.value);
-                if (
-                  ((!minimapData || !minimapData.floor_tag) &&
-                    e.target.value) ||
-                  (floorTag &&
-                    e.target.value &&
-                    minimapData &&
-                    (floorTag != minimapData.floor_tag ||
-                      e.target.value !== minimapData.floor_name))
-                ) {
-                  handleSetSubmitVisibility(true);
-                } else {
-                  handleSetSubmitVisibility(false);
-                }
-              }}
+              onChange={(e) =>
+                handleInputChange(
+                  e,
+                  setFloorName,
+                  floorTag,
+                  minimapData?.floor_tag,
+                  minimapData?.floor_name,
+                )
+              }
             ></input>
           </span>
 
@@ -75,24 +86,15 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
               data-cy="floor-tag-input"
               id="floor-tag-input"
               name="floor-tag-input"
-              onChange={(e) => {
-                if (e.target.value.length < 3) {
-                  setFloorTag(e.target.value);
-                  if (
-                    ((!minimapData || !minimapData.floor_name) &&
-                      e.target.value) ||
-                    (e.target.value &&
-                      floorName &&
-                      minimapData &&
-                      (e.target.value != minimapData.floor_tag ||
-                        floorName !== minimapData.floor_name))
-                  ) {
-                    handleSetSubmitVisibility(true);
-                  } else {
-                    handleSetSubmitVisibility(false);
-                  }
-                }
-              }}
+              onChange={(e) =>
+                handleInputChange(
+                  e,
+                  setFloorTag,
+                  floorName,
+                  minimapData?.floor_tag,
+                  minimapData?.floor_name,
+                )
+              }
             ></input>
           </span>
         </div>
