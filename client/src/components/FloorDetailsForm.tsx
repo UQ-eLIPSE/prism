@@ -54,7 +54,6 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
       setter: setFloorName,
       id: "floor-name-input",
       cy: "floor-name-input",
-      otherValue: floorTag,
     },
     {
       label: "Tag",
@@ -63,7 +62,6 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
       setter: setFloorTag,
       id: "floor-tag-input",
       cy: "floor-tag-input",
-      otherValue: floorName,
     },
   ];
 
@@ -82,34 +80,17 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
     e: React.ChangeEvent<HTMLInputElement>,
     setFnState: React.Dispatch<React.SetStateAction<string>>,
     tagOrName: TagOrNameIdentifier,
-    otherValue: string,
     currentTag?: string,
     currentName?: string,
   ) => {
-    const newValue = e.target.value;
+    setFnState(e.target.value);
 
-    setFnState(newValue);
-
-    /**
-     * Checks if the input value has changed compared to the current value.
-     * This looks complicated, but it's just a way to compare the new input
-     *  value with the current value.
-     */
-    const isChanged = (
-      identifier: TagOrNameIdentifier,
-      value: string,
-      currValue?: string,
-    ) => {
-      return tagOrName === identifier
-        ? value !== currValue
-        : otherValue !== currValue;
-    };
-
-    const isTagChanged = isChanged("tag", newValue, currentTag);
-    const isNameChanged = isChanged("name", newValue, currentName);
-
-    // If either the floor tag or floor name has changed, show the submit button.
-    handleSetSubmitVisibility(isTagChanged || isNameChanged);
+    // Set submit btn to visible if input value is different than api's
+    handleSetSubmitVisibility(
+      tagOrName === "tag"
+        ? e.target.value !== currentTag
+        : e.target.value !== currentName,
+    );
   };
 
   return (
@@ -129,7 +110,6 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
                     e,
                     input.setter,
                     input.tagOrName,
-                    input.otherValue,
                     minimapData?.floor_tag,
                     minimapData?.floor_name,
                   )

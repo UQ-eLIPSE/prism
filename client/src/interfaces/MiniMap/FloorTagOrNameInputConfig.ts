@@ -10,5 +10,4 @@ export interface FloorTagOrNameInputConfig {
   setter: React.Dispatch<React.SetStateAction<string>>;
   id: string;
   cy: string;
-  otherValue: string;
 }
