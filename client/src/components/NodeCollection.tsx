@@ -27,46 +27,55 @@ function NodeCollection({
   x,
   y,
   handleNodeClick,
-}: NodeCollectionProps): React.JSX.Element[] {
-  return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
-    (node, index) => {
-      const scaledCoordinates: xAndYScaledCoordinates =
-        MinimapUtils.getScaledNodeCoordinates(MinimapProps.minimapData, node);
+}: NodeCollectionProps): JSX.Element {
+  return (
+    <div>
+      {(selectedNode ? [...nodeData, selectedNode] : nodeData).map(
+        (node, index) => {
+          const scaledCoordinates: xAndYScaledCoordinates =
+            MinimapUtils.getScaledNodeCoordinates(
+              MinimapProps.minimapData,
+              node,
+            );
 
-      function adjustPosition(position: number): number {
-        if (position > MinimapConstants.UPPER_BOUND) {
-          return MinimapConstants.UPPER_ADJUST;
-        } else if (position < MinimapConstants.LOWER_BOUND) {
-          return MinimapConstants.LOWER_ADJUST;
-        }
-        return position;
-      }
+          const adjustPosition = (position: number): number => {
+            if (position > MinimapConstants.UPPER_BOUND) {
+              return MinimapConstants.UPPER_ADJUST;
+            } else if (position < MinimapConstants.LOWER_BOUND) {
+              return MinimapConstants.LOWER_ADJUST;
+            }
+            return position;
+          };
 
-      const xPosition: number = adjustPosition(
-        scaledCoordinates.nodeXScaledCoordinate,
-      );
-      const yPosition: number = adjustPosition(
-        scaledCoordinates.nodeYScaledCoordinate,
-      );
+          const xPosition: number = adjustPosition(
+            scaledCoordinates.nodeXScaledCoordinate,
+          );
+          const yPosition: number = adjustPosition(
+            scaledCoordinates.nodeYScaledCoordinate,
+          );
 
-      const isMapEnlarged = MinimapProps.minimapEnlarged;
+          const isMapEnlarged = MinimapProps.minimapEnlarged;
 
-      return (
-        <NodeComponent
-          index={index}
-          node={node}
-          selectedNode={selectedNode}
-          y={y}
-          x={x}
-          yPosition={yPosition}
-          xPosition={xPosition}
-          MinimapProps={MinimapProps}
-          isMapEnlarged={isMapEnlarged}
-          configureRotation={configureRotation}
-          handleNodeClick={handleNodeClick}
-        />
-      );
-    },
+          return (
+            <NodeComponent
+              key={index} // Ensure key is here for optimal rendering
+              index={index}
+              node={node}
+              selectedNode={selectedNode}
+              y={y}
+              x={x}
+              yPosition={yPosition}
+              xPosition={xPosition}
+              MinimapProps={MinimapProps}
+              isMapEnlarged={isMapEnlarged}
+              configureRotation={configureRotation}
+              handleNodeClick={handleNodeClick}
+            />
+          );
+        },
+      )}
+    </div>
   );
 }
+
 export default NodeCollection;
