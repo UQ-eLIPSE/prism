@@ -36,9 +36,7 @@ const ToggleEditNodeButton: React.FC<ToggleEditNodeButtonProps> = ({
 
     if (!isEditing) setSelectedNode(null);
 
-    if (isEditing && selectedNode) {
-      updateNodeInfo();
-    }
+    canEdit && updateNodeInfo();
   };
 
   const buttonClass =
