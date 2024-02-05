@@ -58,7 +58,7 @@ const NodeComponent = ({
               node.tiles_id !== MinimapProps.currPanoId,
             [MinimapStyles.upscaled]: MinimapProps.minimapEnlarged,
             [MinimapStyles.scaled]: !MinimapProps.minimapEnlarged,
-            [MinimapStyles.infoNode]: node.info_hotspots?.length ?? 0, //!!! Removed as it may be needed later with other infoNode functionality.
+            [MinimapStyles.infoNode]: node.info_hotspots?.length ?? 0,
           })}
           key={node.tiles_id}
           id={node.tiles_id}
