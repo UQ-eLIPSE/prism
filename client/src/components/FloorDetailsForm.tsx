@@ -1,21 +1,9 @@
 import React from "react";
 import { StateObject } from "../interfaces/StateObject";
-
-// This is needed to check if the tag or name has been changed
-type TagOrNameIdentifier = "tag" | "name";
-
-/**
- * Configuration / settings to be used for the floor tag and name input elements.
- */
-interface InputConfig {
-  label: string;
-  value: string;
-  tagOrName: TagOrNameIdentifier;
-  setter: React.Dispatch<React.SetStateAction<string>>;
-  id: string;
-  cy: string;
-  otherValue: string;
-}
+import {
+  FloorTagOrNameInputConfig,
+  TagOrNameIdentifier,
+} from "../interfaces/MiniMap/FloorTagOrNameInputConfig";
 
 interface FloorDetailsFormProps {
   showForm?: boolean;
@@ -58,7 +46,7 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
     submitVisibilityState.setFn,
   ];
 
-  const inputs: InputConfig[] = [
+  const inputs: FloorTagOrNameInputConfig[] = [
     {
       label: "Floor Name",
       value: floorName,
