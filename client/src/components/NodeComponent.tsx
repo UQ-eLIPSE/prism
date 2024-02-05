@@ -4,6 +4,21 @@ import classNames from "classnames";
 import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
 
+/**
+ * Props for the NodeComponent.
+ * @typedef {Object} NodeComponentProps
+ * @property {number} index - The index of the node in the collection.
+ * @property {NewNode} node - The current node data.
+ * @property {NewNode|null} selectedNode - The node currently selected, if any.
+ * @property {number} y - The y coordinate for the selected node.
+ * @property {number} x - The x coordinate for the selected node.
+ * @property {number} yPosition - The y position for the node, adjusted for scaling.
+ * @property {number} xPosition - The x position for the node, adjusted for scaling.
+ * @property {MinimapProps} MinimapProps - Props related to the minimap configuration.
+ * @property {boolean} isMapEnlarged - Flag indicating if the minimap is enlarged.
+ * @property {(node: NewNode) => string} configureRotation - Function to configure the rotation of the node.
+ * @property {(e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void} handleNodeClick - Function to handle click events on the node.
+ */
 interface NodeComponent {
   index: number;
   node: NewNode;
@@ -21,6 +36,14 @@ interface NodeComponent {
   ) => void;
 }
 
+/**
+ * NodeComponent renders a single node within the minimap, including its position,
+ * selection state, and any special indicators like rotation or enlargement.
+ * It also handles the click events to select a node.
+ *
+ * @param {NodeComponentProps} props - The properties passed to the NodeComponent.
+ * @returns {JSX.Element} The rendered node component.
+ */
 const NodeComponent = ({
   index,
   node,
