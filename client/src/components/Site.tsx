@@ -144,6 +144,7 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
+
       await updateFloors();
     })();
   }, [currfloor, currDate, floorExists]);
