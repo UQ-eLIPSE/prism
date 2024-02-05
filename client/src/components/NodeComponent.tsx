@@ -1,40 +1,7 @@
 import React from "react";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
 import classNames from "classnames";
-import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
-
-/**
- * Props for the NodeComponent.
- * @typedef {Object} NodeComponentProps
- * @property {number} index - The index of the node in the collection.
- * @property {NewNode} node - The current node data.
- * @property {NewNode|null} selectedNode - The node currently selected, if any.
- * @property {number} y - The y coordinate for the selected node.
- * @property {number} x - The x coordinate for the selected node.
- * @property {number} yPosition - The y position for the node, adjusted for scaling.
- * @property {number} xPosition - The x position for the node, adjusted for scaling.
- * @property {MinimapProps} MinimapProps - Props related to the minimap configuration.
- * @property {boolean} isMapEnlarged - Flag indicating if the minimap is enlarged.
- * @property {(node: NewNode) => string} configureRotation - Function to configure the rotation of the node.
- * @property {(e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void} handleNodeClick - Function to handle click events on the node.
- */
-interface NodeComponent {
-  index: number;
-  node: NewNode;
-  selectedNode: NewNode | null;
-  y: number;
-  x: number;
-  yPosition: number;
-  xPosition: number;
-  MinimapProps: MinimapProps;
-  isMapEnlarged: boolean;
-  configureRotation: (node: NewNode) => string;
-  handleNodeClick: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    node: NewNode,
-  ) => void;
-}
+import { NodeComponentProps } from "../interfaces/NodeData";
 
 /**
  * NodeComponent renders a single node within the minimap, including its position,
@@ -56,7 +23,16 @@ const NodeComponent = ({
   isMapEnlarged,
   configureRotation,
   handleNodeClick,
-}: NodeComponent): JSX.Element => {
+}: NodeComponentProps): JSX.Element => {
+  const getNodeStyle = (includeTransform = true) => {
+    const isSelectedNode = node === selectedNode;
+    return {
+      top: `${isSelectedNode ? y : yPosition}%`,
+      left: `${isSelectedNode ? x : xPosition}%`,
+      transform: includeTransform ? configureRotation(node) : "none",
+    };
+  };
+
   return (
     <div
       key={index}
@@ -64,11 +40,7 @@ const NodeComponent = ({
     >
       <div
         className={MinimapStyles.nodeContainer}
-        style={{
-          top: `${node == selectedNode ? y : yPosition}%`,
-          left: `${node == selectedNode ? x : xPosition}%`,
-          transform: configureRotation(node),
-        }}
+        style={getNodeStyle()}
         key={node.tiles_id}
       >
         {node.tiles_id === MinimapProps.currPanoId &&
@@ -97,13 +69,7 @@ const NodeComponent = ({
         />
       </div>
       {isMapEnlarged && (
-        <div
-          className={MinimapStyles.nodeTitle}
-          style={{
-            top: `${node == selectedNode ? y : yPosition}%`,
-            left: `${node == selectedNode ? x : xPosition}%`,
-          }}
-        >
+        <div className={MinimapStyles.nodeTitle} style={getNodeStyle(false)}>
           {node.tiles_name}
         </div>
       )}

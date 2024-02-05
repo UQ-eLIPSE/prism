@@ -62,6 +62,7 @@ function Minimap(props: MinimapProps) {
   });
 
   const [nodes, editNodes] = useState<NewNode[]>([]);
+  const payload = selectedNode ? [...nodes, selectedNode] : nodes;
 
   useEffect(() => {
     const getMinimapNodes = async () => {
@@ -474,7 +475,7 @@ function Minimap(props: MinimapProps) {
               )}
               {props.minimapData && (
                 <NodeCollection
-                  nodeData={nodes}
+                  renderData={payload}
                   selectedNode={selectedNode}
                   MinimapProps={props}
                   configureRotation={configureRotation}
