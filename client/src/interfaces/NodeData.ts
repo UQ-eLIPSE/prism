@@ -18,6 +18,16 @@ export interface SurveyNode {
   manta_link: string;
 }
 
+export interface SurveyDate {
+  survey_name: string;
+  date: Date;
+}
+
+export interface SurveyMonth {
+  monthName: string;
+  dates: SurveyDate[];
+}
+
 export interface MinimapNode {
   id: string;
   node_number: 0;

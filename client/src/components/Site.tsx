@@ -15,6 +15,7 @@ import { ISettings } from "../typings/settings";
 import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
+import { SurveyMonth } from "../interfaces/NodeData";
 
 export interface MinimapReturn {
   image_url: string;
@@ -64,7 +65,9 @@ function Site(props: SiteInterface) {
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
+
   const abortController: AbortController[] = [];
+  const surveyAbortController = new AbortController();
   const hotspotAbortController = new AbortController();
   const minimapImagesAbortController = new AbortController();
   const panoRef = useRef<HTMLDivElement>(null);
@@ -86,6 +89,9 @@ function Site(props: SiteInterface) {
     config.initial_settings.floor,
   );
   const [floors, setFloors] = useState<number[]>([]);
+
+  const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
+  const [allSurveys, setAllSurveys] = useState<SurveyMonth[]>([]);
 
   const [floorExists, setFloorExists] = useState<boolean>(false);
   const [infoPanelId, setInfoPanelId] = useState<string>("");
@@ -118,9 +124,18 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
+
       await updateFloors();
     })();
   }, [currfloor, currDate, floorExists]);
+
+  //The second useEffect is necessary because it isolates survey data updates to occur only when `currDate` changes,
+  // ensuring that these updates are decoupled from floor-related operations.
+  useEffect(() => {
+    (async () => {
+      await updateSurveys();
+    })();
+  }, [currDate]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -132,7 +147,6 @@ function Site(props: SiteInterface) {
           ...empty.emptyFloors,
         ]);
         setFloors([...Array.from(usableFloors)]);
-
         if (!usableFloors.has(currfloor)) {
           changeFloor(Math.min(...floors));
           updateAvailableFloors(floors);
@@ -140,6 +154,39 @@ function Site(props: SiteInterface) {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const updateSurveyData = (
+    surveyWithFloors: SurveyMonth[],
+    siteSurveys: SurveyMonth[],
+  ): void => {
+    setSurveys(surveyWithFloors); // Set the surveys with floor information
+    setAllSurveys(siteSurveys); // Set all surveys
+    try {
+      //The changeDateAndUpdateFloors function is crucial within updateSurveyData as it ensures the application's state aligns with the selected survey date,
+      // triggering necessary updates like floor information refreshment.
+      changeDateAndUpdateFloors(siteSurveys[0]?.dates[0]?.date);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const updateSurveys = async (): Promise<void> => {
+    try {
+      const surveyWithFloors = await NetworkCalls.fetchSurveys(
+        surveyAbortController,
+        siteId,
+        currfloor,
+      );
+      const siteSurveys = await NetworkCalls.fetchSurveys(
+        surveyAbortController,
+        siteId,
+      );
+
+      updateSurveyData(surveyWithFloors, siteSurveys);
+    } catch (error) {
+      console.error("Failed to fetch surveys:", error);
     }
   };
 
@@ -299,6 +346,13 @@ function Site(props: SiteInterface) {
   }
   function changeDate(date: Date): void {
     setCurrDate(date);
+  }
+
+  async function changeDateAndUpdateFloors(date: Date): Promise<void> {
+    if (date.toISOString() === currDate.toISOString()) return;
+    changeDate(date);
+    await updateFloors();
+    updateAvailableFloors(floors);
   }
 
   function updateAvailableFloors(newFloors: number[]) {
@@ -504,7 +558,7 @@ function Site(props: SiteInterface) {
           />
         )}
       </div>
-      {config.enable.timeline && (
+      {enableTimeline && (
         <Timeline
           timelineOpen={timelineOpen}
           floor={currfloor}
@@ -517,6 +571,9 @@ function Site(props: SiteInterface) {
           availableFloors={availableFloors}
           floorExists={floorExists}
           updateFloors={updateFloors}
+          surveyWithFloors={surveys}
+          siteSurveys={allSurveys}
+          changeDateAndUpdateFloors={changeDateAndUpdateFloors}
         />
       )}
     </div>
