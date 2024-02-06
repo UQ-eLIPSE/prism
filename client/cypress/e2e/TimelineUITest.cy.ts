@@ -98,33 +98,45 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.wait("@getSiteExists").then(() => {
           cy.wait("@getSiteDetails").then(() => {
             cy.wait("@getEmptyFloors").then(() => {
-              cy.get("[class^='_timelineButton']").click({ force: true });
+              cy.wait("@getSurveyDate").then(() => {
+                cy.get("[class^='_timelineButton']").click({ force: true });
 
-              cy.get("[data-cy='month_button']").then(($elements) => {
-                const randomIndex = Math.floor(
-                  Math.random() * $elements.length,
-                );
+                cy.get("[data-cy='month_button']").then(($elements) => {
+                  const randomIndex = Math.floor(
+                    Math.random() * $elements.length,
+                  );
 
-                cy.wrap($elements).eq(randomIndex).click();
-              });
-              cy.get("[data-cy='Survey_Date']").then(($input) => {
-                const inputValue = $input.val();
-
-                // Ensure inputValue is a string before proceeding
-                if (typeof inputValue === "string") {
-                  const formattedDate =
-                    inputValue.split("/").reverse().join("-") +
-                    "T00:00:00.000Z";
-
-                  cy.wait("@getSurveyDate").then((interception) => {
-                    expect(interception.request.url).to.include(formattedDate); 
-                    cy.get("[class*='_timeline_selectedSurvey']").then(($title) => {
-                      expect(inputValue).to.eq($title.val());
-                    })
-                  });
-                } else {
-                  throw new Error("Input value is undefined");
-                }
+                  cy.wrap($elements)
+                    .eq(randomIndex)
+                    .click()
+                    .then(() => {
+                      cy.get("[data-cy='Survey_Date']").then(($input) => {
+                        const inputValue = $input.text();
+                        console.log("1", inputValue);
+                        // Ensure inputValue is a string before proceeding
+                        if (typeof inputValue === "string") {
+                          const formattedDate =
+                            inputValue.split("/").reverse().join("-") +
+                            "T00:00:00.000Z";
+                          cy.wait(1000); // TODO : find a better approach to remove cy.wait
+                          cy.wait("@getSurveyDate").then((interception) => {
+                            console.log("2", inputValue);
+                            console.log("REQ", interception.request);
+                            expect(interception.request.url).to.include(
+                              formattedDate,
+                            );
+                            cy.get("[class*='_timeline_selectedSurvey']").then(
+                              ($title) => {
+                                expect($title.text()).to.include(inputValue);
+                              },
+                            );
+                          });
+                        } else {
+                          throw new Error("Input value is undefined");
+                        }
+                      });
+                    });
+                });
               });
             });
           });

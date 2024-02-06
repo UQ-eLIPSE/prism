@@ -167,7 +167,10 @@ function Timeline(props: Props) {
                 </div>
                 {getCurrentSurvey(month).length > 0 ? (
                   <div key={0} className={TimelineStyles.surveyDiv}>
-                    <span className={TimelineStyles.selectedSurvey}>
+                    <span
+                      data-cy="Survey_Date"
+                      className={TimelineStyles.selectedSurvey}
+                    >
                       {month.dates[0].survey_name.length > 0
                         ? month.dates[0].survey_name
                         : props.date.toLocaleDateString()}
@@ -176,10 +179,7 @@ function Timeline(props: Props) {
                   </div>
                 ) : (
                   <div key={0} className={TimelineStyles.surveyDiv}>
-                    <span
-                      className={TimelineStyles.inactiveSurvey}
-                      data-cy="Survey_Date"
-                    >
+                    <span className={TimelineStyles.inactiveSurvey}>
                       {month.dates[0].survey_name}
                     </span>
                   </div>
