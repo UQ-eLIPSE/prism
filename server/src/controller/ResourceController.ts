@@ -114,6 +114,7 @@ export class ResourceController {
             _id: new ObjectId(),
             name: currFile,
             parent: topLevelDirectory._id,
+            site: siteId,
           });
 
           topLevelDirectory.subdirectories = [
@@ -128,9 +129,9 @@ export class ResourceController {
           const file = await new Files({
             _id: new ObjectId(),
             name: currFile,
-            url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${
-              site.tag
-            }/Documents/${dirPath === "/" ? "" : `${dirPath}/`}${currFile}`,
+            url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/drawings/${
+              dirPath === "/" ? "" : `${dirPath}/`
+            }${currFile}`,
             uploaded_at: new Date(),
           });
           topLevelDirectory.files = [...topLevelDirectory.files, file._id];
@@ -142,6 +143,7 @@ export class ResourceController {
     const originalDirFolder = new Directories({
       _id: new ObjectId(),
       name: "Documents",
+      site: siteId,
     });
 
     await fileLoop("/", originalDirFolder);

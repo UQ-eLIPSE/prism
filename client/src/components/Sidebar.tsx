@@ -6,6 +6,7 @@ import prism_logo from "../img/prism-logo.svg";
 import { useUserContext } from "../context/UserContext";
 import { useSettingsContext } from "../context/SettingsContext";
 import { ISettings } from "../typings/settings";
+import UploadDocs from "./UploadDocs";
 import ModuleWindow, { MEDIA_TYPES, ModuleWindowProps } from "./ModuleWindow";
 
 export interface ISidebarLink {
@@ -222,6 +223,7 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
         </nav>
       )}
 
+      <UploadDocs siteId={props.siteId} />
       <div className="nav-icon-container">
         {user?.isAdmin && (
           <>

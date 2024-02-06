@@ -954,4 +954,36 @@ export default class NetworkCalls {
 
     return res;
   }
+
+  // NetworkCalls.ts or similar file
+
+  public static async uploadDocument(
+    zipFile: File,
+    siteId: string,
+  ): Promise<any> {
+    const formData = new FormData();
+    formData.append("zipFile", zipFile);
+
+    const req = {
+      method: "POST",
+      body: formData,
+    };
+
+    try {
+      const resRaw = await fetchWithCredentials(
+        `${this.window_api_url}/api/documentation/${siteId}`,
+        req,
+      );
+      const res = await resRaw.json();
+
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+
+      return res;
+    } catch (error) {
+      console.error("Upload failed:", error);
+      throw error; // Re-throw to handle it in the calling code
+    }
+  }
 }
