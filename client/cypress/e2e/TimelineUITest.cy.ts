@@ -90,7 +90,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    it.only("Testing: Timeline survey button renders when selected", () => {
+    it("Testing: Timeline survey button renders when selected", () => {
       if (zone.timeline) {
         cy.intercept("GET", "/api/site/*/1/survey/minimapSingleSite?date=*").as(
           "getSurveyDate",
