@@ -11,6 +11,9 @@ import MinimapUtils from "../utils/MinimapUtils";
 import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
 import { MinimapConstants } from "../utils/MinimapConstants.d";
 import NodeCollection from "./NodeCollection";
+import FloorDetailsForm from "./FloorDetailsForm";
+import ToggleEditNodeButton from "./ToggleEditNodeButton";
+import MinimapImage from "./MiniMapImage";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -232,43 +235,18 @@ function Minimap(props: MinimapProps) {
           props.minimapEnlarged && user?.isAdmin ? "visible" : ""
         }`}
       >
-        <button
-          onClick={(): void => {
-            setEditing((editing) => !editing);
-
-            if (!editing) setSelectedNode(null);
-
-            if (editing && selectedNode) {
-              updateNodeInfo();
-            }
-          }}
-          className={`editButton ${
-            editing && !selectedNode
-              ? "selecting"
-              : editing && selectedNode
-                ? "editing"
-                : ""
-          }`}
-          data-cy="edit-save-button"
-        >
-          <i
-            className={`fa-solid ${
-              editing && selectedNode ? "fa-floppy-disk" : "fa-pen-to-square"
-            }`}
-          ></i>
-
-          <p>{`${editing && selectedNode ? "Save" : "Edit"} Node`}</p>
-        </button>
+        <ToggleEditNodeButton
+          isEditingState={{ value: editing, setFn: setEditing }}
+          selectedNodeState={{ value: selectedNode, setFn: setSelectedNode }}
+          updateNodeInfo={updateNodeInfo}
+        />
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
           <EditNodeForm
-            rotationValue={rotation}
-            setRotationValue={setRotation}
-            xPositionValue={x}
-            setXPositionValue={setX}
-            yPositionValue={y}
-            setYPositionValue={setY}
+            rotationState={{ value: rotation, setFn: setRotation }}
+            xPositionState={{ value: x, setFn: setX }}
+            yPositionState={{ value: y, setFn: setY }}
             resetSelectedNode={resetSelectedNode}
             updateNode={updateNodeInfo}
           />
@@ -284,73 +262,23 @@ function Minimap(props: MinimapProps) {
         onDragLeave={(e) => e.preventDefault()}
         onDrop={(e) => e.preventDefault()}
       >
-        {!props.minimapEnlarged && props.minimapData && user?.isAdmin && (
-          <>
-            <span className="inlineLabels">
-              <div className="nameInput">
-                <span>
-                  {!props.minimapShown && <p>Floor Name</p>}
-                  <input
-                    value={floorName}
-                    data-cy="floor-name-input"
-                    onChange={(e) => {
-                      setFloorName(e.target.value);
-                      if (
-                        ((!props.minimapData || !props.minimapData.floor_tag) &&
-                          e.target.value) ||
-                        (floorTag &&
-                          e.target.value &&
-                          props.minimapData &&
-                          (floorTag != props.minimapData.floor_tag ||
-                            e.target.value !== props.minimapData.floor_name))
-                      ) {
-                        setSubmitVisibility(true);
-                      } else {
-                        setSubmitVisibility(false);
-                      }
-                    }}
-                  ></input>
-                </span>
-
-                <span>
-                  {!props.minimapShown && <p>Tag</p>}
-                  <input
-                    value={floorTag}
-                    data-cy="floor-tag-input"
-                    onChange={(e) => {
-                      if (e.target.value.length < 3) {
-                        setFloorTag(e.target.value);
-                        if (
-                          ((!props.minimapData ||
-                            !props.minimapData.floor_name) &&
-                            e.target.value) ||
-                          (e.target.value &&
-                            floorName &&
-                            props.minimapData &&
-                            (e.target.value != props.minimapData.floor_tag ||
-                              floorName !== props.minimapData.floor_name))
-                        ) {
-                          setSubmitVisibility(true);
-                        } else {
-                          setSubmitVisibility(false);
-                        }
-                      }
-                    }}
-                  ></input>
-                </span>
-              </div>
-            </span>
-
-            {submitVisibility && (
-              <div
-                className="submit-update"
-                onClick={() => updateFloorTagAndName()}
-              >
-                <span>Save</span>
-              </div>
-            )}
-          </>
-        )}
+        <FloorDetailsForm
+          showForm={
+            !props.minimapEnlarged && props.minimapData && user?.isAdmin
+          }
+          minimapShown={props.minimapShown}
+          minimapData={{
+            floor_tag: props.minimapData.floor_tag,
+            floor_name: props.minimapData.floor_name,
+          }}
+          floorNameState={{ value: floorName, setFn: setFloorName }}
+          floorTagState={{ value: floorTag, setFn: setFloorTag }}
+          submitVisibilityState={{
+            value: submitVisibility,
+            setFn: setSubmitVisibility,
+          }}
+          handleUpdateFloorTagAndName={updateFloorTagAndName}
+        />
 
         {props.minimapShown && (
           <>
@@ -389,22 +317,16 @@ function Minimap(props: MinimapProps) {
                 </button>
               )}
               {imageUrl ? (
-                <img
-                  className={classNames(
-                    "small-map-img",
-                    MinimapStyles.minimapImage,
-                    MinimapStyles.smallMapImg,
-                    {
-                      [MinimapStyles.minimapImgHover]: !mapHover,
-                    },
-                  )}
-                  onClick={(): void => {
-                    props.updateMinimapEnlarged(!props.minimapEnlarged);
-                  }}
-                  src={imageUrl}
-                  alt="Facility Minimap"
-                  style={{
+                <MinimapImage
+                  mapHoverStyleCondition={!mapHover}
+                  imageUrl={imageUrl}
+                  imageAlt="Facility Minimap"
+                  imageStyle={{
                     display: !props.minimapEnlarged ? "block" : "none",
+                  }}
+                  additionalImgClasses="small-map-img"
+                  handleOnClick={(): void => {
+                    props.updateMinimapEnlarged(!props.minimapEnlarged);
                   }}
                 />
               ) : (
@@ -458,17 +380,11 @@ function Minimap(props: MinimapProps) {
               )}
 
               {props.minimapData && imageUrl && (
-                <img
-                  className={classNames(
-                    MinimapStyles.minimapImage,
-                    MinimapStyles.largeMapImg,
-                    {
-                      [MinimapStyles.minimapImgHover]: mapHover,
-                    },
-                  )}
-                  src={imageUrl}
-                  alt="Facility Minimap with Index"
-                  style={{
+                <MinimapImage
+                  mapHoverStyleCondition={mapHover}
+                  imageUrl={imageUrl}
+                  imageAlt="Facility Minimap with Index"
+                  imageStyle={{
                     display: props.minimapEnlarged ? "block" : "none",
                   }}
                 />
