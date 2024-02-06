@@ -13,7 +13,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       expandMiniMap();
     });
 
-    it(`Testing: Button class should be in no mode at initial render`, () => {
+    it(`Testing: Button class should render with correct text in initial render`, () => {
       cy.get('[data-cy="edit-save-button"]')
         .should("exist")
         .should("have.text", "Edit Node");
