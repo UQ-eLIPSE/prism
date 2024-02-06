@@ -75,6 +75,13 @@ export interface InfoHotspot {
   info_id: string;
 }
 
+interface NodePropsBase {
+  MinimapProps: MinimapProps;
+  selectedNode: NewNode | null; 
+  configureRotation: (node: NewNode) => string;
+  handleNodeClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void;
+}
+
 /**
  * Props for the NodeCollection component.
  * @typedef {Object} NodeCollectionProps
@@ -86,17 +93,10 @@ export interface InfoHotspot {
  * @property {number} y - The y coordinate for positioning the selected node.
  * @property {(e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void} handleNodeClick - Function to handle click events on nodes.
  */
-export interface NodeCollectionProps {
+export interface NodeCollectionProps extends NodePropsBase{
   renderData: NewNode[];
-  selectedNode: NewNode | null;
-  MinimapProps: MinimapProps;
-  configureRotation: (node: NewNode) => string;
   x: number;
   y: number;
-  handleNodeClick: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    node: NewNode,
-  ) => void;
 }
 
 /**
@@ -114,19 +114,12 @@ export interface NodeCollectionProps {
  * @property {(node: NewNode) => string} configureRotation - Function to configure the rotation of the node.
  * @property {(e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void} handleNodeClick - Function to handle click events on the node.
  */
-export interface NodeComponentProps {
+export interface NodeComponentProps extends NodePropsBase {
   index: number;
   node: NewNode;
-  selectedNode: NewNode | null;
   y: number;
   x: number;
   yPosition: number;
   xPosition: number;
-  MinimapProps: MinimapProps;
   isMapEnlarged: boolean;
-  configureRotation: (node: NewNode) => string;
-  handleNodeClick: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    node: NewNode,
-  ) => void;
 }

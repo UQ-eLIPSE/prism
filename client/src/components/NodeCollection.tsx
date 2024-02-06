@@ -1,7 +1,6 @@
 import React from "react";
 import MinimapUtils from "../utils/MinimapUtils";
 import { MinimapConstants } from "../utils/MinimapConstants.d";
-import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
 import NodeComponent from "./NodeComponent";
 import { NodeCollectionProps } from "../interfaces/NodeData";
 
@@ -25,7 +24,7 @@ function NodeCollection({
   return (
     <div>
       {renderData.map((node, index) => {
-        const scaledCoordinates: xAndYScaledCoordinates =
+        const { nodeXScaledCoordinate, nodeYScaledCoordinate } =
           MinimapUtils.getScaledNodeCoordinates(MinimapProps.minimapData, node);
 
         const adjustPosition = (position: number): number => {
@@ -36,15 +35,9 @@ function NodeCollection({
           }
           return position;
         };
+        const xPosition: number = adjustPosition(nodeXScaledCoordinate);
 
-        const xPosition: number = adjustPosition(
-          scaledCoordinates.nodeXScaledCoordinate,
-        );
-        const yPosition: number = adjustPosition(
-          scaledCoordinates.nodeYScaledCoordinate,
-        );
-
-        const isMapEnlarged = MinimapProps.minimapEnlarged;
+        const yPosition: number = adjustPosition(nodeYScaledCoordinate);
 
         return (
           <NodeComponent
@@ -57,7 +50,7 @@ function NodeCollection({
             yPosition={yPosition}
             xPosition={xPosition}
             MinimapProps={MinimapProps}
-            isMapEnlarged={isMapEnlarged}
+            isMapEnlarged={MinimapProps.minimapEnlarged}
             configureRotation={configureRotation}
             handleNodeClick={handleNodeClick}
           />
