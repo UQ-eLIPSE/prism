@@ -90,7 +90,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    it("Testing: Timeline survey button renders when selected", () => {
+    it.only("Testing: Timeline survey button fetches correct node survey when selected", () => {
       if (zone.timeline) {
         cy.intercept("GET", "/api/site/*/1/survey/minimapSingleSite?date=*").as(
           "getSurveyDate",
@@ -99,6 +99,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           cy.wait("@getSiteDetails").then(() => {
             cy.wait("@getEmptyFloors").then(() => {
               cy.get("[class^='_timelineButton']").click({ force: true });
+
               cy.get("[data-cy='month_button']").then(($elements) => {
                 const randomIndex = Math.floor(
                   Math.random() * $elements.length,
@@ -116,7 +117,10 @@ testEachZone((zone: Cypress.PrismZone) => {
                     "T00:00:00.000Z";
 
                   cy.wait("@getSurveyDate").then((interception) => {
-                    expect(interception.request.url).to.include(formattedDate);
+                    expect(interception.request.url).to.include(formattedDate); 
+                    cy.get("[class*='_timeline_selectedSurvey']").then(($title) => {
+                      expect(inputValue).to.eq($title.val());
+                    })
                   });
                 } else {
                   throw new Error("Input value is undefined");
