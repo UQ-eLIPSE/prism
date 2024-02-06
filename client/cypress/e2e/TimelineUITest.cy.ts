@@ -89,5 +89,43 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+
+    it.only("Testing: Timeline survey button renders when selected", () => {
+      if (zone.timeline) {
+        cy.intercept("GET", "/api/site/*/1/survey/minimapSingleSite?date=*").as(
+          "getSurveyDate",
+        );
+        cy.wait("@getSiteExists").then(() => {
+          cy.wait("@getSiteDetails").then(() => {
+            cy.wait("@getEmptyFloors").then(() => {
+              cy.get("[class^='_timelineButton']").click({ force: true });
+              cy.get("[data-cy='month_button']").then(($elements) => {
+                const randomIndex = Math.floor(
+                  Math.random() * $elements.length,
+                );
+
+                cy.wrap($elements).eq(randomIndex).click();
+              });
+              cy.get("[data-cy='Survey_Date']").then(($input) => {
+                const inputValue = $input.val();
+
+                // Ensure inputValue is a string before proceeding
+                if (typeof inputValue === "string") {
+                  const formattedDate =
+                    inputValue.split("/").reverse().join("-") +
+                    "T00:00:00.000Z";
+
+                  cy.wait("@getSurveyDate").then((interception) => {
+                    expect(interception.request.url).to.include(formattedDate);
+                  });
+                } else {
+                  throw new Error("Input value is undefined");
+                }
+              });
+            });
+          });
+        });
+      }
+    });
   });
 });

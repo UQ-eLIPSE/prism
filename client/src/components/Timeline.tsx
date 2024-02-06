@@ -154,6 +154,7 @@ function Timeline(props: Props) {
               expandIcon={<i className={"fa fa-chevron-down fa-2x"} />}
             >
               <button
+                data-cy="month_button"
                 onClick={(event): void => showLatestSurveyInMonth(month, event)}
                 onFocus={(event) => event.stopPropagation()}
                 className={classNames(TimelineStyles.monthName, {
@@ -175,7 +176,10 @@ function Timeline(props: Props) {
                   </div>
                 ) : (
                   <div key={0} className={TimelineStyles.surveyDiv}>
-                    <span className={TimelineStyles.inactiveSurvey}>
+                    <span
+                      className={TimelineStyles.inactiveSurvey}
+                      data-cy="Survey_Date"
+                    >
                       {month.dates[0].survey_name}
                     </span>
                   </div>
