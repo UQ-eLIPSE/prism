@@ -135,7 +135,7 @@ function Site(props: SiteInterface) {
     (async () => {
       await updateSurveys();
     })();
-  }, [currDate]);
+  }, []);
 
   const updateFloors = async (): Promise<void> => {
     try {
