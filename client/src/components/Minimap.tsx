@@ -9,8 +9,8 @@ import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
 import MinimapUtils from "../utils/MinimapUtils";
 import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
-import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
 import { MinimapConstants } from "../utils/MinimapConstants.d";
+import NodeCollection from "./NodeCollection";
 import FloorDetailsForm from "./FloorDetailsForm";
 import ToggleEditNodeButton from "./ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
@@ -65,6 +65,7 @@ function Minimap(props: MinimapProps) {
   });
 
   const [nodes, editNodes] = useState<NewNode[]>([]);
+  const payload = selectedNode ? [...nodes, selectedNode] : nodes;
 
   useEffect(() => {
     const getMinimapNodes = async () => {
@@ -158,89 +159,6 @@ function Minimap(props: MinimapProps) {
       ].reduce((a, b) => numOr0(a) + numOr0(b));
       return `rotate(${sum}rad)`;
     }
-  }
-
-  function getNodesJSX(nodeData: NewNode[]): React.ReactElement[] {
-    return (selectedNode ? [...nodeData, selectedNode] : nodeData).map(
-      (node, index) => {
-        // Element Position = Scale * (Position within map + Offset)
-        const scaledCoordinates: xAndYScaledCoordinates =
-          MinimapUtils.getScaledNodeCoordinates(props.minimapData, node);
-
-        function adjustPosition(position: number): number {
-          if (position > MinimapConstants.UPPER_BOUND) {
-            return MinimapConstants.UPPER_ADJUST;
-          } else if (position < MinimapConstants.LOWER_BOUND) {
-            return MinimapConstants.LOWER_ADJUST;
-          }
-          return position;
-        }
-
-        const xPosition: number = adjustPosition(
-          scaledCoordinates.nodeXScaledCoordinate,
-        );
-        const yPosition: number = adjustPosition(
-          scaledCoordinates.nodeYScaledCoordinate,
-        );
-
-        const isMapEnlarged = props.minimapEnlarged;
-        const nodeTitle = node.tiles_name;
-
-        return (
-          <div
-            key={index}
-            className={node == selectedNode ? "currentSelectedNode" : ""}
-          >
-            <div
-              className={MinimapStyles.nodeContainer}
-              style={{
-                top: `${node == selectedNode ? y : yPosition}%`,
-                left: `${node == selectedNode ? x : xPosition}%`,
-                transform: configureRotation(node),
-              }}
-              key={node.tiles_id}
-            >
-              {node.tiles_id === props.currPanoId && config.enable.rotation && (
-                <div className="positionIndicator" />
-              )}
-
-              {node == selectedNode && (
-                <div className="positionIndicator selected" />
-              )}
-
-              <div
-                className={classNames(MinimapStyles.node, {
-                  [MinimapStyles.selectedNode]:
-                    node.tiles_id === props.currPanoId,
-                  [MinimapStyles.unselectedNode]:
-                    node.tiles_id !== props.currPanoId,
-                  [MinimapStyles.upscaled]: props.minimapEnlarged,
-                  [MinimapStyles.scaled]: !props.minimapEnlarged,
-                  [MinimapStyles.infoNode]: node.info_hotspots?.length ?? 0, //!!! Removed as it may be needed later with other infoNode functionality.
-                })}
-                key={node.tiles_id}
-                id={node.tiles_id}
-                onClick={(e): void => handleNodeClick(e, node)}
-                data-cy={
-                  node.tiles_id === props.currPanoId ? "selected-node" : "node"
-                }
-              />
-            </div>
-            {isMapEnlarged && (
-              <div
-                className={MinimapStyles.nodeTitle}
-                style={{
-                  top: `${node == selectedNode ? y : yPosition}%`,
-                  left: `${node == selectedNode ? x : xPosition}%`,
-                }}
-              >
-                {nodeTitle}
-              </div>
-            )}
-          </div>
-        );
-      },
-    );
   }
 
   async function updateNodeInfo(): Promise<void> {
@@ -471,7 +389,17 @@ function Minimap(props: MinimapProps) {
                   }}
                 />
               )}
-              {props.minimapData && getNodesJSX(nodes)}
+              {props.minimapData && (
+                <NodeCollection
+                  renderData={payload}
+                  selectedNode={selectedNode}
+                  MinimapProps={props}
+                  configureRotation={configureRotation}
+                  x={x}
+                  y={y}
+                  handleNodeClick={handleNodeClick}
+                />
+              )}
             </div>
 
             <div className="minimapButtons">
