@@ -77,9 +77,12 @@ export interface InfoHotspot {
 
 interface NodePropsBase {
   MinimapProps: MinimapProps;
-  selectedNode: NewNode | null; 
+  selectedNode: NewNode | null;
   configureRotation: (node: NewNode) => string;
-  handleNodeClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void;
+  handleNodeClick: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    node: NewNode,
+  ) => void;
 }
 
 /**
@@ -93,7 +96,7 @@ interface NodePropsBase {
  * @property {number} y - The y coordinate for positioning the selected node.
  * @property {(e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: NewNode) => void} handleNodeClick - Function to handle click events on nodes.
  */
-export interface NodeCollectionProps extends NodePropsBase{
+export interface NodeCollectionProps extends NodePropsBase {
   renderData: NewNode[];
   x: number;
   y: number;

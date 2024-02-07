@@ -24,6 +24,7 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.get('[data-cy="floor-tag-input"]').click();
         cy.get('[data-cy="floor-tag-input"]').clear();
         cy.get('[data-cy="floor-tag-input"]').type("test");
+        cy.wait(200);
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorTagPatch")
           .its("response.statusCode")
