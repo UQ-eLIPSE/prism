@@ -1,3 +1,4 @@
+import DocumentationStyles from "../sass/partials/_documentation.module.scss";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import NetworkCalls from "../utils/NetworkCalls"; // Ensure this path matches your project structure
 
@@ -37,16 +38,27 @@ const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
   };
 
   return (
-    <div>
-      upload
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} accept=".zip" />
-        <button type="submit">Submit</button>
-        <button type="button" onClick={() => setSelectedFile(null)}>
+    <form onSubmit={handleSubmit} className={DocumentationStyles.form}>
+      <label htmlFor="uploadZip">Upload documents .zip</label>
+      <div className="buttons">
+        <input
+          className="nav-text"
+          type="file"
+          onChange={handleFileChange}
+          accept=".zip"
+        />
+        <button className="nav-text" type="submit">
+          Submit
+        </button>
+        <button
+          className="nav-text"
+          type="button"
+          onClick={() => setSelectedFile(null)}
+        >
           Cancel
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };
 

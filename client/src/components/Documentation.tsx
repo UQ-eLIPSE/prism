@@ -1,6 +1,7 @@
 // todo: change any types into proper types
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
+import UploadDocs from "./UploadDocs";
 
 // Material UI Components
 import Grid from "@material-ui/core/Grid";
@@ -175,6 +176,7 @@ export default function Documentation(props: Props) {
             abortController,
             directoryName,
           ));
+      console.log(res);
       setOriginalFiles([]);
       setFiles([]);
       setSubDirectories([]);
@@ -359,6 +361,15 @@ export default function Documentation(props: Props) {
       className={DocumentationStyles.grid}
       style={{ display: "inline-block" }}
     >
+      <div
+        style={{
+          display: "inline-block",
+          marginLeft: "2em",
+          marginTop: "2em",
+        }}
+      >
+        <UploadDocs siteId={props.siteId} />
+      </div>
       <Grid
         item
         xs={11}
