@@ -90,7 +90,6 @@ export class ResourceController {
 
     // Upload the files to Manta.
     const upload = execSync(
-      // eslint-disable-next-line max-len
       `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/drawings/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
       { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
     );
@@ -116,15 +115,17 @@ export class ResourceController {
             parent: topLevelDirectory._id,
             site: siteId,
           });
+
           await directory.save();
-          // topLevelDirectory.subdirectories = [
-          //   ...topLevelDirectory.subdirectories,
-          //   directory._id,
-          // ];
-          topLevelDirectory.subdirectories.push(directory._id);
+
+          topLevelDirectory.subdirectories = [
+            ...topLevelDirectory.subdirectories,
+            directory._id,
+          ];
+
           await topLevelDirectory.save();
+
           await fileLoop(`${dirPath}/${currFile}`, directory);
-          // directory.save();
         } else {
           // Add to files collection and using the given directory,
           // add association to the directory structure.
@@ -137,10 +138,12 @@ export class ResourceController {
             uploaded_at: new Date(),
             site: siteId,
           });
+
           await file.save();
-          topLevelDirectory.files.push(file._id);
+
+          topLevelDirectory.files = [...topLevelDirectory.files, file._id];
+
           await topLevelDirectory.save();
-          // topLevelDirectory.files = [...topLevelDirectory.files, file._id];
         }
       }
     };
