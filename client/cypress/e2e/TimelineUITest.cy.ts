@@ -112,7 +112,6 @@ testEachZone((zone: Cypress.PrismZone) => {
                     .then(() => {
                       cy.get("[data-cy='Survey_Date']").then(($input) => {
                         const inputValue = $input.text();
-                        console.log("1", inputValue);
                         // Ensure inputValue is a string before proceeding
                         if (typeof inputValue === "string") {
                           const formattedDate =
@@ -120,8 +119,6 @@ testEachZone((zone: Cypress.PrismZone) => {
                             "T00:00:00.000Z";
                           cy.wait(1000); // TODO : find a better approach to remove cy.wait
                           cy.wait("@getSurveyDate").then((interception) => {
-                            console.log("2", inputValue);
-                            console.log("REQ", interception.request);
                             expect(interception.request.url).to.include(
                               formattedDate,
                             );
