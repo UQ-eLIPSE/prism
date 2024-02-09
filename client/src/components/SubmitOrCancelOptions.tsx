@@ -2,7 +2,7 @@ import React from "react";
 
 interface SubmitOrCancelOptionsProps {
   showCondition?: boolean;
-  handleSubmit: () => void;
+  handleSubmit: () => void | Promise<void>;
   handleCancel: () => void;
 }
 
