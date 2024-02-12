@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
