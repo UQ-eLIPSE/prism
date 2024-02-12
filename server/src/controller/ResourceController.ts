@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { CommonUtil } from "../utils/CommonUtil";
 import { MantaService } from "../service/MantaService";
@@ -22,6 +23,7 @@ import * as fs from "fs/promises";
 import { uploadFilesToManta } from "../utils/mantaUtil";
 import { extractZipFile } from "../utils/fileUtil";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
+import { fileLoop } from "../utils/fileUtil";
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -69,56 +71,56 @@ export class ResourceController {
 
     if (!upload) return CommonUtil.failResponse(res, "Failed to upload files.");
 
-    const fileLoop = async (
-      dirPath: string,
-      topLevelDirectory: IDirectories,
-    ) => {
-      const fullDirPath =
-        dirPath === "/"
-          ? `${TMP_FOLDER}/${extractedFolder}`
-          : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
-      ConsoleUtil.log(`fullDirPath: ${fullDirPath}`);
-      const allFiles = await fs.readdir(fullDirPath);
-      for (const currFile of allFiles) {
-        if (currFile.startsWith("._")) continue;
-        const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
-        if (fileStat.isDirectory()) {
-          // Add Directory to the directories collection
-          const directory = await new Directories({
-            _id: new ObjectId(),
-            name: currFile,
-            parent: topLevelDirectory._id,
-          });
+    // const fileLoop = async (
+    //   dirPath: string,
+    //   topLevelDirectory: IDirectories,
+    // ) => {
+    //   const fullDirPath =
+    //     dirPath === "/"
+    //       ? `${TMP_FOLDER}/${extractedFolder}`
+    //       : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
+    //   ConsoleUtil.log(`fullDirPath: ${fullDirPath}`);
+    //   const allFiles = await fs.readdir(fullDirPath);
+    //   for (const currFile of allFiles) {
+    //     if (currFile.startsWith("._")) continue;
+    //     const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
+    //     if (fileStat.isDirectory()) {
+    //       // Add Directory to the directories collection
+    //       const directory = await new Directories({
+    //         _id: new ObjectId(),
+    //         name: currFile,
+    //         parent: topLevelDirectory._id,
+    //       });
 
-          topLevelDirectory.subdirectories = [
-            ...topLevelDirectory.subdirectories,
-            directory._id,
-          ];
-          await fileLoop(`${dirPath}/${currFile}`, directory);
-          directory.save();
-        } else {
-          // Add to files collection and using the given directory,
-          // add association to the directory structure.
-          const file = await new Files({
-            _id: new ObjectId(),
-            name: currFile,
-            url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${
-              site.tag
-            }/Documents/${dirPath === "/" ? "" : `${dirPath}/`}${currFile}`,
-            uploaded_at: new Date(),
-          });
-          topLevelDirectory.files = [...topLevelDirectory.files, file._id];
-          file.save();
-        }
-      }
-    };
+    //       topLevelDirectory.subdirectories = [
+    //         ...topLevelDirectory.subdirectories,
+    //         directory._id,
+    //       ];
+    //       await fileLoop(`${dirPath}/${currFile}`, directory);
+    //       directory.save();
+    //     } else {
+    //       // Add to files collection and using the given directory,
+    //       // add association to the directory structure.
+    //       const file = await new Files({
+    //         _id: new ObjectId(),
+    //         name: currFile,
+    //         url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${
+    //           site.tag
+    //         }/Documents/${dirPath === "/" ? "" : `${dirPath}/`}${currFile}`,
+    //         uploaded_at: new Date(),
+    //       });
+    //       topLevelDirectory.files = [...topLevelDirectory.files, file._id];
+    //       file.save();
+    //     }
+    //   }
+    // };
 
     const originalDirFolder = new Directories({
       _id: new ObjectId(),
       name: "Documents",
     });
 
-    await fileLoop("/", originalDirFolder);
+    await fileLoop("/", originalDirFolder, site.tag);
 
     originalDirFolder.save();
 

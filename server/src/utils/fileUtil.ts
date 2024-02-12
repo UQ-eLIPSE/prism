@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
@@ -5,6 +6,7 @@ import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { Files, IDirectories, Directories } from "../models/ResourceModel";
 import { ObjectId } from "bson";
 import path = require("path");
+import { Console } from "console";
 
 export const extractZipFile = async (
   zip: StreamZip,
@@ -61,12 +63,13 @@ const createFile = async (name: string, url: string) => {
 export const fileLoop = async (
   dirPath: string,
   topLevelDirectory: IDirectories,
-  extractedFolder: string,
   siteTag: string,
-  env: NodeJS.ProcessEnv,
 ) => {
-  const { MANTA_ROOT_FOLDER, TMP_FOLDER } = env;
-  const fullDirPath = path.join(TMP_FOLDER as string, extractedFolder, dirPath);
+  const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
+  const fullDirPath = path.join("/", TMP_FOLDER as string, dirPath);
+
+  ConsoleUtil.log(`Current dir path: ${fullDirPath}`);
+
   const allFiles = await fs.readdir(fullDirPath);
 
   await Promise.all(
@@ -76,25 +79,73 @@ export const fileLoop = async (
       const fileStat = await fs.lstat(path.join(fullDirPath, currFile));
 
       if (fileStat.isDirectory()) {
-        const directory = await createDirectory(
-          currFile,
-          topLevelDirectory._id,
-        );
+        const directory = await new Directories({
+          _id: new ObjectId(),
+          name: currFile,
+          parent: topLevelDirectory._id,
+        });
+
         topLevelDirectory.subdirectories.push(directory._id);
-        await fileLoop(
-          path.join(dirPath, currFile),
-          directory,
-          extractedFolder,
-          siteTag,
-          env,
-        );
+        await fileLoop(path.join(dirPath, currFile), directory, siteTag);
+
+        await directory.save();
       } else {
-        const fileUrl = `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${siteTag}/Documents/${
-          dirPath === "/" ? "" : `${dirPath}/`
-        }${currFile}`;
-        const file = await createFile(currFile, fileUrl);
+        // Add to files colelction and using the given directory,
+        // add association to the directory strucutre.
+        const file = await new Files({
+          _id: new ObjectId(),
+          name: currFile,
+          url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${siteTag}/Documents/${
+            dirPath === "/" ? "" : `${dirPath}/`
+          }${currFile}`,
+          uploaded_at: new Date(),
+        });
+
         topLevelDirectory.files.push(file._id);
+        await file.save();
       }
     }),
   );
 };
+
+// export const fileLoop = async (
+// dirPath: string,
+// topLevelDirectory: IDirectories,
+// extractedFolder: string,
+// siteTag: string,
+// env: NodeJS.ProcessEnv,
+// ) => {
+// const { MANTA_ROOT_FOLDER, TMP_FOLDER } = env;
+// const fullDirPath = path.join(TMP_FOLDER as string, extractedFolder, dirPath);
+// const allFiles = await fs.readdir(fullDirPath);
+//
+// await Promise.all(
+// allFiles.map(async (currFile) => {
+// if (currFile.startsWith("._")) return;
+//
+// const fileStat = await fs.lstat(path.join(fullDirPath, currFile));
+//
+// if (fileStat.isDirectory()) {
+// const directory = await createDirectory(
+// currFile,
+// topLevelDirectory._id,
+// );
+// topLevelDirectory.subdirectories.push(directory._id);
+// await fileLoop(
+// path.join(dirPath, currFile),
+// directory,
+// extractedFolder,
+// siteTag,
+// env,
+// );
+// } else {
+// const fileUrl = `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${siteTag}/Documents/${
+// dirPath === "/" ? "" : `${dirPath}/`
+// }${currFile}`;
+// const file = await createFile(currFile, fileUrl);
+// topLevelDirectory.files.push(file._id);
+// }
+// }),
+// );
+// };
+//
