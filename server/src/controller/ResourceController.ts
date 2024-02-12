@@ -21,6 +21,7 @@ import StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
 import { uploadFilesToManta } from "../utils/mantaUtil";
 import { extractZipFile } from "../utils/fileUtil";
+import { ConsoleUtil } from "../utils/ConsoleUtil";
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -76,6 +77,7 @@ export class ResourceController {
         dirPath === "/"
           ? `${TMP_FOLDER}/${extractedFolder}`
           : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
+      ConsoleUtil.log(`fullDirPath: ${fullDirPath}`);
       const allFiles = await fs.readdir(fullDirPath);
       for (const currFile of allFiles) {
         if (currFile.startsWith("._")) continue;
