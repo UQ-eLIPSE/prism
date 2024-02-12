@@ -13,7 +13,7 @@ export const extractZipFile = async (
   const zipOp = new Promise((resolve, reject) => {
     zip.on("error", (err: string) => {
       // eslint-disable-next-line no-console
-      console.error(err);
+      ConsoleUtil.error(err);
     });
 
     // Extract the zip file.

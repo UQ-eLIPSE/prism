@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { CommonUtil } from "../utils/CommonUtil";
 import { MantaService } from "../service/MantaService";
@@ -20,8 +19,6 @@ import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
-import { ConsoleUtil } from "../utils/ConsoleUtil";
-import { execSync } from "child_process";
 import { uploadFilesToManta } from "../utils/mantaUtil";
 import { extractZipFile } from "../utils/fileUtil";
 
@@ -41,15 +38,7 @@ export class ResourceController {
 
   public async UploadDocumentation(req: Request, res: Response) {
     const { files } = req;
-    const {
-      TMP_FOLDER,
-      MANTA_HOST_NAME,
-      MANTA_USER,
-      MANTA_ROOT_FOLDER,
-      MANTA_ROLES,
-      MANTA_KEY_ID,
-      MANTA_SUB_USER,
-    } = process.env;
+    const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
 
     const { zipFile } = files as {
       [fieldname: string]: Express.Multer.File[];
