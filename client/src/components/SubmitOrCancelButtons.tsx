@@ -1,6 +1,6 @@
 import React from "react";
 
-interface SubmitOrCancelOptionsProps {
+interface SubmitOrCancelButtonsProps {
   showCondition?: boolean;
   handleSubmit: () => void | Promise<void>;
   handleCancel: () => void;
@@ -11,11 +11,11 @@ interface SubmitOrCancelOptionsProps {
  * Renders even if showCondition prop is not provided.
  * @returns {JSX.Element} Submit or Cancel options
  */
-const SubmitOrCancelOptions = ({
+const SubmitOrCancelButtons = ({
   showCondition = true,
   handleSubmit,
   handleCancel,
-}: SubmitOrCancelOptionsProps): JSX.Element | null => {
+}: SubmitOrCancelButtonsProps): JSX.Element | null => {
   return showCondition ? (
     <>
       <div className="submit-update" onClick={handleSubmit}>
@@ -28,4 +28,4 @@ const SubmitOrCancelOptions = ({
   ) : null;
 };
 
-export default SubmitOrCancelOptions;
+export default SubmitOrCancelButtons;

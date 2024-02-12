@@ -14,7 +14,7 @@ import NodeCollection from "./NodeCollection";
 import FloorDetailsForm from "./FloorDetailsForm";
 import ToggleEditNodeButton from "./ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
-import SubmitOrCancelOptions from "./SubmitOrCancelOptions";
+import SubmitOrCancelButtons from "./SubmitOrCancelButtons";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -431,7 +431,7 @@ function Minimap(props: MinimapProps) {
                   </label>
                 </div>
               )}
-              <SubmitOrCancelOptions
+              <SubmitOrCancelButtons
                 showCondition={
                   pendingUpload && !props.minimapEnlarged && user?.isAdmin
                 }
