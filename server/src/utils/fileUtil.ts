@@ -6,6 +6,13 @@ import { Files, IDirectories, Directories } from "../models/ResourceModel";
 import { ObjectId } from "bson";
 import path = require("path");
 
+/**
+ * A helper function to extract the zip file.
+ * @param zip - The zip file
+ * @param extractedFolder - The extracted folder name
+ * @param TMP_FOLDER - The tmp folder path from env
+ * @returns {Promise<boolean>} - Whether the extraction was successful or not
+ */
 export const extractZipFile = async (
   zip: StreamZip,
   extractedFolder: string,
@@ -97,7 +104,6 @@ export const fileLoop = async (
     extractedFolder,
     dirPath === "/" ? "" : dirPath,
   );
-  ConsoleUtil.log(`Reading directory: ${fullDirPath}`);
 
   const allFiles = await fs.readdir(fullDirPath);
 
