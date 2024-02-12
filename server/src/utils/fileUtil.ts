@@ -16,7 +16,7 @@ import path = require("path");
 export const extractZipFile = async (
   zip: StreamZip,
   extractedFolder: string,
-  TMP_FOLDER: string | undefined,
+  TMP_FOLDER: string,
 ): Promise<boolean> => {
   // Ensure the target extraction directory exists
   await fs.mkdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });

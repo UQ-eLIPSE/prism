@@ -68,7 +68,11 @@ export class ResourceController {
     const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
     // Extract the zip file.
-    const zipOp = await extractZipFile(zip, extractedFolder, TMP_FOLDER);
+    const zipOp = await extractZipFile(
+      zip,
+      extractedFolder,
+      TMP_FOLDER as string,
+    );
 
     if (!zipOp) return;
 
