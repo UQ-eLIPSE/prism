@@ -68,103 +68,124 @@ export const fileLoop = async (
   siteTag: string,
 ) => {
   const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
-  // const fullDirPath = path.join("/", TMP_FOLDER as string, dirPath);
-  const fullDirPath = path.join(
-    TMP_FOLDER as string,
-    extractedFolder,
-    dirPath === "/" ? "" : dirPath,
-  );
-
-  ConsoleUtil.log(`Current dir path: ${fullDirPath}`);
-
+  const fullDirPath =
+    dirPath === "/"
+      ? `${TMP_FOLDER}/${extractedFolder}`
+      : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
   const allFiles = await fs.readdir(fullDirPath);
+  for (const currFile of allFiles) {
+    if (currFile.startsWith("._")) continue;
+    const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
+    if (fileStat.isDirectory()) {
+      // Add Directory to the directories collection
+      const directory = await new Directories({
+        _id: new ObjectId(),
+        name: currFile,
+        parent: topLevelDirectory._id,
+        site: siteId,
+      });
 
-  await Promise.all(
-    allFiles.map(async (currFile) => {
-      if (currFile.startsWith("._")) return;
+      await directory.save();
 
-      const fileStat = await fs.lstat(path.join(fullDirPath, currFile));
+      topLevelDirectory.subdirectories = [
+        ...topLevelDirectory.subdirectories,
+        directory._id,
+      ];
 
-      if (fileStat.isDirectory()) {
-        const directory = await new Directories({
-          _id: new ObjectId(),
-          name: currFile,
-          parent: topLevelDirectory._id,
-          site: siteId,
-        });
+      await topLevelDirectory.save();
 
-        await fileLoop(
-          path.join(dirPath, currFile),
-          directory,
-          extractedFolder,
-          siteId,
-          siteTag,
-        );
+      await fileLoop(
+        `${dirPath}/${currFile}`,
+        directory,
+        extractedFolder,
+        siteId,
+        siteTag,
+      );
+    } else {
+      // Add to files collection and using the given directory,
+      // add association to the directory structure.
+      const file = await new Files({
+        _id: new ObjectId(),
+        name: currFile,
+        url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/drawings/${
+          dirPath === "/" ? "" : `${dirPath}/`
+        }${currFile}`,
+        uploaded_at: new Date(),
+        site: siteId,
+      });
 
-        await directory.save();
-        topLevelDirectory.subdirectories.push(directory._id);
+      await file.save();
 
-        await topLevelDirectory.save();
-      } else {
-        // Add to files colelction and using the given directory,
-        // add association to the directory strucutre.
-        const file = await new Files({
-          _id: new ObjectId(),
-          name: currFile,
-          url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${siteTag}/Documents/${
-            dirPath === "/" ? "" : `${dirPath}/`
-          }${currFile}`,
-          uploaded_at: new Date(),
-          site: siteId,
-        });
+      topLevelDirectory.files = [...topLevelDirectory.files, file._id];
 
-        await file.save();
-
-        topLevelDirectory.files.push(file._id);
-        await topLevelDirectory.save();
-      }
-    }),
-  );
+      await topLevelDirectory.save();
+    }
+  }
 };
 
 // export const fileLoop = async (
-// dirPath: string,
-// topLevelDirectory: IDirectories,
-// extractedFolder: string,
-// siteTag: string,
-// env: NodeJS.ProcessEnv,
+//   dirPath: string,
+//   topLevelDirectory: IDirectories,
+//   extractedFolder: string,
+//   siteId: string,
+//   siteTag: string,
 // ) => {
-// const { MANTA_ROOT_FOLDER, TMP_FOLDER } = env;
-// const fullDirPath = path.join(TMP_FOLDER as string, extractedFolder, dirPath);
-// const allFiles = await fs.readdir(fullDirPath);
-//
-// await Promise.all(
-// allFiles.map(async (currFile) => {
-// if (currFile.startsWith("._")) return;
-//
-// const fileStat = await fs.lstat(path.join(fullDirPath, currFile));
-//
-// if (fileStat.isDirectory()) {
-// const directory = await createDirectory(
-// currFile,
-// topLevelDirectory._id,
-// );
-// topLevelDirectory.subdirectories.push(directory._id);
-// await fileLoop(
-// path.join(dirPath, currFile),
-// directory,
-// extractedFolder,
-// siteTag,
-// env,
-// );
-// } else {
-// const fileUrl = `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${siteTag}/Documents/${
-// dirPath === "/" ? "" : `${dirPath}/`
-// }${currFile}`;
-// const file = await createFile(currFile, fileUrl);
-// topLevelDirectory.files.push(file._id);
-// }
-// }),
-// );
+//   const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
+//   // const fullDirPath = path.join("/", TMP_FOLDER as string, dirPath);
+//   const fullDirPath = path.join(
+//     TMP_FOLDER as string,
+//     extractedFolder,
+//     dirPath === "/" ? "" : dirPath,
+//   );
+
+//   ConsoleUtil.log(`Current dir path: ${fullDirPath}`);
+
+//   const allFiles = await fs.readdir(fullDirPath);
+
+//   await Promise.all(
+//     allFiles.map(async (currFile) => {
+//       if (currFile.startsWith("._")) return;
+
+//       const fileStat = await fs.lstat(path.join(fullDirPath, currFile));
+
+//       if (fileStat.isDirectory()) {
+//         const directory = await new Directories({
+//           _id: new ObjectId(),
+//           name: currFile,
+//           parent: topLevelDirectory._id,
+//           site: siteId,
+//         });
+
+//         await fileLoop(
+//           path.join(dirPath, currFile),
+//           directory,
+//           extractedFolder,
+//           siteId,
+//           siteTag,
+//         );
+
+//         await directory.save();
+//         topLevelDirectory.subdirectories.push(directory._id);
+
+//         await topLevelDirectory.save();
+//       } else {
+//         // Add to files colelction and using the given directory,
+//         // add association to the directory strucutre.
+//         const file = await new Files({
+//           _id: new ObjectId(),
+//           name: currFile,
+//           url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${siteTag}/Documents/${
+//             dirPath === "/" ? "" : `${dirPath}/`
+//           }${currFile}`,
+//           uploaded_at: new Date(),
+//           site: siteId,
+//         });
+
+//         await file.save();
+
+//         topLevelDirectory.files.push(file._id);
+//         await topLevelDirectory.save();
+//       }
+//     }),
+//   );
 // };
-//
