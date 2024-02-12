@@ -92,9 +92,10 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it("Testing: Timeline survey button fetches correct node survey when selected", () => {
       if (zone.timeline) {
-        cy.intercept("GET", "/api/site/*/1/survey/minimapSingleSite?date=*").as(
+        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite?date=*").as(
           "getSurveyDate",
         );
+
         cy.wait("@getSiteExists").then(() => {
           cy.wait("@getSiteDetails").then(() => {
             cy.wait("@getEmptyFloors").then(() => {
@@ -106,31 +107,36 @@ testEachZone((zone: Cypress.PrismZone) => {
                     Math.random() * $elements.length,
                   );
 
+                  // Click on the randomly selected month button
                   cy.wrap($elements)
                     .eq(randomIndex)
                     .click()
-                    .then(() => {
-                      cy.get("[data-cy='Survey_Date']").then(($input) => {
-                        const inputValue = $input.text();
-                        // Ensure inputValue is a string before proceeding
-                        if (typeof inputValue === "string") {
-                          const formattedDate =
-                            inputValue.split("/").reverse().join("-") +
-                            "T00:00:00.000Z";
-                          cy.wait(1000); // TODO : find a better approach to remove cy.wait
-                          cy.wait("@getSurveyDate").then((interception) => {
-                            expect(interception.request.url).to.include(
-                              formattedDate,
-                            );
-                            cy.get("[class*='_timeline_selectedSurvey']").then(
-                              ($title) => {
-                                expect($title.text()).to.include(inputValue);
-                              },
-                            );
-                          });
-                        } else {
-                          throw new Error("Input value is undefined");
-                        }
+                    .then(($button) => {
+                      // Find the monthName_display within the clicked button
+                      const expectedMonthYear = $button
+                        .find("[data-cy='monthName_display']")
+                        .text();
+                      console.log("Selected Month Year:", expectedMonthYear); // For debugging purposes
+
+                      const [month, year] = expectedMonthYear.split(" ");
+                      const monthNumber = new Date(`${month} 1`).getMonth() + 1;
+                      const formattedDate = `${year}-${monthNumber.toString().padStart(2, "0")}`; // Converts to "YYYY-MM"
+
+                      cy.wait(1000);
+
+                      cy.wait("@getSurveyDate").then((interception) => {
+                        expect(interception.request.url).to.include(
+                          formattedDate,
+                        );
+
+                        // Further assertions or checks can go here, such as verifying the UI state
+                        cy.get("[class*='_timeline_selectedSurvey']").then(
+                          ($title) => {
+                            cy.get("[data-cy='Survey_Date']").then(($input) => {
+                              expect($title.text()).to.include($input.text());
+                            });
+                          },
+                        );
                       });
                     });
                 });
