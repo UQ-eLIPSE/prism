@@ -68,6 +68,9 @@ export class ResourceController {
     // Folder without .zip ext
     const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
+    // Ensure the target extraction directory exists
+    await fs.mkdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
+
     zip.on("error", (err: string) => {
       // eslint-disable-next-line no-console
       console.error(err);
