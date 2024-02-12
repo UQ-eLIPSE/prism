@@ -117,7 +117,7 @@ export const fileLoop = async (
           uploaded_at: new Date(),
           site: siteId,
         });
-        
+
         await file.save();
 
         topLevelDirectory.files.push(file._id);

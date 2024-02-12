@@ -96,58 +96,58 @@ export class ResourceController {
       { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
     );
     if (!upload) return CommonUtil.failResponse(res, "Failed to upload files.");
-    const fileLoop = async (
-      dirPath: string,
-      topLevelDirectory: IDirectories,
-    ) => {
-      const fullDirPath =
-        dirPath === "/"
-          ? `${TMP_FOLDER}/${extractedFolder}`
-          : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
-      const allFiles = await fs.readdir(fullDirPath);
-      for (const currFile of allFiles) {
-        if (currFile.startsWith("._")) continue;
-        const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
-        if (fileStat.isDirectory()) {
-          // Add Directory to the directories collection
-          const directory = await new Directories({
-            _id: new ObjectId(),
-            name: currFile,
-            parent: topLevelDirectory._id,
-            site: siteId,
-          });
+    // const fileLoop = async (
+    //   dirPath: string,
+    //   topLevelDirectory: IDirectories,
+    // ) => {
+    //   const fullDirPath =
+    //     dirPath === "/"
+    //       ? `${TMP_FOLDER}/${extractedFolder}`
+    //       : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
+    //   const allFiles = await fs.readdir(fullDirPath);
+    //   for (const currFile of allFiles) {
+    //     if (currFile.startsWith("._")) continue;
+    //     const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
+    //     if (fileStat.isDirectory()) {
+    //       // Add Directory to the directories collection
+    //       const directory = await new Directories({
+    //         _id: new ObjectId(),
+    //         name: currFile,
+    //         parent: topLevelDirectory._id,
+    //         site: siteId,
+    //       });
 
-          await directory.save();
+    //       await directory.save();
 
-          topLevelDirectory.subdirectories = [
-            ...topLevelDirectory.subdirectories,
-            directory._id,
-          ];
+    //       topLevelDirectory.subdirectories = [
+    //         ...topLevelDirectory.subdirectories,
+    //         directory._id,
+    //       ];
 
-          await topLevelDirectory.save();
+    //       await topLevelDirectory.save();
 
-          await fileLoop(`${dirPath}/${currFile}`, directory);
-        } else {
-          // Add to files collection and using the given directory,
-          // add association to the directory structure.
-          const file = await new Files({
-            _id: new ObjectId(),
-            name: currFile,
-            url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/drawings/${
-              dirPath === "/" ? "" : `${dirPath}/`
-            }${currFile}`,
-            uploaded_at: new Date(),
-            site: siteId,
-          });
+    //       await fileLoop(`${dirPath}/${currFile}`, directory);
+    //     } else {
+    //       // Add to files collection and using the given directory,
+    //       // add association to the directory structure.
+    //       const file = await new Files({
+    //         _id: new ObjectId(),
+    //         name: currFile,
+    //         url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/drawings/${
+    //           dirPath === "/" ? "" : `${dirPath}/`
+    //         }${currFile}`,
+    //         uploaded_at: new Date(),
+    //         site: siteId,
+    //       });
 
-          await file.save();
+    //       await file.save();
 
-          topLevelDirectory.files = [...topLevelDirectory.files, file._id];
+    //       topLevelDirectory.files = [...topLevelDirectory.files, file._id];
 
-          await topLevelDirectory.save();
-        }
-      }
-    };
+    //       await topLevelDirectory.save();
+    //     }
+    //   }
+    // };
 
     const existingTopLevelDirectory = await Directories.findOne({
       parent: { $exists: false },
@@ -162,6 +162,9 @@ export class ResourceController {
     await fileLoop(
       "/",
       existingTopLevelDirectory ? existingTopLevelDirectory : originalDirFolder,
+      extractedFolder,
+      siteId,
+      site.tag,
     );
     if (!existingTopLevelDirectory) {
       await originalDirFolder.save();
