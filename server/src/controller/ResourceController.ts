@@ -95,6 +95,7 @@ export class ResourceController {
       `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/${site.tag}/Documents/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
       { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
     );
+
     if (!upload) return CommonUtil.failResponse(res, "Failed to upload files.");
 
     const existingTopLevelDirectory = await Directories.findOne({
@@ -114,66 +115,12 @@ export class ResourceController {
       siteId,
       site.tag,
     );
+
     if (!existingTopLevelDirectory) {
       await originalDirFolder.save();
     }
 
     return CommonUtil.successResponse(res, "Resource Endpoint is successful.");
-
-    // const fileLoop = async (
-    //   dirPath: string,
-    //   topLevelDirectory: IDirectories,
-    // ) => {
-    //   const fullDirPath =
-    //     dirPath === "/"
-    //       ? `${TMP_FOLDER}/${extractedFolder}`
-    //       : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
-    //   const allFiles = await fs.readdir(fullDirPath);
-    //   for (const currFile of allFiles) {
-    //     if (currFile.startsWith("._")) continue;
-    //     const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
-    //     if (fileStat.isDirectory()) {
-    //       // Add Directory to the directories collection
-    //       const directory = await new Directories({
-    //         _id: new ObjectId(),
-    //         name: currFile,
-    //         parent: topLevelDirectory._id,
-    //       });
-
-    //       topLevelDirectory.subdirectories = [
-    //         ...topLevelDirectory.subdirectories,
-    //         directory._id,
-    //       ];
-    //       await fileLoop(`${dirPath}/${currFile}`, directory);
-    //       directory.save();
-    //     } else {
-    //       // Add to files collection and using the given directory,
-    //       // add association to the directory structure.
-    //       const file = await new Files({
-    //         _id: new ObjectId(),
-    //         name: currFile,
-    //         url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/${
-    //           site.tag
-    //         }/Documents/${dirPath === "/" ? "" : `${dirPath}/`}${currFile}`,
-    //         uploaded_at: new Date(),
-    //       });
-    //       topLevelDirectory.files = [...topLevelDirectory.files, file._id];
-    //       file.save();
-    //     }
-    //   }
-    // };
-
-    // const originalDirFolder = new Directories({
-    //   _id: new ObjectId(),
-    //   name: "Documents",
-    // });
-
-    // await fileLoop("/", originalDirFolder);
-    // await fileLoop("/", originalDirFolder, extractedFolder, site.tag);
-
-    // originalDirFolder.save();
-
-    // return CommonUtil.successResponse(res, "Resource Endpoint is successful.");
   }
 
   /**

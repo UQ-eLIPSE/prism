@@ -73,6 +73,15 @@ const createAndSaveFile = async (
   return file;
 };
 
+/**
+ * A recursive function that loops through the extracted folder and creates
+ * a directory structure in the database.
+ * @param dirPath - The current directory path
+ * @param topLevelDirectory - The top level directory object
+ * @param extractedFolder - The extracted folder name
+ * @param siteId - The site id
+ * @param siteTag - The site tag
+ */
 export const fileLoop = async (
   dirPath: string,
   topLevelDirectory: IDirectories,
@@ -118,7 +127,6 @@ export const fileLoop = async (
     } else {
       // Add to files collection and using the given directory,
       // add association to the directory structure.
-
       const file = await createAndSaveFile(
         currFile,
         dirPath,
