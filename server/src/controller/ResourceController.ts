@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { CommonUtil } from "../utils/CommonUtil";
 import { MantaService } from "../service/MantaService";
@@ -21,6 +22,8 @@ import StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { execSync } from "child_process";
+import { uploadFilesToManta } from "../utils/mantaUtil";
+import { extractZipFile } from "../utils/fileUtil";
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -68,35 +71,12 @@ export class ResourceController {
     // Folder without .zip ext
     const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
-    // Ensure the target extraction directory exists
-    await fs.mkdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
-
-    zip.on("error", (err: string) => {
-      // eslint-disable-next-line no-console
-      console.error(err);
-    });
-
-    // Extract the zip file.
-    const zipOp = await new Promise((resolve, reject) => {
-      zip.on("ready", () => {
-        // Extract zip
-        zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
-          ConsoleUtil.error(err ? "Extract error" : "Extracted");
-          zip.close();
-
-          err ? reject() : resolve("Extracted");
-        });
-      });
-    });
+    const zipOp = await extractZipFile(zip, extractedFolder, TMP_FOLDER);
 
     if (!zipOp) return;
 
-    // Upload the files to Manta.
-    const upload = execSync(
-      // eslint-disable-next-line max-len
-      `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/${site.tag}/Documents/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
-      { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
-    );
+    const upload = uploadFilesToManta(extractedFolder, site.tag, process.env);
+
     if (!upload) return CommonUtil.failResponse(res, "Failed to upload files.");
 
     const fileLoop = async (
