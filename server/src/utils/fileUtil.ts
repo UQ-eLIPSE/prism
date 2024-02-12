@@ -64,6 +64,7 @@ export const fileLoop = async (
   dirPath: string,
   topLevelDirectory: IDirectories,
   extractedFolder: string,
+  siteId: string,
   siteTag: string,
 ) => {
   const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
@@ -89,17 +90,21 @@ export const fileLoop = async (
           _id: new ObjectId(),
           name: currFile,
           parent: topLevelDirectory._id,
+          site: siteId,
         });
 
-        topLevelDirectory.subdirectories.push(directory._id);
         await fileLoop(
           path.join(dirPath, currFile),
           directory,
           extractedFolder,
+          siteId,
           siteTag,
         );
 
         await directory.save();
+        topLevelDirectory.subdirectories.push(directory._id);
+
+        await topLevelDirectory.save();
       } else {
         // Add to files colelction and using the given directory,
         // add association to the directory strucutre.
@@ -110,10 +115,13 @@ export const fileLoop = async (
             dirPath === "/" ? "" : `${dirPath}/`
           }${currFile}`,
           uploaded_at: new Date(),
+          site: siteId,
         });
+        
+        await file.save();
 
         topLevelDirectory.files.push(file._id);
-        await file.save();
+        await topLevelDirectory.save();
       }
     }),
   );
