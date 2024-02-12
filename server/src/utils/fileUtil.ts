@@ -63,10 +63,16 @@ const createFile = async (name: string, url: string) => {
 export const fileLoop = async (
   dirPath: string,
   topLevelDirectory: IDirectories,
+  extractedFolder: string,
   siteTag: string,
 ) => {
   const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
-  const fullDirPath = path.join("/", TMP_FOLDER as string, dirPath);
+  // const fullDirPath = path.join("/", TMP_FOLDER as string, dirPath);
+  const fullDirPath = path.join(
+    TMP_FOLDER as string,
+    extractedFolder,
+    dirPath === "/" ? "" : dirPath,
+  );
 
   ConsoleUtil.log(`Current dir path: ${fullDirPath}`);
 
@@ -86,7 +92,12 @@ export const fileLoop = async (
         });
 
         topLevelDirectory.subdirectories.push(directory._id);
-        await fileLoop(path.join(dirPath, currFile), directory, siteTag);
+        await fileLoop(
+          path.join(dirPath, currFile),
+          directory,
+          extractedFolder,
+          siteTag,
+        );
 
         await directory.save();
       } else {

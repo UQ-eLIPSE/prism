@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { CommonUtil } from "../utils/CommonUtil";
 import { MantaService } from "../service/MantaService";
@@ -19,10 +18,8 @@ import { ResourceService } from "../service/ResourceService";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import StreamZip = require("node-stream-zip");
-import * as fs from "fs/promises";
-import { uploadFilesToManta } from "../utils/mantaUtil";
-import { extractZipFile } from "../utils/fileUtil";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
+import { execSync } from "child_process";
 import { fileLoop } from "../utils/fileUtil";
 
 export class ResourceController {
@@ -41,7 +38,15 @@ export class ResourceController {
 
   public async UploadDocumentation(req: Request, res: Response) {
     const { files } = req;
-    const { TMP_FOLDER, MANTA_ROOT_FOLDER } = process.env;
+    const {
+      TMP_FOLDER,
+      MANTA_HOST_NAME,
+      MANTA_USER,
+      MANTA_ROOT_FOLDER,
+      MANTA_ROLES,
+      MANTA_KEY_ID,
+      MANTA_SUB_USER,
+    } = process.env;
 
     const { zipFile } = files as {
       [fieldname: string]: Express.Multer.File[];
@@ -63,12 +68,32 @@ export class ResourceController {
     // Folder without .zip ext
     const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
-    const zipOp = await extractZipFile(zip, extractedFolder, TMP_FOLDER);
+    zip.on("error", (err: string) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    });
+
+    // Extract the zip file.
+    const zipOp = await new Promise((resolve, reject) => {
+      zip.on("ready", () => {
+        // Extract zip
+        zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
+          ConsoleUtil.error(err ? "Extract error" : "Extracted");
+          zip.close();
+
+          err ? reject() : resolve("Extracted");
+        });
+      });
+    });
 
     if (!zipOp) return;
 
-    const upload = uploadFilesToManta(extractedFolder, site.tag, process.env);
-
+    // Upload the files to Manta.
+    const upload = execSync(
+      // eslint-disable-next-line max-len
+      `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/${site.tag}/Documents/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
+      { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
+    );
     if (!upload) return CommonUtil.failResponse(res, "Failed to upload files.");
 
     // const fileLoop = async (
@@ -79,7 +104,6 @@ export class ResourceController {
     //     dirPath === "/"
     //       ? `${TMP_FOLDER}/${extractedFolder}`
     //       : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
-    //   ConsoleUtil.log(`fullDirPath: ${fullDirPath}`);
     //   const allFiles = await fs.readdir(fullDirPath);
     //   for (const currFile of allFiles) {
     //     if (currFile.startsWith("._")) continue;
@@ -120,7 +144,8 @@ export class ResourceController {
       name: "Documents",
     });
 
-    await fileLoop("/", originalDirFolder, site.tag);
+    // await fileLoop("/", originalDirFolder);
+    await fileLoop("/", originalDirFolder, extractedFolder, site.tag);
 
     originalDirFolder.save();
 
