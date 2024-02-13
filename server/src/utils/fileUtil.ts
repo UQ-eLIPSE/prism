@@ -19,7 +19,6 @@ export const extractZipFile = async (
 ): Promise<boolean> => {
   // Ensure the target extraction directory exists
   await fs.mkdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
-  ConsoleUtil.log(`Extracting folder: ${TMP_FOLDER}/${extractedFolder}`);
   try {
     await new Promise((resolve, reject) => {
       zip.on("error", (err: string) => {

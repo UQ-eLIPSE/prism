@@ -32,7 +32,7 @@ describe("Test case: Should extract zip files", () => {
   jt.beforeEach(() => {
     jt.jest.clearAllMocks();
     mockZip = new StreamZip({
-      file: "./tests/testFiles/prism_new_field.zip",
+      file: `${TMP_FOLDER}/${extractedFolder}.zip`,
       storeEntries: true,
     });
 
