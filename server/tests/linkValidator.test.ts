@@ -76,7 +76,8 @@ describe("Manta Resource File documentation link validator", () => {
   const workingLinkFile: LinkFile[] = [
     {
       name: "60515147-ME-DWG-257-1 [T1].pdf",
-      url: "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB%20For%20Construction%20-%20Main%20Works%20Tender/T0500%20Drawings/T0500.7%20Mechanical/60515147-ME-DWG-257-1%20[T1].pdf",
+      url: "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB For Construction - Main Works Tender/T0500 Drawings/T0500.7 Mechanical/60515147-ME-DWG-257-1 [T1].pdf",
+      // url: "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB%20For%20Construction%20-%20Main%20Works%20Tender/T0500%20Drawings/T0500.7%20Mechanical/60515147-ME-DWG-257-1%20[T1].pdf",
     },
   ];
 
@@ -88,6 +89,7 @@ describe("Manta Resource File documentation link validator", () => {
   ];
 
   test("Links receives an accurate web response", async () => {
+    console.log("first one", workingLinkFile[0].url.split(" ").join("%20"));
     const result = await testFilesLinks(workingLinkFile);
     expect(result).toBe(true);
   });
