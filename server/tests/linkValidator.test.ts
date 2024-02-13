@@ -73,10 +73,16 @@ describe("Manta Resource URLlink Validator", () => {
 });
 
 describe("Manta Resource File documentation link validator", () => {
+  const workingLinkUrl: string =
+    "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB For Construction - Main Works Tender/T0500 Drawings/T0500.7 Mechanical/60515147-ME-DWG-257-1 [T1].pdf";
+  const brokenLinkUrl: string =
+    workingLinkUrl + Math.floor(Math.random() * 10) + 1;
+
   const workingLinkFile: LinkFile[] = [
     {
       name: "60515147-ME-DWG-257-1 [T1].pdf",
-      url: "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB For Construction - Main Works Tender/T0500 Drawings/T0500.7 Mechanical/60515147-ME-DWG-257-1 [T1].pdf",
+      url: workingLinkUrl,
+      // * What will be displayed in the url.
       // url: "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB%20For%20Construction%20-%20Main%20Works%20Tender/T0500%20Drawings/T0500.7%20Mechanical/60515147-ME-DWG-257-1%20[T1].pdf",
     },
   ];
@@ -84,7 +90,7 @@ describe("Manta Resource File documentation link validator", () => {
   const brokenLinkFile: LinkFile[] = [
     {
       name: "60515147-ME-DWG-257-1 [T1].pdf",
-      url: "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB%20For%20Construction%20-%20Main%20Works%20Tender/T0500%20Drawings/T0500.7%20Mechanical/60515147-ME-DWG-257-1%20[T1].pdff",
+      url: brokenLinkUrl,
     },
   ];
 
@@ -102,9 +108,7 @@ describe("Manta Resource File documentation link validator", () => {
     expect(fileExists).toBeTruthy();
 
     const brokenLinks = await readBrokenLinksFromCSV(resourcesLinksLogs);
-    const csvResult =
-      brokenLinks[0] ===
-      "https://stluc.manta.uqcloud.net/elipse/public/PRISM/andrew_liveris/drawings/ANLB%20For%20Construction%20-%20Main%20Works%20Tender/T0500%20Drawings/T0500.7%20Mechanical/60515147-ME-DWG-257-1%20[T1].pdff";
+    const csvResult = brokenLinks[0] === brokenLinkUrl;
     expect(csvResult).toBeTruthy();
   });
 });
