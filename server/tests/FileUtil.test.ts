@@ -4,6 +4,7 @@ import { extractZipFile } from "../src/utils/fileUtil";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
+import { ConsoleUtil } from "../src/utils/ConsoleUtil";
 
 const { describe, it, expect } = jt;
 
@@ -12,6 +13,8 @@ jt.jest.mock("fs", () => ({
   // Mock other fs methods if necessary
   open: jt.jest.fn(),
 }));
+ConsoleUtil.error = jt.jest.fn();
+ConsoleUtil.success = jt.jest.fn();
 
 describe("Test case: Should extract zip files", () => {
   const TMP_FOLDER = "tests/testFiles";
@@ -50,6 +53,8 @@ describe("Test case: Should extract zip files", () => {
       expect.any(Function),
     );
 
+    expect(ConsoleUtil.success).toHaveBeenCalledWith("Extracted");
+
     const files = await fs.readdir(`${TMP_FOLDER}`);
     expect(files).toContain(extractedFolder);
   });
@@ -62,6 +67,7 @@ describe("Test case: Should extract zip files", () => {
     const result = await extractZipFile(mockZip, extractedFolder, TMP_FOLDER);
 
     expect(result).toBe(false);
+    expect(ConsoleUtil.error).toHaveBeenCalledWith("Error");
   });
 
   jt.afterEach(async () => {
