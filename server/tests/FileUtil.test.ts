@@ -37,9 +37,7 @@ describe("Test case: Should extract zip files", () => {
     });
 
     mockZip.on = jt.jest.fn((event, callback: StreamZipType) => {
-      if (event === "ready") {
-        callback();
-      }
+      if (event === "ready") callback();
     });
 
     mockZip.extract = jt.jest.fn((entry, target, callback: StreamZipType) => {
@@ -68,17 +66,12 @@ describe("Test case: Should extract zip files", () => {
   });
 
   it("should not extract zip file successfully", async () => {
-    mockZip.extract = jt.jest.fn((entry, target, callback: StreamZipType) => {
+    mockZip.extract = jt.jest.fn((_, __, callback: StreamZipType) => {
       callback("Error");
     });
 
     mockZip.on = jt.jest.fn((event, callback: StreamZipType) => {
-      if (event === "error") {
-        callback("error");
-      }
-      if (event === "ready") {
-        callback("error");
-      }
+      if (event === "ready") callback();
     });
 
     const result = await extractZipFile(mockZip, extractedFolder, TMP_FOLDER);
