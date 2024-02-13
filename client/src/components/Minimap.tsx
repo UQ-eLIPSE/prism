@@ -14,6 +14,7 @@ import NodeCollection from "./NodeCollection";
 import FloorDetailsForm from "./FloorDetailsForm";
 import ToggleEditNodeButton from "./ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
+import SubmitOrCancelButtons from "./SubmitOrCancelButtons";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -430,30 +431,17 @@ function Minimap(props: MinimapProps) {
                   </label>
                 </div>
               )}
-              {pendingUpload && !props.minimapEnlarged && user?.isAdmin && (
-                <div
-                  className="submit-update"
-                  onClick={() => {
-                    performMinimapUpload();
-                  }}
-                >
-                  <span>Submit</span>
-                </div>
-              )}
-              {pendingUpload && !props.minimapEnlarged && user?.isAdmin && (
-                <div
-                  className="cancel-update"
-                  onClick={() => {
-                    setSelectedImage(undefined);
-                    setImageUrl(
-                      props.minimapData ? props.minimapData.image : "",
-                    );
-                    setPendingUpload(false);
-                  }}
-                >
-                  <span>Cancel</span>
-                </div>
-              )}
+              <SubmitOrCancelButtons
+                showCondition={
+                  pendingUpload && !props.minimapEnlarged && user?.isAdmin
+                }
+                handleSubmit={performMinimapUpload}
+                handleCancel={() => {
+                  setSelectedImage(undefined);
+                  setImageUrl(props.minimapData ? props.minimapData.image : "");
+                  setPendingUpload(false);
+                }}
+              />
             </div>
           </>
         )}
