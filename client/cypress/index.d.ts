@@ -8,6 +8,7 @@ declare namespace Cypress {
     timeline: boolean;
     floors: boolean;
     adminUser: boolean;
+    documenttaion: boolean;
   }
 
   interface Chainable<> {
