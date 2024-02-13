@@ -77,7 +77,7 @@ export class ResourceController {
     const zipOp = await new Promise((resolve, reject) => {
       zip.on("ready", () => {
         // Extract zip
-        zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
+        zip.extract(nul, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
           ConsoleUtil.error(err ? "Extract error" : "Extracted");
           zip.close();
 
