@@ -238,3 +238,67 @@ Table i {
 .MuiTableCell-body {
   padding: 5px;
 }
+
+form {
+  label {
+    flex-grow: 2;
+    display: flex;
+    align-items: center; // Vertically center the text in the label
+    margin: 0.25em;
+    padding: 0.75em; // Increased padding to match the button
+    font-size: 1em;
+    font-weight: 600; // Match the font weight of the buttons
+  }
+
+  .buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    input[type="file"] {
+      flex-grow: 2;
+      margin: 0.25em;
+      padding: 0.5em;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px; // Border radius to match the button
+      transition: all 0.3s ease; // Transition effect similar to the button
+      &:hover {
+        background-color: gray; // Hover background color
+        color: #ffffff; // Hover text color
+      }
+    }
+
+    button {
+      flex-grow: 1;
+      margin: 0.25em;
+      padding: 0.75em;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:nth-child(2) {
+        color: #e8754b;
+        border: 2px solid #e8754b;
+        background-color: #ffffff;
+
+        &:hover {
+          color: #161a71;
+          border-color: #161a71;
+        }
+      }
+
+      &:nth-child(3) {
+        color: #ffffff;
+        background-color: #e8754b;
+
+        &:hover {
+          background-color: #161a71;
+        }
+      }
+    }
+  }
+}
