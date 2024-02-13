@@ -36,7 +36,8 @@ const runFilesUrlLinkValidator = async () => {
     const formattedFiles = files.map((file) => {
       return {
         ...file,
-        // Do I replace dwg with pdf?
+        // Some files ending with .dwg actually works if we replace it with .pdf.
+        // Please confirm.
         url: file.url.replace(/\.dwg$/, ".pdf"),
         // url: file.url,
       };
