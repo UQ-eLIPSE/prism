@@ -1,159 +1,77 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as jt from "@jest/globals";
 import { extractZipFile } from "../src/utils/fileUtil";
-import * as fs from "fs";
-// import StreamZip from "node-stream-zip";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const StreamZip = require("node-stream-zip");
-import { ConsoleUtil } from "../src/utils/ConsoleUtil";
+import * as fs from "fs/promises";
 
-const { describe, test, it, expect, beforeEach } = jt;
-
-describe("sum module", () => {
-  test("adds 1 + 2 to equal 3", () => {
-    expect(1 + 2).toBe(3);
-  });
-});
+const { describe, it, expect } = jt;
 
 jt.jest.mock("fs", () => ({
   mkdir: jt.jest.fn((path, options, callback: any) => callback(null)),
   // Mock other fs methods if necessary
+  open: jt.jest.fn(),
 }));
 
-// jt.jest.mock("fs/promises");
+describe("Test case: Should extract zip files", () => {
+  const TMP_FOLDER = "tests/testFiles";
+  const extractedFolder = "prism_new_field";
+  let mockZip: typeof StreamZip;
 
-describe("extractZipFile", () => {
-  let zip: typeof StreamZip;
-  const extractedFolder = "extractedFolder";
-  const TMP_FOLDER = "tmpFolder";
+  jt.beforeEach(() => {
+    jt.jest.clearAllMocks();
+    mockZip = new StreamZip({
+      file: "./tests/testFiles/prism_new_field.zip",
+      storeEntries: true,
+    });
 
-  beforeEach(() => {
-    (fs.promises.mkdir as jt.jest.Mock).mockImplementation(() =>
-      Promise.resolve(),
-    );
-    zip = {
-      on: jt.jest.fn((event, callback: any) => {
-        if (event === "ready") {
-          callback();
-        }
-      }),
-      extract: jt.jest.fn((entry, target, callback: any) => {
-        callback(null);
-      }),
-      close: jt.jest.fn(),
-    };
+    mockZip.on = jt.jest.fn((event, callback: any) => {
+      if (event === "ready") {
+        callback();
+      }
+    });
 
-    ConsoleUtil.error = jt.jest.fn();
+    mockZip.extract = jt.jest.fn((entry, target, callback: any) => {
+      callback(null);
+    });
+
+    mockZip.close = jt.jest.fn();
   });
 
   it("should extract zip file successfully", async () => {
-    const result = await extractZipFile(zip, extractedFolder, TMP_FOLDER);
+    const result = await extractZipFile(mockZip, extractedFolder, TMP_FOLDER);
 
-    expect(fs.mkdir).toHaveBeenCalledWith(`${TMP_FOLDER}/${extractedFolder}`, {
-      recursive: true,
-    });
-    expect(zip.on).toHaveBeenCalledTimes(2);
-    expect(zip.extract).toHaveBeenCalledWith(
+    expect(result).toBe(true);
+
+    // Check if the extract method was called with the correct target directory
+    expect(mockZip.extract).toHaveBeenCalledWith(
       null,
       `${TMP_FOLDER}/${extractedFolder}`,
       expect.any(Function),
     );
-    expect(zip.close).toHaveBeenCalled();
-    expect(ConsoleUtil.error).not.toHaveBeenCalled();
-    expect(result).toBe(true);
+
+    const files = await fs.readdir(`${TMP_FOLDER}`);
+    expect(files).toContain(extractedFolder);
   });
 
-  it("should handle errors during extraction", async () => {
-    zip.extract = jt.jest.fn((entry, target, callback: any) => {
-      callback("error");
+  it("should not extract zip file successfully", async () => {
+    mockZip.extract = jt.jest.fn((entry, target, callback: any) => {
+      callback("Error");
     });
 
-    try {
-      await extractZipFile(zip, extractedFolder, TMP_FOLDER);
-    } catch (e) {
-      expect(fs.mkdir).toHaveBeenCalledWith(
-        `${TMP_FOLDER}/${extractedFolder}`,
-        { recursive: true },
-      );
-      expect(zip.on).toHaveBeenCalledTimes(2);
-      expect(zip.extract).toHaveBeenCalledWith(
-        null,
-        `${TMP_FOLDER}/${extractedFolder}`,
-        expect.any(Function),
-      );
-      expect(zip.close).toHaveBeenCalled();
-      expect(ConsoleUtil.error).toHaveBeenCalledWith("Extract error");
+    const result = await extractZipFile(mockZip, extractedFolder, TMP_FOLDER);
+
+    expect(result).toBe(false);
+  });
+
+  jt.afterEach(async () => {
+    const directoryExists = await fs
+      .access(`${TMP_FOLDER}/${extractedFolder}`)
+      .then(() => true)
+      .catch(() => false);
+
+    if (directoryExists) {
+      await fs.rmdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
     }
   });
 });
-
-// jt.jest.mock("fs", () => ({
-//   open: jt.jest.fn(),
-// }));
-
-// jt.jest.mock("fs", () => ({
-//   mkdir: jt.jest.fn((path, options, callback: any) => callback(null)),
-//   // Mock other fs methods if necessary
-// }));
-
-// jt.jest.mock("../src/utils/ConsoleUtil", () => ({
-//   error: jt.jest.fn(),
-// }));
-
-// jt.jest.mock("../src/utils/fileUtil", () => ({
-//   extractZipFile: jt.jest.fn(),
-// }));
-
-// jt.jest.mock("node-stream-zip", () => {
-//   return jt.jest.fn().mockImplementation(() => {
-//     return {
-//       on: jt.jest.fn(),
-//       extract: jt.jest.fn(),
-//       close: jt.jest.fn(),
-//     };
-//   });
-// });
-
-// describe("extractZipFile", () => {
-//   it("should handle errors during extraction", async () => {
-//     const zip = {
-//       on: jt.jest.fn((event, callback: any) => {
-//         if (event === "ready") {
-//           callback();
-//         }
-//       }),
-//       extract: jt.jest.fn((entry, target, callback: any) => {
-//         callback("error");
-//       }),
-//       close: jt.jest.fn(),
-//     };
-
-//     const extractedFolder = "extractedFolder";
-//     const TMP_FOLDER = "tmpFolder";
-
-//     try {
-//       await extractZipFile(
-//         zip as typeof StreamZip,
-//         extractedFolder,
-//         TMP_FOLDER,
-//       );
-//       expect(fs.mkdir).toHaveBeenCalledWith(
-//         `${TMP_FOLDER}/${extractedFolder}`,
-//         { recursive: true },
-//       );
-//     } catch (e) {
-//       expect(fs.mkdir).toHaveBeenCalledWith(
-//         `${TMP_FOLDER}/${extractedFolder}`,
-//         { recursive: true },
-//       );
-//       expect(zip.on).toHaveBeenCalledTimes(2);
-//       expect(zip.extract).toHaveBeenCalledWith(
-//         null,
-//         `${TMP_FOLDER}/${extractedFolder}`,
-//         expect.any(Function),
-//       );
-//       expect(zip.close).toHaveBeenCalled();
-//       expect(ConsoleUtil.error).toHaveBeenCalledWith("Extract error");
-//     }
-//   });
-// });

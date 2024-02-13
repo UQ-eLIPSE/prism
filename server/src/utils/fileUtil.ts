@@ -19,26 +19,29 @@ export const extractZipFile = async (
 ): Promise<boolean> => {
   // Ensure the target extraction directory exists
   await fs.mkdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
+  ConsoleUtil.log(`Extracting folder: ${TMP_FOLDER}/${extractedFolder}`);
+  try {
+    await new Promise((resolve, reject) => {
+      zip.on("error", (err: string) => {
+        ConsoleUtil.error(err);
+        reject(err);
+      });
 
-  const zipOp = new Promise((resolve, reject) => {
-    zip.on("error", (err: string) => {
-      // eslint-disable-next-line no-console
-      ConsoleUtil.error(err);
-    });
+      // Extract the zip file.
+      zip.on("ready", () => {
+        // Extract zip
+        zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
+          err ? ConsoleUtil.error(err) : ConsoleUtil.success("Extracted");
+          zip.close();
 
-    // Extract the zip file.
-    zip.on("ready", () => {
-      // Extract zip
-      zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
-        ConsoleUtil.error(err ? "Extract error" : "Extracted");
-        zip.close();
-
-        err ? reject() : resolve("Extracted");
+          err ? reject(err) : resolve("Extracted");
+        });
       });
     });
-  });
-
-  return !zipOp ? false : true;
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 const createAndSaveDirectory = async (

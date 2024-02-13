@@ -31,7 +31,7 @@ const removeAllCollections = async () => {
 jt.it("1 is 1", () => {
   jt.expect(1).toBe(1);
 });
-jt.describe("Uploading documentation", () => {});
+
 jt.it("should return false upload dummy file which are not .zip", async () => {
   const formData = new FormData();
   formData.append(

@@ -37,6 +37,7 @@ export class ResourceController {
 
   public async UploadDocumentation(req: Request, res: Response) {
     const { files } = req;
+    console.log("req", req);
     const {
       TMP_FOLDER,
       MANTA_HOST_NAME,
@@ -66,6 +67,7 @@ export class ResourceController {
 
     // Folder without .zip ext
     const extractedFolder = zipFile[0].filename.replace(".zip", "");
+    console.log("extractedFolder", extractedFolder);
 
     // Extract the zip file.
     const zipOp = await extractZipFile(
