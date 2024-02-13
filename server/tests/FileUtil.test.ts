@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as jt from "@jest/globals";
 import { extractZipFile } from "../src/utils/fileUtil";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,10 +12,13 @@ const EXTRACTED_MSGS = {
   error: "Error",
 };
 
+// types
+type MkDirType = typeof fs.mkdir;
+type StreamZipType = typeof StreamZip;
+
 // MOCKS
 jt.jest.mock("fs", () => ({
-  mkdir: jt.jest.fn((path, options, callback: any) => callback(null)),
-  // Mock other fs methods if necessary
+  mkdir: jt.jest.fn((_, __, callback: MkDirType) => callback("")),
   open: jt.jest.fn(),
 }));
 ConsoleUtil.error = jt.jest.fn();
@@ -34,13 +36,13 @@ describe("Test case: Should extract zip files", () => {
       storeEntries: true,
     });
 
-    mockZip.on = jt.jest.fn((event, callback: any) => {
+    mockZip.on = jt.jest.fn((event, callback: StreamZipType) => {
       if (event === "ready") {
         callback();
       }
     });
 
-    mockZip.extract = jt.jest.fn((entry, target, callback: any) => {
+    mockZip.extract = jt.jest.fn((entry, target, callback: StreamZipType) => {
       callback(null);
     });
 
@@ -66,11 +68,11 @@ describe("Test case: Should extract zip files", () => {
   });
 
   it("should not extract zip file successfully", async () => {
-    mockZip.extract = jt.jest.fn((entry, target, callback: any) => {
+    mockZip.extract = jt.jest.fn((entry, target, callback: StreamZipType) => {
       callback("Error");
     });
 
-    mockZip.on = jt.jest.fn((event, callback: any) => {
+    mockZip.on = jt.jest.fn((event, callback: StreamZipType) => {
       if (event === "error") {
         callback("error");
       }
