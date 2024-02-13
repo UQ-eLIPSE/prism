@@ -17,6 +17,8 @@ import DocumentationStyles from "../sass/partials/_documentation.module.scss";
 import classNames from "classnames";
 import NetworkCalls from "../utils/NetworkCalls";
 import { ISettings } from "../typings/settings";
+import UploadDocs from "./UploadDocs";
+import { useUserContext } from "../context/UserContext";
 
 interface fileInfo {
   url: string;
@@ -45,6 +47,7 @@ export default function Documentation(props: Props) {
   const [subDirectories, setSubDirectories] = useState<folderInfo[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [allFiles, setAllFiles] = useState<fileInfo[]>([]);
+  const [user] = useUserContext();
 
   const abortController = new AbortController();
 
@@ -359,6 +362,17 @@ export default function Documentation(props: Props) {
       className={DocumentationStyles.grid}
       style={{ display: "inline-block" }}
     >
+      {user?.isAdmin && (
+        <div
+          style={{
+            display: "inline-block",
+            marginLeft: "2em",
+            marginTop: "2em",
+          }}
+        >
+          <UploadDocs siteId={props.siteId} />
+        </div>
+      )}
       <Grid
         item
         xs={11}
