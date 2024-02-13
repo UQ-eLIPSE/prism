@@ -162,7 +162,10 @@ function Timeline(props: Props) {
                     currentMonthName === month.monthName,
                 })}
               >
-                <div className={TimelineStyles.monthNameDiv}>
+                <div
+                  data-cy="monthName_display"
+                  className={TimelineStyles.monthNameDiv}
+                >
                   {month.monthName}
                 </div>
                 {getCurrentSurvey(month).length > 0 ? (
