@@ -8,6 +8,12 @@ import { ConsoleUtil } from "../src/utils/ConsoleUtil";
 
 const { describe, it, expect } = jt;
 
+const EXTRACTED_MSGS = {
+  success: "Extracted",
+  error: "Error",
+};
+
+// MOCKS
 jt.jest.mock("fs", () => ({
   mkdir: jt.jest.fn((path, options, callback: any) => callback(null)),
   // Mock other fs methods if necessary
@@ -53,7 +59,7 @@ describe("Test case: Should extract zip files", () => {
       expect.any(Function),
     );
 
-    expect(ConsoleUtil.success).toHaveBeenCalledWith("Extracted");
+    expect(ConsoleUtil.success).toHaveBeenCalledWith(EXTRACTED_MSGS.success);
 
     const files = await fs.readdir(`${TMP_FOLDER}`);
     expect(files).toContain(extractedFolder);
@@ -64,10 +70,19 @@ describe("Test case: Should extract zip files", () => {
       callback("Error");
     });
 
+    mockZip.on = jt.jest.fn((event, callback: any) => {
+      if (event === "error") {
+        callback("error");
+      }
+      if (event === "ready") {
+        callback("error");
+      }
+    });
+
     const result = await extractZipFile(mockZip, extractedFolder, TMP_FOLDER);
 
     expect(result).toBe(false);
-    expect(ConsoleUtil.error).toHaveBeenCalledWith("Error");
+    expect(ConsoleUtil.error).toHaveBeenCalledWith(EXTRACTED_MSGS.error);
   });
 
   jt.afterEach(async () => {
@@ -77,7 +92,7 @@ describe("Test case: Should extract zip files", () => {
       .catch(() => false);
 
     if (directoryExists) {
-      await fs.rmdir(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
+      await fs.rm(`${TMP_FOLDER}/${extractedFolder}`, { recursive: true });
     }
   });
 });
