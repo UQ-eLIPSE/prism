@@ -33,16 +33,7 @@ const runFilesUrlLinkValidator = async () => {
       url: doc.url,
     })) as LinkFile[];
 
-    const formattedFiles = files.map((file) => {
-      return {
-        ...file,
-        // Some files ending with .dwg actually works if we replace it with .pdf.
-        // Please confirm.
-        url: file.url.replace(/\.dwg$/, ".pdf"),
-        // url: file.url,
-      };
-    });
-    await testFilesLinks(formattedFiles);
+    await testFilesLinks(files);
     await client.close();
     ConsoleUtil.log("Script completed. Exiting.");
     process.exit(0);
