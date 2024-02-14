@@ -366,7 +366,7 @@ export default function Documentation(props: Props) {
         <div
           style={{
             display: "inline-block",
-            marginLeft: "2em",
+            marginLeft: "7em",
             marginTop: "2em",
           }}
         >
