@@ -69,7 +69,33 @@ export default class MarzipanoHelper {
     // Initialize viewer.
     this.viewer = new Marzipano.Viewer(panoElement, viewerOpts);
     if (config.enable.rotation) {
+      console.log("INITIALISED");
       this.viewer.addEventListener("viewChange", () => {
+        // this.viewer.lookTo({ yaw: this.viewer.view()._yaw });
+        // setTimeout(() => {
+        //   console.log(
+        //     "HELLO, view change is being runned, yaw:",
+        //     this.viewer.view()._yaw,
+        //     "pitch:",
+        //     this.viewer.view()._pitch,
+        //     "fov:",
+        //     this.viewer.view()._fov,
+        //   );
+        //   this.updateRotation(this.viewer.view()._yaw);
+        //   this.updateViewParams({
+        //     yaw: this.viewer.view()._yaw,
+        //     pitch: this.viewer.view()._pitch,
+        //     fov: this.viewer.view()._fov,
+        //   });
+        // });
+        console.log(
+          "HELLO, view change is being runned, yaw:",
+          this.viewer.view()._yaw,
+          "pitch:",
+          this.viewer.view()._pitch,
+          "fov:",
+          this.viewer.view()._fov,
+        );
         this.updateRotation(this.viewer.view()._yaw);
         this.updateViewParams({
           yaw: this.viewer.view()._yaw,
@@ -148,6 +174,10 @@ export default class MarzipanoHelper {
   public switchScene(scene: any): void {
     this.changeInfoPanelOpen(false);
     scene.view.setParameters(scene.data.survey_node.initial_parameters);
+    console.log(
+      "scene view initial parameters",
+      scene.data.survey_node.initial_parameters,
+    );
     scene.scene.switchTo();
 
     this.updateCurrPano(scene.data.minimap_node.tiles_id);

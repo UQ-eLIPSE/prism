@@ -80,10 +80,16 @@ function Site(props: SiteInterface) {
     config.initial_settings.pano_id,
   );
   const [currRotation, setCurrRotation] = useState<number>(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [lastRotation, setLastRotation] = useState<number>(0);
 
   const [currViewParams, setCurrViewParams] = useState<InitialViewParameters>({
     ...config.initial_settings,
   });
+  console.log("Current view params", currViewParams);
+  const [lastViewParams, setLastViewParams] =
+    useState<InitialViewParameters | null>(null);
+  console.log("Last view params", lastViewParams);
 
   const [currfloor, setCurrFloor] = useState<number>(
     config.initial_settings.floor,
@@ -124,7 +130,6 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
-
       await updateFloors();
     })();
   }, [currfloor, currDate, floorExists]);
@@ -136,6 +141,21 @@ function Site(props: SiteInterface) {
       await updateSurveys();
     })();
   }, []);
+
+  useEffect(() => {
+    console.log("use effect running:", lastViewParams, currPanoId);
+    console.log("curr rotation", currRotation, "last rotation", lastRotation);
+    if (!lastViewParams) return;
+    if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
+      marzipano.current
+        .findSceneById(currPanoId)
+        ?.view.setParameters(lastViewParams);
+      marzipano.current.updateCurrView(
+        lastViewParams,
+        marzipano.current.findSceneById(currPanoId),
+      );
+    }
+  }, [currPanoId]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -215,7 +235,7 @@ function Site(props: SiteInterface) {
   }
 
   function updateCurrPano(panoId: string): void {
-    setCurrPanoId(panoId);
+    setCurrPanoId(() => panoId);
     getHotspotDescriptionList(panoId);
   }
 
@@ -238,6 +258,7 @@ function Site(props: SiteInterface) {
       marzipano.current.findSceneById(currPanoId),
     );
     updateViewParams(viewParams);
+    setLastViewParams(() => viewParams);
     // Open info panel
     getInfoHotspot(info_id);
   }
@@ -245,14 +266,21 @@ function Site(props: SiteInterface) {
   function minimapClick(panoId: string): void {
     if (marzipano.current)
       marzipano?.current?.switchScene(marzipano.current.findSceneById(panoId));
+    setLastViewParams(() => null);
+    setLastRotation(() => 0);
   }
 
   function updateRotation(rotation: number): void {
-    setCurrRotation(rotation);
+    console.log("Updating rotation to:", rotation);
+    setCurrRotation(() => rotation);
+    setLastRotation(() => rotation);
   }
 
   function updateViewParams(viewParams: InitialViewParameters): void {
-    setCurrViewParams(viewParams);
+    if (viewParams === currViewParams) return;
+    console.log("Updating view params", viewParams);
+    setCurrViewParams(() => viewParams);
+    setLastViewParams(() => viewParams);
   }
 
   function getSurveyNodes(floor: number = 0): void {
@@ -284,6 +312,7 @@ function Site(props: SiteInterface) {
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
           if (!marzipano.current && floorExists) {
+            console.log("creating marzipano");
             marzipano.current = new Marzipano(
               nodesData,
               getInfoHotspot,
@@ -324,7 +353,9 @@ function Site(props: SiteInterface) {
               ? currPanoId
               : currentTilesId,
           );
-
+          console.log("setting last view params after click", currViewParams);
+          setLastViewParams(() => currViewParams);
+          setLastRotation(() => currRotation);
           if (
             viewParams.fov !== 0 ||
             viewParams.pitch !== 0 ||
