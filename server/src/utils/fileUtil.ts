@@ -147,8 +147,6 @@ export const fileLoop = async (
         MANTA_ROOT_FOLDER as string,
       );
 
-      await file.save();
-
       topLevelDirectory.files.push(file._id);
 
       await topLevelDirectory.save();
