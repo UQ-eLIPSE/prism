@@ -68,6 +68,7 @@ export default class MarzipanoHelper {
 
     // Initialize viewer.
     this.viewer = new Marzipano.Viewer(panoElement, viewerOpts);
+    (window as any).viewer = this.viewer;
     if (config.enable.rotation) {
       this.viewer.addEventListener("viewChange", () => {
         this.updateRotation(this.viewer.view()._yaw);
