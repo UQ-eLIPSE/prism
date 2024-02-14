@@ -143,17 +143,13 @@ function Site(props: SiteInterface) {
   }, []);
 
   useEffect(() => {
-    console.log("use effect running:", lastViewParams, currPanoId);
-    console.log("curr rotation", currRotation, "last rotation", lastRotation);
     if (!lastViewParams) return;
     if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
-      marzipano.current
-        .findSceneById(currPanoId)
-        ?.view.setParameters(lastViewParams);
       marzipano.current.updateCurrView(
         lastViewParams,
         marzipano.current.findSceneById(currPanoId),
       );
+      marzipano.current.updateRotation(lastRotation);
     }
   }, [currPanoId]);
 
@@ -257,29 +253,29 @@ function Site(props: SiteInterface) {
       viewParams,
       marzipano.current.findSceneById(currPanoId),
     );
+
     updateViewParams(viewParams);
-    setLastViewParams(() => viewParams);
+    // setLastViewParams(() => viewParams);
     // Open info panel
     getInfoHotspot(info_id);
   }
 
   function minimapClick(panoId: string): void {
-    if (marzipano.current)
+    if (marzipano.current) {
       marzipano?.current?.switchScene(marzipano.current.findSceneById(panoId));
-    setLastViewParams(() => null);
-    setLastRotation(() => 0);
+      setLastViewParams(() => null);
+      setLastRotation(() => 0);
+    }
   }
 
   function updateRotation(rotation: number): void {
-    console.log("Updating rotation to:", rotation);
-    setCurrRotation(() => rotation);
+    setCurrRotation(rotation);
     setLastRotation(() => rotation);
   }
 
   function updateViewParams(viewParams: InitialViewParameters): void {
     if (viewParams === currViewParams) return;
-    console.log("Updating view params", viewParams);
-    setCurrViewParams(() => viewParams);
+    setCurrViewParams(viewParams);
     setLastViewParams(() => viewParams);
   }
 
@@ -312,7 +308,6 @@ function Site(props: SiteInterface) {
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
           if (!marzipano.current && floorExists) {
-            console.log("creating marzipano");
             marzipano.current = new Marzipano(
               nodesData,
               getInfoHotspot,
@@ -353,8 +348,7 @@ function Site(props: SiteInterface) {
               ? currPanoId
               : currentTilesId,
           );
-          console.log("setting last view params after click", currViewParams);
-          setLastViewParams(() => currViewParams);
+          setLastViewParams(() => viewParams);
           setLastRotation(() => currRotation);
           if (
             viewParams.fov !== 0 ||
