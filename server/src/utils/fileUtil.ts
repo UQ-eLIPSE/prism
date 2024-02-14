@@ -5,6 +5,10 @@ import { Files, IDirectories, Directories } from "../models/ResourceModel";
 import { ObjectId } from "bson";
 import path = require("path");
 
+const EXTRACTED_MSGS = {
+  success: "Extracted",
+};
+
 /**
  * A helper function to extract the zip file.
  * @param zip - The zip file
@@ -30,10 +34,12 @@ export const extractZipFile = async (
       zip.on("ready", () => {
         // Extract zip
         zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
-          err ? ConsoleUtil.error(err) : ConsoleUtil.success("Extracted");
+          err
+            ? ConsoleUtil.error(err)
+            : ConsoleUtil.success(EXTRACTED_MSGS.success);
           zip.close();
 
-          err ? reject(err) : resolve("Extracted");
+          err ? reject(err) : resolve(EXTRACTED_MSGS.success);
         });
       });
     });
