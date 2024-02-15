@@ -7,4 +7,7 @@ module.exports = {
   testMatch: ["**/*.test.ts"],
   testEnvironment: "node",
   testTimeout: 100000,
+  transform: {
+    "^.+\\.tsx?$": "ts-jest",
+  },
 };
