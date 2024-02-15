@@ -18,6 +18,7 @@ ADD package.json /tmp/server/
 
 # Use the key used for Manta
 ADD ./tmp/prism-tst-id_rsa /root/.ssh/
+# ADD ./tmp/<project>-id_rsa /root/.ssh/
 
 RUN cd /tmp/server && yarn
 
