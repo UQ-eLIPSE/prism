@@ -8,19 +8,9 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from "@material-ui/core";
-import NetworkCalls from "../utils/NetworkCalls";
 import TimelineStyles from "../sass/partials/_timeline.module.scss";
 import classNames from "classnames";
-
-interface SurveyDate {
-  survey_name: string;
-  date: Date;
-}
-
-interface SurveyMonth {
-  monthName: string;
-  dates: SurveyDate[];
-}
+import { SurveyMonth, SurveyDate } from "../interfaces/NodeData";
 
 interface Props {
   timelineOpen: boolean;
@@ -34,31 +24,22 @@ interface Props {
   availableFloors: number[];
   floorExists: boolean;
   updateFloors: Function;
+  surveyWithFloors: SurveyMonth[]; //The surveyWithFloors variable is for fetching survey data limited to a specific floor
+  siteSurveys: SurveyMonth[]; // siteSurveys fetches all surveys for the entire site without floor restriction
+  changeDateAndUpdateFloors: (date: Date) => Promise<void>;
 }
 
 function Timeline(props: Props) {
-  const floors: number[] = [];
   const [surveys, setSurveys] = useState<SurveyMonth[]>([]);
   const [currentMonthName, setCurrentMonthName] = useState<string>("");
   const [expandedAccordian, setExpandedAccordian] = useState<string>("");
   const [, setIsExpanded] = useState<boolean>(true);
   const [allSurveys, setAllSurveys] = useState<SurveyMonth[]>([]);
-  const abortController = new AbortController();
   const drawerContainerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
     const fetchingSurveys = async () => {
-      const surveyWithFloors = await NetworkCalls.fetchSurveys(
-        abortController,
-        props.siteId,
-        props.floor,
-      );
-      const fetchSiteSurveys = await NetworkCalls.fetchSurveys(
-        abortController,
-        props.siteId,
-      );
-
-      setSurveys(surveyWithFloors);
+      setSurveys(props.surveyWithFloors);
       await props.updateFloors();
       setCurrentMonthName(
         props.date.toLocaleString("en-us", {
@@ -68,7 +49,7 @@ function Timeline(props: Props) {
       );
       const scrollControl = drawerContainerRef.current;
       let positioningMonthIndex = 0;
-      for (const [i, survey] of fetchSiteSurveys.entries()) {
+      for (const [i, survey] of props.siteSurveys.entries()) {
         if (survey.monthName === currentMonthName) positioningMonthIndex = i;
       }
       if (scrollControl) {
@@ -77,23 +58,23 @@ function Timeline(props: Props) {
         });
       }
 
-      setAllSurveys(fetchSiteSurveys);
+      setAllSurveys(props.siteSurveys);
       const months = [];
-      for (const survey of fetchSiteSurveys) {
+      for (const survey of props.siteSurveys) {
         for (const date of survey.dates) {
           months.push(date.date.toISOString());
         }
       }
       if (
         !months.includes(props.date.toISOString()) &&
-        fetchSiteSurveys.length > 0
+        props.siteSurveys.length > 0
       )
-        changeDate(fetchSiteSurveys[0].dates[0].date);
+        changeDate(props.siteSurveys[0].dates[0].date);
       switchSurveys();
     };
 
     fetchingSurveys();
-  }, []);
+  }, [props.siteSurveys]);
 
   const getMonthJSX = (month: SurveyMonth): React.ReactElement[] => {
     return month.dates.map((date: SurveyDate) => {
@@ -173,6 +154,7 @@ function Timeline(props: Props) {
               expandIcon={<i className={"fa fa-chevron-down fa-2x"} />}
             >
               <button
+                data-cy="month_button"
                 onClick={(event): void => showLatestSurveyInMonth(month, event)}
                 onFocus={(event) => event.stopPropagation()}
                 className={classNames(TimelineStyles.monthName, {
@@ -180,12 +162,18 @@ function Timeline(props: Props) {
                     currentMonthName === month.monthName,
                 })}
               >
-                <div className={TimelineStyles.monthNameDiv}>
+                <div
+                  data-cy="monthName_display"
+                  className={TimelineStyles.monthNameDiv}
+                >
                   {month.monthName}
                 </div>
                 {getCurrentSurvey(month).length > 0 ? (
                   <div key={0} className={TimelineStyles.surveyDiv}>
-                    <span className={TimelineStyles.selectedSurvey}>
+                    <span
+                      data-cy="Survey_Date"
+                      className={TimelineStyles.selectedSurvey}
+                    >
                       {month.dates[0].survey_name.length > 0
                         ? month.dates[0].survey_name
                         : props.date.toLocaleDateString()}
@@ -337,10 +325,7 @@ function Timeline(props: Props) {
   };
 
   const changeDate = async (date: Date): Promise<void> => {
-    if (date.toISOString() === props.date.toISOString()) return;
-    props.changeDate(date, props.updateFloors);
-    await props.updateFloors();
-    props.updateAvailableFloors(floors);
+    props.changeDateAndUpdateFloors(date);
     setCurrentMonthName(
       date.toLocaleString("en-us", { month: "short", year: "numeric" }),
     );

@@ -98,6 +98,7 @@ const FilesSchema: Schema = new Schema({
   name: { type: String, required: true },
   url: { type: String, required: true },
   uploaded_at: { type: Date, required: true },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
 });
 
 const DirectoriesSchema: Schema = new Schema({
@@ -105,6 +106,7 @@ const DirectoriesSchema: Schema = new Schema({
   subdirectories: [{ type: Schema.Types.ObjectId, ref: "Directories" }],
   files: [{ type: Schema.Types.ObjectId, ref: "Documentation" }],
   parent: { type: Schema.Types.ObjectId, ref: "Documentation" },
+  site: { type: Schema.Types.ObjectId, ref: "sites" },
 });
 
 const AboutSchema: Schema = new Schema({

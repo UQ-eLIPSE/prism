@@ -1,15 +1,13 @@
 import React from "react";
 import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
+import { StateObject } from "../interfaces/StateObject";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
-  rotationValue: number;
-  setRotationValue: (rotation: number) => void;
-  xPositionValue: number;
-  setXPositionValue: (xPosition: number) => void;
-  yPositionValue: number;
-  setYPositionValue: (yPosition: number) => void;
+  rotationState: StateObject<number>;
+  xPositionState: StateObject<number>;
+  yPositionState: StateObject<number>;
   resetSelectedNode: () => void; // Clears selected node and sets editing to false.
   updateNode: () => Promise<void>;
 }
@@ -25,12 +23,27 @@ const [POSITION_MIN, POSITION_MAX] = [0, 100];
  * @returns {JSX.Element}
  */
 const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
+  const [rotationValue, setRotationValue] = [
+    props.rotationState.value,
+    props.rotationState.setFn,
+  ];
+
+  const [xPositionValue, setXPositionValue] = [
+    props.xPositionState.value,
+    props.xPositionState.setFn,
+  ];
+
+  const [yPositionValue, setYPositionValue] = [
+    props.yPositionState.value,
+    props.yPositionState.setFn,
+  ];
+
   // Input configurations for the form. Please note that the label
   // for each must be unique since it is used as the input's id.
   const rotationInputConfig: EditNodeInput = {
     label: "orientation",
-    value: props.rotationValue,
-    setValue: props.setRotationValue,
+    value: rotationValue,
+    setValue: setRotationValue,
     step: 15,
     symbol: <i className="fa-solid fa-rotate-right"></i>,
     bounds: {
@@ -41,8 +54,8 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
   const xPositionInputConfig: EditNodeInput = {
     label: "x",
-    value: props.xPositionValue,
-    setValue: props.setXPositionValue,
+    value: xPositionValue,
+    setValue: setXPositionValue,
     symbol: <i className="fa-solid fa-arrows-left-right"></i>,
     bounds: {
       min: POSITION_MIN,
@@ -52,8 +65,8 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
   const yPositionInputConfig: EditNodeInput = {
     label: "y",
-    value: props.yPositionValue,
-    setValue: props.setYPositionValue,
+    value: yPositionValue,
+    setValue: setYPositionValue,
     symbol: <i className="fa-solid fa-arrows-up-down"></i>,
     bounds: {
       min: POSITION_MIN,

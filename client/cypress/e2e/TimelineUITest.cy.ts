@@ -89,5 +89,62 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       }
     });
+
+    it("Testing: Timeline survey button fetches correct node survey when selected", () => {
+      if (zone.timeline) {
+        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite?date=*").as(
+          "getSurveyDate",
+        );
+
+        cy.wait("@getSiteExists").then(() => {
+          cy.wait("@getSiteDetails").then(() => {
+            cy.wait("@getEmptyFloors").then(() => {
+              cy.wait("@getSurveyDate").then(() => {
+                cy.get("[class^='_timelineButton']").click({ force: true });
+
+                cy.get("[data-cy='month_button']").then(($elements) => {
+                  const randomIndex = Math.floor(
+                    Math.random() * $elements.length,
+                  );
+
+                  // Click on the randomly selected month button
+                  cy.wrap($elements)
+                    .eq(randomIndex)
+                    .click()
+                    .then(($button) => {
+                      // Find the monthName_display within the clicked button
+                      const expectedMonthYear = $button
+                        .find("[data-cy='monthName_display']")
+                        .text();
+                      console.log("Selected Month Year:", expectedMonthYear); // For debugging purposes
+
+                      const [month, year] = expectedMonthYear.split(" ");
+                      const monthNumber = new Date(`${month} 1`).getMonth() + 1;
+                      const formattedDate = `${year}-${monthNumber.toString().padStart(2, "0")}`; // Converts to "YYYY-MM"
+
+                      cy.wait(1000);
+
+                      cy.wait("@getSurveyDate").then((interception) => {
+                        expect(interception.request.url).to.include(
+                          formattedDate,
+                        );
+
+                        // Further assertions or checks can go here, such as verifying the UI state
+                        cy.get("[class*='_timeline_selectedSurvey']").then(
+                          ($title) => {
+                            cy.get("[data-cy='Survey_Date']").then(($input) => {
+                              expect($title.text()).to.include($input.text());
+                            });
+                          },
+                        );
+                      });
+                    });
+                });
+              });
+            });
+          });
+        });
+      }
+    });
   });
 });

@@ -17,6 +17,8 @@ import DocumentationStyles from "../sass/partials/_documentation.module.scss";
 import classNames from "classnames";
 import NetworkCalls from "../utils/NetworkCalls";
 import { ISettings } from "../typings/settings";
+import UploadDocs from "./UploadDocs";
+import { useUserContext } from "../context/UserContext";
 
 interface fileInfo {
   url: string;
@@ -45,6 +47,7 @@ export default function Documentation(props: Props) {
   const [subDirectories, setSubDirectories] = useState<folderInfo[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [allFiles, setAllFiles] = useState<fileInfo[]>([]);
+  const [user] = useUserContext();
 
   const abortController = new AbortController();
 
@@ -296,6 +299,7 @@ export default function Documentation(props: Props) {
     return subDirectories.map((directory, i) => {
       return (
         <button
+          data-cy="Documentation-button"
           className={DocumentationStyles.individualFolderView}
           key={i}
           onClick={() => dirClickHandler(directory["id"], directory["name"])}
@@ -303,7 +307,12 @@ export default function Documentation(props: Props) {
           <div className={DocumentationStyles.folderLink}>
             <i className="fas fa-folder" />
           </div>
-          <p className={DocumentationStyles.folderName}>{directory["name"]}</p>
+          <p
+            data-cy="Documentation-name"
+            className={DocumentationStyles.folderName}
+          >
+            {directory["name"]}
+          </p>
         </button>
       );
     });
@@ -359,6 +368,21 @@ export default function Documentation(props: Props) {
       className={DocumentationStyles.grid}
       style={{ display: "inline-block" }}
     >
+      {user?.isAdmin && (
+        <div
+          style={{
+            display: "none", // should be "inline-block" when you want to display
+            marginLeft: "7em",
+            marginTop: "2em",
+          }}
+        >
+          <UploadDocs
+            siteId={props.siteId}
+            fetchDirectory={fetchDirectory}
+            fetchAllFiles={fetchAllFiles}
+          />
+        </div>
+      )}
       <Grid
         item
         xs={11}
