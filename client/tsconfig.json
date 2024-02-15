@@ -15,7 +15,7 @@
     "noEmit": true,
     "jsx": "react",
     "downlevelIteration": true,
-    "types": ["jest", "@testing-library/jest-dom"],
+    "types": ["jest", "@testing-library/jest-dom"]
   },
-  "include": ["src", "tests"],
+  "include": ["src", "tests"]
 }
