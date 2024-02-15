@@ -1,5 +1,34 @@
+import { Position } from "cypress-real-events/getCypressElementCoordinates";
 import { testEachZone } from "../testutils";
 import "cypress-real-events";
+
+const changeToRandomFloor = ($container: JQuery<HTMLElement>) => {
+  const $labels = $container.find("div > label");
+  const $checkedLabel = $labels.filter(".checked");
+  const $uncheckedLabels = $labels.not(".checked");
+
+  if (!$uncheckedLabels.length) return;
+  // Remove the .checked class from the currently checked label
+  $checkedLabel.removeClass("checked");
+
+  // Add the .checked class to a random unchecked label
+  const $randomLabel = $uncheckedLabels.eq(
+    Math.floor(Math.random() * $uncheckedLabels.length),
+  );
+  $randomLabel.addClass("checked");
+  ($randomLabel[0] as HTMLElement).click();
+};
+
+const moveMarzipanoViewer = (
+  id: string,
+  movement: { x: number; y: number; fromPosition?: Position },
+) => {
+  const { x, y, fromPosition } = movement;
+  cy.get(id)
+    .realMouseDown()
+    .realMouseMove(x, y, { position: fromPosition })
+    .realMouseUp();
+};
 
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Marzipano node configuration when traversing between different floors", () => {
@@ -10,11 +39,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: View parameters should remain consistent when trasversing through floors after moving marzipano`, () => {
       if (!zone.floors) return;
 
-      cy.get("#pano")
-        .realMouseDown()
-        .realMouseMove(-250, 0, { position: "center" })
-        .realMouseUp();
-      cy.wait(800);
+      moveMarzipanoViewer("#pano", { x: -250, y: 0, fromPosition: "center" });
 
       cy.get("[data-cy='selected-node']")
         .parent()
@@ -28,20 +53,7 @@ testEachZone((zone: Cypress.PrismZone) => {
               : originalStyleValue;
 
           cy.get(".levelSliderContainer").then(($levelSliderContainer) => {
-            const $labels = $levelSliderContainer.find("div > label");
-            const $checkedLabel = $labels.filter(".checked");
-            const $uncheckedLabels = $labels.not(".checked");
-
-            if (!$uncheckedLabels.length) return;
-            // Remove the .checked class from the currently checked label
-            $checkedLabel.removeClass("checked");
-
-            // Add the .checked class to a random unchecked label
-            const $randomLabel = $uncheckedLabels.eq(
-              Math.floor(Math.random() * $uncheckedLabels.length),
-            );
-            $randomLabel.addClass("checked");
-            ($randomLabel[0] as HTMLElement).click();
+            changeToRandomFloor($levelSliderContainer);
 
             cy.get("[data-cy='selected-node']")
               .parent()
@@ -77,22 +89,7 @@ testEachZone((zone: Cypress.PrismZone) => {
               : originalStyleValue?.slice(originalTransformIdx);
 
           cy.get(".levelSliderContainer").then(($levelSliderContainer) => {
-            const $labels = $levelSliderContainer.find("div > label");
-
-            const $checkedLabel = $labels.filter(".checked");
-
-            const $uncheckedLabels = $labels.not(".checked");
-
-            if (!$uncheckedLabels.length) return;
-            // Remove the .checked class from the currently checked label
-            $checkedLabel.removeClass("checked");
-
-            // Add the .checked class to a random unchecked label
-            const $randomLabel = $uncheckedLabels.eq(
-              Math.floor(Math.random() * $uncheckedLabels.length),
-            );
-            $randomLabel.addClass("checked");
-            ($randomLabel[0] as HTMLElement).click();
+            changeToRandomFloor($levelSliderContainer);
 
             cy.get("[data-cy='selected-node']")
               .parent()
@@ -125,11 +122,11 @@ testEachZone((zone: Cypress.PrismZone) => {
               ? originalStyleValue?.slice(transformIdx)
               : originalStyleValue;
 
-          cy.get("#pano")
-            .realMouseDown()
-            .realMouseMove(-250, 0, { position: "center" })
-            .realMouseUp();
-          cy.wait(800);
+          moveMarzipanoViewer("#pano", {
+            x: -250,
+            y: 0,
+            fromPosition: "center",
+          });
 
           cy.get("[data-cy='selected-node']")
             .parent()
