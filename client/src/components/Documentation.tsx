@@ -299,6 +299,7 @@ export default function Documentation(props: Props) {
     return subDirectories.map((directory, i) => {
       return (
         <button
+          data-cy="Documentation-button"
           className={DocumentationStyles.individualFolderView}
           key={i}
           onClick={() => dirClickHandler(directory["id"], directory["name"])}
@@ -306,7 +307,12 @@ export default function Documentation(props: Props) {
           <div className={DocumentationStyles.folderLink}>
             <i className="fas fa-folder" />
           </div>
-          <p className={DocumentationStyles.folderName}>{directory["name"]}</p>
+          <p
+            data-cy="Documentation-name"
+            className={DocumentationStyles.folderName}
+          >
+            {directory["name"]}
+          </p>
         </button>
       );
     });
@@ -370,7 +376,11 @@ export default function Documentation(props: Props) {
             marginTop: "2em",
           }}
         >
-          <UploadDocs siteId={props.siteId} />
+          <UploadDocs
+            siteId={props.siteId}
+            fetchDirectory={fetchDirectory}
+            fetchAllFiles={fetchAllFiles}
+          />
         </div>
       )}
       <Grid
