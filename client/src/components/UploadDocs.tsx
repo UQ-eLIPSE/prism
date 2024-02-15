@@ -12,7 +12,10 @@ const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files.length > 0  ? event.target.files[0] : null;
+    const file =
+      event.target.files && event.target.files.length > 0
+        ? event.target.files[0]
+        : null;
     if (
       file &&
       (file.type === "application/zip" || file.name.endsWith(".zip"))
