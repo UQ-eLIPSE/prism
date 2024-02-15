@@ -1,18 +1,33 @@
 import DocumentationStyles from "../sass/partials/_documentation.module.scss";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useRef } from "react";
 import NetworkCalls from "../utils/NetworkCalls";
 
 interface UploadDocsProps {
   siteId: string;
+  fetchDirectory: (directoryName?: string | undefined) => Promise<void>;
+  fetchAllFiles: () => Promise<void>;
 }
 
-const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
+const UploadDocs: React.FC<UploadDocsProps> = ({
+  siteId,
+  fetchAllFiles,
+  fetchDirectory,
+}) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const clearFileInput = () => {
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    setSelectedFile(null); // Also reset the selectedFile state
+  };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files.length > 0  ? event.target.files[0] : null;
+    const file =
+      event.target.files && event.target.files.length > 0
+        ? event.target.files[0]
+        : null;
     if (
       file &&
       (file.type === "application/zip" || file.name.endsWith(".zip"))
@@ -20,6 +35,7 @@ const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
       setSelectedFile(file);
     } else {
       alert("Please select a ZIP file.");
+      clearFileInput();
     }
   };
 
@@ -37,7 +53,9 @@ const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
       setUploadSuccess(true);
       setTimeout(() => {
         setUploadSuccess(false);
-        setSelectedFile(null);
+        clearFileInput();
+        fetchDirectory();
+        fetchAllFiles();
       }, 1000);
     } catch (error) {
       alert("Failed to upload file.");
@@ -59,6 +77,7 @@ const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
           accept=".zip"
           id="uploadZip"
           name="uploadZip"
+          ref={fileInputRef}
         />
         {isLoading ? (
           <div className={DocumentationStyles.loader}></div>
@@ -85,9 +104,10 @@ const UploadDocs: React.FC<UploadDocsProps> = ({ siteId }) => {
               Submit
             </button>
             <button
+              data-cy="cancel-documentation"
               className="nav-text"
               type="button"
-              onClick={() => setSelectedFile(null)}
+              onClick={clearFileInput}
             >
               Cancel
             </button>
