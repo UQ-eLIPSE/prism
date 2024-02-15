@@ -1,4 +1,4 @@
-import { testEachZone } from "../testutils";
+// import { testEachZone } from "../testutils";
 
 testEachZone((zone: Cypress.PrismZone) => {
   //These test suites will remain inactive for the time being, as the functionality for uploading documentation through the UI is still under development and has been disabled.
