@@ -80,11 +80,12 @@ export default class MarzipanoHelper {
       });
     };
     if (config.enable.rotation) {
-      initialRender
-        ? this.viewer.addEventListener("viewChange", updateView)
+      initialRender // initial page load, need to update view params immediately
+        ? // to default db values.
+          this.viewer.addEventListener("viewChange", updateView)
         : setTimeout(() => {
             this.viewer.addEventListener("viewChange", updateView);
-          }, 1000);
+          }, 100); // Delay needed to prevent viewChange from running twice sometimes.
     }
 
     // Create scenes.
