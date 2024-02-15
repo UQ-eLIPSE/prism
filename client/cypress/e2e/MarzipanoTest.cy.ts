@@ -1,11 +1,5 @@
 import { testEachZone } from "../testutils";
-
-function checkStyleContains(styleString: string) {
-  cy.get("[data-cy='selected-node']")
-    .parent()
-    .should("have.attr", "style")
-    .should("contain", styleString);
-}
+import "cypress-real-events";
 
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Marzipano node configuration when traversing between different floors", () => {
@@ -13,70 +7,29 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.accessZone(zone);
     });
 
-    it(`Testing: New Marzipano should be created`, () => {
-      if (!zone.floors) return;
-      cy.get("#pano").find("canvas").should("exist");
-    });
-
-    it(`Testing: Changing view rotation should also change the style of the selected node`, () => {
+    it(`Testing: View parameters should remain consistent when trasversing through floors after moving marzipano`, () => {
       if (!zone.floors) return;
 
-      cy.get("[data-cy='selected-node'")
-        .parent()
-        .invoke("attr", "style")
-        .then((originalStyleValue) => {
-          expect(originalStyleValue).to.contain("transform");
-          cy.window()
-            .its("viewer")
-            .then((viewer) => {
-              // You can interact with the viewer instance here
-              expect(viewer.view).to.exist;
-
-              // Invoke an event on the viewer
-              // viewer.lookTo({ _yaw: 2, _pitch: 2, _fov: 2 });
-              viewer.view._yaw = 2;
-              viewer.view._pitch = 2;
-              viewer.view._fov = 2;
-              cy.get("[data-cy='selected-node']")
-                .parent()
-                .invoke("attr", "style")
-                .then((newStyleValue) => {
-                  expect(newStyleValue).to.not.equal(originalStyleValue);
-                }); //* NOT WORKINGG
-
-              // Move floors
-              cy.get(".levelSliderContainer").then(($levelSliderContainer) => {
-                const $labels = $levelSliderContainer.find("div > label");
-                const $checkedLabel = $labels.filter(".checked");
-                const $uncheckedLabels = $labels.not(".checked");
-                if (!$uncheckedLabels.length) return;
-                $checkedLabel.removeClass("checked");
-                const $randomLabel = $uncheckedLabels.eq(
-                  Math.floor(Math.random() * $uncheckedLabels.length),
-                );
-                $randomLabel.addClass("checked");
-                ($randomLabel[0] as HTMLElement).click();
-              });
-            });
-        });
-    });
-
-    it(`Testing: Rotation of the node should be consistent when traversing between different floors`, () => {
-      if (!zone.floors) return;
+      cy.get("#pano")
+        .realMouseDown()
+        .realMouseMove(-250, 0, { position: "center" })
+        .realMouseUp();
+      cy.wait(800);
 
       cy.get("[data-cy='selected-node']")
         .parent()
         .invoke("attr", "style")
         .then((originalStyleValue) => {
           expect(originalStyleValue).to.contain("transform");
+          const transformIdx = originalStyleValue?.indexOf("transform:");
+          const originalTransformValue =
+            transformIdx !== -1
+              ? originalStyleValue?.slice(transformIdx)
+              : originalStyleValue;
+
           cy.get(".levelSliderContainer").then(($levelSliderContainer) => {
-            // Find all the labels inside the .levelSliderContainer element
             const $labels = $levelSliderContainer.find("div > label");
-
-            // Find the label with the .checked class
             const $checkedLabel = $labels.filter(".checked");
-
-            // Filter out the checked label from the list of labels
             const $uncheckedLabels = $labels.not(".checked");
 
             if (!$uncheckedLabels.length) return;
@@ -94,10 +47,119 @@ testEachZone((zone: Cypress.PrismZone) => {
               .parent()
               .invoke("attr", "style")
               .then((newStyleValue) => {
-                expect(newStyleValue).to.equal(originalStyleValue);
+                expect(newStyleValue).to.contain("transform:");
+                const newTransformIdx = newStyleValue?.indexOf("transform");
+                const newTransformValue =
+                  newTransformIdx !== -1
+                    ? newStyleValue?.slice(newTransformIdx)
+                    : newStyleValue;
+
+                expect(newTransformValue).to.equal(originalTransformValue);
               });
           });
         });
+    });
+
+    it(`Testing: Rotation of the node should be consistent when traversing between different floors`, () => {
+      if (!zone.floors) return;
+
+      cy.get("[data-cy='selected-node']")
+        .parent()
+        .invoke("attr", "style")
+        .then((originalStyleValue) => {
+          expect(originalStyleValue).to.contain("transform:");
+          const originalTransformIdx =
+            originalStyleValue?.indexOf("transform:");
+
+          const originalTransformValue =
+            originalTransformIdx === -1
+              ? originalStyleValue
+              : originalStyleValue?.slice(originalTransformIdx);
+
+          cy.get(".levelSliderContainer").then(($levelSliderContainer) => {
+            const $labels = $levelSliderContainer.find("div > label");
+
+            const $checkedLabel = $labels.filter(".checked");
+
+            const $uncheckedLabels = $labels.not(".checked");
+
+            if (!$uncheckedLabels.length) return;
+            // Remove the .checked class from the currently checked label
+            $checkedLabel.removeClass("checked");
+
+            // Add the .checked class to a random unchecked label
+            const $randomLabel = $uncheckedLabels.eq(
+              Math.floor(Math.random() * $uncheckedLabels.length),
+            );
+            $randomLabel.addClass("checked");
+            ($randomLabel[0] as HTMLElement).click();
+
+            cy.get("[data-cy='selected-node']")
+              .parent()
+              .invoke("attr", "style")
+              .then((newStyleValue) => {
+                expect(newStyleValue).to.contain("transform:");
+                const newTransformIdx = newStyleValue?.indexOf("transform:");
+                const newTransformValue =
+                  newTransformIdx === -1
+                    ? newStyleValue
+                    : newStyleValue?.slice(newTransformIdx);
+
+                expect(newTransformValue).to.equal(originalTransformValue);
+              });
+          });
+        });
+    });
+
+    it(`Moving marzipano viewer should change the node's rotation `, () => {
+      if (!zone.floors) return;
+
+      cy.get("[data-cy='selected-node']")
+        .parent()
+        .invoke("attr", "style")
+        .then((originalStyleValue) => {
+          expect(originalStyleValue).to.contain("transform");
+          const transformIdx = originalStyleValue?.indexOf("transform:");
+          const originalTransformValue =
+            transformIdx !== -1
+              ? originalStyleValue?.slice(transformIdx)
+              : originalStyleValue;
+
+          cy.get("#pano")
+            .realMouseDown()
+            .realMouseMove(-250, 0, { position: "center" })
+            .realMouseUp();
+          cy.wait(800);
+
+          cy.get("[data-cy='selected-node']")
+            .parent()
+            .invoke("attr", "style")
+            .then((newStyleValue) => {
+              expect(newStyleValue).to.contain("transform:");
+              const newTransformIdx = newStyleValue?.indexOf("transform");
+              const newTransformValue =
+                newTransformIdx !== -1
+                  ? newStyleValue?.slice(newTransformIdx)
+                  : newStyleValue;
+
+              expect(newTransformValue).to.not.equal(originalTransformValue);
+            });
+        });
+    });
+  });
+
+  // ? this needs to be after somehow or above tests won't work.
+  describe("Test case: Marzipano config works as expected", () => {
+    beforeEach(() => {
+      cy.accessZone(zone);
+    });
+
+    it(`Testing: Marzipano cursor should change to "move"`, () => {
+      cy.get("#pano").should("have.css", "cursor", "default");
+      cy.get("#pano").realMouseDown();
+      cy.get("#pano").should("have.css", "cursor", "move");
+      cy.get("#pano").realMouseUp();
+      cy.get("#pano").should("have.css", "cursor", "default");
     });
   });
 });

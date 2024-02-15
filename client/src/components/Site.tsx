@@ -80,7 +80,7 @@ function Site(props: SiteInterface) {
     config.initial_settings.pano_id,
   );
   const [currRotation, setCurrRotation] = useState<number>(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [lastRotation, setLastRotation] = useState<number>(0);
 
   const [currViewParams, setCurrViewParams] = useState<InitialViewParameters>({
@@ -114,6 +114,8 @@ function Site(props: SiteInterface) {
   const [minimap, setMinimap] = useState<MinimapReturn>(MinimapInitial);
   const [floorTag, setFloorTag] = useState<string>("");
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
+
+  const [initialRender, setInitialRender] = useState<boolean>(true);
 
   useEffect(() => {
     if (marzipano.current) {
@@ -316,7 +318,9 @@ function Site(props: SiteInterface) {
               updateViewParams,
               changeInfoPanelOpen,
               config,
+              initialRender,
             );
+            setInitialRender(false);
           }
           // Get current tile id based on previous node number
           let currentTilesId = nodesData[0].minimap_node.tiles_id;

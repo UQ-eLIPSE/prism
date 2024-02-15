@@ -62,5 +62,5 @@ export default defineConfig({
     },
   },
   // retries: 3,
-  retries: 1,
+  retries: 0,
 });

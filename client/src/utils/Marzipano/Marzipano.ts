@@ -29,6 +29,7 @@ export default class MarzipanoHelper {
   public updateRotation: Function;
   private updateViewParams: Function;
   private changeInfoPanelOpen: Function;
+  private initialRender: boolean;
 
   constructor(
     data: NodeData[],
@@ -38,6 +39,7 @@ export default class MarzipanoHelper {
     updateViewParams: Function,
     changeInfoPanelOpen: Function,
     config: ISettings,
+    initialRender: boolean,
   ) {
     this.data = data;
 
@@ -56,6 +58,7 @@ export default class MarzipanoHelper {
     this.updateRotation = updateRotation;
     this.updateViewParams = updateViewParams;
     this.changeInfoPanelOpen = changeInfoPanelOpen;
+    this.initialRender = initialRender;
 
     const mouseViewMode = config.marzipano_mouse_view_mode;
 
@@ -68,16 +71,20 @@ export default class MarzipanoHelper {
 
     // Initialize viewer.
     this.viewer = new Marzipano.Viewer(panoElement, viewerOpts);
-    (window as any).viewer = this.viewer;
-    if (config.enable.rotation) {
-      this.viewer.addEventListener("viewChange", () => {
-        this.updateRotation(this.viewer.view()._yaw);
-        this.updateViewParams({
-          yaw: this.viewer.view()._yaw,
-          pitch: this.viewer.view()._pitch,
-          fov: this.viewer.view()._fov,
-        });
+    const updateView = () => {
+      this.updateRotation(this.viewer.view()._yaw);
+      this.updateViewParams({
+        yaw: this.viewer.view()._yaw,
+        pitch: this.viewer.view()._pitch,
+        fov: this.viewer.view()._fov,
       });
+    };
+    if (config.enable.rotation) {
+      initialRender
+        ? this.viewer.addEventListener("viewChange", updateView)
+        : setTimeout(() => {
+            this.viewer.addEventListener("viewChange", updateView);
+          }, 1000);
     }
 
     // Create scenes.
