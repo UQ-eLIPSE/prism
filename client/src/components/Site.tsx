@@ -86,10 +86,8 @@ function Site(props: SiteInterface) {
   const [currViewParams, setCurrViewParams] = useState<InitialViewParameters>({
     ...config.initial_settings,
   });
-  console.log("Current view params", currViewParams);
   const [lastViewParams, setLastViewParams] =
     useState<InitialViewParameters | null>(null);
-  console.log("Last view params", lastViewParams);
 
   const [currfloor, setCurrFloor] = useState<number>(
     config.initial_settings.floor,
@@ -115,6 +113,7 @@ function Site(props: SiteInterface) {
   const [floorTag, setFloorTag] = useState<string>("");
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
 
+  // Used to detect if page is being rendered for the first time (not switching floors).
   const [initialRender, setInitialRender] = useState<boolean>(true);
 
   useEffect(() => {
@@ -257,7 +256,6 @@ function Site(props: SiteInterface) {
     );
 
     updateViewParams(viewParams);
-    // setLastViewParams(() => viewParams);
     // Open info panel
     getInfoHotspot(info_id);
   }
