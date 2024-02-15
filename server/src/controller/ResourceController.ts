@@ -18,9 +18,8 @@ import { ResourceService } from "../service/ResourceService";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import StreamZip = require("node-stream-zip");
-import * as fs from "fs/promises";
-import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { execSync } from "child_process";
+import { extractZipFile, fileLoop } from "../utils/fileUtil";
 
 export class ResourceController {
   public mantaService: MantaService;
@@ -68,23 +67,12 @@ export class ResourceController {
     // Folder without .zip ext
     const extractedFolder = zipFile[0].filename.replace(".zip", "");
 
-    zip.on("error", (err: string) => {
-      // eslint-disable-next-line no-console
-      console.error(err);
-    });
-
     // Extract the zip file.
-    const zipOp = await new Promise((resolve, reject) => {
-      zip.on("ready", () => {
-        // Extract zip
-        zip.extract(null, `${TMP_FOLDER}/${extractedFolder}`, (err: string) => {
-          ConsoleUtil.error(err ? "Extract error" : "Extracted");
-          zip.close();
-
-          err ? reject() : resolve("Extracted");
-        });
-      });
-    });
+    const zipOp = await extractZipFile(
+      zip,
+      extractedFolder,
+      TMP_FOLDER as string,
+    );
 
     if (!zipOp) return;
 
@@ -93,60 +81,8 @@ export class ResourceController {
       `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/drawings/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
       { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
     );
+
     if (!upload) return CommonUtil.failResponse(res, "Failed to upload files.");
-
-    const fileLoop = async (
-      dirPath: string,
-      topLevelDirectory: IDirectories,
-    ) => {
-      const fullDirPath =
-        dirPath === "/"
-          ? `${TMP_FOLDER}/${extractedFolder}`
-          : `${TMP_FOLDER}/${extractedFolder}/${dirPath}`;
-      const allFiles = await fs.readdir(fullDirPath);
-      for (const currFile of allFiles) {
-        if (currFile.startsWith("._")) continue;
-        const fileStat = await fs.lstat(`${fullDirPath}/${currFile}`);
-        if (fileStat.isDirectory()) {
-          // Add Directory to the directories collection
-          const directory = await new Directories({
-            _id: new ObjectId(),
-            name: currFile,
-            parent: topLevelDirectory._id,
-            site: siteId,
-          });
-
-          await directory.save();
-
-          topLevelDirectory.subdirectories = [
-            ...topLevelDirectory.subdirectories,
-            directory._id,
-          ];
-
-          await topLevelDirectory.save();
-
-          await fileLoop(`${dirPath}/${currFile}`, directory);
-        } else {
-          // Add to files collection and using the given directory,
-          // add association to the directory structure.
-          const file = await new Files({
-            _id: new ObjectId(),
-            name: currFile,
-            url: `https://stluc.manta.uqcloud.net/${MANTA_ROOT_FOLDER}/drawings/${
-              dirPath === "/" ? "" : `${dirPath}/`
-            }${currFile}`,
-            uploaded_at: new Date(),
-            site: siteId,
-          });
-
-          await file.save();
-
-          topLevelDirectory.files = [...topLevelDirectory.files, file._id];
-
-          await topLevelDirectory.save();
-        }
-      }
-    };
 
     const existingTopLevelDirectory = await Directories.findOne({
       parent: { $exists: false },
@@ -161,7 +97,11 @@ export class ResourceController {
     await fileLoop(
       "/",
       existingTopLevelDirectory ? existingTopLevelDirectory : originalDirFolder,
+      extractedFolder,
+      siteId,
+      site.tag,
     );
+
     if (!existingTopLevelDirectory) {
       await originalDirFolder.save();
     }
