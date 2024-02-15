@@ -17,6 +17,7 @@ export default defineConfig({
         floors: false,
         adminUser: true,
         rotation: true,
+        documentation: false,
       },
       {
         project: "uwmt",
@@ -30,6 +31,7 @@ export default defineConfig({
         floors: false,
         adminUser: true,
         rotation: false,
+        documentation: false,
       },
       {
         project: "general",
@@ -43,6 +45,7 @@ export default defineConfig({
         floors: true,
         adminUser: true,
         rotation: true,
+        documentation: true,
       },
     ],
   },
