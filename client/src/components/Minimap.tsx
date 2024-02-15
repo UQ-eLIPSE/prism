@@ -150,7 +150,9 @@ function Minimap(props: MinimapProps) {
     }
 
     if (node == selectedNode) {
-      return `rotate(${rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION}rad)`;
+      return `rotate(${
+        rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION
+      }rad)`;
     } else {
       const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
       const sum = [

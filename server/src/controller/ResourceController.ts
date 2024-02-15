@@ -78,8 +78,7 @@ export class ResourceController {
 
     // Upload the files to Manta.
     const upload = execSync(
-      // eslint-disable-next-line max-len
-      `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/${site.tag}/Documents/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
+      `manta-sync ${TMP_FOLDER}/${extractedFolder} /${MANTA_ROOT_FOLDER}/drawings/ --account=${MANTA_USER} --user=${MANTA_SUB_USER} --role=${MANTA_ROLES} --keyId=${MANTA_KEY_ID} --url=${MANTA_HOST_NAME}`,
       { encoding: "utf-8", maxBuffer: 200 * 1024 * 1024 },
     );
 
