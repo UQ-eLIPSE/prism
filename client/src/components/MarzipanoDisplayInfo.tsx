@@ -1,15 +1,6 @@
 import React from "react";
 import { InitialViewParameters } from "../interfaces/NodeData";
 
-function radToDeg(radians: number): number {
-  return Math.round(((radians * 180) / Math.PI) * 100) / 100;
-}
-
-function pitchToDeg(pitch: number): number {
-  const degrees = Math.round(((pitch * 180) / Math.PI) * 100) / 100;
-  return Math.round(90 - degrees);
-}
-
 interface MarzipanoDisplayInfoProps {
   viewParams: InitialViewParameters;
 }
@@ -18,10 +9,28 @@ const MarzipanoDisplayInfo = ({ viewParams }: MarzipanoDisplayInfoProps) => {
   const { yaw, pitch, fov } = viewParams;
   return (
     <>
-      <p>{`Pitch (tilt): ${pitchToDeg(pitch)}\u00B0`}</p>
-      <p>{`Yaw (rotation): ${radToDeg(parseFloat(yaw.toFixed(2)))}\u00B0`}</p>
-      <p>{`Field of View: ${parseFloat(fov.toFixed(2))}\u00B0`}</p>
+      <p>{`Pitch (Tilt): ${pitchToDeg(pitch)}\u00B0`}</p>
+      <p>{`Yaw (Rotation): ${radToDeg(yaw)}\u00B0`}</p>
+      <p>{`Fov (Zoom): ${fovToPercent(fov, { min: 0.73, max: 1.2 })}%`}</p>
     </>
   );
 };
+
+// Helpers
+function radToDeg(radians: number): number {
+  return Math.round(((radians * 180) / Math.PI) * 100) / 100;
+}
+
+function pitchToDeg(pitch: number): number {
+  return Math.round(90 - radToDeg(pitch));
+}
+
+function fovToPercent(
+  fov: number,
+  range: { min: number; max: number },
+): number {
+  const { min, max } = range;
+  return Math.min(Math.round(((fov - min) / (max - min)) * 100), 100);
+}
+
 export default MarzipanoDisplayInfo;

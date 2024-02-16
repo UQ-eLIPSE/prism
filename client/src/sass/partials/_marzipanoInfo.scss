@@ -12,6 +12,14 @@
 
   line-height: 1em;
   gap: 1em;
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.6);
   padding: 0.5em 2em;
+  color: #fff;
+  border-radius: 0.5rem;
+
+  p {
+    font-size: 1.25rem;
+    font-family: "Lexend Deca", "Lato", "Helvetica Neue", Helvetica, Arial,
+      sans-serif;
+  }
 }

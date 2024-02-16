@@ -471,7 +471,6 @@ function Site(props: SiteInterface) {
         }
         timelineOpen={timelineOpen}
       />
-      <div className="marzipano-info">{`Yaw (rotation): ${currViewParams.yaw}`}</div>
       <div className="marzipano-info">
         <MarzipanoDisplayInfo viewParams={currViewParams} />
       </div>
