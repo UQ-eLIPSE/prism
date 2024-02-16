@@ -16,6 +16,7 @@ import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
 import { SurveyMonth } from "../interfaces/NodeData";
+import MarzipanoDisplayInfo from "./MarzipanoDisplayInfo";
 
 export interface MinimapReturn {
   image_url: string;
@@ -470,6 +471,10 @@ function Site(props: SiteInterface) {
         }
         timelineOpen={timelineOpen}
       />
+      <div className="marzipano-info">{`Yaw (rotation): ${currViewParams.yaw}`}</div>
+      <div className="marzipano-info">
+        <MarzipanoDisplayInfo viewParams={currViewParams} />
+      </div>
       <div
         className={`linkButton ${!config.enable.hotspots_nav && "disabled"}`}
         onClick={(e): void => handleDropdownClick(e, !linkNodeListOpen)}
