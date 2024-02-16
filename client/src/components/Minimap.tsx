@@ -76,7 +76,6 @@ function Minimap(props: MinimapProps) {
           String(props.floor),
           props.currDate,
         );
-        console.log("minimap node data", minimapNodeData);
 
         if (minimapNodeData) {
           editNodes(

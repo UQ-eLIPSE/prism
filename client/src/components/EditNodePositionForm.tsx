@@ -143,13 +143,13 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
       <span>
         MiniMap Initial Rotation Offset:{" "}
         {props.selectedNode &&
-          radiansToDegrees(props.selectedNode.rotation).toFixed(2)}
+          `${Math.round(radiansToDegrees(props.selectedNode.rotation))}\u00B0`}
       </span>
 
       <span>
         Initial Yaw Parameters:{" "}
         {props.selectedNode &&
-          `${yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)}°`}
+          `${yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)}\u00B0`}
       </span>
       <span>
         <label htmlFor={rotationInputConfig.label}>Orientation</label>
@@ -191,10 +191,8 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
 // Additional helpers:
 function radiansToDegrees(radians: number): number {
-  radians = ((radians + Math.PI) % (2 * Math.PI)) - Math.PI;
-
-  const degrees = ((radians + Math.PI) / (2 * Math.PI)) * 360;
-  return degrees < 0 ? degrees + 360 : degrees;
+  const degrees = ((radians + 2 * Math.PI) % (2 * Math.PI)) * (180 / Math.PI);
+  return degrees;
 }
 
 function yawRadToDeg(radians: number): number {
