@@ -29,7 +29,7 @@ import { ConsoleUtil } from "../utils/ConsoleUtil";
  * @returns The newly created MinimapImages object if successful, otherwise throws an error.
  */
 export async function createMinimapImages(siteId: string, floor: string) {
-  const addedMinimapFloorObject = await MinimapImages.create({
+  const addedMinimapFloorImages = await MinimapImages.create({
     _id: new ObjectId(),
     floor: floor,
     floor_name: "Level " + floor,
@@ -42,11 +42,11 @@ export async function createMinimapImages(siteId: string, floor: string) {
     y_pixel_offset: 0,
   });
 
-  if (!addedMinimapFloorObject) {
+  if (!addedMinimapFloorImages) {
     throw new Error("Failed to add images entry to database.");
   }
 
-  return addedMinimapFloorObject;
+  return addedMinimapFloorImages;
 }
 
 // this packages uses require over import
