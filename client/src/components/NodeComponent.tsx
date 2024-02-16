@@ -73,7 +73,6 @@ const NodeComponent = ({
         {node == selectedNode && <div className="positionIndicator selected" />}
         {node.tiles_id === MinimapProps.currPanoId &&
           MinimapProps.config.enable.rotation && (
-            // <div className="positionArrow" />
             <div className={MinimapStyles.nodeContainer}>
               {node.tiles_id === MinimapProps.currPanoId &&
                 MinimapProps.config.enable.rotation && (
