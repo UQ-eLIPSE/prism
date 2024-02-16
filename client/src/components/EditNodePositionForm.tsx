@@ -2,6 +2,7 @@ import React from "react";
 import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
 import { StateObject } from "../interfaces/StateObject";
+import { NewNode } from "../interfaces/MiniMap/NewNode";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
@@ -10,6 +11,7 @@ interface EditNodeFormProps {
   yPositionState: StateObject<number>;
   resetSelectedNode: () => void; // Clears selected node and sets editing to false.
   updateNode: () => Promise<void>;
+  selectedNode: NewNode | null;
 }
 
 // The minimum and maximum values for the rotation and position inputs.
@@ -124,8 +126,17 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     props.resetSelectedNode();
   };
 
+  if (props.selectedNode !== null) {
+    console.log("selectedNode", props.selectedNode.rotation);
+  }
+
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
+      <span>
+        Initial Rotation Offset:{" "}
+        {props.selectedNode &&
+          radiansToDegrees(props.selectedNode.rotation).toFixed(2)}
+      </span>
       <span>
         <label htmlFor={rotationInputConfig.label}>Orientation</label>
         <div>
@@ -163,5 +174,13 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     </form>
   );
 };
+
+// Additional helpers:
+function radiansToDegrees(radians: number): number {
+  radians = ((radians + Math.PI) % (2 * Math.PI)) - Math.PI;
+
+  const degrees = ((radians + Math.PI) / (2 * Math.PI)) * 360;
+  return degrees < 0 ? degrees + 360 : degrees;
+}
 
 export default EditNodeForm;

@@ -76,6 +76,7 @@ function Minimap(props: MinimapProps) {
           String(props.floor),
           props.currDate,
         );
+        console.log("minimap node data", minimapNodeData);
 
         if (minimapNodeData) {
           editNodes(
@@ -252,6 +253,7 @@ function Minimap(props: MinimapProps) {
             yPositionState={{ value: y, setFn: setY }}
             resetSelectedNode={resetSelectedNode}
             updateNode={updateNodeInfo}
+            selectedNode={selectedNode}
           />
         </div>
       </div>
