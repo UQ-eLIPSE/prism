@@ -20,6 +20,7 @@ import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { ParsedQs } from "qs";
+import { createMinimapImages } from "../service/SurveyService";
 
 // these packages use require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -572,18 +573,10 @@ export class SurveyController {
       });
 
       if (JSON.stringify(minimapFloorObject) === "[]") {
-        const addedMinimapFloorObject = await MinimapImages.create({
-          _id: new ObjectId(),
-          floor: floor,
-          floor_name: "Level " + floor,
-          floor_tag: floor,
-          site: new ObjectId(siteId),
-          x_scale: 1,
-          y_scale: 1,
-          xy_flipped: false,
-          x_pixel_offset: 0,
-          y_pixel_offset: 0,
-        });
+        const addedMinimapFloorObject = await createMinimapImages(
+          siteId,
+          floor,
+        );
 
         if (!addedMinimapFloorObject)
           throw new Error("Failed to add empty floor to database.");
