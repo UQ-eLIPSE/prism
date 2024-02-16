@@ -44,7 +44,8 @@ const NodeComponent = ({
       {node.tiles_id === MinimapProps.currPanoId &&
         MinimapProps.config.enable.rotation && (
           <div
-            className={MinimapStyles.nodeContainer}
+            className={`${MinimapStyles.nodeContainer} default-arrow`}
+            // style={getNodeStyle(false)}
             style={{ ...getNodeStyle(false) }}
           >
             {node.tiles_id === MinimapProps.currPanoId &&
@@ -52,7 +53,7 @@ const NodeComponent = ({
                 <Icon
                   className={`fa fa-arrow-up`}
                   style={{
-                    transform: `scale(2) translate(-5px) rotate(${360 - 225}deg)`,
+                    transform: `scale(1.5) translate(-5px) rotate(${360 - 225}deg)`,
                   }}
                 />
               )}
@@ -73,16 +74,13 @@ const NodeComponent = ({
         {node.tiles_id === MinimapProps.currPanoId &&
           MinimapProps.config.enable.rotation && (
             // <div className="positionArrow" />
-            <div
-              className={MinimapStyles.nodeContainer}
-              style={getNodeStyle(false)}
-            >
+            <div className={MinimapStyles.nodeContainer}>
               {node.tiles_id === MinimapProps.currPanoId &&
                 MinimapProps.config.enable.rotation && (
                   <Icon
-                    className={`fa fa-arrow-up`}
+                    className={`fa fa-arrow-up arrow`}
                     style={{
-                      transform: `${configureRotation(node)} scale(1.5) translateX(10px)`,
+                      transform: ` scale(1.5)`,
                       color: "red",
                     }}
                   />
