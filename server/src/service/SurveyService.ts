@@ -167,6 +167,11 @@ export abstract class SurveyService {
         floor_name: "Level " + floor,
         floor_tag: floor,
         site: new ObjectId(siteId),
+        x_scale: 1,
+        y_scale: 1,
+        xy_flipped: false,
+        x_pixel_offset: 0,
+        y_pixel_offset: 0,
       });
 
       return insertFloor;
@@ -290,7 +295,6 @@ export abstract class SurveyService {
           if (!minimapNode) reject("Minimap Node cannot be uploaded");
 
           // Upload Minimap conversions with the provided x/y coords from the CSV
-
           const minimapConversion = await MinimapConversion.create([
             {
               _id: new ObjectId(),
