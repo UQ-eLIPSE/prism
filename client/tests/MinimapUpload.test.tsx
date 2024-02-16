@@ -8,22 +8,22 @@ beforeAll(() => {
 });
 
 const mockMinimapData: MinimapReturn = {
-    image_url: "",
-    floor: 1,
-    site: "",
-    image_large_url: "",
-    x_pixel_offset: 0,
-    y_pixel_offset: 0,
-    x_scale: 1,
-    y_scale: 1,
-    img_width: 100,
-    img_height: 100,
-    xy_flipped: false,
-    __v: 0,
-    floor_name: "",
-    floor_tag: "",
-    image: "",
-  };
+  image_url: "",
+  floor: 1,
+  site: "",
+  image_large_url: "",
+  x_pixel_offset: 0,
+  y_pixel_offset: 0,
+  x_scale: 1,
+  y_scale: 1,
+  img_width: 100,
+  img_height: 100,
+  xy_flipped: false,
+  __v: 0,
+  floor_name: "",
+  floor_tag: "",
+  image: "",
+};
 
 const mockProps = {
   setMapHover: jest.fn(),
@@ -51,12 +51,14 @@ describe("MinimapUpdate Component", () => {
   });
 
   test("handles drop event", () => {
-    const mockFile = new File(["dummy content"], "example.png", { type: "image/png" });
+    const mockFile = new File(["dummy content"], "example.png", {
+      type: "image/png",
+    });
     const dataTransfer = { files: [mockFile] };
     const { getByTestId } = render(<MinimapUpdate {...mockProps} />);
     const dropZone = getByTestId("drop-zone");
     fireEvent.drop(dropZone, { dataTransfer });
-    
+
     expect(mockProps.setMapHover).toHaveBeenCalledWith(false);
     expect(mockProps.setSelectedImage).toHaveBeenCalledWith(mockFile);
     expect(mockProps.setImageUrl).toHaveBeenCalled();
