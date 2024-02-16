@@ -20,6 +20,7 @@ function NodeCollection({
   x,
   y,
   handleNodeClick,
+  configureRotationTo0,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -52,6 +53,7 @@ function NodeCollection({
             MinimapProps={MinimapProps}
             isMapEnlarged={MinimapProps.minimapEnlarged}
             configureRotation={configureRotation}
+            configureRotationTo0={configureRotationTo0}
             handleNodeClick={handleNodeClick}
           />
         );

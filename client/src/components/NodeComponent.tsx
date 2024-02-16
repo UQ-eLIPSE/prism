@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import { NodeComponentProps } from "../interfaces/NodeData";
+import Icon from "@material-ui/core/Icon";
 
 /**
  * NodeComponent renders a single node within the minimap, including its position,
@@ -22,6 +23,7 @@ const NodeComponent = ({
   MinimapProps,
   isMapEnlarged,
   configureRotation,
+  configureRotationTo0,
   handleNodeClick,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
@@ -32,12 +34,31 @@ const NodeComponent = ({
       transform: includeTransform ? configureRotation(node) : "none",
     };
   };
-
+  console.log("config to 0", configureRotationTo0(node));
+  console.log("config", configureRotation(node));
   return (
     <div
       key={index}
       className={node == selectedNode ? "currentSelectedNode" : ""}
     >
+      {node.tiles_id === MinimapProps.currPanoId &&
+        MinimapProps.config.enable.rotation && (
+          <div
+            className={MinimapStyles.nodeContainer}
+            style={{ ...getNodeStyle(false) }}
+          >
+            {node.tiles_id === MinimapProps.currPanoId &&
+              MinimapProps.config.enable.rotation && (
+                <Icon
+                  className={`fa fa-arrow-up`}
+                  style={{
+                    transform: `scale(2) translate(-5px) rotate(${360 - 225}deg)`,
+                  }}
+                />
+              )}
+          </div>
+        )}
+
       <div
         className={MinimapStyles.nodeContainer}
         style={getNodeStyle()}
@@ -49,6 +70,25 @@ const NodeComponent = ({
           )}
 
         {node == selectedNode && <div className="positionIndicator selected" />}
+        {node.tiles_id === MinimapProps.currPanoId &&
+          MinimapProps.config.enable.rotation && (
+            // <div className="positionArrow" />
+            <div
+              className={MinimapStyles.nodeContainer}
+              style={getNodeStyle(false)}
+            >
+              {node.tiles_id === MinimapProps.currPanoId &&
+                MinimapProps.config.enable.rotation && (
+                  <Icon
+                    className={`fa fa-arrow-up`}
+                    style={{
+                      transform: `${configureRotation(node)} scale(1.5) translateX(10px)`,
+                      color: "red",
+                    }}
+                  />
+                )}
+            </div>
+          )}
 
         <div
           className={classNames(MinimapStyles.node, {

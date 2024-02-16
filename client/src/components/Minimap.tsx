@@ -164,6 +164,16 @@ function Minimap(props: MinimapProps) {
     }
   }
 
+  function configureRotationTo0(node: NewNode): string {
+    // Convert the UI's zero rotation from degrees to radians
+    const uiZeroRotationInRadians = 3.92699;
+
+    // Subtract the node's rotation from the UI's zero rotation
+    const zeroEquivalentRotation = uiZeroRotationInRadians - node.rotation;
+
+    return `rotate(${zeroEquivalentRotation}rad)`;
+  }
+
   async function updateNodeInfo(): Promise<void> {
     const newX: number = MinimapUtils.calculateNewXY(
       props.minimapData.img_width,
@@ -400,6 +410,7 @@ function Minimap(props: MinimapProps) {
                   selectedNode={selectedNode}
                   MinimapProps={props}
                   configureRotation={configureRotation}
+                  configureRotationTo0={configureRotationTo0}
                   x={x}
                   y={y}
                   handleNodeClick={handleNodeClick}
