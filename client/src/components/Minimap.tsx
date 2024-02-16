@@ -254,6 +254,7 @@ function Minimap(props: MinimapProps) {
             resetSelectedNode={resetSelectedNode}
             updateNode={updateNodeInfo}
             selectedNode={selectedNode}
+            nodesData={props.nodeData}
           />
         </div>
       </div>
