@@ -20,8 +20,14 @@ import { ObjectId } from "bson";
 import { uploadZipManta } from "../utils/mantaUtil";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
 
-// this packages uses require over import
-
+/**
+ * createMinimapImages
+ * Creates a new entry in the MinimapImages collection for a given site and floor.
+ * The new entry includes default values for scale, offset, and xy_flipped properties.
+ * @param siteId - The unique identifier of the site.
+ * @param floor - The floor number for which the minimap image is being created.
+ * @returns The newly created MinimapImages object if successful, otherwise throws an error.
+ */
 export async function createMinimapImages(siteId: string, floor: string) {
   const addedMinimapFloorObject = await MinimapImages.create({
     _id: new ObjectId(),
@@ -37,12 +43,13 @@ export async function createMinimapImages(siteId: string, floor: string) {
   });
 
   if (!addedMinimapFloorObject) {
-    throw new Error("Failed to add empty floor to database.");
+    throw new Error("Failed to add images entry to database.");
   }
 
   return addedMinimapFloorObject;
 }
 
+// this packages uses require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const StreamZip = require("node-stream-zip");
 
@@ -183,18 +190,6 @@ export abstract class SurveyService {
     });
 
     if (!minimapFloorObject.length) {
-      // const insertFloor = await MinimapImages.create({
-      //   _id: new ObjectId(),
-      //   floor: floor,
-      //   floor_name: "Level " + floor,
-      //   floor_tag: floor,
-      //   site: new ObjectId(siteId),
-      //   x_scale: 1,
-      //   y_scale: 1,
-      //   xy_flipped: false,
-      //   x_pixel_offset: 0,
-      //   y_pixel_offset: 0,
-      // });
       const insertFloorToMinimap = await createMinimapImages(siteId, floor);
       return insertFloorToMinimap;
     }
