@@ -1,8 +1,0 @@
-1|.env.AGCO360.example|agco360|agco360_mongodump_2023-11-20
-2|.env.ANLB.sample|anlb|andrew_liveris_mongodump_2023-11-20
-3|.env.kingston.sample|kingston|kingston_mongodump_2023-11-20
-4|.env.urban_water_new.example|urban_water|urban_water_mongodump_2023-11-20
-5|.env.camphill.example|camphill|camphill_mongodump_2023-11-20
-6|.env.aeb.example|aeb|aeb_mongodump_2023-11-20
-7|.env.uqlakes.example|uqlakes|uqlakes_mongodump_2023-11-20
-
