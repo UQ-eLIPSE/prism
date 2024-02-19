@@ -75,14 +75,13 @@ Make sure before running this server, you have the `prism-tst-id_rsa` key in the
 
 In principle, development process will based on the test database `prism_uat`. When you run the bash script `run_project_docker.sh`, you will get latest dumpdata from prism_uat zone.
 
-### Get product data
+### Get product dumpdata
 
 In some case, the product database will be needed to test in a development environment, you can get the dumpdata by:
-Navigate to server folder:
 
-- `cd server`
-- `./get_mongodumps.sh`
-- `mongorestore ./prism_mongodumps/<project-name>/<restore-file-name>`
+- navigate to prism root
+- run `./server/get_mongodumps.sh` to get product dumpdata
+- restore by `mongorestore ./prism_mongodumps/<project-name>/<restore-file-name>`
 
 ## Creating a new PRISM UAT zone with Ansible
 
