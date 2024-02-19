@@ -81,7 +81,7 @@ In some case, the product database will be needed to test in a development envir
 
 - navigate to prism root
 - run `./server/get_mongodumps.sh` to get product dumpdata
-- restore by `mongorestore ./prism_mongodumps/<project-name>/<restore-file-name>`
+- restore by `mongorestore ./server/prism_mongodumps/<project-name>/<restore-file-name>`
 
 ## Creating a new PRISM UAT zone with Ansible
 
