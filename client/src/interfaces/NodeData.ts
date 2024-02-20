@@ -126,3 +126,17 @@ export interface NodeComponentProps extends NodePropsBase {
   xPosition: number;
   isMapEnlarged: boolean;
 }
+
+/**
+ * This interface represents the current node's position and rotation in the minimap.
+ * It is used to update the node's position and rotation in the database.
+ * @interface NodeConfiguration
+ * @property {number} x_position 0 - 100 horizontal percentage position of the node.
+ * @property {number} y_position 0 - 100 vertical percentage position of the node.
+ * @property {number} rotation 0 - 360 degrees rotation of the node.
+ */
+export interface NodeConfiguration {
+  x_position: number;
+  y_position: number;
+  rotation: number;
+}
