@@ -7,7 +7,11 @@ import Timeline from "./Timeline";
 import TimelineButton from "./TimelineButton";
 import LinkNodes from "./LinkNodes";
 import Marzipano from "../utils/Marzipano/Marzipano";
-import { NodeData, InitialViewParameters } from "../interfaces/NodeData";
+import {
+  NodeData,
+  InitialViewParameters,
+  NodeConfiguration,
+} from "../interfaces/NodeData";
 import NetworkCalls from "../utils/NetworkCalls";
 import { HotspotDescription } from "../interfaces/HotspotDescription";
 import LevelSlider from "./LevelSlider";
@@ -108,6 +112,11 @@ function Site(props: SiteInterface) {
   const [minimap, setMinimap] = useState<MinimapReturn>(MinimapInitial);
   const [floorTag, setFloorTag] = useState<string>("");
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
+  const [nodeState, setNodeState] = useState<NodeConfiguration>({
+    x_position: parseFloat(currPanoId.split("_")[3]),
+    y_position: parseFloat(currPanoId.split("_")[4]),
+    rotation: 0,
+  });
 
   useEffect(() => {
     if (marzipano.current) {
@@ -255,6 +264,10 @@ function Site(props: SiteInterface) {
     setCurrViewParams(viewParams);
   }
 
+  function updateNodeState(nodeState: NodeConfiguration): void {
+    setNodeState(nodeState);
+  }
+
   function getSurveyNodes(floor: number = 0): void {
     const viewParams = currViewParams;
 
@@ -281,7 +294,6 @@ function Site(props: SiteInterface) {
 
           setNodesData(nodesData);
 
-          // Get correct minimap image on initial load.
           getMinimapImage(floor);
           if (!marzipano.current && floorExists) {
             marzipano.current = new Marzipano(
@@ -294,35 +306,41 @@ function Site(props: SiteInterface) {
               config,
             );
           }
-          // Get current tile id based on previous node number
-          let currentTilesId = nodesData[0].minimap_node.tiles_id;
-          let xDifference = 10000;
-          let yDifference = 10000;
-          const xOffset = currPanoId.split("_")[3];
-          const yOffset = currPanoId.split("_")[4];
 
-          for (const node of nodesData) {
-            const xDiff = Math.abs(Number(xOffset) - node.x);
-            const yDiff = Math.abs(Number(yOffset) - node.y);
-            if (
-              node.x.toString() === xOffset &&
-              node.y.toString() === yOffset
-            ) {
-              currentTilesId = node.minimap_node.tiles_id;
-              break;
-            } else if (xDifference > xDiff && yDifference > yDiff) {
-              xDifference = xDiff;
-              yDifference = yDiff;
-              currentTilesId = node.minimap_node.tiles_id;
+          // Calculate nearest node based on x and y coordinates
+          let nearestNodeId = nodesData[0].minimap_node.tiles_id; // Default to first node's ID
+          let nearestNodeX = nodesData[0].x;
+          let nearestNodeY = nodesData[0].y;
+          let smallestDistance = Infinity; // Initialize with a large number
+
+          const previousXOffset = nodeState.x_position;
+          const previousYOffset = nodeState.y_position;
+
+          nodesData.forEach((node) => {
+            const xDiff = Math.abs(previousXOffset - node.x);
+            const yDiff = Math.abs(previousYOffset - node.y);
+            const distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff); // Calculate Euclidean distance
+
+            if (distance < smallestDistance) {
+              smallestDistance = distance;
+              nearestNodeId = node.minimap_node.tiles_id; // Update nearest node ID
+              nearestNodeX = node.x;
+              nearestNodeY = node.y;
             }
-          }
+          });
+
+          // Update currPanoId to the nearest node
+          setCurrPanoId(nearestNodeId); // Assuming setCurrPanoId is available in your context
+          setNodeState((prevState) => ({
+            ...prevState,
+            x_position: nearestNodeX,
+            y_position: nearestNodeY,
+          }));
 
           minimapClick(
-            nodesData.some(
-              (e: NodeData) => e.minimap_node.tiles_id === currPanoId,
-            )
+            nodesData.some((node) => node.minimap_node.tiles_id === currPanoId)
               ? currPanoId
-              : currentTilesId,
+              : nearestNodeId,
           );
 
           if (
@@ -344,6 +362,7 @@ function Site(props: SiteInterface) {
       }
     }
   }
+
   function changeDate(date: Date): void {
     setCurrDate(date);
   }
@@ -544,6 +563,7 @@ function Site(props: SiteInterface) {
           updateFloorTag={(input: string) => setFloorTag(input)}
           minimapShown={floorExists}
           currDate={currDate}
+          setNodeState={updateNodeState}
         />
         {config.enable.floors && !minimapEnlarged && (
           <LevelSlider
