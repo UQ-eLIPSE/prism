@@ -1,7 +1,8 @@
 import { testEachZone } from "../testutils";
 
 testEachZone((zone: Cypress.PrismZone) => {
-  describe("Test case:Documentation Test", () => {
+  //These test suites will remain inactive for the time being, as the functionality for uploading documentation through the UI is still under development and has been disabled.
+  describe.skip("Test case:Documentation Test", () => {
     beforeEach(() => {
       cy.accessZone(zone);
       if (!zone.adminUser || !zone.documentation) return;

@@ -371,7 +371,7 @@ export default function Documentation(props: Props) {
       {user?.isAdmin && (
         <div
           style={{
-            display: "inline-block",
+            display: "none", // should be "inline-block" when you want to display
             marginLeft: "7em",
             marginTop: "2em",
           }}
