@@ -27,6 +27,15 @@ const MinimapUpdate = ({
     }
   };
 
+  const dragDropClass = mapHover
+    ? "displayed light dropUpload"
+    : `${!imageUrl || !minimapdata ? "displayed" : "light"}`;
+  const iconClass = `fa-solid ${mapHover ? "fa-cloud-arrow-up" : "fa-file-image"}`;
+  const messageText = mapHover
+    ? "Drop Image to Upload"
+    : "Upload Minimap Image";
+  const dropUploadHoverClass = mapHover ? "dropUploadHover" : "";
+
   return (
     <div
       className="minimap-drag-drop"
@@ -38,21 +47,10 @@ const MinimapUpdate = ({
       onDrop={handleDrop}
       data-testid="drop-zone"
     >
-      <label
-        className={
-          mapHover
-            ? "displayed light dropUpload"
-            : `${!imageUrl || !minimapdata ? "displayed" : "light"}`
-        }
-        htmlFor="select-image"
-      >
-        <span className={`${mapHover && "dropUploadHover"}`}>
-          <i
-            className={`fa-solid ${
-              mapHover ? "fa-cloud-arrow-up" : "fa-file-image"
-            }`}
-          ></i>
-          <p>{mapHover ? "Drop Image to Upload" : "Upload Minimap Image"}</p>
+      <label className={dragDropClass} htmlFor="select-image">
+        <span className={dropUploadHoverClass}>
+          <i className={iconClass}></i>
+          <p>{messageText}</p>
         </span>
       </label>
     </div>
