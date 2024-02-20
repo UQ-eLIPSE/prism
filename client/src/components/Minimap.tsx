@@ -15,6 +15,7 @@ import FloorDetailsForm from "./FloorDetailsForm";
 import ToggleEditNodeButton from "./ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
 import SubmitOrCancelButtons from "./SubmitOrCancelButtons";
+import MinimapUpdate from "./MinimapUpload";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -345,53 +346,15 @@ function Minimap(props: MinimapProps) {
                   }}
                 />
               ) : (
-                <div
-                  className="minimap-drag-drop"
-                  onDragOver={() => setMapHover(true)}
-                  onDragLeave={(e) => {
-                    if (e.target instanceof HTMLDivElement) {
-                      setMapHover(false);
-                    }
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setMapHover(false);
-                    if (
-                      e.dataTransfer.files[0] &&
-                      e.dataTransfer.files[0].type.includes("image/")
-                    ) {
-                      setSelectedImage(e.dataTransfer.files[0]);
-                      setImageUrl(URL.createObjectURL(e.dataTransfer.files[0]));
-                      setPendingUpload(true);
-                    }
-                  }}
-                >
-                  <label
-                    className={
-                      mapHover
-                        ? "displayed light dropUpload"
-                        : `${
-                            !imageUrl || !props.minimapData
-                              ? "displayed"
-                              : "light"
-                          }`
-                    }
-                    htmlFor="select-image"
-                  >
-                    <span className={`${mapHover && "dropUploadHover"}`}>
-                      <i
-                        className={`fa-solid ${
-                          mapHover ? "fa-cloud-arrow-up" : "fa-file-image"
-                        }`}
-                      ></i>
-                      <p>
-                        {mapHover
-                          ? "Drop Image to Upload"
-                          : "Upload Minimap Image"}
-                      </p>
-                    </span>
-                  </label>
-                </div>
+                <MinimapUpdate
+                  setMapHover={setMapHover}
+                  setSelectedImage={setSelectedImage}
+                  setImageUrl={setImageUrl}
+                  setPendingUpload={setPendingUpload}
+                  mapHover={mapHover}
+                  imageUrl={imageUrl}
+                  minimapdata={props.minimapData}
+                />
               )}
 
               {props.minimapData && imageUrl && (
