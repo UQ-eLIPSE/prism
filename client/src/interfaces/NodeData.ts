@@ -140,3 +140,9 @@ export interface NodeConfiguration {
   y_position: number;
   rotation: number;
 }
+
+export interface NearestNode {
+  nearestNodeId: string;
+  nearestNodeX: number;
+  nearestNodeY: number;
+}

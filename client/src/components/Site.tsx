@@ -11,6 +11,7 @@ import {
   NodeData,
   InitialViewParameters,
   NodeConfiguration,
+  NearestNode,
 } from "../interfaces/NodeData";
 import NetworkCalls from "../utils/NetworkCalls";
 import { HotspotDescription } from "../interfaces/HotspotDescription";
@@ -20,6 +21,7 @@ import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
 import { SurveyMonth } from "../interfaces/NodeData";
+import MinimapUtils from "../utils/MinimapUtils";
 
 export interface MinimapReturn {
   image_url: string;
@@ -38,12 +40,6 @@ export interface MinimapReturn {
   floor_name: string;
   floor_tag: string;
   image: string;
-}
-
-interface NearestNode {
-  nearestNodeId: string;
-  nearestNodeX: number;
-  nearestNodeY: number;
 }
 
 const MinimapInitial = {
@@ -316,7 +312,8 @@ function Site(props: SiteInterface) {
 
       getMinimapImage(floor);
       initializeMarzipano(floor, nodesData);
-      const nearestNode = findNearestNode(nodesData);
+      // const nearestNode = findNearestNode(nodesData,nodeState);
+      const nearestNode = MinimapUtils.findNearestNode(nodesData, nodeState);
       updateViewAndMinimap(nearestNode, nodesData);
     });
   }
@@ -338,36 +335,6 @@ function Site(props: SiteInterface) {
         config,
       );
     }
-  }
-
-  /**
-   * Finds the nearest node to the current position from the array of nodes data.
-   * @param {Array} nodesData - The data of the nodes retrieved from the survey.
-   * @returns {Object} The nearest node's data, including its ID, x, and y coordinates.
-   */
-  function findNearestNode(nodesData: NodeData[]): NearestNode {
-    let nearestNodeId = nodesData[0].minimap_node.tiles_id;
-    let nearestNodeX = nodesData[0].x;
-    let nearestNodeY = nodesData[0].y;
-    let smallestDistance = Infinity;
-
-    const previousXOffset = nodeState.x_position;
-    const previousYOffset = nodeState.y_position;
-
-    nodesData.forEach((node) => {
-      const xDiff = Math.abs(previousXOffset - node.x);
-      const yDiff = Math.abs(previousYOffset - node.y);
-      const distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-
-      if (distance < smallestDistance) {
-        smallestDistance = distance;
-        nearestNodeId = node.minimap_node.tiles_id;
-        nearestNodeX = node.x;
-        nearestNodeY = node.y;
-      }
-    });
-
-    return { nearestNodeId, nearestNodeX, nearestNodeY };
   }
 
   /**
