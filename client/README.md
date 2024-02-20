@@ -1,33 +1,27 @@
 **PRISM client**
 
-This README should contain details on how to configure the server of the PRISM client.
-
 _Techstack_
 
 - React
 - Node 20
 
-## List of files to configure
-
-- .env
-  - SKIP_PREFLIGHT_CHECK - Skips preflight checks
-  - REACT_APP_BASE_URL - Project base url
-
-## Running
-
-git clone git@bitbucket.org:elipse-team/prism-client.git
-cd prism-client
-cp .env.develop.example .env
-
-### Running Locally
+## Running Locally
 
 yarn && yarn start
 
-### Running on zone
+### configure env variables
+
+Client side use standardized env.js which located inside `client/public/` folder including configuration for:
+
+- `API_URL`: Backend API
+- `PROJECT_TITLE`: (for products deployment, will be resign a value via Ansible Playbook script)
+- `SSO` (for products, SSO will be resign a value via Ansible Playbook script)
+
+## Running on zone
 
 yarn && yarn build
 
-### Linting and Prettier
+## Linting and Prettier
 
 It is always good practice to lint and prettier your code prior to review,
 use this command to check that all linting errors are fixed and the code
