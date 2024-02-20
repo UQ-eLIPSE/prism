@@ -312,7 +312,6 @@ function Site(props: SiteInterface) {
 
       getMinimapImage(floor);
       initializeMarzipano(floor, nodesData);
-      // const nearestNode = findNearestNode(nodesData,nodeState);
       const nearestNode = MinimapUtils.findNearestNode(nodesData, nodeState);
       updateViewAndMinimap(nearestNode, nodesData);
     });
