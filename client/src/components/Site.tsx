@@ -281,7 +281,7 @@ function Site(props: SiteInterface) {
    * It also handles aborting the last network request if necessary. If no Marzipano
    * instance exists, it initializes a new abort controller for upcoming network requests.
    */
-  function resetViewerAndAbortCalls() {
+  function resetViewerAndAbortCalls(): void {
     if (marzipano.current !== undefined) {
       marzipano.current.viewer.domElement().innerHTML = "<div></div>";
       marzipano.current.viewer.destroyAllScenes();
@@ -301,7 +301,7 @@ function Site(props: SiteInterface) {
    * this data to update the state and possibly initialize or update the Marzipano viewer.
    * @param {number} floor - The floor number for which to fetch survey nodes.
    */
-  function fetchAndProcessSurveyNodes(floor: number) {
+  function fetchAndProcessSurveyNodes(floor: number): void {
     NetworkCalls.fetchSurveyNodes(
       floor,
       siteId,
@@ -326,7 +326,7 @@ function Site(props: SiteInterface) {
    * @param {number} floor - The floor number for which the Marzipano viewer is being initialized.
    * @param {Array} nodesData - The data of the nodes retrieved from the survey.
    */
-  function initializeMarzipano(floor: number, nodesData: NodeData[]) {
+  function initializeMarzipano(floor: number, nodesData: NodeData[]): void {
     if (!marzipano.current && floorExists) {
       marzipano.current = new Marzipano(
         nodesData,
@@ -345,7 +345,7 @@ function Site(props: SiteInterface) {
    * @param {Array} nodesData - The data of the nodes retrieved from the survey.
    * @returns {Object} The nearest node's data, including its ID, x, and y coordinates.
    */
-  function findNearestNode(nodesData: NodeData[]) {
+  function findNearestNode(nodesData: NodeData[]): NearestNode {
     let nearestNodeId = nodesData[0].minimap_node.tiles_id;
     let nearestNodeX = nodesData[0].x;
     let nearestNodeY = nodesData[0].y;
@@ -379,7 +379,7 @@ function Site(props: SiteInterface) {
   function updateViewAndMinimap(
     nearestNode: NearestNode,
     nodesData: NodeData[],
-  ) {
+  ): void {
     setCurrPanoId(nearestNode.nearestNodeId);
     setNodeState((prevState) => ({
       ...prevState,
@@ -401,7 +401,7 @@ function Site(props: SiteInterface) {
    * This function checks if the Marzipano viewer and the current scene are initialized,
    * then updates the view parameters if they are not set to their default values.
    */
-  function updateMarzipanoView() {
+  function updateMarzipanoView(): void {
     const viewParams = currViewParams;
     if (
       viewParams.fov !== 0 ||
@@ -423,7 +423,7 @@ function Site(props: SiteInterface) {
    * survey nodes for the specified floor.
    * @param {number} [floor=0] - The floor number for which to fetch survey nodes. Defaults to 0.
    */
-  function getSurveyNodes(floor = 0) {
+  function getSurveyNodes(floor: number = 0): void {
     if (floor !== Infinity) {
       resetViewerAndAbortCalls();
       fetchAndProcessSurveyNodes(floor);
