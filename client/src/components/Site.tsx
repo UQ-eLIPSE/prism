@@ -39,6 +39,13 @@ export interface MinimapReturn {
   floor_tag: string;
   image: string;
 }
+
+interface NearestNode {
+  nearestNodeId: string;
+  nearestNodeX: number;
+  nearestNodeY: number;
+}
+
 const MinimapInitial = {
   image_url: "",
   floor: 0,
@@ -268,98 +275,119 @@ function Site(props: SiteInterface) {
     setNodeState(nodeState);
   }
 
-  function getSurveyNodes(floor: number = 0): void {
-    const viewParams = currViewParams;
+  function resetViewerAndAbortCalls() {
+    if (marzipano.current !== undefined) {
+      marzipano.current.viewer.domElement().innerHTML = "<div></div>";
+      marzipano.current.viewer.destroyAllScenes();
 
-    if (floor !== Infinity) {
-      if (marzipano.current !== undefined) {
-        marzipano.current.viewer.domElement().innerHTML = "<div></div>";
-        marzipano.current.viewer.destroyAllScenes();
-
-        if (abortController.length > 1) {
-          abortController[abortController.length - 1].abort();
-          abortController.pop();
-        }
-      } else {
-        abortController.push(new AbortController());
-        NetworkCalls.fetchSurveyNodes(
-          floor,
-          siteId,
-          abortController[abortController.length - 1],
-          currDate,
-        ).then((nodesData) => {
-          panoRef?.current?.childNodes && panoRef?.current?.replaceChildren("");
-
-          if (!nodesData || !nodesData.length) return;
-
-          setNodesData(nodesData);
-
-          getMinimapImage(floor);
-          if (!marzipano.current && floorExists) {
-            marzipano.current = new Marzipano(
-              nodesData,
-              getInfoHotspot,
-              updateCurrPano,
-              updateRotation,
-              updateViewParams,
-              changeInfoPanelOpen,
-              config,
-            );
-          }
-
-          // Calculate nearest node based on x and y coordinates
-          let nearestNodeId = nodesData[0].minimap_node.tiles_id; // Default to first node's ID
-          let nearestNodeX = nodesData[0].x;
-          let nearestNodeY = nodesData[0].y;
-          let smallestDistance = Infinity; // Initialize with a large number
-
-          const previousXOffset = nodeState.x_position;
-          const previousYOffset = nodeState.y_position;
-
-          nodesData.forEach((node) => {
-            const xDiff = Math.abs(previousXOffset - node.x);
-            const yDiff = Math.abs(previousYOffset - node.y);
-            const distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff); // Calculate Euclidean distance
-
-            if (distance < smallestDistance) {
-              smallestDistance = distance;
-              nearestNodeId = node.minimap_node.tiles_id; // Update nearest node ID
-              nearestNodeX = node.x;
-              nearestNodeY = node.y;
-            }
-          });
-
-          // Update currPanoId to the nearest node
-          setCurrPanoId(nearestNodeId); // Assuming setCurrPanoId is available in your context
-          setNodeState((prevState) => ({
-            ...prevState,
-            x_position: nearestNodeX,
-            y_position: nearestNodeY,
-          }));
-
-          minimapClick(
-            nodesData.some((node) => node.minimap_node.tiles_id === currPanoId)
-              ? currPanoId
-              : nearestNodeId,
-          );
-
-          if (
-            viewParams.fov !== 0 ||
-            viewParams.pitch !== 0 ||
-            viewParams.yaw !== 0
-          ) {
-            if (
-              marzipano.current &&
-              marzipano.current.findSceneById(currPanoId)
-            ) {
-              marzipano.current.updateCurrView(
-                viewParams,
-                marzipano.current.findSceneById(currPanoId),
-              );
-            }
-          }
-        });
+      if (abortController.length > 1) {
+        abortController[abortController.length - 1].abort();
+        abortController.pop();
       }
+    } else {
+      abortController.push(new AbortController());
+    }
+  }
+
+  function fetchAndProcessSurveyNodes(floor: number) {
+    NetworkCalls.fetchSurveyNodes(
+      floor,
+      siteId,
+      abortController[abortController.length - 1],
+      currDate,
+    ).then((nodesData) => {
+      panoRef?.current?.childNodes && panoRef?.current?.replaceChildren("");
+
+      if (!nodesData || !nodesData.length) return;
+
+      setNodesData(nodesData);
+
+      getMinimapImage(floor);
+      initializeMarzipanoIfNeeded(floor, nodesData);
+      const nearestNode = findNearestNode(nodesData);
+      updateViewAndMinimap(nearestNode, nodesData);
+    });
+  }
+
+  function initializeMarzipanoIfNeeded(floor: number, nodesData: NodeData[]) {
+    if (!marzipano.current && floorExists) {
+      marzipano.current = new Marzipano(
+        nodesData,
+        getInfoHotspot,
+        updateCurrPano,
+        updateRotation,
+        updateViewParams,
+        changeInfoPanelOpen,
+        config,
+      );
+    }
+  }
+
+  function findNearestNode(nodesData: NodeData[]) {
+    let nearestNodeId = nodesData[0].minimap_node.tiles_id;
+    let nearestNodeX = nodesData[0].x;
+    let nearestNodeY = nodesData[0].y;
+    let smallestDistance = Infinity;
+
+    const previousXOffset = nodeState.x_position;
+    const previousYOffset = nodeState.y_position;
+
+    nodesData.forEach((node) => {
+      const xDiff = Math.abs(previousXOffset - node.x);
+      const yDiff = Math.abs(previousYOffset - node.y);
+      const distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        nearestNodeId = node.minimap_node.tiles_id;
+        nearestNodeX = node.x;
+        nearestNodeY = node.y;
+      }
+    });
+
+    return { nearestNodeId, nearestNodeX, nearestNodeY };
+  }
+
+  function updateViewAndMinimap(
+    nearestNode: NearestNode,
+    nodesData: NodeData[],
+  ) {
+    setCurrPanoId(nearestNode.nearestNodeId);
+    setNodeState((prevState) => ({
+      ...prevState,
+      x_position: nearestNode.nearestNodeX,
+      y_position: nearestNode.nearestNodeY,
+    }));
+
+    minimapClick(
+      nodesData.some((node) => node.minimap_node.tiles_id === currPanoId)
+        ? currPanoId
+        : nearestNode.nearestNodeId,
+    );
+
+    updateMarzipanoViewIfNeeded();
+  }
+
+  function updateMarzipanoViewIfNeeded() {
+    const viewParams = currViewParams;
+    if (
+      viewParams.fov !== 0 ||
+      viewParams.pitch !== 0 ||
+      viewParams.yaw !== 0
+    ) {
+      if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
+        marzipano.current.updateCurrView(
+          viewParams,
+          marzipano.current.findSceneById(currPanoId),
+        );
+      }
+    }
+  }
+
+  function getSurveyNodes(floor = 0) {
+    if (floor !== Infinity) {
+      resetViewerAndAbortCalls();
+      fetchAndProcessSurveyNodes(floor);
     }
   }
 
