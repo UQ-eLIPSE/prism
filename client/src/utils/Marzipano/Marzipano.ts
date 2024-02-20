@@ -96,22 +96,14 @@ export default class MarzipanoHelper {
       const scene = this.viewer.createScene({
         source: Marzipano.ImageUrlSource.fromString(
           // THIS IS NOT A FIX - Permenant solution needs to be made with file management.
-          config.display.title === "Boomaroo Nurseries"
-            ? nodeData.survey_node.manta_link +
-                nodeData.minimap_node.tiles_id +
-                "/{z}/{f}/{y}/{x}.jpg"
-            : nodeData.survey_node.manta_link +
-                nodeData.minimap_node.tiles_id +
-                "/{z}/{f}/{y}/{x}.jpg",
+          nodeData.survey_node.manta_link +
+            nodeData.minimap_node.tiles_id +
+            "/{z}/{f}/{y}/{x}.jpg",
           {
             cubeMapPreviewUrl:
-              config.display.title === "Boomaroo Nurseries"
-                ? nodeData.survey_node.manta_link +
-                  nodeData.minimap_node.tiles_id +
-                  "/preview.jpg"
-                : nodeData.survey_node.manta_link +
-                  nodeData.minimap_node.tiles_id +
-                  "/preview.jpg",
+              nodeData.survey_node.manta_link +
+              nodeData.minimap_node.tiles_id +
+              "/preview.jpg",
           },
         ),
         geometry: geometry,
