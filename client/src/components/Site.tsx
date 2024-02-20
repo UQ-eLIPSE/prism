@@ -275,6 +275,12 @@ function Site(props: SiteInterface) {
     setNodeState(nodeState);
   }
 
+  /**
+   * Resets the Marzipano viewer and manages abort controllers for network calls.
+   * If a Marzipano instance exists, it clears its DOM and destroys all scenes.
+   * It also handles aborting the last network request if necessary. If no Marzipano
+   * instance exists, it initializes a new abort controller for upcoming network requests.
+   */
   function resetViewerAndAbortCalls() {
     if (marzipano.current !== undefined) {
       marzipano.current.viewer.domElement().innerHTML = "<div></div>";
@@ -289,6 +295,12 @@ function Site(props: SiteInterface) {
     }
   }
 
+  /**
+   * Fetches and processes survey nodes for a given floor.
+   * It makes a network request to fetch survey nodes data, then processes
+   * this data to update the state and possibly initialize or update the Marzipano viewer.
+   * @param {number} floor - The floor number for which to fetch survey nodes.
+   */
   function fetchAndProcessSurveyNodes(floor: number) {
     NetworkCalls.fetchSurveyNodes(
       floor,
@@ -303,13 +315,18 @@ function Site(props: SiteInterface) {
       setNodesData(nodesData);
 
       getMinimapImage(floor);
-      initializeMarzipanoIfNeeded(floor, nodesData);
+      initializeMarzipano(floor, nodesData);
       const nearestNode = findNearestNode(nodesData);
       updateViewAndMinimap(nearestNode, nodesData);
     });
   }
 
-  function initializeMarzipanoIfNeeded(floor: number, nodesData: NodeData[]) {
+  /**
+   * Initializes Marzipano with survey nodes data if it has not been initialized yet and if the current floor exists.
+   * @param {number} floor - The floor number for which the Marzipano viewer is being initialized.
+   * @param {Array} nodesData - The data of the nodes retrieved from the survey.
+   */
+  function initializeMarzipano(floor: number, nodesData: NodeData[]) {
     if (!marzipano.current && floorExists) {
       marzipano.current = new Marzipano(
         nodesData,
@@ -323,6 +340,11 @@ function Site(props: SiteInterface) {
     }
   }
 
+  /**
+   * Finds the nearest node to the current position from the array of nodes data.
+   * @param {Array} nodesData - The data of the nodes retrieved from the survey.
+   * @returns {Object} The nearest node's data, including its ID, x, and y coordinates.
+   */
   function findNearestNode(nodesData: NodeData[]) {
     let nearestNodeId = nodesData[0].minimap_node.tiles_id;
     let nearestNodeX = nodesData[0].x;
@@ -348,6 +370,12 @@ function Site(props: SiteInterface) {
     return { nearestNodeId, nearestNodeX, nearestNodeY };
   }
 
+  /**
+   * Updates the view and minimap based on the nearest node and nodes data.
+   * It updates the current panorama ID and node state, then triggers a click on the minimap.
+   * @param {Object} nearestNode - The nearest node's data, including its ID and coordinates.
+   * @param {Array} nodesData - The data of the nodes retrieved from the survey.
+   */
   function updateViewAndMinimap(
     nearestNode: NearestNode,
     nodesData: NodeData[],
@@ -365,10 +393,15 @@ function Site(props: SiteInterface) {
         : nearestNode.nearestNodeId,
     );
 
-    updateMarzipanoViewIfNeeded();
+    updateMarzipanoView();
   }
 
-  function updateMarzipanoViewIfNeeded() {
+  /**
+   * Updates the Marzipano view if the current view parameters (fov, pitch, yaw) are not default.
+   * This function checks if the Marzipano viewer and the current scene are initialized,
+   * then updates the view parameters if they are not set to their default values.
+   */
+  function updateMarzipanoView() {
     const viewParams = currViewParams;
     if (
       viewParams.fov !== 0 ||
@@ -384,6 +417,12 @@ function Site(props: SiteInterface) {
     }
   }
 
+  /**
+   * The main function to get survey nodes for a specific floor.
+   * It resets the viewer and aborts any pending network calls before fetching and processing
+   * survey nodes for the specified floor.
+   * @param {number} [floor=0] - The floor number for which to fetch survey nodes. Defaults to 0.
+   */
   function getSurveyNodes(floor = 0) {
     if (floor !== Infinity) {
       resetViewerAndAbortCalls();
