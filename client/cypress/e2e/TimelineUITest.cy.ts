@@ -120,7 +120,9 @@ testEachZone((zone: Cypress.PrismZone) => {
 
                       const [month, year] = expectedMonthYear.split(" ");
                       const monthNumber = new Date(`${month} 1`).getMonth() + 1;
-                      const formattedDate = `${year}-${monthNumber.toString().padStart(2, "0")}`; // Converts to "YYYY-MM"
+                      const formattedDate = `${year}-${monthNumber
+                        .toString()
+                        .padStart(2, "0")}`; // Converts to "YYYY-MM"
 
                       cy.wait(1000);
 
