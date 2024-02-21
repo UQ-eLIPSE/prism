@@ -12,7 +12,7 @@ import {
   InitialViewParameters,
   SurveyNode,
 } from "../../interfaces/NodeData";
-
+// Todo find scene and view type, remove any
 interface IScene {
   data: NodeData;
   scene: any;
@@ -78,11 +78,68 @@ export default class MarzipanoHelper {
         });
       });
     }
+    // Initialize scenes with null values for scene and view.
+    this.scenes = this.data.map((nodeData) => ({
+      data: nodeData,
+      scene: null,
+      view: null,
+    }));
+  }
+  // private loadScene(index: number): void {
+  //   const nodeData = this.scenes[index].data;
+  //   const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
+  //   const limiter = Marzipano.RectilinearView.limit.traditional(
+  //     nodeData.survey_node.face_size,
+  //     (100 * Math.PI) / 180,
+  //     (120 * Math.PI) / 180,
+  //   );
+  //   const view = new Marzipano.RectilinearView(
+  //     nodeData.survey_node.initial_parameters,
+  //     limiter,
+  //   );
 
-    // Create scenes.
-    this.scenes = this.data.map((nodeData) => {
+  //   const scene = this.viewer.createScene({
+  //     source: Marzipano.ImageUrlSource.fromString(
+  //       nodeData.survey_node.manta_link +
+  //         nodeData.minimap_node.tiles_id +
+  //         "/{z}/{f}/{y}/{x}.jpg",
+  //       {
+  //         cubeMapPreviewUrl:
+  //           nodeData.survey_node.manta_link +
+  //           nodeData.minimap_node.tiles_id +
+  //           "/preview.jpg",
+  //       },
+  //     ),
+  //     geometry: geometry,
+  //     view: view,
+  //     pinFirstLevel: true,
+  //   });
+
+  //   // Create link hotspots.
+  //   nodeData.survey_node.link_hotspots.forEach((hotspot) => {
+  //     const element = this.createLinkHotspotElement(hotspot);
+  //     scene.hotspotContainer().createHotspot(element, {
+  //       yaw: hotspot.yaw,
+  //       pitch: hotspot.pitch,
+  //     });
+  //   });
+
+  //   // Create info hotspots.
+  //   nodeData.survey_node.info_hotspots.forEach((hotspot) => {
+  //     const element = this.createInfoHotspotElement(hotspot);
+  //     scene.hotspotContainer().createHotspot(element, {
+  //       yaw: hotspot.yaw,
+  //       pitch: hotspot.pitch,
+  //     });
+  //   });
+
+  //   this.scenes[index].scene = scene;
+  //   this.scenes[index].view = view;
+  // }
+  private async loadScene(index: number): Promise<void> {
+    return new Promise((resolve) => {
+      const nodeData = this.scenes[index].data;
       const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
-
       const limiter = Marzipano.RectilinearView.limit.traditional(
         nodeData.survey_node.face_size,
         (100 * Math.PI) / 180,
@@ -95,7 +152,6 @@ export default class MarzipanoHelper {
 
       const scene = this.viewer.createScene({
         source: Marzipano.ImageUrlSource.fromString(
-          // THIS IS NOT A FIX - Permenant solution needs to be made with file management.
           nodeData.survey_node.manta_link +
             nodeData.minimap_node.tiles_id +
             "/{z}/{f}/{y}/{x}.jpg",
@@ -129,29 +185,48 @@ export default class MarzipanoHelper {
         });
       });
 
-      return {
-        data: nodeData,
-        scene: scene,
-        view: view,
-      };
+      this.scenes[index].scene = scene;
+      this.scenes[index].view = view;
+
+      // Resolve the promise once the scene is fully loaded.
+      // This is a placeholder; you might need to use an actual event or callback from Marzipano.
+      resolve();
     });
   }
 
-  public switchScene(scene: any): void {
+  public async switchScene(sceneData: IScene | undefined): Promise<void> {
+    //ToDO remove undefined type
+    if (!sceneData) {
+      console.error("Scene data is undefined");
+      return;
+    }
+    const sceneIndex = this.scenes.findIndex((s) => s === sceneData);
+    if (sceneIndex === -1) {
+      console.error("Scene not found");
+      return;
+    }
+
+    if (!sceneData.scene) {
+      await this.loadScene(sceneIndex);
+    }
     this.changeInfoPanelOpen(false);
-    scene.view.setParameters(scene.data.survey_node.initial_parameters);
-    scene.scene.switchTo();
+    sceneData.view.setParameters(sceneData.data.survey_node.initial_parameters);
+    sceneData.scene.switchTo();
 
-    this.updateCurrPano(scene.data.minimap_node.tiles_id);
-    this.updateSceneList(scene);
+    this.updateCurrPano(sceneData.data.minimap_node.tiles_id);
+    this.updateSceneList(sceneData);
+    // todo: remove any, find scene type
+    function waitForSceneLoaded(scene: any): Promise<void> {
+      return new Promise((resolve) => {
+        scene.addEventListener("loaded", () => resolve());
+      });
+    }
+    // Usage within an async function
+    async function updateMarzipanoContainerAfterSceneLoad(scene: any) {
+      await waitForSceneLoaded(scene); // Wait for the scene to load
 
-    // Gets the marzipano viewer div element
-    const marzipanoContainer = document.getElementById("pano");
-
-    // Deletes all non-active div and canvas child nodes after 1 second of changing scene.
-    setTimeout(() => {
+      const marzipanoContainer = document.getElementById("pano");
       if (marzipanoContainer) {
-        // Gets the required canvas and div child nodes.
         const requiredCanvas = Array.from(
           marzipanoContainer.querySelectorAll("canvas"),
         ).slice(-2);
@@ -159,17 +234,16 @@ export default class MarzipanoHelper {
           marzipanoContainer.querySelectorAll(":scope > div"),
         ).slice(-2);
 
-        // Deletes all child elements of the Marzipano viewer div.
-        marzipanoContainer.childNodes.forEach((node) => {
-          node.remove();
-        });
+        // Clean up
+        marzipanoContainer.childNodes.forEach((node) => node.remove());
 
-        // Adds the reqired canvas and div elements for the Marzipano div.
+        // Add the required elements back
         if (requiredCanvas && requiredDiv) {
           marzipanoContainer.append(...requiredCanvas, ...requiredDiv);
         }
       }
-    }, 1000);
+    }
+    await updateMarzipanoContainerAfterSceneLoad(sceneData.scene);
   }
 
   private updateSceneList(scene: any): void {
