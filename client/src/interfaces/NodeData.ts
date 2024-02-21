@@ -100,6 +100,7 @@ export interface NodeCollectionProps extends NodePropsBase {
   renderData: NewNode[];
   x: number;
   y: number;
+  isEditing: boolean;
 }
 
 /**
@@ -125,4 +126,5 @@ export interface NodeComponentProps extends NodePropsBase {
   yPosition: number;
   xPosition: number;
   isMapEnlarged: boolean;
+  isEditing: boolean;
 }

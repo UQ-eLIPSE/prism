@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import classNames from "classnames";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
@@ -25,6 +26,7 @@ const NodeComponent = ({
   isMapEnlarged,
   configureRotation,
   handleNodeClick,
+  isEditing,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
@@ -54,23 +56,6 @@ const NodeComponent = ({
           },
         }}
       />
-      <ArrowIcon
-        showArrow={
-          node.tiles_id === MinimapProps.currPanoId &&
-          MinimapProps.config.enable.rotation
-        }
-        containerProps={{
-          className: MinimapStyles.nodeArrowContainer,
-          style: getNodeStyle(false),
-        }}
-        iconProps={{
-          className: "arrow",
-          style: {
-            transform: `scale(1.5)`,
-            color: "red",
-          },
-        }}
-      />
 
       <div
         className={MinimapStyles.nodeContainer}
@@ -83,6 +68,23 @@ const NodeComponent = ({
           )}
 
         {node == selectedNode && <div className="positionIndicator selected" />}
+        <ArrowIcon
+          showArrow={
+            node.tiles_id === MinimapProps.currPanoId &&
+            MinimapProps.config.enable.rotation
+          }
+          containerProps={{
+            className: MinimapStyles.nodeArrowContainer,
+            style: getNodeStyle(false),
+          }}
+          iconProps={{
+            className: "arrow",
+            style: {
+              transform: `scale(1.5)`,
+              color: "red",
+            },
+          }}
+        />
 
         <div
           className={classNames(MinimapStyles.node, {

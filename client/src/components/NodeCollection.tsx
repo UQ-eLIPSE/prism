@@ -20,6 +20,7 @@ function NodeCollection({
   x,
   y,
   handleNodeClick,
+  isEditing,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -53,6 +54,7 @@ function NodeCollection({
             isMapEnlarged={MinimapProps.minimapEnlarged}
             configureRotation={configureRotation}
             handleNodeClick={handleNodeClick}
+            isEditing={isEditing}
           />
         );
       })}
