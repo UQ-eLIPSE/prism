@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import classNames from "classnames";
 import MinimapStyles from "../sass/partials/_minimap.module.scss";
@@ -9,7 +8,6 @@ import {
 import ArrowIcon from "./ArrowIcon";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
 
-const ROTATION_STYLE_OFFSET = 360 - 225;
 /**
  * NodeComponent renders a single node within the minimap, including its position,
  * selection state, and any special indicators like rotation or enlargement.
@@ -31,7 +29,8 @@ const NodeComponent = ({
   configureRotation,
   handleNodeClick,
   isEditing,
-  currViewParams,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  currViewParams, // TODO: NEED FOR LATER
   nodesData,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
