@@ -59,6 +59,24 @@ const NodeComponent = ({
               )}
           </div>
         )}
+      {node.tiles_id === MinimapProps.currPanoId &&
+        MinimapProps.config.enable.rotation && (
+          <div
+            className={MinimapStyles.nodeContainer}
+            style={{ ...getNodeStyle(false) }}
+          >
+            {node.tiles_id === MinimapProps.currPanoId &&
+              MinimapProps.config.enable.rotation && (
+                <Icon
+                  className={`fa fa-arrow-up arrow`}
+                  style={{
+                    transform: ` scale(1.5)`,
+                    color: "red",
+                  }}
+                />
+              )}
+          </div>
+        )}
 
       <div
         className={MinimapStyles.nodeContainer}
@@ -71,21 +89,6 @@ const NodeComponent = ({
           )}
 
         {node == selectedNode && <div className="positionIndicator selected" />}
-        {node.tiles_id === MinimapProps.currPanoId &&
-          MinimapProps.config.enable.rotation && (
-            <div className={MinimapStyles.nodeContainer}>
-              {node.tiles_id === MinimapProps.currPanoId &&
-                MinimapProps.config.enable.rotation && (
-                  <Icon
-                    className={`fa fa-arrow-up arrow`}
-                    style={{
-                      transform: ` scale(1.5)`,
-                      color: "red",
-                    }}
-                  />
-                )}
-            </div>
-          )}
 
         <div
           className={classNames(MinimapStyles.node, {

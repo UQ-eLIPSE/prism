@@ -13,7 +13,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it("Testing in each Zone: clicks each mininode element and then compares", () => {
-      cy.get("[class^='_minimap_node']").then(($elements) => {
+      cy.get("[class^='_minimap_node_']").then(($elements) => {
         $elements.each((index, element) => {
           cy.wrap(element)
             .click({ force: true })
