@@ -316,6 +316,7 @@
 }
 
 .nodeContainer:hover + .nodeTitle,
+.nodeArrowContainer:hover + .nodeTitle,
 .currentSelectedNode > div:nth-child(3) {
   flex-direction: row;
   justify-content: space-between;
@@ -339,28 +340,6 @@
 }
 .nodeArrowContainer {
   position: absolute;
-}
-.nodeArrowContainer:hover + .nodeTitle,
-.currentSelectedNode > div:nth-child(3) {
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-  z-index: 3;
-  position: absolute;
-  left: 100%;
-  top: -18px;
-  margin-left: 25px;
-  font-size: 16px;
-  max-width: 300px;
-  padding: 8px 10px;
-  border-radius: 5px;
-  background-color: rgba(58, 68, 84, 0.8);
-  color: #fff;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  transition: transform 0.3s;
 }
 
 .infoIcon {

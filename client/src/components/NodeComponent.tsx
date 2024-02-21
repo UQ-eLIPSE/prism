@@ -56,6 +56,23 @@ const NodeComponent = ({
           },
         }}
       />
+      <ArrowIcon
+        showArrow={
+          node.tiles_id === MinimapProps.currPanoId &&
+          MinimapProps.config.enable.rotation
+        }
+        containerProps={{
+          className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+          style: getNodeStyle(false),
+        }}
+        iconProps={{
+          className: "arrow",
+          style: {
+            transform: `scale(1.5)`,
+            color: "red",
+          },
+        }}
+      />
 
       <div
         className={MinimapStyles.nodeContainer}
@@ -68,23 +85,6 @@ const NodeComponent = ({
           )}
 
         {node == selectedNode && <div className="positionIndicator selected" />}
-        <ArrowIcon
-          showArrow={
-            node.tiles_id === MinimapProps.currPanoId &&
-            MinimapProps.config.enable.rotation
-          }
-          containerProps={{
-            className: MinimapStyles.nodeArrowContainer,
-            style: getNodeStyle(false),
-          }}
-          iconProps={{
-            className: "arrow",
-            style: {
-              transform: `scale(1.5)`,
-              color: "red",
-            },
-          }}
-        />
 
         <div
           className={classNames(MinimapStyles.node, {
