@@ -28,6 +28,7 @@ const NodeComponent = ({
   handleNodeClick,
   isEditing,
   currViewParams,
+  nodesData,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;

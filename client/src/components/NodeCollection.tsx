@@ -22,6 +22,7 @@ function NodeCollection({
   handleNodeClick,
   isEditing,
   currViewParams,
+  nodesData,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -57,6 +58,7 @@ function NodeCollection({
             handleNodeClick={handleNodeClick}
             isEditing={isEditing}
             currViewParams={currViewParams}
+            nodesData={nodesData}
           />
         );
       })}

@@ -102,6 +102,7 @@ export interface NodeCollectionProps extends NodePropsBase {
   y: number;
   isEditing: boolean;
   currViewParams: InitialViewParameters;
+  nodesData: NodeData[];
 }
 
 /**
@@ -129,4 +130,5 @@ export interface NodeComponentProps extends NodePropsBase {
   isMapEnlarged: boolean;
   isEditing: boolean;
   currViewParams: InitialViewParameters;
+  nodesData: NodeData[];
 }
