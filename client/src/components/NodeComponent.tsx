@@ -39,12 +39,6 @@ const NodeComponent = ({
     };
   };
 
-  const getNodeRotation = () => {
-    const radians = node.rotation;
-    // convert radians to deg
-    return (radians * 180) / Math.PI;
-  };
-
   const radToDeg = (rad: number) => {
     return (rad * 180) / Math.PI;
   };
@@ -83,7 +77,7 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${getNodeRotation()}deg)`,
+          transform: `rotate(${radToDeg(node.rotation)}deg)`,
         }}
       >
         <ArrowIcon
