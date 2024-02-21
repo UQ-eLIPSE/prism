@@ -79,7 +79,6 @@ interface NodePropsBase {
   MinimapProps: MinimapProps;
   selectedNode: NewNode | null;
   configureRotation: (node: NewNode) => string;
-  configureRotationTo0: (node: NewNode) => string;
   handleNodeClick: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     node: NewNode,
