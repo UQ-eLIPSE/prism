@@ -55,7 +55,6 @@ const NodeComponent = ({
     const selectedNodeData = nodesData.find(
       (node) => node.survey_node.tiles_id === tile_id,
     );
-    console.log(selectedNodeData);
     const initialParams = selectedNodeData?.survey_node.initial_parameters;
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
