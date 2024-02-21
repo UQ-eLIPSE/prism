@@ -32,13 +32,12 @@ const moveMarzipanoViewer = (
 
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Marzipano node configuration when traversing between different floors", () => {
-    beforeEach(() => {
+    beforeEach(function () {
       cy.accessZone(zone);
+      if (!zone.floors) this.skip();
     });
 
     it(`Testing: View parameters should remain consistent when trasversing through floors after moving marzipano`, () => {
-      if (!zone.floors) return;
-
       moveMarzipanoViewer("#pano", { x: -250, y: 0, fromPosition: "center" });
 
       cy.get("[data-cy='selected-node']")
@@ -73,8 +72,6 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: Rotation of the node should be consistent when traversing between different floors`, () => {
-      if (!zone.floors) return;
-
       cy.get("[data-cy='selected-node']")
         .parent()
         .invoke("attr", "style")
@@ -109,8 +106,6 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Moving marzipano viewer should change the node's rotation `, () => {
-      if (!zone.floors) return;
-
       cy.get("[data-cy='selected-node']")
         .parent()
         .invoke("attr", "style")
