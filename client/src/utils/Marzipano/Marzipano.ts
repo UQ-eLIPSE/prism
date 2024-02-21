@@ -137,8 +137,6 @@ export default class MarzipanoHelper {
       this.scenes[index].scene = scene;
       this.scenes[index].view = view;
 
-      // Resolve the promise once the scene is fully loaded.
-      // This is a placeholder; you might need to use an actual event or callback from Marzipano.
       resolve();
     });
   }
@@ -219,10 +217,7 @@ export default class MarzipanoHelper {
 
     // Add click event handler.
     wrapper.addEventListener("click", () => {
-      // Add timeout to allow time for menu animation to occur (menu to close if needed)
-      setTimeout(() => {
-        this.switchScene(this.findSceneById(hotspot.target));
-      }, 400);
+      this.switchScene(this.findSceneById(hotspot.target));
     });
 
     // Prevent touch and scroll events from reaching the parent element.
