@@ -101,6 +101,7 @@ export interface NodeCollectionProps extends NodePropsBase {
   x: number;
   y: number;
   isEditing: boolean;
+  currViewParams: InitialViewParameters;
 }
 
 /**
@@ -127,4 +128,5 @@ export interface NodeComponentProps extends NodePropsBase {
   xPosition: number;
   isMapEnlarged: boolean;
   isEditing: boolean;
+  currViewParams: InitialViewParameters;
 }

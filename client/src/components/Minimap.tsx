@@ -367,6 +367,7 @@ function Minimap(props: MinimapProps) {
                   y={y}
                   handleNodeClick={handleNodeClick}
                   isEditing={editing}
+                  currViewParams={props.currViewParams}
                 />
               )}
             </div>

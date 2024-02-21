@@ -21,6 +21,7 @@ function NodeCollection({
   y,
   handleNodeClick,
   isEditing,
+  currViewParams,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -55,6 +56,7 @@ function NodeCollection({
             configureRotation={configureRotation}
             handleNodeClick={handleNodeClick}
             isEditing={isEditing}
+            currViewParams={currViewParams}
           />
         );
       })}

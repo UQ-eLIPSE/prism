@@ -27,6 +27,7 @@ const NodeComponent = ({
   configureRotation,
   handleNodeClick,
   isEditing,
+  currViewParams,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
@@ -43,6 +44,12 @@ const NodeComponent = ({
     // convert radians to deg
     return (radians * 180) / Math.PI;
   };
+
+  const radToDeg = (rad: number) => {
+    return (rad * 180) / Math.PI;
+  };
+
+  console.log("Curr view param:", radToDeg(currViewParams.yaw));
   return (
     <div
       key={index}
@@ -50,7 +57,10 @@ const NodeComponent = ({
     >
       <div
         className={MinimapStyles.nodeContainer}
-        style={{ ...getNodeStyle() }}
+        style={{
+          ...getNodeStyle(false),
+          transform: `rotate(${radToDeg(currViewParams.yaw)}deg)`,
+        }}
       >
         <ArrowIcon
           showArrow={
@@ -62,15 +72,19 @@ const NodeComponent = ({
             style: getNodeStyle(false),
           }}
           iconProps={{
+            className: "arrow",
             style: {
-              transform: `scale(1.5) translate(-5px) rotate(${ROTATION_STYLE_OFFSET}deg)`,
+              transform: `scale(1.5)`,
             },
           }}
         />
       </div>
       <div
         className={MinimapStyles.nodeContainer}
-        style={{ ...getNodeStyle() }}
+        style={{
+          ...getNodeStyle(false),
+          transform: `rotate(${getNodeRotation()}deg)`,
+        }}
       >
         <ArrowIcon
           showArrow={
@@ -81,7 +95,6 @@ const NodeComponent = ({
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
             style: {
               ...getNodeStyle(false),
-              transform: `${getNodeRotation()}`,
             },
           }}
           iconProps={{

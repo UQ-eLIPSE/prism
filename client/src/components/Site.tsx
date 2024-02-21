@@ -548,6 +548,7 @@ function Site(props: SiteInterface) {
           updateFloorTag={(input: string) => setFloorTag(input)}
           minimapShown={floorExists}
           currDate={currDate}
+          currViewParams={currViewParams}
         />
         {config.enable.floors && !minimapEnlarged && (
           <LevelSlider
