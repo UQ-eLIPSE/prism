@@ -138,8 +138,6 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
-  console.log("SELECTED", props.selectedNode);
-
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
       <span>
