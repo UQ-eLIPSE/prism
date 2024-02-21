@@ -63,7 +63,6 @@ const NodeComponent = ({
           }
           containerProps={{
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
-            style: getNodeStyle(false),
           }}
           iconProps={{
             className: "arrow",
@@ -87,9 +86,6 @@ const NodeComponent = ({
           }
           containerProps={{
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
-            style: {
-              ...getNodeStyle(false),
-            },
           }}
           iconProps={{
             className: "arrow",
