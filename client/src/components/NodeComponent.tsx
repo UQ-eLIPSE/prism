@@ -30,50 +30,69 @@ const NodeComponent = ({
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
+    console.log("node: ", node.rotation);
     return {
       top: `${isSelectedNode ? y : yPosition}%`,
       left: `${isSelectedNode ? x : xPosition}%`,
       transform: includeTransform ? configureRotation(node) : "none",
     };
   };
+
+  const getNodeRotation = () => {
+    const radians = node.rotation;
+    // convert radians to deg
+    return (radians * 180) / Math.PI;
+  };
   return (
     <div
       key={index}
       className={node == selectedNode ? "currentSelectedNode" : ""}
     >
-      <ArrowIcon
-        showArrow={
-          node.tiles_id === MinimapProps.currPanoId &&
-          MinimapProps.config.enable.rotation
-        }
-        containerProps={{
-          className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
-          style: getNodeStyle(false),
-        }}
-        iconProps={{
-          style: {
-            transform: `scale(1.5) translate(-5px) rotate(${ROTATION_STYLE_OFFSET}deg)`,
-          },
-        }}
-      />
-      <ArrowIcon
-        showArrow={
-          node.tiles_id === MinimapProps.currPanoId &&
-          MinimapProps.config.enable.rotation
-        }
-        containerProps={{
-          className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
-          style: getNodeStyle(false),
-        }}
-        iconProps={{
-          className: "arrow",
-          style: {
-            transform: `scale(1.5)`,
-            color: "red",
-          },
-        }}
-      />
-
+      <div
+        className={MinimapStyles.nodeContainer}
+        style={{ ...getNodeStyle() }}
+      >
+        <ArrowIcon
+          showArrow={
+            node.tiles_id === MinimapProps.currPanoId &&
+            MinimapProps.config.enable.rotation
+          }
+          containerProps={{
+            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            style: getNodeStyle(false),
+          }}
+          iconProps={{
+            style: {
+              transform: `scale(1.5) translate(-5px) rotate(${ROTATION_STYLE_OFFSET}deg)`,
+            },
+          }}
+        />
+      </div>
+      <div
+        className={MinimapStyles.nodeContainer}
+        style={{ ...getNodeStyle() }}
+      >
+        <ArrowIcon
+          showArrow={
+            node.tiles_id === MinimapProps.currPanoId &&
+            MinimapProps.config.enable.rotation
+          }
+          containerProps={{
+            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            style: {
+              ...getNodeStyle(false),
+              transform: `${getNodeRotation()}`,
+            },
+          }}
+          iconProps={{
+            className: "arrow",
+            style: {
+              transform: `scale(1.5)`,
+              color: "red",
+            },
+          }}
+        />
+      </div>
       <div
         className={MinimapStyles.nodeContainer}
         style={getNodeStyle()}
