@@ -4,6 +4,7 @@ import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import { NodeComponentProps } from "../interfaces/NodeData";
 import ArrowIcon from "./ArrowIcon";
 
+const ROTATION_STYLE_OFFSET = 360 - 225;
 /**
  * NodeComponent renders a single node within the minimap, including its position,
  * selection state, and any special indicators like rotation or enlargement.
@@ -44,12 +45,12 @@ const NodeComponent = ({
           MinimapProps.config.enable.rotation
         }
         containerProps={{
-          className: `${MinimapStyles.nodeContainer} default-arrow`,
+          className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
           style: getNodeStyle(false),
         }}
         iconProps={{
           style: {
-            transform: `scale(1.5) translate(-5px) rotate(${360 - 225}deg)`,
+            transform: `scale(1.5) translate(-5px) rotate(${ROTATION_STYLE_OFFSET}deg)`,
           },
         }}
       />
@@ -59,7 +60,7 @@ const NodeComponent = ({
           MinimapProps.config.enable.rotation
         }
         containerProps={{
-          className: MinimapStyles.nodeContainer,
+          className: MinimapStyles.nodeArrowContainer,
           style: getNodeStyle(false),
         }}
         iconProps={{
