@@ -89,7 +89,10 @@ export default class MarzipanoHelper {
   private loadScene(index: number): void {
     const nodeData = this.scenes[index].data;
     const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
+    //Marzipano.RectilinearView.limit.traditional function, which sets limits on the field of view (FOV) for the rectilinear view in a Marzipano panorama:
     const limiter = Marzipano.RectilinearView.limit.traditional(
+      //(100 * Math.PI) / 180: This is a conversion from degrees to radians.
+      //(120 * Math.PI) / 180: This parameter sets the maximum FOV limit in radians.
       nodeData.survey_node.face_size,
       (100 * Math.PI) / 180,
       (120 * Math.PI) / 180,
