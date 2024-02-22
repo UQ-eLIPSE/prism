@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "../sass/App.scss";
 import "../utils/Marzipano/Marzipano.scss";
 import InfoPanel from "./InfoPanel";
-import Minimap from "./Minimap";
+import Minimap from "./Minimap/Minimap";
 import Timeline from "./Timeline";
 import TimelineButton from "./TimelineButton";
 import LinkNodes from "./LinkNodes";
