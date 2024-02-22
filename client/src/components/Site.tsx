@@ -6,7 +6,7 @@ import Minimap from "./Minimap";
 import Timeline from "./Timeline";
 import TimelineButton from "./TimelineButton";
 import LinkNodes from "./LinkNodes";
-import Marzipano from "../utils/Marzipano/Marzipano";
+import MarzipanoHelper from "../utils/Marzipano/Marzipano";
 import { NodeData, InitialViewParameters } from "../interfaces/NodeData";
 import NetworkCalls from "../utils/NetworkCalls";
 import { HotspotDescription } from "../interfaces/HotspotDescription";
@@ -61,7 +61,7 @@ interface SiteInterface {
 
 function Site(props: SiteInterface) {
   const { siteId, config, updateFloor } = props;
-  const marzipano = useRef<Marzipano>();
+  const marzipano = useRef<MarzipanoHelper>();
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
@@ -284,7 +284,7 @@ function Site(props: SiteInterface) {
           // Get correct minimap image on initial load.
           getMinimapImage(floor);
           if (!marzipano.current && floorExists) {
-            marzipano.current = new Marzipano(
+            marzipano.current = new MarzipanoHelper(
               nodesData,
               getInfoHotspot,
               updateCurrPano,
