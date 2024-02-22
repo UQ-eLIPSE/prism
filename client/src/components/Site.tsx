@@ -129,6 +129,9 @@ function Site(props: SiteInterface) {
   // Used to detect if page is being rendered for the first time (not switching floors).
   const [initialRender, setInitialRender] = useState<boolean>(true);
 
+  // Used to detect if page is being rendered for the first time (not switching floors).
+  const [initialRender, setInitialRender] = useState<boolean>(true);
+
   useEffect(() => {
     if (marzipano.current) {
       marzipano.current = undefined;
@@ -144,7 +147,6 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
-
       await updateFloors();
     })();
   }, [currfloor, currDate, floorExists]);
