@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import MinimapUpdate from "../src/components/MinimapUpload";
+import MinimapUpdate from "../src/components/Minimap/MinimapUpload";
 import { MinimapReturn } from "../src/components/Site";
 
 beforeAll(() => {
