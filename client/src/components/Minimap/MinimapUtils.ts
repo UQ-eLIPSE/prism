@@ -1,8 +1,8 @@
-import { MinimapReturn } from "../components/Site";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
-import NetworkCalls from "./NetworkCalls";
-import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
-import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
+import { MinimapReturn } from "../Site";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import NetworkCalls from "../../utils/NetworkCalls";
+import { xAndYScaledCoordinates } from "../../interfaces/MiniMap/XAndYScaledCoordinates";
+import { FloorIdentifier } from "../../interfaces/MiniMap/FloorIdentifier";
 import { MinimapConstants } from "./MinimapConstants.d";
 
 /**
