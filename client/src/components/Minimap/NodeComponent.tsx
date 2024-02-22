@@ -4,9 +4,9 @@ import MinimapStyles from "../sass/partials/_minimap.module.scss";
 import {
   InitialViewParameters,
   NodeComponentProps,
-} from "../interfaces/NodeData";
-import ArrowIcon from "./ArrowIcon";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
+} from "../../interfaces/NodeData";
+import ArrowIcon from "./../ArrowIcon";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
 
 /**
  * NodeComponent renders a single node within the minimap, including its position,

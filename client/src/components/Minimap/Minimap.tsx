@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
-import MinimapStyles from "../sass/partials/_minimap.module.scss";
-import { ISettings } from "../typings/settings";
-import NetworkCalls from "../utils/NetworkCalls";
-import { useUserContext } from "../context/UserContext";
-import EditNodeForm from "./EditNodePositionForm";
-import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
-import MinimapUtils from "../utils/MinimapUtils";
-import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
-import { MinimapConstants } from "../utils/MinimapConstants.d";
+import MinimapStyles from "../../sass/partials/_minimap.module.scss";
+import { ISettings } from "../../typings/settings";
+import NetworkCalls from "../../utils/NetworkCalls";
+import { useUserContext } from "../../context/UserContext";
+import EditNodePositionForm from "./EditNodePositionForm";
+import { MinimapProps } from "../../interfaces/MiniMap/MinimapProps";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import MinimapUtils from "./MinimapUtils";
+import { FloorIdentifier } from "../../interfaces/MiniMap/FloorIdentifier";
+import { MinimapConstants } from "./MinimapConstants.d";
 import NodeCollection from "./NodeCollection";
-import FloorDetailsForm from "./FloorDetailsForm";
-import ToggleEditNodeButton from "./ToggleEditNodeButton";
+import FloorDetailsForm from "../FloorDetailsForm";
+import ToggleEditNodeButton from "../ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
-import SubmitOrCancelButtons from "./SubmitOrCancelButtons";
+import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
 import MinimapUpdate from "./MinimapUpload";
 
 /**
@@ -247,7 +247,7 @@ function Minimap(props: MinimapProps) {
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
-          <EditNodeForm
+          <EditNodePositionForm
             rotationState={{ value: rotation, setFn: setRotation }}
             xPositionState={{ value: x, setFn: setX }}
             yPositionState={{ value: y, setFn: setY }}
