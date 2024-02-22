@@ -85,60 +85,57 @@ export default class MarzipanoHelper {
       view: null,
     }));
   }
-  private async loadScene(index: number): Promise<void> {
-    return new Promise((resolve) => {
-      const nodeData = this.scenes[index].data;
-      const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
-      const limiter = Marzipano.RectilinearView.limit.traditional(
-        nodeData.survey_node.face_size,
-        (100 * Math.PI) / 180,
-        (120 * Math.PI) / 180,
-      );
-      const view = new Marzipano.RectilinearView(
-        nodeData.survey_node.initial_parameters,
-        limiter,
-      );
 
-      const scene = this.viewer.createScene({
-        source: Marzipano.ImageUrlSource.fromString(
-          nodeData.survey_node.manta_link +
+  private loadScene(index: number): void {
+    const nodeData = this.scenes[index].data;
+    const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
+    const limiter = Marzipano.RectilinearView.limit.traditional(
+      nodeData.survey_node.face_size,
+      (100 * Math.PI) / 180,
+      (120 * Math.PI) / 180,
+    );
+    const view = new Marzipano.RectilinearView(
+      nodeData.survey_node.initial_parameters,
+      limiter,
+    );
+
+    const scene = this.viewer.createScene({
+      source: Marzipano.ImageUrlSource.fromString(
+        nodeData.survey_node.manta_link +
+          nodeData.minimap_node.tiles_id +
+          "/{z}/{f}/{y}/{x}.jpg",
+        {
+          cubeMapPreviewUrl:
+            nodeData.survey_node.manta_link +
             nodeData.minimap_node.tiles_id +
-            "/{z}/{f}/{y}/{x}.jpg",
-          {
-            cubeMapPreviewUrl:
-              nodeData.survey_node.manta_link +
-              nodeData.minimap_node.tiles_id +
-              "/preview.jpg",
-          },
-        ),
-        geometry: geometry,
-        view: view,
-        pinFirstLevel: true,
-      });
-
-      // Create link hotspots.
-      nodeData.survey_node.link_hotspots.forEach((hotspot) => {
-        const element = this.createLinkHotspotElement(hotspot);
-        scene.hotspotContainer().createHotspot(element, {
-          yaw: hotspot.yaw,
-          pitch: hotspot.pitch,
-        });
-      });
-
-      // Create info hotspots.
-      nodeData.survey_node.info_hotspots.forEach((hotspot) => {
-        const element = this.createInfoHotspotElement(hotspot);
-        scene.hotspotContainer().createHotspot(element, {
-          yaw: hotspot.yaw,
-          pitch: hotspot.pitch,
-        });
-      });
-
-      this.scenes[index].scene = scene;
-      this.scenes[index].view = view;
-
-      resolve();
+            "/preview.jpg",
+        },
+      ),
+      geometry: geometry,
+      view: view,
+      pinFirstLevel: true,
     });
+
+    // Create link hotspots.
+    nodeData.survey_node.link_hotspots.forEach((hotspot) => {
+      const element = this.createLinkHotspotElement(hotspot);
+      scene.hotspotContainer().createHotspot(element, {
+        yaw: hotspot.yaw,
+        pitch: hotspot.pitch,
+      });
+    });
+
+    // Create info hotspots.
+    nodeData.survey_node.info_hotspots.forEach((hotspot) => {
+      const element = this.createInfoHotspotElement(hotspot);
+      scene.hotspotContainer().createHotspot(element, {
+        yaw: hotspot.yaw,
+        pitch: hotspot.pitch,
+      });
+    });
+
+    this.scenes[index].scene = scene;
+    this.scenes[index].view = view;
   }
 
   public async switchScene(sceneData: IScene | undefined): Promise<void> {
@@ -154,7 +151,7 @@ export default class MarzipanoHelper {
     }
 
     if (!sceneData.scene) {
-      await this.loadScene(sceneIndex);
+      this.loadScene(sceneIndex);
     }
     this.changeInfoPanelOpen(false);
     sceneData.view.setParameters(sceneData.data.survey_node.initial_parameters);
