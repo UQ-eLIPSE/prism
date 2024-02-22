@@ -7,11 +7,7 @@ const faqController = new FAQController();
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${dbName}`;
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  });
+  await mongoose.connect(url);
 });
 
 async function removeAllCollections() {
@@ -34,12 +30,12 @@ async function removeAllCollections() {
   }
 }
 
-afterAll(async (done) => {
+afterAll(async () => {
   await removeAllCollections();
-  done();
+  await mongoose.connection.close();
 }, 6000);
 
-test("Should create question and answer", async (done) => {
+test("Should create question and answer", async () => {
   const payload = [
     {
       question: "hello?",
@@ -63,11 +59,9 @@ test("Should create question and answer", async (done) => {
 
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });
 
-test("Should be able to get faq", async (done) => {
+test("Should be able to get faq", async () => {
   const request = httpMocks.createRequest({
     method: "POST",
     url: "/api/:username/faq/post",
@@ -81,11 +75,9 @@ test("Should be able to get faq", async (done) => {
   await faqController.getFAQ(request, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });
 
-test("Should be able to edit faq", async (done) => {
+test("Should be able to edit faq", async () => {
   const payload = {
     question: "updated question?",
   };
@@ -106,11 +98,9 @@ test("Should be able to edit faq", async (done) => {
   await faqController.editQuestionAnswer(request, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });
 
-test("Should be able to delete faq", async (done) => {
+test("Should be able to delete faq", async () => {
   const payload = {
     idx: 0,
   };
@@ -130,6 +120,4 @@ test("Should be able to delete faq", async (done) => {
   await faqController.deleteQuestionAnswer(request, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });

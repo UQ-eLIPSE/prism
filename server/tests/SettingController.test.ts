@@ -7,11 +7,7 @@ const settingController = new SettingController();
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${dbName}`;
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  });
+  await mongoose.connect(url);
 });
 
 async function removeAllCollections() {
@@ -34,12 +30,12 @@ async function removeAllCollections() {
   }
 }
 
-afterAll(async (done) => {
+afterAll(async () => {
   await removeAllCollections();
-  done();
+  await mongoose.connection.close();
 }, 6000);
 
-test("Should get the settings table", async (done) => {
+test("Should get the settings table", async () => {
   const request = httpMocks.createRequest({
     method: "GET",
     url: "/api/:username/visibility/settings",
@@ -54,11 +50,9 @@ test("Should get the settings table", async (done) => {
   await settingController.getSettings(request, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });
 
-test("Should toggle object in the settings table", async (done) => {
+test("Should toggle object in the settings table", async () => {
   const request = httpMocks.createRequest({
     method: "PUT",
     url: "/api/:username/visibility/settings",
@@ -76,6 +70,4 @@ test("Should toggle object in the settings table", async (done) => {
   await settingController.togglePagesVisibility(request, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });
