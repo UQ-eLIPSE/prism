@@ -7,6 +7,7 @@ import * as Marzipano from "marzipano";
 import { ISettings } from "../../typings/settings";
 import {
   NodeData,
+  Hotspot,
   LinkHotspot,
   InfoHotspot,
   InitialViewParameters,
@@ -86,6 +87,20 @@ export default class MarzipanoHelper {
     }));
   }
 
+  private createHotspots<T extends Hotspot>(
+    hotspots: T[],
+    createHotspotElement: (hotspot: T) => HTMLElement,
+    scene: any,
+  ): void {
+    hotspots.forEach((hotspot) => {
+      const element = createHotspotElement.call(this, hotspot);
+      scene.hotspotContainer().createHotspot(element, {
+        yaw: hotspot.yaw,
+        pitch: hotspot.pitch,
+      });
+    });
+  }
+
   private loadScene(index: number): void {
     const nodeData = this.scenes[index].data;
     const geometry = new Marzipano.CubeGeometry(nodeData.survey_node.levels);
@@ -120,22 +135,18 @@ export default class MarzipanoHelper {
     });
 
     // Create link hotspots.
-    nodeData.survey_node.link_hotspots.forEach((hotspot) => {
-      const element = this.createLinkHotspotElement(hotspot);
-      scene.hotspotContainer().createHotspot(element, {
-        yaw: hotspot.yaw,
-        pitch: hotspot.pitch,
-      });
-    });
+    this.createHotspots(
+      nodeData.survey_node.link_hotspots,
+      this.createLinkHotspotElement,
+      scene,
+    );
 
     // Create info hotspots.
-    nodeData.survey_node.info_hotspots.forEach((hotspot) => {
-      const element = this.createInfoHotspotElement(hotspot);
-      scene.hotspotContainer().createHotspot(element, {
-        yaw: hotspot.yaw,
-        pitch: hotspot.pitch,
-      });
-    });
+    this.createHotspots(
+      nodeData.survey_node.info_hotspots,
+      this.createInfoHotspotElement,
+      scene,
+    );
 
     this.scenes[index].scene = scene;
     this.scenes[index].view = view;
