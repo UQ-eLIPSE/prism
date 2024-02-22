@@ -4,7 +4,7 @@ import MinimapStyles from "../../sass/partials/_minimap.module.scss";
 import { ISettings } from "../../typings/settings";
 import NetworkCalls from "../../utils/NetworkCalls";
 import { useUserContext } from "../../context/UserContext";
-import EditNodeForm from "./EditNodePositionForm";
+import EditNodePositionForm from "./EditNodePositionForm";
 import { MinimapProps } from "../../interfaces/MiniMap/MinimapProps";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
 import MinimapUtils from "./MinimapUtils";
@@ -13,9 +13,9 @@ import { MinimapConstants } from "./MinimapConstants.d";
 import NodeCollection from "./NodeCollection";
 import FloorDetailsForm from "../FloorDetailsForm";
 import ToggleEditNodeButton from "../ToggleEditNodeButton";
-import MinimapImage from "../MiniMapImage";
+import MinimapImage from "./MiniMapImage";
 import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
-import MinimapUpdate from "../MinimapUpload";
+import MinimapUpdate from "./MinimapUpload";
 
 /**
  * This interface represents the current node's position and rotation in the minimap.
@@ -247,7 +247,7 @@ function Minimap(props: MinimapProps) {
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
-          <EditNodeForm
+          <EditNodePositionForm
             rotationState={{ value: rotation, setFn: setRotation }}
             xPositionState={{ value: x, setFn: setX }}
             yPositionState={{ value: y, setFn: setY }}

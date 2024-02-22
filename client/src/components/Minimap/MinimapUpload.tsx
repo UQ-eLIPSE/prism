@@ -1,5 +1,5 @@
 import React from "react";
-import { MinimapUpdateProps } from "../interfaces/MinimapImages";
+import { MinimapUpdateProps } from "../../interfaces/MinimapImages";
 
 const MinimapUpdate = ({
   setMapHover,

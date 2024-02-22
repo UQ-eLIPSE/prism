@@ -1,7 +1,7 @@
 import React from "react";
 import MinimapUtils from "./MinimapUtils";
 import { MinimapConstants } from "./MinimapConstants.d";
-import NodeComponent from "../NodeComponent";
+import NodeComponent from "./NodeComponent";
 import { NodeCollectionProps } from "../../interfaces/NodeData";
 
 /**
