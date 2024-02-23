@@ -369,9 +369,10 @@ function Site(props: SiteInterface) {
    * @param {Array} nodesData - The data of the nodes retrieved from the survey.
    */
   function updateViewAndMinimap(
-    nearestNode: NearestNode,
+    nearestNode: NearestNode | null,
     nodesData: NodeData[],
   ): void {
+    if (nearestNode == null) return;
     setCurrPanoId(nearestNode.nearestNodeId);
     setNodeState((prevState) => ({
       ...prevState,

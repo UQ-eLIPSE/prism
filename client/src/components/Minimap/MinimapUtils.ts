@@ -255,7 +255,11 @@ const updateFloorTagAndNameAPI = async (
 function findNearestNode(
   nodesData: NodeData[],
   nodeState: NodeConfiguration,
-): NearestNode {
+): NearestNode | null {
+  if (!nodesData || nodesData.length === 0) {
+    return null;
+  }
+
   let nearestNodeId = nodesData[0].minimap_node.tiles_id;
   let nearestNodeX = nodesData[0].x;
   let nearestNodeY = nodesData[0].y;
