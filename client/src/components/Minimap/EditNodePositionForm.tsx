@@ -2,6 +2,8 @@ import React from "react";
 import { EditNodeInput } from "../../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
 import { StateObject } from "../../interfaces/StateObject";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import { InitialViewParameters, NodeData } from "../../interfaces/NodeData";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
@@ -10,6 +12,8 @@ interface EditNodeFormProps {
   yPositionState: StateObject<number>;
   resetSelectedNode: () => void; // Clears selected node and sets editing to false.
   updateNode: () => Promise<void>;
+  selectedNode: NewNode | null;
+  nodesData: NodeData[];
 }
 
 // The minimum and maximum values for the rotation and position inputs.
@@ -124,8 +128,29 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     props.resetSelectedNode();
   };
 
+  const getInitialParams = (node: NewNode): InitialViewParameters => {
+    const tile_id = node.tiles_id;
+
+    const selectedNodeData = props.nodesData.find(
+      (node) => node.survey_node.tiles_id === tile_id,
+    );
+    const initialParams = selectedNodeData?.survey_node.initial_parameters;
+    return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
+  };
+
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
+      <span>
+        MiniMap Initial Rotation Offset:{" "}
+        {props.selectedNode &&
+          `${Math.round(radiansToDegrees(props.selectedNode.rotation))}\u00B0`}
+      </span>
+
+      <span>
+        Initial Yaw Parameters:{" "}
+        {props.selectedNode &&
+          `${yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)}\u00B0`}
+      </span>
       <span>
         <label htmlFor={rotationInputConfig.label}>Orientation</label>
         <div>
@@ -163,5 +188,15 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     </form>
   );
 };
+
+// Additional helpers:
+function radiansToDegrees(radians: number): number {
+  const degrees = ((radians + 2 * Math.PI) % (2 * Math.PI)) * (180 / Math.PI);
+  return degrees;
+}
+
+function yawRadToDeg(radians: number): number {
+  return Math.round(((radians * 180) / Math.PI) * 100) / 100;
+}
 
 export default EditNodeForm;
