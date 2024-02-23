@@ -89,6 +89,7 @@ const NodeComponent = ({
               transform: `scale(1.5)`,
             },
           }}
+          dataCy="yaw-arrow"
         />
       </div>
       <div
@@ -120,6 +121,7 @@ const NodeComponent = ({
               opacity: 0.5,
             },
           }}
+          dataCy="rotation-offset-arrow"
         />
       </div>
       <div
