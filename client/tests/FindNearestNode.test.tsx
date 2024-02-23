@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { NodeData } from "../src/interfaces/NodeData";
-import MinimapUtils from "../src/utils/MinimapUtils";
+import MinimapUtils from "../src/components/Minimap/MinimapUtils";
 
 const createMockNodeData = (overrides: Partial<NodeData> = {}): NodeData => {
   return {

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "../sass/App.scss";
 import "../utils/Marzipano/Marzipano.scss";
 import InfoPanel from "./InfoPanel";
-import Minimap from "./Minimap";
+import Minimap from "./Minimap/Minimap";
 import Timeline from "./Timeline";
 import TimelineButton from "./TimelineButton";
 import LinkNodes from "./LinkNodes";
@@ -21,7 +21,7 @@ import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
 import { SurveyMonth } from "../interfaces/NodeData";
-import MinimapUtils from "../utils/MinimapUtils";
+import MinimapUtils from "./Minimap/MinimapUtils";
 
 export interface MinimapReturn {
   image_url: string;
@@ -88,9 +88,13 @@ function Site(props: SiteInterface) {
   );
   const [currRotation, setCurrRotation] = useState<number>(0);
 
+  const [lastRotation, setLastRotation] = useState<number>(0);
+
   const [currViewParams, setCurrViewParams] = useState<InitialViewParameters>({
     ...config.initial_settings,
   });
+  const [lastViewParams, setLastViewParams] =
+    useState<InitialViewParameters | null>(null);
 
   const [currfloor, setCurrFloor] = useState<number>(
     config.initial_settings.floor,
@@ -121,6 +125,9 @@ function Site(props: SiteInterface) {
     rotation: 0,
   });
 
+  // Used to detect if page is being rendered for the first time (not switching floors).
+  const [initialRender, setInitialRender] = useState<boolean>(true);
+
   useEffect(() => {
     if (marzipano.current) {
       marzipano.current = undefined;
@@ -136,7 +143,6 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
-
       await updateFloors();
     })();
   }, [currfloor, currDate, floorExists]);
@@ -148,6 +154,17 @@ function Site(props: SiteInterface) {
       await updateSurveys();
     })();
   }, []);
+
+  useEffect(() => {
+    if (!lastViewParams) return;
+    if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
+      marzipano.current.updateCurrView(
+        lastViewParams,
+        marzipano.current.findSceneById(currPanoId),
+      );
+      marzipano.current.updateRotation(lastRotation);
+    }
+  }, [currPanoId]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -227,7 +244,7 @@ function Site(props: SiteInterface) {
   }
 
   function updateCurrPano(panoId: string): void {
-    setCurrPanoId(panoId);
+    setCurrPanoId(() => panoId);
     getHotspotDescriptionList(panoId);
   }
 
@@ -249,22 +266,29 @@ function Site(props: SiteInterface) {
       viewParams,
       marzipano.current.findSceneById(currPanoId),
     );
+
     updateViewParams(viewParams);
     // Open info panel
     getInfoHotspot(info_id);
   }
 
   function minimapClick(panoId: string): void {
-    if (marzipano.current)
+    if (marzipano.current) {
       marzipano?.current?.switchScene(marzipano.current.findSceneById(panoId));
+      setLastViewParams(() => null);
+      setLastRotation(() => 0);
+    }
   }
 
   function updateRotation(rotation: number): void {
     setCurrRotation(rotation);
+    setLastRotation(() => rotation);
   }
 
   function updateViewParams(viewParams: InitialViewParameters): void {
+    if (viewParams === currViewParams) return;
     setCurrViewParams(viewParams);
+    setLastViewParams(() => viewParams);
   }
 
   function updateNodeState(nodeState: NodeConfiguration): void {
@@ -332,7 +356,9 @@ function Site(props: SiteInterface) {
         updateViewParams,
         changeInfoPanelOpen,
         config,
+        initialRender,
       );
+      setInitialRender(false);
     }
   }
 
@@ -369,6 +395,8 @@ function Site(props: SiteInterface) {
    */
   function updateMarzipanoView(): void {
     const viewParams = currViewParams;
+    setLastViewParams(() => viewParams);
+    setLastRotation(() => currRotation);
     if (
       viewParams.fov !== 0 ||
       viewParams.pitch !== 0 ||

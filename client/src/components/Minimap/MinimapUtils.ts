@@ -1,14 +1,14 @@
-import { MinimapReturn } from "../components/Site";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
-import NetworkCalls from "./NetworkCalls";
-import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
-import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
+import { MinimapReturn } from "../Site";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import NetworkCalls from "../../utils/NetworkCalls";
+import { xAndYScaledCoordinates } from "../../interfaces/MiniMap/XAndYScaledCoordinates";
+import { FloorIdentifier } from "../../interfaces/MiniMap/FloorIdentifier";
 import { MinimapConstants } from "./MinimapConstants.d";
 import {
   NearestNode,
   NodeConfiguration,
   NodeData,
-} from "../interfaces/NodeData";
+} from "../../interfaces/NodeData";
 
 /**
  * Interface for parameters needed to calculate X and Y coordinates for a minimap.

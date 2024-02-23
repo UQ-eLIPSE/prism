@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
-import MinimapStyles from "../sass/partials/_minimap.module.scss";
-import { NodeComponentProps } from "../interfaces/NodeData";
+import MinimapStyles from "../../sass/partials/_minimap.module.scss";
+import { NodeComponentProps } from "../../interfaces/NodeData";
 
 /**
  * NodeComponent renders a single node within the minimap, including its position,

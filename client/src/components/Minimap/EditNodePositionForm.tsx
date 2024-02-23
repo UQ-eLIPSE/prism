@@ -1,7 +1,7 @@
 import React from "react";
-import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
+import { EditNodeInput } from "../../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
-import { StateObject } from "../interfaces/StateObject";
+import { StateObject } from "../../interfaces/StateObject";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {

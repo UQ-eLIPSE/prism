@@ -1,5 +1,5 @@
 import React from "react";
-import { MinimapUpdateProps } from "../interfaces/MinimapImages";
+import { MinimapUpdateProps } from "../../interfaces/MinimapImages";
 
 const MinimapUpdate = ({
   setMapHover,
@@ -30,7 +30,9 @@ const MinimapUpdate = ({
   const dragDropClass = mapHover
     ? "displayed light dropUpload"
     : `${!imageUrl || !minimapdata ? "displayed" : "light"}`;
-  const iconClass = `fa-solid ${mapHover ? "fa-cloud-arrow-up" : "fa-file-image"}`;
+  const iconClass = `fa-solid ${
+    mapHover ? "fa-cloud-arrow-up" : "fa-file-image"
+  }`;
   const messageText = mapHover
     ? "Drop Image to Upload"
     : "Upload Minimap Image";
