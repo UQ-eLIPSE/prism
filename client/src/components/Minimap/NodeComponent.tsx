@@ -1,7 +1,17 @@
 import React from "react";
 import classNames from "classnames";
 import MinimapStyles from "../../sass/partials/_minimap.module.scss";
-import { NodeComponentProps } from "../../interfaces/NodeData";
+import {
+  InitialViewParameters,
+  NodeComponentProps,
+} from "../../interfaces/NodeData";
+import ArrowIcon from "./../ArrowIcon";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+
+// Helper
+const radToDeg = (rad: number) => {
+  return (rad * 180) / Math.PI;
+};
 
 /**
  * NodeComponent renders a single node within the minimap, including its position,
@@ -23,6 +33,11 @@ const NodeComponent = ({
   isMapEnlarged,
   configureRotation,
   handleNodeClick,
+  isEditing,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  currViewParams, // TODO: NEED FOR LATER
+  nodesData,
+  currRotation,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
@@ -33,11 +48,78 @@ const NodeComponent = ({
     };
   };
 
+  const getInitialParams = (
+    node: NewNode | null,
+  ): InitialViewParameters | null => {
+    if (!node) return null;
+    const tile_id = node.tiles_id;
+
+    const selectedNodeData = nodesData.find(
+      (node) => node.survey_node.tiles_id === tile_id,
+    );
+    const initialParams = selectedNodeData?.survey_node.initial_parameters;
+    return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
+  };
+
+  const yaw: number = getInitialParams(selectedNode)?.yaw ?? 0;
+
   return (
     <div
       key={index}
       className={node == selectedNode ? "currentSelectedNode" : ""}
     >
+      <div
+        className={MinimapStyles.nodeContainer}
+        style={{
+          ...getNodeStyle(false),
+          transform: `rotate(${radToDeg(yaw)}deg)`,
+          zIndex: 2,
+        }}
+      >
+        <ArrowIcon
+          showArrow={
+            node.tiles_id === MinimapProps.currPanoId &&
+            MinimapProps.config.enable.rotation &&
+            isEditing
+          }
+          containerProps={{
+            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+          }}
+          iconProps={{
+            className: "arrow",
+            style: {
+              transform: `scale(1.5)`,
+            },
+          }}
+        />
+      </div>
+      <div
+        className={MinimapStyles.nodeContainer}
+        style={{
+          ...getNodeStyle(false),
+          transform: `rotate(${currRotation}deg)`,
+        }}
+      >
+        <ArrowIcon
+          showArrow={
+            node.tiles_id === MinimapProps.currPanoId &&
+            MinimapProps.config.enable.rotation &&
+            isEditing
+          }
+          containerProps={{
+            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            style: { transform: `scaleY(1.5)` },
+          }}
+          iconProps={{
+            className: "arrow",
+            style: {
+              transform: `scale(1.5)`,
+              color: "red",
+              opacity: 0.5,
+            },
+          }}
+        />
+      </div>
       <div
         className={MinimapStyles.nodeContainer}
         style={getNodeStyle()}
