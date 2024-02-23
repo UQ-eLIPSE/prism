@@ -8,6 +8,11 @@ import {
 import ArrowIcon from "./../ArrowIcon";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
 
+// Helper
+const radToDeg = (rad: number) => {
+  return (rad * 180) / Math.PI;
+};
+
 /**
  * NodeComponent renders a single node within the minimap, including its position,
  * selection state, and any special indicators like rotation or enlargement.
@@ -32,6 +37,7 @@ const NodeComponent = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   currViewParams, // TODO: NEED FOR LATER
   nodesData,
+  currRotation,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
@@ -40,10 +46,6 @@ const NodeComponent = ({
       left: `${isSelectedNode ? x : xPosition}%`,
       transform: includeTransform ? configureRotation(node) : "none",
     };
-  };
-
-  const radToDeg = (rad: number) => {
-    return (rad * 180) / Math.PI;
   };
 
   const getInitialParams = (
@@ -59,7 +61,7 @@ const NodeComponent = ({
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
-  const yaw = getInitialParams(selectedNode)?.yaw;
+  const yaw: number = getInitialParams(selectedNode)?.yaw ?? 0;
 
   return (
     <div
@@ -70,8 +72,8 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(yaw ?? 0)}deg)`,
-          display: yaw !== undefined ? "block" : "none",
+          transform: `rotate(${radToDeg(yaw)}deg)`,
+          zIndex: 2,
         }}
       >
         <ArrowIcon
@@ -95,7 +97,7 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(node.rotation)}deg)`,
+          transform: `rotate(${currRotation}deg)`,
         }}
       >
         <ArrowIcon
@@ -106,12 +108,14 @@ const NodeComponent = ({
           }
           containerProps={{
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            style: { transform: `scaleY(1.5)` },
           }}
           iconProps={{
             className: "arrow",
             style: {
               transform: `scale(1.5)`,
               color: "red",
+              opacity: 0.5,
             },
           }}
         />

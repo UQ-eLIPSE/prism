@@ -103,6 +103,7 @@ export interface NodeCollectionProps extends NodePropsBase {
   isEditing: boolean;
   currViewParams: InitialViewParameters;
   nodesData: NodeData[];
+  currRotation: number;
 }
 
 /**
@@ -131,4 +132,5 @@ export interface NodeComponentProps extends NodePropsBase {
   isEditing: boolean;
   currViewParams: InitialViewParameters;
   nodesData: NodeData[];
+  currRotation: number;
 }

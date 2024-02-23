@@ -369,6 +369,7 @@ function Minimap(props: MinimapProps) {
                   isEditing={editing}
                   currViewParams={props.currViewParams}
                   nodesData={props.nodeData}
+                  currRotation={rotation}
                 />
               )}
             </div>

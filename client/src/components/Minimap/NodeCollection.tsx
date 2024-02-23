@@ -23,6 +23,7 @@ function NodeCollection({
   isEditing,
   currViewParams,
   nodesData,
+  currRotation,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -59,6 +60,7 @@ function NodeCollection({
             isEditing={isEditing}
             currViewParams={currViewParams}
             nodesData={nodesData}
+            currRotation={currRotation}
           />
         );
       })}
