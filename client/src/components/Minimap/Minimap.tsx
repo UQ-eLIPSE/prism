@@ -152,6 +152,7 @@ function Minimap(props: MinimapProps) {
 
     if (node == selectedNode) {
       return `rotate(${
+        props.currViewParams.yaw + // include intial yaw from db
         rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION
       }rad)`;
     } else {
