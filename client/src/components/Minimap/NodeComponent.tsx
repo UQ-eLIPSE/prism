@@ -95,7 +95,12 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${currRotation}deg)`,
+          // The curr rotation could be saved as the previous state of the rotation
+          // The curr rotation updates when the user clicks into the node this is
+          // why this check is needed
+          transform: `rotate(${
+            !selectedNode ? radToDeg(node.rotation) : currRotation
+          }deg)`,
         }}
       >
         <ArrowIcon
