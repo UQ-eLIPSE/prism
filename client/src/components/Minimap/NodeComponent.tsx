@@ -95,9 +95,8 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          // The curr rotation could be saved as the previous state of the rotation
-          // The curr rotation updates when the user clicks into the node this is
-          // why this check is needed
+          // The current rotation is stored as the previous state of rotation.
+          // The current rotation is updated when the user clicks on the node, which is why this check is necessary.
           transform: `rotate(${
             !selectedNode ? radToDeg(node.rotation) : currRotation
           }deg)`,
