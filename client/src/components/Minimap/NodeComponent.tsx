@@ -61,7 +61,7 @@ const NodeComponent = ({
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
-  const yaw: number = getInitialParams(selectedNode)?.yaw ?? 0;
+  // const yaw: number = getInitialParams(selectedNode)?.yaw ?? 0;
 
   return (
     <div
@@ -72,7 +72,8 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(yaw)}deg)`,
+          // transform: `rotate(${radToDeg(yaw)}deg)`,
+          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0)}deg)`,
           zIndex: 2,
         }}
       >
