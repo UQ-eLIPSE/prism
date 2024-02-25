@@ -30,6 +30,7 @@ export default class MarzipanoHelper {
   public updateRotation: Function;
   private updateViewParams: Function;
   private changeInfoPanelOpen: Function;
+  private initialRender: boolean;
 
   constructor(
     data: NodeData[],
@@ -39,6 +40,7 @@ export default class MarzipanoHelper {
     updateViewParams: Function,
     changeInfoPanelOpen: Function,
     config: ISettings,
+    initialRender: boolean,
   ) {
     this.data = data;
 
@@ -57,6 +59,7 @@ export default class MarzipanoHelper {
     this.updateRotation = updateRotation;
     this.updateViewParams = updateViewParams;
     this.changeInfoPanelOpen = changeInfoPanelOpen;
+    this.initialRender = initialRender;
 
     const mouseViewMode = config.marzipano_mouse_view_mode;
 
@@ -69,15 +72,21 @@ export default class MarzipanoHelper {
 
     // Initialize viewer.
     this.viewer = new Marzipano.Viewer(panoElement, viewerOpts);
-    if (config.enable.rotation) {
-      this.viewer.addEventListener("viewChange", () => {
-        this.updateRotation(this.viewer.view()._yaw);
-        this.updateViewParams({
-          yaw: this.viewer.view()._yaw,
-          pitch: this.viewer.view()._pitch,
-          fov: this.viewer.view()._fov,
-        });
+    const updateView = () => {
+      this.updateRotation(this.viewer.view()._yaw);
+      this.updateViewParams({
+        yaw: this.viewer.view()._yaw,
+        pitch: this.viewer.view()._pitch,
+        fov: this.viewer.view()._fov,
       });
+    };
+    if (config.enable.rotation) {
+      initialRender // initial page load, need to update view params immediately
+        ? // to default db values.
+          this.viewer.addEventListener("viewChange", updateView)
+        : setTimeout(() => {
+            this.viewer.addEventListener("viewChange", updateView);
+          }, 100); // Delay needed to prevent viewChange from running twice sometimes.
     }
     // Initialize scenes with null values for scene and view.
     this.scenes = this.data.map((nodeData) => ({

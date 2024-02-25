@@ -1,8 +1,8 @@
 import React from "react";
-import MinimapUtils from "../utils/MinimapUtils";
-import { MinimapConstants } from "../utils/MinimapConstants.d";
+import MinimapUtils from "./MinimapUtils";
+import { MinimapConstants } from "./MinimapConstants.d";
 import NodeComponent from "./NodeComponent";
-import { NodeCollectionProps } from "../interfaces/NodeData";
+import { NodeCollectionProps } from "../../interfaces/NodeData";
 
 /**
  * Renders a collection of nodes as part of a minimap interface. Each node is represented
@@ -20,6 +20,10 @@ function NodeCollection({
   x,
   y,
   handleNodeClick,
+  isEditing,
+  currViewParams,
+  nodesData,
+  currRotation,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -53,6 +57,10 @@ function NodeCollection({
             isMapEnlarged={MinimapProps.minimapEnlarged}
             configureRotation={configureRotation}
             handleNodeClick={handleNodeClick}
+            isEditing={isEditing}
+            currViewParams={currViewParams}
+            nodesData={nodesData}
+            currRotation={currRotation}
           />
         );
       })}

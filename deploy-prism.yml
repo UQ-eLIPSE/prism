@@ -110,11 +110,11 @@
             chdir: /opt/server/
 
         # Start server
-        - name: Enable and start prism service
+        - name: Enable and start/restart prism service
           systemd:
             name: prism
             enabled: yes
-            state: started
+            state: restarted
           become: yes
 
         - name: Check Nginx configuration

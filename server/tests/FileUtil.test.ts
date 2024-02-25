@@ -1,11 +1,8 @@
-import * as jt from "@jest/globals";
 import { extractZipFile } from "../src/utils/fileUtil";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const StreamZip = require("node-stream-zip");
 import * as fs from "fs/promises";
 import { ConsoleUtil } from "../src/utils/ConsoleUtil";
-
-const { describe, it, expect } = jt;
 
 const EXTRACTED_MSGS = {
   success: "Extracted",
@@ -17,34 +14,34 @@ type MkDirType = typeof fs.mkdir;
 type StreamZipType = typeof StreamZip;
 
 // MOCKS
-jt.jest.mock("fs", () => ({
-  mkdir: jt.jest.fn((_, __, callback: MkDirType) => callback("")),
-  open: jt.jest.fn(),
+jest.mock("fs", () => ({
+  mkdir: jest.fn((_, __, callback: MkDirType) => callback("")),
+  open: jest.fn(),
 }));
-ConsoleUtil.error = jt.jest.fn();
-ConsoleUtil.success = jt.jest.fn();
+ConsoleUtil.error = jest.fn();
+ConsoleUtil.success = jest.fn();
 
 describe("Test case: Should extract zip files", () => {
   const TMP_FOLDER = "tests/testFiles";
   const extractedFolder = "prism_new_field";
   let mockZip: typeof StreamZip;
 
-  jt.beforeEach(() => {
-    jt.jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
     mockZip = new StreamZip({
       file: `${TMP_FOLDER}/${extractedFolder}.zip`,
       storeEntries: true,
     });
 
-    mockZip.on = jt.jest.fn((event, callback: StreamZipType) => {
+    mockZip.on = jest.fn((event, callback: StreamZipType) => {
       if (event === "ready") callback();
     });
 
-    mockZip.extract = jt.jest.fn((entry, target, callback: StreamZipType) => {
+    mockZip.extract = jest.fn((entry, target, callback: StreamZipType) => {
       callback(null);
     });
 
-    mockZip.close = jt.jest.fn();
+    mockZip.close = jest.fn();
   });
 
   it("should extract zip file successfully", async () => {
@@ -66,11 +63,11 @@ describe("Test case: Should extract zip files", () => {
   });
 
   it("should not extract zip file successfully", async () => {
-    mockZip.extract = jt.jest.fn((_, __, callback: StreamZipType) => {
+    mockZip.extract = jest.fn((_, __, callback: StreamZipType) => {
       callback("Error");
     });
 
-    mockZip.on = jt.jest.fn((event, callback: StreamZipType) => {
+    mockZip.on = jest.fn((event, callback: StreamZipType) => {
       if (event === "ready") callback();
     });
 
@@ -80,7 +77,7 @@ describe("Test case: Should extract zip files", () => {
     expect(ConsoleUtil.error).toHaveBeenCalledWith(EXTRACTED_MSGS.error);
   });
 
-  jt.afterEach(async () => {
+  afterEach(async () => {
     const directoryExists = await fs
       .access(`${TMP_FOLDER}/${extractedFolder}`)
       .then(() => true)

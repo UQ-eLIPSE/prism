@@ -316,7 +316,8 @@
 }
 
 .nodeContainer:hover + .nodeTitle,
-.currentSelectedNode > div:nth-child(2) {
+.nodeArrowContainer:hover + .nodeTitle,
+.currentSelectedNode > div:nth-child(4) {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -336,6 +337,9 @@
   text-overflow: ellipsis;
   overflow: hidden;
   transition: transform 0.3s;
+}
+.nodeArrowContainer {
+  position: absolute;
 }
 
 .infoIcon {
@@ -386,6 +390,15 @@
       transparent
     );
   }
+}
+
+.arrow {
+  width: 10px;
+  height: 20px;
+  top: -1.75rem;
+  left: -0.5rem;
+  position: absolute;
+  z-index: 1;
 }
 
 .sideNavOpen {
@@ -441,7 +454,7 @@ h1 {
   font-size: 2em;
 }
 
-.currentSelectedNode div:not(.positionIndicator) {
+.currentSelectedNode div:not(.positionIndicator):not(.default-arrow) {
   background: #161a71 !important;
   border-color: rgba(22, 26, 113, 0.4);
 }

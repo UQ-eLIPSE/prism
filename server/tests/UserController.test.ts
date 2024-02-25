@@ -8,11 +8,7 @@ const userController = new UserController();
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${dbName}`;
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  });
+  await mongoose.connect(url);
 });
 
 async function removeAllCollections() {
@@ -35,12 +31,12 @@ async function removeAllCollections() {
   }
 }
 
-afterAll(async (done) => {
+afterAll(async () => {
   await removeAllCollections();
-  done();
+  await mongoose.connection.close();
 }, 6000);
 
-test("Should save user to database", async (done) => {
+test("Should save user to database", async () => {
   const users = [
     {
       email: `testing0@test.com`,
@@ -69,11 +65,9 @@ test("Should save user to database", async (done) => {
     const newUser = await new User(user);
     await newUser.save();
   }
-
-  done();
 });
 
-test("get user using api", async (done) => {
+test("get user using api", async () => {
   const expectedResult = {
     email: `testing0@test.com`,
     firstName: "Ratata",
@@ -98,11 +92,9 @@ test("get user using api", async (done) => {
   expect(data.payload.firstName).toEqual(expectedResult.firstName);
   expect(data.payload.lastName).toEqual(expectedResult.lastName);
   expect(data.payload.role).toEqual(expectedResult.role);
-
-  done();
 });
 
-test("Should get User list from database", async (done) => {
+test("Should get User list from database", async () => {
   const expectedResult = {
     currentPage: 1,
     pageSize: 10,
@@ -142,10 +134,9 @@ test("Should get User list from database", async (done) => {
     expectedResult.users[0].lastName,
   );
   expect(data.payload.users[0].role).toEqual(expectedResult.users[0].role);
-  done();
 });
 
-test("Should be able to invite user", async (done) => {
+test("Should be able to invite user", async () => {
   process.env.JWT_Hash = "supersecret";
 
   const newInvitedUser = {
@@ -176,10 +167,9 @@ test("Should be able to invite user", async (done) => {
   const data = resp._getJSONData();
   const successMessage = `An invite email has been sent to ${newInvitedUser.email}`;
   expect(data.message).toEqual(successMessage);
-  done();
 });
 
-test("Should return false when updating invited user without id", async (done) => {
+test("Should return false when updating invited user without id", async () => {
   const invitedUserTobeUpdated = { firstName: "Userupdated2" };
 
   const req = httpMocks.createRequest({
@@ -197,11 +187,9 @@ test("Should return false when updating invited user without id", async (done) =
   await userController.updateInvitedUser(req, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeFalsy();
-
-  done();
 });
 
-test("Should delete invited user", async (done) => {
+test("Should delete invited user", async () => {
   const invitedUserTobeDeleted = { email: `testing1@test.com` };
 
   const req = httpMocks.createRequest({
@@ -219,11 +207,9 @@ test("Should delete invited user", async (done) => {
   await userController.deleteInvitedUser(req, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });
 
-test("Should be able to send forgot password email", async (done) => {
+test("Should be able to send forgot password email", async () => {
   process.env.JWT_Hash = "supersecret";
 
   const userEmail = { email: `testing0@test.com` };
@@ -244,10 +230,9 @@ test("Should be able to send forgot password email", async (done) => {
   const data = resp._getJSONData();
   const successMessage = `We will send the email to reset your password if your email is found`;
   expect(data.message).toEqual(successMessage);
-  done();
 });
 
-test("Should update user password", async (done) => {
+test("Should update user password", async () => {
   const bodyPayload = { email: `testing0@test.com`, password: `password123` };
 
   const req = httpMocks.createRequest({
@@ -264,10 +249,9 @@ test("Should update user password", async (done) => {
   const successMessage = "Password is updated successfully";
 
   expect(data.message).toEqual(successMessage);
-  done();
 });
 
-test("Should return search result", async (done) => {
+test("Should return search result", async () => {
   const req = httpMocks.createRequest({
     method: "GET",
     url: `/api/users/:username/search`,
@@ -284,10 +268,9 @@ test("Should return search result", async (done) => {
   await userController.searchUser(req, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-  done();
 });
 
-test("Should change UQ user role to guest", async (done) => {
+test("Should change UQ user role to guest", async () => {
   const req = httpMocks.createRequest({
     method: "GET",
     url: `/api/users/:username/:usernameToBeUpdated`,
@@ -303,6 +286,4 @@ test("Should change UQ user role to guest", async (done) => {
   await userController.updateUserRole(req, resp);
   const data = resp._getJSONData();
   expect(data.success).toBeTruthy();
-
-  done();
 });

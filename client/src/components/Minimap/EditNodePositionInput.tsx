@@ -1,5 +1,5 @@
 import React from "react";
-import { EditNodeInput } from "../interfaces/MiniMap/EditNodeInput";
+import { EditNodeInput } from "../../interfaces/MiniMap/EditNodeInput";
 
 interface EditNodePositionInputProps {
   inputConfiguration: EditNodeInput;

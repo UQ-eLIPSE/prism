@@ -10,11 +10,7 @@ const resourceController = new ResourceController();
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${dbName}`;
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  });
+  await mongoose.connect(url);
 });
 
 async function removeAllCollections() {
@@ -37,12 +33,12 @@ async function removeAllCollections() {
   }
 }
 
-afterAll(async (done) => {
+afterAll(async () => {
   await removeAllCollections();
-  done();
+  await mongoose.connection.close();
 }, 6000);
 
-test("should return false upload dummy file which are not .zip", async (done) => {
+test("should return false upload dummy file which are not .zip", async () => {
   const formData = new FormData();
   formData.append(
     "resource",
@@ -61,17 +57,15 @@ test("should return false upload dummy file which are not .zip", async (done) =>
   const resp = httpMocks.createResponse();
   resp.locals = { user: { username: "Tester" } };
 
-  const err = null;
+  const err = { code: "" };
 
   await resourceController.createNewResource(request, resp, err);
 
   const data = resp._getJSONData();
   expect(data.success).toBeFalsy();
-
-  done();
 });
 
-test("should create new resource area", async (done) => {
+test("should create new resource area", async () => {
   const payload = { name: "hello area", description: "nothing here" };
 
   const req = httpMocks.createRequest({
@@ -85,10 +79,10 @@ test("should create new resource area", async (done) => {
   const data = resp._getJSONData();
 
   expect(data.success).toBeTruthy();
-  done();
 });
 
-test("Should get Resource list from database", async (done) => {
+// TODO: Fix this test
+test("Should get Resource list from database", async () => {
   const request = httpMocks.createRequest({
     method: "GET",
     url: "/api/:username/resources/1",
@@ -103,5 +97,4 @@ test("Should get Resource list from database", async (done) => {
   const data = resp._getJSONData();
 
   expect(data.success).toBeTruthy();
-  done();
 });

@@ -2,12 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import "../sass/App.scss";
 import "../utils/Marzipano/Marzipano.scss";
 import InfoPanel from "./InfoPanel";
-import Minimap from "./Minimap";
+import Minimap from "./Minimap/Minimap";
 import Timeline from "./Timeline";
 import TimelineButton from "./TimelineButton";
 import LinkNodes from "./LinkNodes";
 import MarzipanoHelper from "../utils/Marzipano/Marzipano";
-import { NodeData, InitialViewParameters } from "../interfaces/NodeData";
+import {
+  NodeData,
+  InitialViewParameters,
+  NodeConfiguration,
+  NearestNode,
+} from "../interfaces/NodeData";
 import NetworkCalls from "../utils/NetworkCalls";
 import { HotspotDescription } from "../interfaces/HotspotDescription";
 import LevelSlider from "./LevelSlider";
@@ -16,6 +21,8 @@ import UploadFiles from "./UploadFiles";
 import TitleCard from "./TitleCard";
 import { useUserContext } from "../context/UserContext";
 import { SurveyMonth } from "../interfaces/NodeData";
+import MinimapUtils from "./Minimap/MinimapUtils";
+import MarzipanoDisplayInfo from "./MarzipanoDisplayInfo";
 
 export interface MinimapReturn {
   image_url: string;
@@ -35,6 +42,7 @@ export interface MinimapReturn {
   floor_tag: string;
   image: string;
 }
+
 const MinimapInitial = {
   image_url: "",
   floor: 0,
@@ -81,9 +89,13 @@ function Site(props: SiteInterface) {
   );
   const [currRotation, setCurrRotation] = useState<number>(0);
 
+  const [lastRotation, setLastRotation] = useState<number>(0);
+
   const [currViewParams, setCurrViewParams] = useState<InitialViewParameters>({
     ...config.initial_settings,
   });
+  const [lastViewParams, setLastViewParams] =
+    useState<InitialViewParameters | null>(null);
 
   const [currfloor, setCurrFloor] = useState<number>(
     config.initial_settings.floor,
@@ -108,6 +120,14 @@ function Site(props: SiteInterface) {
   const [minimap, setMinimap] = useState<MinimapReturn>(MinimapInitial);
   const [floorTag, setFloorTag] = useState<string>("");
   const [availableFloors, setAvailableFloors] = useState<number[]>([0]);
+  const [nodeState, setNodeState] = useState<NodeConfiguration>({
+    x_position: parseFloat(currPanoId.split("_")[3]),
+    y_position: parseFloat(currPanoId.split("_")[4]),
+    rotation: 0,
+  });
+
+  // Used to detect if page is being rendered for the first time (not switching floors).
+  const [initialRender, setInitialRender] = useState<boolean>(true);
 
   useEffect(() => {
     if (marzipano.current) {
@@ -124,7 +144,6 @@ function Site(props: SiteInterface) {
 
       // Update correspondingly floors based on prior async data.
       updateFloor(currfloor);
-
       await updateFloors();
     })();
   }, [currfloor, currDate, floorExists]);
@@ -136,6 +155,17 @@ function Site(props: SiteInterface) {
       await updateSurveys();
     })();
   }, []);
+
+  useEffect(() => {
+    if (!lastViewParams) return;
+    if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
+      marzipano.current.updateCurrView(
+        lastViewParams,
+        marzipano.current.findSceneById(currPanoId),
+      );
+      marzipano.current.updateRotation(lastRotation);
+    }
+  }, [currPanoId]);
 
   const updateFloors = async (): Promise<void> => {
     try {
@@ -215,7 +245,7 @@ function Site(props: SiteInterface) {
   }
 
   function updateCurrPano(panoId: string): void {
-    setCurrPanoId(panoId);
+    setCurrPanoId(() => panoId);
     getHotspotDescriptionList(panoId);
   }
 
@@ -237,113 +267,165 @@ function Site(props: SiteInterface) {
       viewParams,
       marzipano.current.findSceneById(currPanoId),
     );
+
     updateViewParams(viewParams);
     // Open info panel
     getInfoHotspot(info_id);
   }
 
   function minimapClick(panoId: string): void {
-    if (marzipano.current)
+    if (marzipano.current) {
       marzipano?.current?.switchScene(marzipano.current.findSceneById(panoId));
+      setLastViewParams(() => null);
+      setLastRotation(() => 0);
+    }
   }
 
   function updateRotation(rotation: number): void {
     setCurrRotation(rotation);
+    setLastRotation(() => rotation);
   }
 
   function updateViewParams(viewParams: InitialViewParameters): void {
+    if (viewParams === currViewParams) return;
     setCurrViewParams(viewParams);
+    setLastViewParams(() => viewParams);
   }
 
-  function getSurveyNodes(floor: number = 0): void {
+  function updateNodeState(nodeState: NodeConfiguration): void {
+    setNodeState(nodeState);
+  }
+
+  /**
+   * Resets the Marzipano viewer and manages abort controllers for network calls.
+   * If a Marzipano instance exists, it clears its DOM and destroys all scenes.
+   * It also handles aborting the last network request if necessary. If no Marzipano
+   * instance exists, it initializes a new abort controller for upcoming network requests.
+   */
+  function resetViewerAndAbortCalls(): void {
+    if (marzipano.current !== undefined) {
+      marzipano.current.viewer.domElement().innerHTML = "<div></div>";
+      marzipano.current.viewer.destroyAllScenes();
+
+      if (abortController.length > 1) {
+        abortController[abortController.length - 1].abort();
+        abortController.pop();
+      }
+    } else {
+      abortController.push(new AbortController());
+    }
+  }
+
+  /**
+   * Fetches and processes survey nodes for a given floor.
+   * It makes a network request to fetch survey nodes data, then processes
+   * this data to update the state and possibly initialize or update the Marzipano viewer.
+   * @param {number} floor - The floor number for which to fetch survey nodes.
+   */
+  function fetchAndProcessSurveyNodes(floor: number): void {
+    NetworkCalls.fetchSurveyNodes(
+      floor,
+      siteId,
+      abortController[abortController.length - 1],
+      currDate,
+    ).then((nodesData) => {
+      panoRef?.current?.childNodes && panoRef?.current?.replaceChildren("");
+
+      if (!nodesData || !nodesData.length) return;
+
+      setNodesData(nodesData);
+
+      getMinimapImage(floor);
+      initializeMarzipano(floor, nodesData);
+      const nearestNode = MinimapUtils.findNearestNode(nodesData, nodeState);
+      updateViewAndMinimap(nearestNode, nodesData);
+    });
+  }
+
+  /**
+   * Initializes Marzipano with survey nodes data if it has not been initialized yet and if the current floor exists.
+   * @param {number} floor - The floor number for which the Marzipano viewer is being initialized.
+   * @param {Array} nodesData - The data of the nodes retrieved from the survey.
+   */
+  function initializeMarzipano(floor: number, nodesData: NodeData[]): void {
+    if (!marzipano.current && floorExists) {
+      marzipano.current = new MarzipanoHelper(
+        nodesData,
+        getInfoHotspot,
+        updateCurrPano,
+        updateRotation,
+        updateViewParams,
+        changeInfoPanelOpen,
+        config,
+        initialRender,
+      );
+      setInitialRender(false);
+    }
+  }
+
+  /**
+   * Updates the view and minimap based on the nearest node and nodes data.
+   * It updates the current panorama ID and node state, then triggers a click on the minimap.
+   * @param {Object} nearestNode - The nearest node's data, including its ID and coordinates.
+   * @param {Array} nodesData - The data of the nodes retrieved from the survey.
+   */
+  function updateViewAndMinimap(
+    nearestNode: NearestNode | null,
+    nodesData: NodeData[],
+  ): void {
+    if (nearestNode == null) return;
+    setCurrPanoId(nearestNode.nearestNodeId);
+    setNodeState((prevState) => ({
+      ...prevState,
+      x_position: nearestNode.nearestNodeX,
+      y_position: nearestNode.nearestNodeY,
+    }));
+
+    minimapClick(
+      nodesData.some((node) => node.minimap_node.tiles_id === currPanoId)
+        ? currPanoId
+        : nearestNode.nearestNodeId,
+    );
+
+    updateMarzipanoView();
+  }
+
+  /**
+   * Updates the Marzipano view if the current view parameters (fov, pitch, yaw) are not default.
+   * This function checks if the Marzipano viewer and the current scene are initialized,
+   * then updates the view parameters if they are not set to their default values.
+   */
+  function updateMarzipanoView(): void {
     const viewParams = currViewParams;
-
-    if (floor !== Infinity) {
-      if (marzipano.current !== undefined) {
-        marzipano.current.viewer.domElement().innerHTML = "<div></div>";
-        marzipano.current.viewer.destroyAllScenes();
-
-        if (abortController.length > 1) {
-          abortController[abortController.length - 1].abort();
-          abortController.pop();
-        }
-      } else {
-        abortController.push(new AbortController());
-        NetworkCalls.fetchSurveyNodes(
-          floor,
-          siteId,
-          abortController[abortController.length - 1],
-          currDate,
-        ).then((nodesData) => {
-          panoRef?.current?.childNodes && panoRef?.current?.replaceChildren("");
-
-          if (!nodesData || !nodesData.length) return;
-
-          setNodesData(nodesData);
-
-          // Get correct minimap image on initial load.
-          getMinimapImage(floor);
-          if (!marzipano.current && floorExists) {
-            marzipano.current = new MarzipanoHelper(
-              nodesData,
-              getInfoHotspot,
-              updateCurrPano,
-              updateRotation,
-              updateViewParams,
-              changeInfoPanelOpen,
-              config,
-            );
-          }
-          // Get current tile id based on previous node number
-          let currentTilesId = nodesData[0].minimap_node.tiles_id;
-          let xDifference = 10000;
-          let yDifference = 10000;
-          const xOffset = currPanoId.split("_")[3];
-          const yOffset = currPanoId.split("_")[4];
-
-          for (const node of nodesData) {
-            const xDiff = Math.abs(Number(xOffset) - node.x);
-            const yDiff = Math.abs(Number(yOffset) - node.y);
-            if (
-              node.x.toString() === xOffset &&
-              node.y.toString() === yOffset
-            ) {
-              currentTilesId = node.minimap_node.tiles_id;
-              break;
-            } else if (xDifference > xDiff && yDifference > yDiff) {
-              xDifference = xDiff;
-              yDifference = yDiff;
-              currentTilesId = node.minimap_node.tiles_id;
-            }
-          }
-
-          minimapClick(
-            nodesData.some(
-              (e: NodeData) => e.minimap_node.tiles_id === currPanoId,
-            )
-              ? currPanoId
-              : currentTilesId,
-          );
-
-          if (
-            viewParams.fov !== 0 ||
-            viewParams.pitch !== 0 ||
-            viewParams.yaw !== 0
-          ) {
-            if (
-              marzipano.current &&
-              marzipano.current.findSceneById(currPanoId)
-            ) {
-              marzipano.current.updateCurrView(
-                viewParams,
-                marzipano.current.findSceneById(currPanoId),
-              );
-            }
-          }
-        });
+    setLastViewParams(() => viewParams);
+    setLastRotation(() => currRotation);
+    if (
+      viewParams.fov !== 0 ||
+      viewParams.pitch !== 0 ||
+      viewParams.yaw !== 0
+    ) {
+      if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
+        marzipano.current.updateCurrView(
+          viewParams,
+          marzipano.current.findSceneById(currPanoId),
+        );
       }
     }
   }
+
+  /**
+   * The main function to get survey nodes for a specific floor.
+   * It resets the viewer and aborts any pending network calls before fetching and processing
+   * survey nodes for the specified floor.
+   * @param {number} [floor=0] - The floor number for which to fetch survey nodes. Defaults to 0.
+   */
+  function getSurveyNodes(floor: number = 0): void {
+    if (floor !== Infinity) {
+      resetViewerAndAbortCalls();
+      fetchAndProcessSurveyNodes(floor);
+    }
+  }
+
   function changeDate(date: Date): void {
     setCurrDate(date);
   }
@@ -470,6 +552,9 @@ function Site(props: SiteInterface) {
         }
         timelineOpen={timelineOpen}
       />
+      <div className="marzipano-info">
+        <MarzipanoDisplayInfo viewParams={currViewParams} />
+      </div>
       <div
         className={`linkButton ${!config.enable.hotspots_nav && "disabled"}`}
         onClick={(e): void => handleDropdownClick(e, !linkNodeListOpen)}
@@ -544,6 +629,8 @@ function Site(props: SiteInterface) {
           updateFloorTag={(input: string) => setFloorTag(input)}
           minimapShown={floorExists}
           currDate={currDate}
+          setNodeState={updateNodeState}
+          currViewParams={currViewParams}
         />
         {config.enable.floors && !minimapEnlarged && (
           <LevelSlider

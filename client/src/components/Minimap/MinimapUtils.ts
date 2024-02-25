@@ -1,9 +1,14 @@
-import { MinimapReturn } from "../components/Site";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
-import NetworkCalls from "./NetworkCalls";
-import { xAndYScaledCoordinates } from "../interfaces/MiniMap/XAndYScaledCoordinates";
-import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
+import { MinimapReturn } from "../Site";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import NetworkCalls from "../../utils/NetworkCalls";
+import { xAndYScaledCoordinates } from "../../interfaces/MiniMap/XAndYScaledCoordinates";
+import { FloorIdentifier } from "../../interfaces/MiniMap/FloorIdentifier";
 import { MinimapConstants } from "./MinimapConstants.d";
+import {
+  NearestNode,
+  NodeConfiguration,
+  NodeData,
+} from "../../interfaces/NodeData";
 
 /**
  * Interface for parameters needed to calculate X and Y coordinates for a minimap.
@@ -242,6 +247,43 @@ const updateFloorTagAndNameAPI = async (
   }
 };
 
+/**
+ * Finds the nearest node to the current position from the array of nodes data.
+ * @param {Array} nodesData - The data of the nodes retrieved from the survey.
+ * @returns {Object} The nearest node's data, including its ID, x, and y coordinates.
+ */
+function findNearestNode(
+  nodesData: NodeData[],
+  nodeState: NodeConfiguration,
+): NearestNode | null {
+  if (!nodesData || nodesData.length === 0) {
+    return null;
+  }
+
+  let nearestNodeId = nodesData[0].minimap_node.tiles_id;
+  let nearestNodeX = nodesData[0].x;
+  let nearestNodeY = nodesData[0].y;
+  let smallestDistance = Infinity;
+
+  const previousXOffset = nodeState.x_position;
+  const previousYOffset = nodeState.y_position;
+
+  nodesData.forEach((node) => {
+    const xDiff = Math.abs(previousXOffset - node.x);
+    const yDiff = Math.abs(previousYOffset - node.y);
+    const distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+
+    if (distance < smallestDistance) {
+      smallestDistance = distance;
+      nearestNodeId = node.minimap_node.tiles_id;
+      nearestNodeX = node.x;
+      nearestNodeY = node.y;
+    }
+  });
+
+  return { nearestNodeId, nearestNodeX, nearestNodeY };
+}
+
 export default {
   getScaledNodeCoordinates,
   setNodeSelected,
@@ -249,4 +291,5 @@ export default {
   updateNodeCoordinateAPI,
   updateNodeRotationAPI,
   updateFloorTagAndNameAPI,
+  findNearestNode,
 };

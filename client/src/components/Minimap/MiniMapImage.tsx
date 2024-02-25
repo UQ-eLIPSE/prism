@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import MinimapStyles from "../sass/partials/_minimap.module.scss";
+import MinimapStyles from "../../sass/partials/_minimap.module.scss";
 
 interface MinimapImageProps {
   mapHoverStyleCondition: boolean;
