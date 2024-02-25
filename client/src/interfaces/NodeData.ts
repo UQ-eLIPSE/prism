@@ -59,22 +59,21 @@ export interface InitialViewParameters {
   pitch: number;
   fov: number;
 }
-
-export interface LinkHotspot {
+export interface Hotspot {
   yaw: number;
   pitch: number;
+}
+
+export interface LinkHotspot extends Hotspot {
   rotation: number;
   target: string;
 }
 
-export interface InfoHotspot {
-  yaw: number;
-  pitch: number;
+export interface InfoHotspot extends Hotspot {
   title: string;
   id: number;
   info_id: string;
 }
-
 interface NodePropsBase {
   MinimapProps: MinimapProps;
   selectedNode: NewNode | null;

@@ -6,7 +6,7 @@ import Minimap from "./Minimap/Minimap";
 import Timeline from "./Timeline";
 import TimelineButton from "./TimelineButton";
 import LinkNodes from "./LinkNodes";
-import Marzipano from "../utils/Marzipano/Marzipano";
+import MarzipanoHelper from "../utils/Marzipano/Marzipano";
 import {
   NodeData,
   InitialViewParameters,
@@ -69,7 +69,7 @@ interface SiteInterface {
 
 function Site(props: SiteInterface) {
   const { siteId, config, updateFloor } = props;
-  const marzipano = useRef<Marzipano>();
+  const marzipano = useRef<MarzipanoHelper>();
   const sideNavOpen = false;
 
   const enableTimeline = config.enable.timeline;
@@ -349,7 +349,7 @@ function Site(props: SiteInterface) {
    */
   function initializeMarzipano(floor: number, nodesData: NodeData[]): void {
     if (!marzipano.current && floorExists) {
-      marzipano.current = new Marzipano(
+      marzipano.current = new MarzipanoHelper(
         nodesData,
         getInfoHotspot,
         updateCurrPano,
