@@ -460,6 +460,7 @@ function Site(props: SiteInterface) {
         config.initial_settings.floor = floor;
         setCurrFloor(floor);
         setMinimap(res as MinimapReturn);
+        console.log(minimap);
       }
     } catch {
       setCurrFloor(floor);
@@ -543,7 +544,7 @@ function Site(props: SiteInterface) {
   }
 
   return (
-    <div id="sitePage">
+    <div data-testid="site-element" id="sitePage">
       <TitleCard
         firstLineName={
           marzipano.current

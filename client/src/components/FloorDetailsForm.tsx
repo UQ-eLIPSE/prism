@@ -45,7 +45,7 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
     submitVisibilityState.value,
     submitVisibilityState.setFn,
   ];
-
+  console.log(floorTag);
   const inputs: FloorTagOrNameInputConfig[] = [
     {
       label: "Floor Name",
@@ -101,6 +101,7 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
             <span key={input.id}>
               {!minimapShown && <label htmlFor={input.id}>{input.label}</label>}
               <input
+                data-testid={input.id}
                 value={input.value}
                 data-cy={input.cy}
                 id={input.id}
