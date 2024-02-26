@@ -1,54 +1,29 @@
 #!/bin/bash
 # The following functions are called in the Main Execution Flow in this order:
-# 1. load_projects: Loads project data from 'projects.txt'.
-# 2. select_project: Selects the target project and assigns its parameters.
-# 3. get_manta_key: Retrieves access credentials for Manta storage.
-# 4. get_mongo_dump: Downloads the necessary MongoDB data for the selected project.
-# 5. build_and_run:
-#    5.1. create_env_file: Generates a .env file for environment configuration.
-#    5.2. start_docker_compose: Initiates Docker Compose, optionally rebuilding if needed.
-#    5.3. restore_data_in_mongodb: Restores data in the MongoDB instance.
-#    5.4. display_information: Displays relevant information about the process.
 
-IDS=()
-DATANAMES=()
-RESTORE_DATAS=()
-RESTORE_FILENAMES=()
+# 1. get_manta_key: Retrieves access credentials for Manta storage.
+# 2. get_mongo_dump: Downloads the necessary MongoDB data for the selected project.
+# 3. build_and_run:
+#    3.1. create_env_file: Generates a .env file for environment configuration.
+#    3.2. start_docker_compose: Initiates Docker Compose, optionally rebuilding if needed.
+#    3.3. restore_data_in_mongodb: Restores data in the MongoDB instance.
+#    3.4. display_information: Displays relevant information about the process.
 
-load_projects() {
-    index=0
-    while IFS="|" read -r id dataname restore_data restore_filename; do
-        IDS[$index]=$id
-        DATANAMES[$index]=$dataname
-        RESTORE_DATAS[$index]=$restore_data
-        RESTORE_FILENAMES[$index]=$restore_filename
-        index=$((index+1))
-    done < projects.txt
-}
-
-select_project() {
-    read -p "Choose a project number (e.g. 1, 2): 1. AGCO360, 2. ANLB, 3. Kingston, 4. Urban Water, 5. Camp Hill, 6. aeb, 7. uqlakes  " project_name
-    project_index=$((project_name - 1))
-
-    DATANAME="${DATANAMES[$project_index]}"
-    RESTORE_DATA="${RESTORE_DATAS[$project_index]}"
-    RESTORE_FILENAME="${RESTORE_FILENAMES[$project_index]}"
-
-    if [ -z "$DATANAME" ]; then
-        echo "Invalid project number."
-        exit 1
-    fi
-}
+# For create .env file in server
+DATANAME=".env.prism_uat.example"
+# default mongorestore file name 
+RESTORE_FILENAME="prism_uat_v0"
 
 get_mantakey() {
     # Make folder for mantakey
-    [ ! -d "./server/tmp" ] && mkdir ./server/tmp
+    [ ! -d "./server/opt/tmp" ] && mkdir -p ./server/opt/tmp
+    echo "check the opt/tmp"
 
-    if [ ! -f "./server/tmp/prism-tst-id_rsa" ]; then
+    if [ ! -f "./server/opt/tmp/prism-tst-id_rsa" ]; then
         wget --no-parent -r http://stluc.manta.uqcloud.net/elipse/public/PRISM-TST/prism-tst.tar.gz -O prism-tst.tar.gz
         [ $? -ne 0 ] && echo "Error downloading the file." && exit 1
         tar -xvzf prism-tst.tar.gz
-        mv prism-tst/prism-tst-id_rsa ./server/tmp
+        mv prism-tst/prism-tst-id_rsa ./server/opt/tmp
         rm -rf prism-tst.tar.gz prism-tst
     fi
 }
@@ -63,15 +38,17 @@ get_mongo_dump() {
             exit 1
         fi
         # Download dumpdata
-        scp -r $USERNAME@mango.eait.uq.edu.au:/home/groups/elipse-projects/Prism/prism_mongodumps/ ./server/
+        # Make folder for dumpdata
+        [ ! -d "./server/prism_mongodumps" ] && mkdir -p ./server/prism_mongodumps
+        scp -r $USERNAME@mango.eait.uq.edu.au:/home/groups/elipse-projects/Prism/prism_mongodumps/prism_uat/ ./server/prism_mongodumps/
         [ $? -ne 0 ] && echo "Error downloading dumpdata. Check your username and accessibility" && exit 1
     else
-        echo "Data files exist at ./server/prism_mongodumps"
+        echo "Data files exist at ./server/prism_mongodumps/prism_uat"
     fi
 }
 
 restore_data() {
-    cd "./server/prism_mongodumps/$RESTORE_DATA"
+    cd "./server/prism_mongodumps/prism_uat"
     mongorestore "$RESTORE_FILENAME"
     cd ../../..
   
@@ -110,8 +87,6 @@ echo "Ports checked!"
 
 
 # Run server build steps
-load_projects
-select_project
 get_mantakey
 get_mongo_dump
 build_and_run

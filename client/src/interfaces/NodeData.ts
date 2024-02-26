@@ -59,22 +59,21 @@ export interface InitialViewParameters {
   pitch: number;
   fov: number;
 }
-
-export interface LinkHotspot {
+export interface Hotspot {
   yaw: number;
   pitch: number;
+}
+
+export interface LinkHotspot extends Hotspot {
   rotation: number;
   target: string;
 }
 
-export interface InfoHotspot {
-  yaw: number;
-  pitch: number;
+export interface InfoHotspot extends Hotspot {
   title: string;
   id: number;
   info_id: string;
 }
-
 interface NodePropsBase {
   MinimapProps: MinimapProps;
   selectedNode: NewNode | null;
@@ -100,6 +99,10 @@ export interface NodeCollectionProps extends NodePropsBase {
   renderData: NewNode[];
   x: number;
   y: number;
+  isEditing: boolean;
+  currViewParams: InitialViewParameters;
+  nodesData: NodeData[];
+  currRotation: number;
 }
 
 /**
@@ -125,4 +128,28 @@ export interface NodeComponentProps extends NodePropsBase {
   yPosition: number;
   xPosition: number;
   isMapEnlarged: boolean;
+  isEditing: boolean;
+  currViewParams: InitialViewParameters;
+  nodesData: NodeData[];
+  currRotation: number;
+}
+
+/**
+ * This interface represents the current node's position and rotation in the minimap.
+ * It is used to update the node's position and rotation in the database.
+ * @interface NodeConfiguration
+ * @property {number} x_position 0 - 100 horizontal percentage position of the node.
+ * @property {number} y_position 0 - 100 vertical percentage position of the node.
+ * @property {number} rotation 0 - 360 degrees rotation of the node.
+ */
+export interface NodeConfiguration {
+  x_position: number;
+  y_position: number;
+  rotation: number;
+}
+
+export interface NearestNode {
+  nearestNodeId: string;
+  nearestNodeX: number;
+  nearestNodeY: number;
 }

@@ -1,34 +1,21 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
-import MinimapStyles from "../sass/partials/_minimap.module.scss";
-import { ISettings } from "../typings/settings";
-import NetworkCalls from "../utils/NetworkCalls";
-import { useUserContext } from "../context/UserContext";
-import EditNodeForm from "./EditNodePositionForm";
-import { MinimapProps } from "../interfaces/MiniMap/MinimapProps";
-import { NewNode } from "../interfaces/MiniMap/NewNode";
-import MinimapUtils from "../utils/MinimapUtils";
-import { FloorIdentifier } from "../interfaces/MiniMap/FloorIdentifier";
-import { MinimapConstants } from "../utils/MinimapConstants.d";
+import MinimapStyles from "../../sass/partials/_minimap.module.scss";
+import { ISettings } from "../../typings/settings";
+import NetworkCalls from "../../utils/NetworkCalls";
+import { useUserContext } from "../../context/UserContext";
+import EditNodePositionForm from "./EditNodePositionForm";
+import { MinimapProps } from "../../interfaces/MiniMap/MinimapProps";
+import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import MinimapUtils from "./MinimapUtils";
+import { FloorIdentifier } from "../../interfaces/MiniMap/FloorIdentifier";
+import { MinimapConstants } from "./MinimapConstants.d";
 import NodeCollection from "./NodeCollection";
-import FloorDetailsForm from "./FloorDetailsForm";
-import ToggleEditNodeButton from "./ToggleEditNodeButton";
+import FloorDetailsForm from "../FloorDetailsForm";
+import ToggleEditNodeButton from "../ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
-import SubmitOrCancelButtons from "./SubmitOrCancelButtons";
-
-/**
- * This interface represents the current node's position and rotation in the minimap.
- * It is used to update the node's position and rotation in the database.
- * @interface NodeConfiguration
- * @property {number} x_position 0 - 100 horizontal percentage position of the node.
- * @property {number} y_position 0 - 100 vertical percentage position of the node.
- * @property {number} rotation 0 - 360 degrees rotation of the node.
- */
-interface NodeConfiguration {
-  x_position: number;
-  y_position: number;
-  rotation: number;
-}
+import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
+import MinimapUpdate from "./MinimapUpload";
 
 function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
@@ -57,14 +44,6 @@ function Minimap(props: MinimapProps) {
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
 
-  // * temporary
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [nodeState, setNodeState] = useState<NodeConfiguration>({
-    x_position: 0,
-    y_position: 0,
-    rotation: 0,
-  });
-
   const [nodes, editNodes] = useState<NewNode[]>([]);
   const payload = selectedNode ? [...nodes, selectedNode] : nodes;
 
@@ -76,7 +55,6 @@ function Minimap(props: MinimapProps) {
           String(props.floor),
           props.currDate,
         );
-
         if (minimapNodeData) {
           editNodes(
             selectedNode
@@ -115,7 +93,6 @@ function Minimap(props: MinimapProps) {
     node: NewNode,
   ): void {
     e.stopPropagation();
-
     if (editing && !selectedNode) {
       MinimapUtils.setNodeSelected(
         node,
@@ -128,6 +105,11 @@ function Minimap(props: MinimapProps) {
     } else if (!editing && !selectedNode) {
       props.updateMinimapEnlarged(false);
       props.onClickNode(node.tiles_id);
+      props.setNodeState({
+        x_position: node.x,
+        y_position: node.y,
+        rotation: 0,
+      });
     }
   }
 
@@ -151,6 +133,7 @@ function Minimap(props: MinimapProps) {
 
     if (node == selectedNode) {
       return `rotate(${
+        props.currViewParams.yaw + // include intial yaw from db
         rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION
       }rad)`;
     } else {
@@ -246,12 +229,14 @@ function Minimap(props: MinimapProps) {
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
           <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
-          <EditNodeForm
+          <EditNodePositionForm
             rotationState={{ value: rotation, setFn: setRotation }}
             xPositionState={{ value: x, setFn: setX }}
             yPositionState={{ value: y, setFn: setY }}
             resetSelectedNode={resetSelectedNode}
             updateNode={updateNodeInfo}
+            selectedNode={selectedNode}
+            nodesData={props.nodeData}
           />
         </div>
       </div>
@@ -333,53 +318,15 @@ function Minimap(props: MinimapProps) {
                   }}
                 />
               ) : (
-                <div
-                  className="minimap-drag-drop"
-                  onDragOver={() => setMapHover(true)}
-                  onDragLeave={(e) => {
-                    if (e.target instanceof HTMLDivElement) {
-                      setMapHover(false);
-                    }
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setMapHover(false);
-                    if (
-                      e.dataTransfer.files[0] &&
-                      e.dataTransfer.files[0].type.includes("image/")
-                    ) {
-                      setSelectedImage(e.dataTransfer.files[0]);
-                      setImageUrl(URL.createObjectURL(e.dataTransfer.files[0]));
-                      setPendingUpload(true);
-                    }
-                  }}
-                >
-                  <label
-                    className={
-                      mapHover
-                        ? "displayed light dropUpload"
-                        : `${
-                            !imageUrl || !props.minimapData
-                              ? "displayed"
-                              : "light"
-                          }`
-                    }
-                    htmlFor="select-image"
-                  >
-                    <span className={`${mapHover && "dropUploadHover"}`}>
-                      <i
-                        className={`fa-solid ${
-                          mapHover ? "fa-cloud-arrow-up" : "fa-file-image"
-                        }`}
-                      ></i>
-                      <p>
-                        {mapHover
-                          ? "Drop Image to Upload"
-                          : "Upload Minimap Image"}
-                      </p>
-                    </span>
-                  </label>
-                </div>
+                <MinimapUpdate
+                  setMapHover={setMapHover}
+                  setSelectedImage={setSelectedImage}
+                  setImageUrl={setImageUrl}
+                  setPendingUpload={setPendingUpload}
+                  mapHover={mapHover}
+                  imageUrl={imageUrl}
+                  minimapdata={props.minimapData}
+                />
               )}
 
               {props.minimapData && imageUrl && (
@@ -401,6 +348,10 @@ function Minimap(props: MinimapProps) {
                   x={x}
                   y={y}
                   handleNodeClick={handleNodeClick}
+                  isEditing={editing}
+                  currViewParams={props.currViewParams}
+                  nodesData={props.nodeData}
+                  currRotation={rotation}
                 />
               )}
             </div>
