@@ -6,7 +6,8 @@ Cypress.Commands.add("accessZone", (zone: Cypress.PrismZone): void => {
     );
   } else {
     cy.visit(test === "local" ? zone.url.local : zone.url.uat);
-    cy.get(".pin.enabled.enabled.false.bottom.enabled").click({
+    // TODO: to discuss whether implement choose any/all map-pin needed or choose a default one can be satisfied for the test
+    cy.get(".pin.enabled.enabled.false.bottom.enabled").eq(0).click({
       force: true,
     });
     if (zone.adminUser) {
