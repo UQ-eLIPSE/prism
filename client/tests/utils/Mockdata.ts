@@ -1,6 +1,6 @@
 import { ISettings } from "../../src/typings/settings";
 
-export const mockConfig: ISettings = {
+const mockConfig: ISettings = {
   _id: "mockConfigId",
   enable: {
     timeline: true,
@@ -50,4 +50,10 @@ export const mockConfig: ISettings = {
   marzipano_mouse_view_mode: "default",
   num_floors: 3,
   site: "mockSite",
+};
+
+export const mockSiteProps = {
+  siteId: "mockSiteId",
+  config: mockConfig,
+  updateFloor: jest.fn(),
 };

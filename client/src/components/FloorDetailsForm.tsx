@@ -45,7 +45,6 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
     submitVisibilityState.value,
     submitVisibilityState.setFn,
   ];
-  console.log(floorTag);
   const inputs: FloorTagOrNameInputConfig[] = [
     {
       label: "Floor Name",

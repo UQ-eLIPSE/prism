@@ -5,13 +5,7 @@ import "@testing-library/jest-dom";
 import "@testing-library/react/dont-cleanup-after-each";
 import Site from "../src/components/Site";
 import { BrowserRouter as Router } from "react-router-dom";
-import { mockConfig } from "./utils/Mockdata";
-
-const mockSiteProps = {
-  siteId: "mockSiteId",
-  config: mockConfig,
-  updateFloor: jest.fn(),
-};
+import { mockSiteProps } from "./utils/Mockdata";
 
 jest.mock("../src/utils/NetworkCalls", () => ({
   getEmptyFloors: jest.fn().mockResolvedValue({

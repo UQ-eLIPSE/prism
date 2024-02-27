@@ -460,7 +460,6 @@ function Site(props: SiteInterface) {
         config.initial_settings.floor = floor;
         setCurrFloor(floor);
         setMinimap(res as MinimapReturn);
-        console.log(minimap);
       }
     } catch {
       setCurrFloor(floor);
