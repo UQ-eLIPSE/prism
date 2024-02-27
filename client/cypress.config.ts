@@ -51,7 +51,7 @@ export default defineConfig({
   },
   e2e: {
     specPattern: "cypress/e2e/**/*.cy.{js,ts}",
-    baseUrl: "https://prism-uat.uqcloud.net",
+    baseUrl: "http://localhost:3000",
     supportFile: "cypress/support/index.ts",
     screenshotOnRunFailure: false,
   },
