@@ -364,17 +364,6 @@ export abstract class SurveyService {
               // Half of Pi
               rotation_offset: 1.5707963267948966,
             },
-            minimap: {
-              image_url: "",
-              image_large_url: "",
-              x_pixel_offset: 0,
-              y_pixel_offset: 0,
-              x_scale: 1,
-              y_scale: 1,
-              img_width: 0,
-              img_height: 0,
-              xy_flipped: false,
-            },
             animation: {
               url: "NA",
               title: "NA",
