@@ -1,13 +1,10 @@
 Cypress.Commands.add("accessZone", (zone: Cypress.PrismZone): void => {
   const test = Cypress.env("testurl");
-  console.log(test);
   if (zone.singleSite) {
     cy.visit(
       test === "local" ? `${zone.url.local}/site` : `${zone.url.uat}/site`,
     );
   } else {
-    console.log(test);
-    cy.log(test);
     cy.visit(test === "local" ? zone.url.local : zone.url.uat);
     // TODO: to discuss whether implement choose all map-pin needed or choose a random one can be satisfied for the test
     cy.get(".pin.enabled.enabled.false.bottom.enabled")
