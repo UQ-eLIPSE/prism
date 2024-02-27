@@ -13,8 +13,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           .parent("[class^='_minimap_nodeContainer']")
           .should("exist")
           .parent()
-          .children("div")
-          .eq(1)
+          .children("div[class*='nodeTitle']")
           .should("exist")
           .invoke("text")
           .then((text) => {
