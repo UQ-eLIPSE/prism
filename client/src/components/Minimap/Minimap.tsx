@@ -17,20 +17,6 @@ import MinimapImage from "./MiniMapImage";
 import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
 import MinimapUpdate from "./MinimapUpload";
 
-/**
- * This interface represents the current node's position and rotation in the minimap.
- * It is used to update the node's position and rotation in the database.
- * @interface NodeConfiguration
- * @property {number} x_position 0 - 100 horizontal percentage position of the node.
- * @property {number} y_position 0 - 100 vertical percentage position of the node.
- * @property {number} rotation 0 - 360 degrees rotation of the node.
- */
-interface NodeConfiguration {
-  x_position: number;
-  y_position: number;
-  rotation: number;
-}
-
 function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
   const [user] = useUserContext();
@@ -58,14 +44,6 @@ function Minimap(props: MinimapProps) {
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
 
-  // * temporary
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [nodeState, setNodeState] = useState<NodeConfiguration>({
-    x_position: 0,
-    y_position: 0,
-    rotation: 0,
-  });
-
   const [nodes, editNodes] = useState<NewNode[]>([]);
   const payload = selectedNode ? [...nodes, selectedNode] : nodes;
 
@@ -77,7 +55,6 @@ function Minimap(props: MinimapProps) {
           String(props.floor),
           props.currDate,
         );
-
         if (minimapNodeData) {
           editNodes(
             selectedNode
@@ -116,7 +93,6 @@ function Minimap(props: MinimapProps) {
     node: NewNode,
   ): void {
     e.stopPropagation();
-
     if (editing && !selectedNode) {
       MinimapUtils.setNodeSelected(
         node,
@@ -129,6 +105,11 @@ function Minimap(props: MinimapProps) {
     } else if (!editing && !selectedNode) {
       props.updateMinimapEnlarged(false);
       props.onClickNode(node.tiles_id);
+      props.setNodeState({
+        x_position: node.x,
+        y_position: node.y,
+        rotation: 0,
+      });
     }
   }
 

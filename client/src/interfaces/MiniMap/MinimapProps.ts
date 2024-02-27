@@ -1,6 +1,10 @@
 import { MinimapReturn } from "../../components/Site";
 import { ISettings } from "../../typings/settings";
-import { InitialViewParameters, NodeData } from "../NodeData";
+import {
+  NodeConfiguration,
+  InitialViewParameters,
+  NodeData,
+} from "../NodeData";
 
 export interface MinimapProps {
   currPanoId: string;
@@ -21,5 +25,6 @@ export interface MinimapProps {
   updateFloorTag: (input: string) => void;
   minimapShown: boolean;
   currDate: Date;
+  setNodeState: (nodeState: NodeConfiguration) => void;
   currViewParams: InitialViewParameters;
 }
