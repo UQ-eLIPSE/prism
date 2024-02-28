@@ -16,6 +16,7 @@ import {
   ISurveyNode,
   IHotspotDescription,
 } from "../models/SurveyModel";
+import { findByFloorAndSite } from "../service/minimapConversionRepo";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
@@ -185,21 +186,17 @@ export class SurveyController {
    * @param res
    */
   public async getIndividualSurveysDetails(req: Request, res: Response) {
-    const { siteId } = req.params;
-    const { floor, date } = req.query;
+    const siteId = req.params.siteId;
+    const floor = req.query.floor as string;
+    const date = req.query.date as string;
+
     let allSurveys: IMinimapConversion[] = [];
     let results: IMinimapConversion[] = [];
     if (!siteId)
       return CommonUtil.failResponse(res, "Site ID has not been provided");
 
     if (floor) {
-      allSurveys = await MinimapConversion.find(
-        { floor, site: new ObjectId(siteId) },
-        "-_id",
-      )
-        .populate("survey_node", "-_id")
-        .populate("minimap_node", "-_id");
-
+      allSurveys = await findByFloorAndSite(floor, siteId);
       results = allSurveys;
 
       if (!results)
@@ -234,6 +231,7 @@ export class SurveyController {
         return dbDate === specificDate;
       });
     }
+    console.log(results);
 
     return CommonUtil.successResponse(res, "", results);
   }
