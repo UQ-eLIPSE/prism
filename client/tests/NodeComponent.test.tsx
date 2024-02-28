@@ -1,6 +1,6 @@
 import { getCounterRotationStyle } from "../src/components/Minimap/NodeComponent";
 
-describe("getCounterRotationStyle", () => {
+describe("Counter rotation style calculations works", () => {
   it("should return the counter rotation style", () => {
     const rotationStyle = "rotate(1.8325956209839993rad)";
     const expectedCounterRotationStyle = "rotate(-1.8325956209839993rad)";
