@@ -14,6 +14,26 @@ const radToDeg = (rad: number) => {
 };
 
 /**
+ * Converts rotation style to counter rotation style.
+ * Used to make the node look like it hasn't changed from the rotation.
+ * @param {string} rotationStyle - A CSS rotation style string (e.g., "rotate(45rad)")
+ * @returns {string} - A CSS rotation style string with the counter rotation (e.g., "rotate(-45rad)")
+ */
+const getCounterRotationStyle = (rotationStyle: string): string => {
+  // Regex to extract rotation value
+  const rotationMatch = /rotate\(([^)]+)\)/.exec(rotationStyle);
+
+  if (!rotationMatch) return rotationStyle;
+  // rotation match e.g.
+  // ['rotate(1.8325956209839993rad)', '1.8325956209839993rad', index: 0, input:
+  // 'rotate(1.8325956209839993rad)', groups: undefined]
+  const rotationValueInRadians = parseFloat(rotationMatch[1].split("rad")[0]);
+  const counterRotationStyle = `rotate(${-rotationValueInRadians}rad)`;
+
+  return counterRotationStyle;
+};
+
+/**
  * NodeComponent renders a single node within the minimap, including its position,
  * selection state, and any special indicators like rotation or enlargement.
  * It also handles the click events to select a node.
@@ -135,7 +155,6 @@ const NodeComponent = ({
           )}
 
         {node == selectedNode && <div className="positionIndicator selected" />}
-
         <div
           className={classNames(MinimapStyles.node, {
             [MinimapStyles.selectedNode]:
@@ -152,6 +171,10 @@ const NodeComponent = ({
           data-cy={
             node.tiles_id === MinimapProps.currPanoId ? "selected-node" : "node"
           }
+          style={{
+            // needed to make the node look like it hasn't changed from the rotation
+            transform: getCounterRotationStyle(getNodeStyle().transform),
+          }}
         />
       </div>
       {isMapEnlarged && (
