@@ -553,8 +553,17 @@ h1 {
         flex-direction: row;
         align-items: center;
 
+        .coords-container {
+          display: flex;
+          flex-direction: row;
+          min-width: 50%;
+        }
+
         div {
           position: relative;
+          .coords {
+            width: 50%;
+          }
 
           &.coords:nth-of-type(1) input {
             border-radius: 5px 0 0 5px;

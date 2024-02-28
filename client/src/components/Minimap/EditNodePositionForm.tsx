@@ -163,16 +163,18 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
       <span>
         <label htmlFor={xPositionInputConfig.label}>Coordinates</label>
-        {[xPositionInputConfig, yPositionInputConfig].map(
-          (inputConfig: EditNodeInput, idx: number) => (
-            <div className="coords" key={idx}>
-              <EditNodePositionInput
-                inputConfiguration={inputConfig}
-                handleInputChange={handleInputChange}
-              />
-            </div>
-          ),
-        )}
+        <div className="coords-container">
+          {[xPositionInputConfig, yPositionInputConfig].map(
+            (inputConfig: EditNodeInput, idx: number) => (
+              <div className="coords" key={idx}>
+                <EditNodePositionInput
+                  inputConfiguration={inputConfig}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
+            ),
+          )}
+        </div>
       </span>
 
       <span>
