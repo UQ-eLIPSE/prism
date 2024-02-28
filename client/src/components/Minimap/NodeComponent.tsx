@@ -22,7 +22,6 @@ const radToDeg = (rad: number) => {
 export const getCounterRotationStyle = (rotationStyle: string): string => {
   // Regex to extract rotation value
   const rotationMatch = /rotate\(([^)]+)rad\)/.exec(rotationStyle);
-  console.log(rotationMatch);
 
   if (!rotationMatch) return rotationStyle;
   // rotation match e.g.
