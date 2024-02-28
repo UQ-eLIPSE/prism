@@ -20,7 +20,7 @@ import {
   findOneBySurveyNodeWithRelated,
   findOneBySurveyNode,
   deleteOneMinimapCvs,
-} from "../service/minimapConversionRepo";
+} from "../dal/minimapConversionRepo";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
@@ -226,10 +226,13 @@ export class SurveyController {
         const specificDate = date
           ? new Date(date as string).getTime()
           : new Date().getTime();
-        const dbDate = survey.survey_node.date
-          ? new Date(survey.survey_node.date).getTime()
-          : new Date().getTime();
-        return dbDate === specificDate;
+        //Type Check
+        if ("date" in survey.survey_node) {
+          const dbDate = survey.survey_node.date
+            ? new Date(survey.survey_node.date).getTime()
+            : new Date().getTime();
+          return dbDate === specificDate;
+        }
       });
     }
     console.log(results);
@@ -271,22 +274,31 @@ export class SurveyController {
       }
 
       const results: INodeReturnData[] = [];
+
       allSurveys.map((s: IMinimapConversion) => {
         if (s.floor == Number(floorId)) {
-          results.push({
-            floor: s.floor,
-            node_number: s.survey_node.node_number,
-            tiles_id: s.survey_node.tiles_id,
-            tiles_name: s.survey_node.tiles_name,
-            survey_node: s.minimap_node.survey_node,
-            x: s.x,
-            x_scale: s.x_scale,
-            y: s.y,
-            y_scale: s.y_scale,
-            site: s.site,
-            rotation: s.rotation,
-            info_hotspots: s.survey_node.info_hotspots,
-          });
+          if (
+            "node_number" in s.survey_node &&
+            "tiles_id" in s.survey_node &&
+            "tiles_name" in s.survey_node &&
+            "info_hotspots" in s.survey_node &&
+            "survey_node" in s.minimap_node
+          ) {
+            results.push({
+              floor: s.floor,
+              node_number: s.survey_node.node_number,
+              tiles_id: s.survey_node.tiles_id,
+              tiles_name: s.survey_node.tiles_name,
+              survey_node: s.minimap_node.survey_node,
+              x: s.x,
+              x_scale: s.x_scale,
+              y: s.y,
+              y_scale: s.y_scale,
+              site: Number(s.site),
+              rotation: s.rotation,
+              info_hotspots: s.survey_node.info_hotspots,
+            });
+          }
         }
       });
 
