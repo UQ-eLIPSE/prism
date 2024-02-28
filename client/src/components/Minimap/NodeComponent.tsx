@@ -84,7 +84,7 @@ const NodeComponent = ({
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
           }}
           iconProps={{
-            className: "arrow",
+            className: "arrow arrow-yaw",
             style: {
               transform: `scale(1.5)`,
             },
