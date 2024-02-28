@@ -21,6 +21,7 @@ import {
   findOneBySurveyNode,
   deleteOneMinimapCvs,
 } from "../dal/minimapConversionsHandler";
+import { findByDateAndSite } from "../dal/surveyNodesHandler";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
@@ -212,10 +213,7 @@ export class SurveyController {
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await SurveyNode.find({
-          date: date,
-          site: new ObjectId(siteId),
-        });
+        const surveyNode = await findByDateAndSite(date, siteId);
         for (const node of surveyNode) {
           const survey = await findOneBySurveyNodeWithRelated(node._id);
           survey && allSurveys.push(survey as IMinimapConversion);
@@ -226,17 +224,12 @@ export class SurveyController {
         const specificDate = date
           ? new Date(date as string).getTime()
           : new Date().getTime();
-        //Type Check
-        if ("date" in survey.survey_node) {
-          const dbDate = survey.survey_node.date
-            ? new Date(survey.survey_node.date).getTime()
-            : new Date().getTime();
-          return dbDate === specificDate;
-        }
+        const dbDate = survey.survey_node.date
+          ? new Date(survey.survey_node.date).getTime()
+          : new Date().getTime();
+        return dbDate === specificDate;
       });
     }
-    console.log(results);
-
     return CommonUtil.successResponse(res, "", results);
   }
 
