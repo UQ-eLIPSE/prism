@@ -11,6 +11,7 @@ interface ArrowIconProps {
     className?: string;
     style?: React.CSSProperties;
   };
+  dataCy?: string;
 }
 
 /**
@@ -21,6 +22,7 @@ const ArrowIcon = ({
   showArrow = true,
   containerProps,
   iconProps,
+  dataCy,
 }: ArrowIconProps): JSX.Element => {
   return (
     <>
@@ -32,6 +34,7 @@ const ArrowIcon = ({
           <Icon
             className={`fa fa-arrow-up ${iconProps?.className}`}
             style={iconProps?.style}
+            data-cy={dataCy}
           />
         </div>
       )}
