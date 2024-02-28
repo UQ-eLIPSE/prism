@@ -81,13 +81,12 @@ test("should create new resource area", async () => {
   expect(data.success).toBeTruthy();
 });
 
-// TODO: Fix this test
 test("Should get Resource list from database", async () => {
   const request = httpMocks.createRequest({
     method: "GET",
-    url: "/api/:username/resources/1",
+    url: "/api/:siteId/resources/1",
     params: {
-      username: "Tester",
+      siteId: 123456789,
     },
   });
 
