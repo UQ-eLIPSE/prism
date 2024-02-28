@@ -141,7 +141,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
   const yawInDeg: number | null = props.selectedNode
     ? yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)
-    : null;
+    : 0;
 
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
