@@ -395,10 +395,14 @@
 .arrow {
   width: 10px;
   height: 20px;
-  top: -1.75rem;
+  top: -2rem;
   left: -0.5rem;
   position: absolute;
   z-index: 1;
+}
+
+.arrow-yaw {
+  top: -2.3rem;
 }
 
 .sideNavOpen {
