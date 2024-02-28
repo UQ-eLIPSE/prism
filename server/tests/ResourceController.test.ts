@@ -94,7 +94,6 @@ test("Should get Resource list from database", async () => {
   resp.locals = { user: { username: "Tester" } };
   await resourceController.getAllResources(request, resp);
   const data = resp._getJSONData();
-  console.log("data", data);
 
   expect(data.success).toBeTruthy();
 });
