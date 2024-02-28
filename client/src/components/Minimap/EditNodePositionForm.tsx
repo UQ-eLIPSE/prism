@@ -4,6 +4,7 @@ import EditNodePositionInput from "./EditNodePositionInput";
 import { StateObject } from "../../interfaces/StateObject";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
 import { InitialViewParameters, NodeData } from "../../interfaces/NodeData";
+import { Icon } from "@material-ui/core";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
@@ -138,18 +139,39 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
+  const yawInDeg: number | null = props.selectedNode
+    ? yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)
+    : null;
+
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
       <span data-cy="currRotation-offset-value">
         Initial Minimap Rotation Offset:{" "}
         {props.selectedNode &&
           `${Math.round(radiansToDegrees(props.selectedNode.rotation))}\u00B0`}
+        <Icon
+          className="fa fa-arrow-up"
+          style={{
+            opacity: "0.5",
+            color: "red",
+            marginLeft: "10px",
+            width: "20px",
+            transform: `rotate(${rotationValue}deg)`,
+          }}
+        />
       </span>
 
       <span data-cy="viewParam-currYaw-value">
-        Initial Yaw Parameters:{" "}
-        {props.selectedNode &&
-          `${yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)}\u00B0`}
+        Initial Yaw Parameters: {props.selectedNode && `${yawInDeg}\u00B0`}
+        <Icon
+          className="fa fa-arrow-up"
+          style={{
+            color: "black",
+            marginLeft: "10px",
+            width: "20px",
+            transform: `rotate(${yawInDeg}deg)`,
+          }}
+        />
       </span>
       <span>
         <label htmlFor={rotationInputConfig.label}>Rotation Offset</label>
