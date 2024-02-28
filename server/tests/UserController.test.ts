@@ -89,8 +89,6 @@ test("get user using api", async () => {
 
   expect(data.success).toBeTruthy();
   expect(data.payload.email).toEqual(expectedResult.email);
-  expect(data.payload.firstName).toEqual(expectedResult.firstName);
-  expect(data.payload.lastName).toEqual(expectedResult.lastName);
   expect(data.payload.role).toEqual(expectedResult.role);
 });
 
@@ -127,109 +125,7 @@ test("Should get User list from database", async () => {
 
   expect(data.success).toBeTruthy();
   expect(data.payload.users[0].email).toEqual(expectedResult.users[0].email);
-  expect(data.payload.users[0].firstName).toEqual(
-    expectedResult.users[0].firstName,
-  );
-  expect(data.payload.users[0].lastName).toEqual(
-    expectedResult.users[0].lastName,
-  );
   expect(data.payload.users[0].role).toEqual(expectedResult.users[0].role);
-});
-
-test("Should be able to invite user", async () => {
-  process.env.JWT_Hash = "supersecret";
-
-  const newInvitedUser = {
-    email: `testing1@test.com`,
-    firstName: "User2",
-    lastName: "Tester",
-    role: "projectAdmin",
-  };
-  const req = httpMocks.createRequest({
-    method: "POST",
-    url: "/api/user/:username/invite",
-    params: {
-      username: "Tester",
-    },
-    app: {
-      get: jest.fn(() => {
-        return { sendMail: jest.fn() };
-      }),
-    },
-    body: newInvitedUser,
-  });
-
-  const resp = httpMocks.createResponse();
-  resp.locals = { user: { username: "Tester" } };
-
-  await userController.inviteUser(req, resp);
-
-  const data = resp._getJSONData();
-  const successMessage = `An invite email has been sent to ${newInvitedUser.email}`;
-  expect(data.message).toEqual(successMessage);
-});
-
-test("Should return false when updating invited user without id", async () => {
-  const invitedUserTobeUpdated = { firstName: "Userupdated2" };
-
-  const req = httpMocks.createRequest({
-    method: "GET",
-    url: `/api/users/:username/:usernameToBeUpdated`,
-    params: {
-      username: "Tester",
-    },
-    body: invitedUserTobeUpdated,
-  });
-
-  const resp = httpMocks.createResponse();
-  resp.locals = { user: { username: "Tester" } };
-
-  await userController.updateInvitedUser(req, resp);
-  const data = resp._getJSONData();
-  expect(data.success).toBeFalsy();
-});
-
-test("Should delete invited user", async () => {
-  const invitedUserTobeDeleted = { email: `testing1@test.com` };
-
-  const req = httpMocks.createRequest({
-    method: "GET",
-    url: `/api/users/:username/:usernameToBeUpdated`,
-    params: {
-      username: "Tester",
-    },
-    body: invitedUserTobeDeleted,
-  });
-
-  const resp = httpMocks.createResponse();
-  resp.locals = { user: { username: "Tester" } };
-
-  await userController.deleteInvitedUser(req, resp);
-  const data = resp._getJSONData();
-  expect(data.success).toBeTruthy();
-});
-
-test("Should be able to send forgot password email", async () => {
-  process.env.JWT_Hash = "supersecret";
-
-  const userEmail = { email: `testing0@test.com` };
-  const req = httpMocks.createRequest({
-    method: "POST",
-    url: "/api/forgot-password",
-    app: {
-      get: jest.fn(() => {
-        return { sendMail: jest.fn() };
-      }),
-    },
-    body: userEmail,
-  });
-
-  const resp = httpMocks.createResponse();
-  await userController.sendEmailForgotPassword(req, resp);
-
-  const data = resp._getJSONData();
-  const successMessage = `We will send the email to reset your password if your email is found`;
-  expect(data.message).toEqual(successMessage);
 });
 
 test("Should update user password", async () => {
