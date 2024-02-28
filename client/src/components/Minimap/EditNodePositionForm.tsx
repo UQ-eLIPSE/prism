@@ -156,7 +156,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
             color: "red",
             marginLeft: "10px",
             width: "20px",
-            transform: `rotate(${rotationValue}deg)`,
+            transform: `rotate(${props.selectedNode ? props.selectedNode.rotation : 0}deg)`,
           }}
         />
       </span>
