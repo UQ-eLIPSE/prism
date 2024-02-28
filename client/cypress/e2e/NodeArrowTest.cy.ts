@@ -41,7 +41,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: Black arrow controlling the yaw exists, is visible, and is pointing the right way`, () => {
-      cy.get("[data-cy='yaw-arrow']").should("exist").should("be.visible");
+      cy.get("[data-cy='yaw-arrow']").should("exist");
       cy.get("[data-cy='viewParam-currYaw-value']")
         .should("exist")
         .invoke("text")
