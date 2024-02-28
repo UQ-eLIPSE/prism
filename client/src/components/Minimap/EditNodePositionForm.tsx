@@ -141,7 +141,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
       <span data-cy="currRotation-offset-value">
-        MiniMap Initial Rotation Offset:{" "}
+        Initial Minimap Rotation Offset:{" "}
         {props.selectedNode &&
           `${Math.round(radiansToDegrees(props.selectedNode.rotation))}\u00B0`}
       </span>
@@ -152,7 +152,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
           `${yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)}\u00B0`}
       </span>
       <span>
-        <label htmlFor={rotationInputConfig.label}>Orientation</label>
+        <label htmlFor={rotationInputConfig.label}>Rotation Offset</label>
         <div>
           <EditNodePositionInput
             inputConfiguration={rotationInputConfig}
