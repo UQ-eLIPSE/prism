@@ -20,7 +20,7 @@ import {
   findOneBySurveyNodeWithRelated,
   findOneBySurveyNode,
   deleteOneMinimapCvs,
-} from "../dal/minimapConversionRepo";
+} from "../dal/minimapConversionsHandler";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
