@@ -19,15 +19,16 @@ const radToDeg = (rad: number) => {
  * @param {string} rotationStyle - A CSS rotation style string (e.g., "rotate(45rad)")
  * @returns {string} - A CSS rotation style string with the counter rotation (e.g., "rotate(-45rad)")
  */
-const getCounterRotationStyle = (rotationStyle: string): string => {
+export const getCounterRotationStyle = (rotationStyle: string): string => {
   // Regex to extract rotation value
-  const rotationMatch = /rotate\(([^)]+)\)/.exec(rotationStyle);
+  const rotationMatch = /rotate\(([^)]+)rad\)/.exec(rotationStyle);
+  console.log(rotationMatch);
 
   if (!rotationMatch) return rotationStyle;
   // rotation match e.g.
-  // ['rotate(1.8325956209839993rad)', '1.8325956209839993rad', index: 0, input:
+  // ['rotate(1.8325956209839993rad)', '1.8325956209839993', index: 0, input:
   // 'rotate(1.8325956209839993rad)', groups: undefined]
-  const rotationValueInRadians = parseFloat(rotationMatch[1].split("rad")[0]);
+  const rotationValueInRadians = parseFloat(rotationMatch[1]);
   const counterRotationStyle = `rotate(${-rotationValueInRadians}rad)`;
 
   return counterRotationStyle;
