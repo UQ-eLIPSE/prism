@@ -139,6 +139,10 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
+  const initialRotationOffset: number = props.selectedNode
+    ? Math.round(radiansToDegrees(props.selectedNode.rotation ?? 0))
+    : 0;
+
   const yawInDeg: number | null = props.selectedNode
     ? yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)
     : 0;
@@ -146,9 +150,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
       <span data-cy="currRotation-offset-value">
-        Initial Minimap Rotation Offset:{" "}
-        {props.selectedNode &&
-          `${Math.round(radiansToDegrees(props.selectedNode.rotation))}\u00B0`}
+        Initial Minimap Rotation Offset: {`${initialRotationOffset}\u00B0`}
         <Icon
           className="fa fa-arrow-up"
           style={{
