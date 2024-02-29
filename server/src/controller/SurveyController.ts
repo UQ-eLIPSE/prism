@@ -216,7 +216,7 @@ export class SurveyController {
         const surveyNode = await findByDateAndSite(date, siteId);
         for (const node of surveyNode) {
           const survey = await findOneBySurveyNodeWithRelated(node._id);
-          survey && allSurveys.push(survey as IMinimapConversion);
+          survey && allSurveys.push(survey);
         }
       }
 
@@ -224,10 +224,13 @@ export class SurveyController {
         const specificDate = date
           ? new Date(date as string).getTime()
           : new Date().getTime();
-        const dbDate = survey.survey_node.date
-          ? new Date(survey.survey_node.date).getTime()
-          : new Date().getTime();
-        return dbDate === specificDate;
+        //Type Check
+        if ("date" in survey.survey_node) {
+          const dbDate = survey.survey_node.date
+            ? new Date(survey.survey_node.date).getTime()
+            : new Date().getTime();
+          return dbDate === specificDate;
+        }
       });
     }
     return CommonUtil.successResponse(res, "", results);
