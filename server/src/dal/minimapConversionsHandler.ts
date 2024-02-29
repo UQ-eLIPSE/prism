@@ -1,16 +1,17 @@
 import { ObjectId, DeleteResult } from "mongodb";
 import { MinimapConversion, IMinimapConversion } from "../models/SurveyModel";
-//TODO: remove any
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function typeGuardMiniConversion(obj: any): obj is IMinimapConversion {
-  console.log(obj);
+function typeGuardMiniConversion(obj: unknown): obj is IMinimapConversion {
+  if (typeof obj !== "object" || obj === null) return false;
+
+  const conversion = obj as IMinimapConversion;
+
   return (
-    typeof obj.floor === "number" &&
-    typeof obj.x === "number" &&
-    typeof obj.y === "number" &&
-    typeof obj.x_scale === "number" &&
-    typeof obj.y_scale === "number" &&
-    typeof obj.rotation === "number"
+    typeof conversion.floor === "number" &&
+    typeof conversion.x === "number" &&
+    typeof conversion.y === "number" &&
+    typeof conversion.x_scale === "number" &&
+    typeof conversion.y_scale === "number" &&
+    typeof conversion.rotation === "number"
   );
 }
 
@@ -24,6 +25,8 @@ export const findByFloorAndSite = async (
   )
     .populate("survey_node", "-_id")
     .populate("minimap_node", "-_id");
+
+  // TODO: Use for future implementations of typeguards
   result.forEach((item) => {
     console.log(typeGuardMiniConversion(item));
   });
@@ -73,4 +76,14 @@ export const createMinimapConversion = async (
   data: IMinimapConversion,
 ): Promise<IMinimapConversion> => {
   return MinimapConversion.create(data);
+};
+
+export const updateOneMinimapConversion = async (
+  nodeId: string,
+  data: Partial<IMinimapConversion>,
+): Promise<IMinimapConversion | null> => {
+  return MinimapConversion.findOneAndUpdate(
+    { survey_node: new ObjectId(nodeId) },
+    data,
+  );
 };

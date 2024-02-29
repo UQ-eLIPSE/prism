@@ -9,7 +9,7 @@ export interface IMinimapConversion extends Document {
   y_scale: number;
   survey_node: ISurveyNode & Schema.Types.ObjectId;
   minimap_node: IMinimapNode & Schema.Types.ObjectId;
-  site: number;
+  site: number & Schema.Types.ObjectId;
   rotation: number;
 }
 
