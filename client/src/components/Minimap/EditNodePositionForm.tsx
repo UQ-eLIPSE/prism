@@ -176,7 +176,9 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
         />
       </span>
       <span>
-        <label htmlFor={rotationInputConfig.label}>Rotation Offset</label>
+        <label className="edit-form-label" htmlFor={rotationInputConfig.label}>
+          Rotation Offset
+        </label>
         <div>
           <EditNodePositionInput
             inputConfiguration={rotationInputConfig}
@@ -186,7 +188,9 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
       </span>
 
       <span>
-        <label htmlFor={xPositionInputConfig.label}>Coordinates</label>
+        <label className="edit-form-label" htmlFor={xPositionInputConfig.label}>
+          Coordinates
+        </label>
         <div className="coords-container">
           {[xPositionInputConfig, yPositionInputConfig].map(
             (inputConfig: EditNodeInput, idx: number) => (
