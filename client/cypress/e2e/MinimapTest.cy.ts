@@ -38,27 +38,22 @@ function getRotationValue(selector: string): Cypress.Chainable<number> {
 
 /**
  * Extracts a numeric value from a text based on a given label.
- * @param label - The label to search for in the text.
- * @param text - The text to search for the label and extract the numeric value from.
  * @returns {number} The extracted numeric value, or 0 if no match is found.
  */
 function extractNumberFromLabel(label: string, text: string): number {
   // Use a regular expression to extract the numeric value
   const regex = new RegExp(`${label}: ([\\d.]+)°`);
   const match = regex.exec(text);
-
-  // If there's no match, return 0
   if (!match) return 0;
 
-  // Convert the matched string to a number and return it
   return parseFloat(match[1]);
 }
 
 /**
  * Adds rotation to the given style string.
- * i.e. "rotate(0.523599rad)" + 1.5708rad = "rotate(2.09439rad)"
- * @param rotationStyle - The original rotation style string.
- * @param rotationDegrees - The rotation in degrees to be added.
+ * i.e. "rotate(0.523599rad)" + 1.5708 = "rotate(2.09439rad)"
+ * @param rotationStyle - "rotate({value}rad)"
+ * @param rotationDegrees - rotation will be converted to radians
  * @returns {string} The updated rotation style string.
  */
 function addRotationToStyle(
@@ -70,10 +65,9 @@ function addRotationToStyle(
   if (!rotationMatch) return rotationStyle;
   const originalRotationInRadians = parseFloat(rotationMatch[1]);
 
-  // Convert the rotation in degrees to radians
+  // degrees -> radians
   const rotationInRadians = rotationDegrees * (Math.PI / 180);
 
-  // Add the rotations
   const newRotationInRadians = originalRotationInRadians + rotationInRadians;
 
   return `rotate(${newRotationInRadians}rad)`;
