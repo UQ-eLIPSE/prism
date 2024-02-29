@@ -8,7 +8,6 @@ import {
   editNodePosition,
   actions,
 } from "../support/minimapUtils";
-import "cypress-real-events";
 
 function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").clear();
