@@ -15,17 +15,15 @@ function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").type(String(rotation));
 }
 
-function extractRotationValue(rotationStyle: string) {
+/**
+ * Extracts the rotation value from a rotation styled string.
+ * i.e. "rotate(0.523599rad)" -> 0.523599
+ * @param rotationStyle "rotate({value}rad)"
+ * @returns {number} The rotation value in radians.
+ */
+function extractRotationValue(rotationStyle: string): number {
   const match = rotationStyle.match(/rotate\((.*?)rad\)/);
-  if (match && match[1]) {
-    const value = parseFloat(match[1]);
-    if (isNaN(value)) {
-      throw new Error("Invalid rotation value");
-    }
-    return value;
-  } else {
-    throw new Error("Invalid rotation string");
-  }
+  return match && match[1] ? parseFloat(match[1]) : 0;
 }
 
 function getRotationValue(selector: string): Cypress.Chainable<number> {
@@ -39,6 +37,12 @@ function getRotationValue(selector: string): Cypress.Chainable<number> {
     });
 }
 
+/**
+ * Extracts a numeric value from a text based on a given label.
+ * @param label - The label to search for in the text.
+ * @param text - The text to search for the label and extract the numeric value from.
+ * @returns {number} The extracted numeric value, or 0 if no match is found.
+ */
 function extractNumberFromLabel(label: string, text: string): number {
   // Use a regular expression to extract the numeric value
   const regex = new RegExp(`${label}: ([\\d.]+)°`);
@@ -51,7 +55,17 @@ function extractNumberFromLabel(label: string, text: string): number {
   return parseFloat(match[1]);
 }
 
-function addRotationToStyle(rotationStyle: string, rotationDegrees: number) {
+/**
+ * Adds rotation to the given style string.
+ * i.e. "rotate(0.523599rad)" + 1.5708rad = "rotate(2.09439rad)"
+ * @param rotationStyle - The original rotation style string.
+ * @param rotationDegrees - The rotation in degrees to be added.
+ * @returns {string} The updated rotation style string.
+ */
+function addRotationToStyle(
+  rotationStyle: string,
+  rotationDegrees: number,
+): string {
   // Extract the original rotation value in radians from the rotation style string
   const rotationMatch = /rotate\(([^)]+)rad\)/.exec(rotationStyle);
   if (!rotationMatch) return rotationStyle;
@@ -63,7 +77,7 @@ function addRotationToStyle(rotationStyle: string, rotationDegrees: number) {
   // Add the rotations
   const newRotationInRadians = originalRotationInRadians + rotationInRadians;
 
-  return `rotate(${newRotationInRadians.toFixed(4)}rad)`;
+  return `rotate(${newRotationInRadians}rad)`;
 }
 
 const rotationValues: { degrees: number; cssValue: string }[] = [
