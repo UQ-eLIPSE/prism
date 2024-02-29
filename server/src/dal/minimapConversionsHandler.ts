@@ -1,5 +1,8 @@
 import { ObjectId, DeleteResult } from "mongodb";
 import { MinimapConversion, IMinimapConversion } from "../models/SurveyModel";
+
+// TODO: Please do not delete as it is a demo for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function typeGuardMiniConversion(obj: unknown): obj is IMinimapConversion {
   if (typeof obj !== "object" || obj === null) return false;
 
@@ -25,11 +28,6 @@ export const findByFloorAndSite = async (
   )
     .populate("survey_node", "-_id")
     .populate("minimap_node", "-_id");
-
-  // TODO: Use for future implementations of typeguards
-  result.forEach((item) => {
-    console.log(typeGuardMiniConversion(item));
-  });
   return result;
 };
 
