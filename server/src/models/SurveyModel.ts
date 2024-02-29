@@ -17,7 +17,6 @@ export interface IMinimapNode extends Document {
   node_number: number;
   title: string;
   description: string;
-  minimap_conversion: IMinimapConversion;
   survey_node: ISurveyNode;
   floor: number;
   site: number;
@@ -30,7 +29,6 @@ export interface IInitialParams extends Document {
 }
 
 export interface IInfoHotspot extends Document {
-  survey_node: ISurveyNode;
   yaw: number;
   pitch: number;
   rotation: number;
@@ -39,7 +37,6 @@ export interface IInfoHotspot extends Document {
 }
 
 export interface ILinkHotspot extends Document {
-  survey_node: ISurveyNode;
   yaw: number;
   pitch: number;
   rotation: number;
@@ -47,9 +44,10 @@ export interface ILinkHotspot extends Document {
 }
 
 export interface ISurveyNode extends Document {
-  uploaded_at: string;
-  uploaded_by: string;
+  // uploaded_at: string;
+  // uploaded_by: string;
   date: string;
+  manta_link: string;
   node_number: number;
   survey_name: string;
   tiles_id: string;
