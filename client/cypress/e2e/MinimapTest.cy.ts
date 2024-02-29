@@ -28,16 +28,14 @@ function extractRotationValue(rotationStyle: string) {
   }
 }
 
-function checkRotationStyleValue(expectedStyleString: string) {
-  const expectedRotationValue = extractRotationValue(expectedStyleString);
-
-  cy.get("[data-cy='selected-node']")
+function getRotationValue(selector: string): Cypress.Chainable<number> {
+  return cy
+    .get(selector)
     .parent()
     .should("exist")
     .should("have.attr", "style")
     .then((style: unknown) => {
-      const actualRotationValue = extractRotationValue(style as string);
-      expect(actualRotationValue).to.be.closeTo(expectedRotationValue, 0.1);
+      return extractRotationValue(style as string);
     });
 }
 
@@ -149,7 +147,12 @@ testEachZone((zone: Cypress.PrismZone) => {
                   randTuple.cssValue,
                   initialYawValue,
                 );
-                checkRotationStyleValue(`transform: ${newRotationStyle}`);
+                getRotationValue("[data-cy='selected-node']").then((actual) => {
+                  expect(actual).to.be.closeTo(
+                    extractRotationValue(newRotationStyle),
+                    0.1,
+                  );
+                });
               });
           });
       });
@@ -178,7 +181,12 @@ testEachZone((zone: Cypress.PrismZone) => {
                   randTuple.cssValue,
                   initialYawValue,
                 );
-                checkRotationStyleValue(`transform: ${newRotationStyle}`);
+                getRotationValue("[data-cy='selected-node']").then((actual) => {
+                  expect(actual).to.be.closeTo(
+                    extractRotationValue(newRotationStyle),
+                    0.1,
+                  );
+                });
               });
           });
       });
