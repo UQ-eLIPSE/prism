@@ -218,7 +218,7 @@ export class SurveyController {
         });
         for (const node of surveyNode) {
           const survey = await findOneBySurveyNodeWithRelated(node._id);
-          survey && allSurveys.push(survey as IMinimapConversion);
+          survey && allSurveys.push(survey);
         }
       }
 
@@ -235,7 +235,6 @@ export class SurveyController {
         }
       });
     }
-    console.log(results);
 
     return CommonUtil.successResponse(res, "", results);
   }
