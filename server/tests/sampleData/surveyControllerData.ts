@@ -1,11 +1,4 @@
-import {
-  ISurveyNode,
-  IInitialParams,
-  ILinkHotspot,
-  IInfoHotspot,
-  IMinimapConversion,
-  IMinimapNode,
-} from "../../src/models/SurveyModel";
+import { ISurveyNode, IMinimapConversion } from "../../src/models/SurveyModel";
 import mongoose from "mongoose";
 
 const mockSurveyNodes: ISurveyNode[] = [
@@ -21,7 +14,7 @@ const mockSurveyNodes: ISurveyNode[] = [
       pitch: 0,
       yaw: 0,
       fov: 90,
-    } as IInitialParams,
+    },
     link_hotspots: [
       {
         yaw: 0.2824,
@@ -29,7 +22,7 @@ const mockSurveyNodes: ISurveyNode[] = [
         rotation: 0,
         target: "1-prism_uat_level2",
       },
-    ] as ILinkHotspot[],
+    ],
     info_hotspots: [
       {
         yaw: 0.2824,
@@ -38,7 +31,7 @@ const mockSurveyNodes: ISurveyNode[] = [
         target: "info-123",
         info_id: "info-123",
       },
-    ] as IInfoHotspot[],
+    ],
     levels: [1],
     face_size: 1024,
     site: 123,
@@ -63,7 +56,7 @@ const mockMiniconverions: IMinimapConversion[] = [
         pitch: 0,
         yaw: 0,
         fov: 90,
-      } as IInitialParams,
+      },
       link_hotspots: [
         {
           yaw: 0.2824,
@@ -71,7 +64,7 @@ const mockMiniconverions: IMinimapConversion[] = [
           rotation: 0,
           target: "1-prism_uat_level2",
         },
-      ] as ILinkHotspot[],
+      ],
       info_hotspots: [
         {
           yaw: 0.2824,
@@ -80,11 +73,11 @@ const mockMiniconverions: IMinimapConversion[] = [
           target: "info-123",
           info_id: "info-123",
         },
-      ] as IInfoHotspot[],
+      ],
       levels: [1],
       face_size: 1024,
       site: 123,
-    } as ISurveyNode,
+    },
     minimap_node: {
       node_number: 1,
       title: "string",
@@ -100,7 +93,7 @@ const mockMiniconverions: IMinimapConversion[] = [
           pitch: 0,
           yaw: 0,
           fov: 90,
-        } as IInitialParams,
+        },
         link_hotspots: [
           {
             yaw: 0.2824,
@@ -108,7 +101,7 @@ const mockMiniconverions: IMinimapConversion[] = [
             rotation: 0,
             target: "1-prism_uat_level2",
           },
-        ] as ILinkHotspot[],
+        ],
         info_hotspots: [
           {
             yaw: 0.2824,
@@ -117,14 +110,14 @@ const mockMiniconverions: IMinimapConversion[] = [
             target: "info-123",
             info_id: "info-123",
           },
-        ] as IInfoHotspot[],
+        ],
         levels: [1],
         face_size: 1024,
         site: 123,
       },
       floor: 0,
       site: 0,
-    } as IMinimapNode,
+    },
     site: 0,
     rotation: 0,
   },
