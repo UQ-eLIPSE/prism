@@ -1,13 +1,34 @@
 import { ObjectId, DeleteResult } from "mongodb";
 import { MinimapConversion, IMinimapConversion } from "../models/SurveyModel";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function typeGuardMiniConversion(obj: any): obj is IMinimapConversion {
+  console.log(obj);
+  return (
+    typeof obj.floor === "number" &&
+    typeof obj.x === "number" &&
+    typeof obj.y === "number" &&
+    typeof obj.x_scale === "number" &&
+    typeof obj.y_scale === "number" &&
+    // typeof obj.site === "number" &&
+    typeof obj.rotation === "number"
+  );
+}
+
 export const findByFloorAndSite = async (
   floor: string,
   siteId: string,
 ): Promise<IMinimapConversion[]> => {
-  return MinimapConversion.find({ floor, site: new ObjectId(siteId) }, "-_id")
+  const result: IMinimapConversion[] = await MinimapConversion.find(
+    { floor, site: new ObjectId(siteId) },
+    "-_id",
+  )
     .populate("survey_node", "-_id")
     .populate("minimap_node", "-_id");
+  result.forEach((item) => {
+    console.log(typeGuardMiniConversion(item));
+  });
+  return result;
 };
 
 export const findOneBySurveyNodeWithRelated = async (
