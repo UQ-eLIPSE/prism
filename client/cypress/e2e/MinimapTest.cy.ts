@@ -15,11 +15,30 @@ function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").type(String(rotation));
 }
 
-function checkStyleContains(styleString: string) {
+function extractRotationValue(rotationStyle: string) {
+  const match = rotationStyle.match(/rotate\((.*?)rad\)/);
+  if (match && match[1]) {
+    const value = parseFloat(match[1]);
+    if (isNaN(value)) {
+      throw new Error("Invalid rotation value");
+    }
+    return value;
+  } else {
+    throw new Error("Invalid rotation string");
+  }
+}
+
+function checkRotationStyleValue(expectedStyleString: string) {
+  const expectedRotationValue = extractRotationValue(expectedStyleString);
+
   cy.get("[data-cy='selected-node']")
     .parent()
+    .should("exist")
     .should("have.attr", "style")
-    .should("contain", styleString);
+    .then((style: unknown) => {
+      const actualRotationValue = extractRotationValue(style as string);
+      expect(actualRotationValue).to.be.closeTo(expectedRotationValue, 0.1);
+    });
 }
 
 function extractNumberFromLabel(label: string, text: string): number {
@@ -130,7 +149,7 @@ testEachZone((zone: Cypress.PrismZone) => {
                   randTuple.cssValue,
                   initialYawValue,
                 );
-                checkStyleContains(`transform: ${newRotationStyle}`);
+                checkRotationStyleValue(`transform: ${newRotationStyle}`);
               });
           });
       });
@@ -159,7 +178,7 @@ testEachZone((zone: Cypress.PrismZone) => {
                   randTuple.cssValue,
                   initialYawValue,
                 );
-                checkStyleContains(`transform: ${newRotationStyle}`);
+                checkRotationStyleValue(`transform: ${newRotationStyle}`);
               });
           });
       });
