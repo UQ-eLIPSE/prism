@@ -5,7 +5,6 @@ import * as multer from "multer";
 import * as path from "path";
 import { SurveyService } from "../service/SurveyService";
 import {
-  MinimapConversion,
   Survey,
   SurveyNode,
   MinimapNode,
@@ -16,6 +15,12 @@ import {
   ISurveyNode,
   IHotspotDescription,
 } from "../models/SurveyModel";
+import {
+  findByFloorAndSite,
+  findOneBySurveyNodeWithRelated,
+  findOneBySurveyNode,
+  deleteOneMinimapCvs,
+} from "../dal/minimapConversionsHandler";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
@@ -185,21 +190,17 @@ export class SurveyController {
    * @param res
    */
   public async getIndividualSurveysDetails(req: Request, res: Response) {
-    const { siteId } = req.params;
-    const { floor, date } = req.query;
+    const siteId = req.params.siteId;
+    const floor = req.query.floor as string;
+    const date = req.query.date as string;
+
     let allSurveys: IMinimapConversion[] = [];
     let results: IMinimapConversion[] = [];
     if (!siteId)
       return CommonUtil.failResponse(res, "Site ID has not been provided");
 
     if (floor) {
-      allSurveys = await MinimapConversion.find(
-        { floor, site: new ObjectId(siteId) },
-        "-_id",
-      )
-        .populate("survey_node", "-_id")
-        .populate("minimap_node", "-_id");
-
+      allSurveys = await findByFloorAndSite(floor, siteId);
       results = allSurveys;
 
       if (!results)
@@ -216,11 +217,8 @@ export class SurveyController {
           site: new ObjectId(siteId),
         });
         for (const node of surveyNode) {
-          allSurveys.push(
-            (await MinimapConversion.findOne({ survey_node: node._id }, "-_id")
-              .populate("survey_node", "-_id")
-              .populate("minimap_node", "-_id")) as IMinimapConversion,
-          );
+          const survey = await findOneBySurveyNodeWithRelated(node._id);
+          survey && allSurveys.push(survey);
         }
       }
 
@@ -228,10 +226,13 @@ export class SurveyController {
         const specificDate = date
           ? new Date(date as string).getTime()
           : new Date().getTime();
-        const dbDate = survey.survey_node.date
-          ? new Date(survey.survey_node.date).getTime()
-          : new Date().getTime();
-        return dbDate === specificDate;
+        //Type Check
+        if ("date" in survey.survey_node) {
+          const dbDate = survey.survey_node.date
+            ? new Date(survey.survey_node.date).getTime()
+            : new Date().getTime();
+          return dbDate === specificDate;
+        }
       });
     }
 
@@ -264,14 +265,15 @@ export class SurveyController {
 
         for (const node of surveyNode) {
           allSurveys.push(
-            (await MinimapConversion.findOne({ survey_node: node._id }, "-_id")
-              .populate("survey_node", "-_id")
-              .populate("minimap_node", "-_id")) as IMinimapConversion,
+            (await findOneBySurveyNodeWithRelated(
+              node._id,
+            )) as IMinimapConversion,
           );
         }
       }
 
       const results: INodeReturnData[] = [];
+
       allSurveys.map((s: IMinimapConversion) => {
         if (s.floor == Number(floorId)) {
           results.push({
@@ -448,15 +450,15 @@ export class SurveyController {
 
     for (const surveyNode of surveyNodes) {
       await SurveyNode.findByIdAndRemove(id);
-      const relatedMiniMapConversions = await MinimapConversion.findOne({
-        survey_node: surveyNode,
-      });
+      const relatedMiniMapConversion = await findOneBySurveyNode(
+        surveyNode._id,
+      );
       const relatedMinimapNode = await MinimapNode.findOne({
         survey_node: surveyNode,
       });
 
-      if (relatedMiniMapConversions) {
-        await MinimapConversion.deleteOne({ survey_node: surveyNode });
+      if (relatedMiniMapConversion) {
+        await deleteOneMinimapCvs(surveyNode._id);
       }
 
       if (relatedMinimapNode) {
@@ -757,9 +759,7 @@ export class SurveyController {
       const { nodeId } = req.params;
       const { x, y } = req.body;
 
-      const findNodeId = await MinimapConversion.find({
-        survey_node: new ObjectId(nodeId),
-      });
+      const findNodeId = await findOneBySurveyNode(nodeId);
       if (!findNodeId) throw new Error("Node does not exist in database");
 
       const updateCoords = await SurveyService.updateNodeCoordinates(
@@ -790,9 +790,7 @@ export class SurveyController {
       const { nodeId } = req.params;
       const { rotation } = req.body;
 
-      const findNodeId = await MinimapConversion.find({
-        survey_node: new Object(nodeId),
-      });
+      const findNodeId = await findOneBySurveyNode(nodeId);
       if (!findNodeId) throw new Error("Node does not exist in databae");
 
       const updateCoords = await SurveyService.updateNodeRotation(
