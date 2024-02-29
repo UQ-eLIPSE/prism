@@ -286,7 +286,7 @@ export class SurveyController {
             x_scale: s.x_scale,
             y: s.y,
             y_scale: s.y_scale,
-            site: Number(s.site),
+            site: s.site,
             rotation: s.rotation,
             info_hotspots: s.survey_node.info_hotspots,
           });
