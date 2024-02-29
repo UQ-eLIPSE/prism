@@ -69,12 +69,6 @@ export const deleteOneMinimapCvs = async (
   });
 };
 
-export const minimapConversionCreateOne = async (
-  objectMini: IMinimapConversion,
-): Promise<IMinimapConversion> => {
-  return MinimapConversion.create(objectMini);
-};
-
 export const createMinimapConversion = async (
   data: IMinimapConversion,
 ): Promise<IMinimapConversion> => {
