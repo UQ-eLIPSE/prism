@@ -1,6 +1,6 @@
 import { ObjectId, DeleteResult } from "mongodb";
 import { MinimapConversion, IMinimapConversion } from "../models/SurveyModel";
-
+//TODO: remove any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function typeGuardMiniConversion(obj: any): obj is IMinimapConversion {
   console.log(obj);
@@ -10,7 +10,6 @@ function typeGuardMiniConversion(obj: any): obj is IMinimapConversion {
     typeof obj.y === "number" &&
     typeof obj.x_scale === "number" &&
     typeof obj.y_scale === "number" &&
-    // typeof obj.site === "number" &&
     typeof obj.rotation === "number"
   );
 }
