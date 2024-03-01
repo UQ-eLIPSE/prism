@@ -1,4 +1,4 @@
-import { ISettings } from "../../src/typings/settings";
+import { ISettings } from "../../../src/typings/settings";
 
 const mockConfig: ISettings = {
   _id: "mockConfigId",

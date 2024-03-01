@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import "@testing-library/react/dont-cleanup-after-each";
 import Site from "../src/components/Site";
 import { BrowserRouter as Router } from "react-router-dom";
-import { mockSiteProps } from "./utils/Mockdata";
+import { mockSiteProps } from "./utils/sampleData/siteSampleData";
 
 jest.mock("../src/utils/NetworkCalls", () => ({
   getEmptyFloors: jest.fn().mockResolvedValue({
@@ -57,11 +57,7 @@ jest.mock("../src/utils/NetworkCalls", () => ({
       ],
     },
   ]),
-  fetchHotspotDescription: jest.fn().mockResolvedValue([]),
   fetchSurveyNodes: jest.fn().mockResolvedValue([]),
-  getFullSites: jest
-    .fn()
-    .mockResolvedValue({ payload: [{ _id: "mockedSiteId" }] }),
   getFloorSurveyExistence: jest.fn().mockResolvedValue(true),
   fetchMinimap: jest.fn().mockResolvedValue({
     floor: 3,
