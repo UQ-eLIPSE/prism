@@ -82,6 +82,11 @@ In some case, the product database will be needed to test in a development envir
 - navigate to prism root
 - run `./server/get_mongodumps.sh` to get product dumpdata
 - restore by `mongorestore ./server/prism_mongodumps/<project-name>/<restore-file-name>`
+- change .env `DATABASE_URL`:
+  for example, to restore agco360 dataset, the DATABASE_URL will be:
+  `DATABASE_URL=mongodb://mongodb:27017/agco360`
+- get the prism_server docker container ID with `docker ps`
+- restart server container with `docker restart <container id>`
 
 ## Creating a new PRISM UAT zone with Ansible
 

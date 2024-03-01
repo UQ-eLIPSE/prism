@@ -16,18 +16,6 @@ export interface ISettings {
     hotspots_nav: boolean; // enables hotspots dropdown
     animations: boolean; //same as media?
   };
-  //settings related to minimap functionality
-  minimap: {
-    image_url: string; //url to mini image (when it is not expanded)
-    image_large_url: string; //url to image (when expanded)
-    x_pixel_offset: number; //offset from certain point (not sure where or how this is calculated)
-    y_pixel_offset: number;
-    x_scale: number;
-    y_scale: number;
-    img_width: number; //width of minimap image
-    img_height: number; //height of minimap image
-    xy_flipped: boolean; //flips the x, y -> y, x
-  };
   //Intial settings for when the user first enters a site
   initial_settings: {
     date: string; //sets the specific survey

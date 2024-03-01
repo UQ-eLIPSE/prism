@@ -17,19 +17,6 @@ export interface ISiteSettings extends Document {
     hotspots_nav: boolean;
   };
 
-  // settings related to minimap functionality
-  minimap: {
-    image_url: string;
-    image_large_url: string;
-    x_pixel_offset: number; // offset from certain point (unsure of how this is calculated)
-    y_pixel_offset: number; // not clear on what this does
-    x_scale: number;
-    y_scale: number;
-    img_width: number;
-    img_height: number;
-    xy_flipped: boolean;
-  };
-
   initial_settings: {
     date: string; // not sure what this does
     floor: number; // sets the appropriate starting floor (default this to 1)
@@ -100,19 +87,6 @@ const SiteSettingSchema: Schema = new Schema({
       about: { type: Boolean },
       animations: { type: Boolean },
       hotspots_nav: { type: Boolean },
-    },
-  },
-  minimap: {
-    type: {
-      image_url: { type: String },
-      image_large_url: { type: String },
-      x_pixel_offset: { type: Number },
-      y_pixel_offset: { type: Number },
-      x_scale: { type: Number },
-      y_scale: { type: Number },
-      img_width: { type: Number },
-      img_height: { type: Number },
-      xy_flipped: { type: Boolean },
     },
   },
   initial_settings: {
