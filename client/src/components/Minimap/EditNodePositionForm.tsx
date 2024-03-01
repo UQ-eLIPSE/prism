@@ -4,6 +4,7 @@ import EditNodePositionInput from "./EditNodePositionInput";
 import { StateObject } from "../../interfaces/StateObject";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
 import { InitialViewParameters, NodeData } from "../../interfaces/NodeData";
+import { Icon } from "@material-ui/core";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
@@ -138,21 +139,46 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
+  const initialRotationOffset: number = props.selectedNode
+    ? Math.round(radiansToDegrees(props.selectedNode.rotation ?? 0))
+    : 0;
+
+  const yawInDeg: number | null = props.selectedNode
+    ? yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)
+    : 0;
+
   return (
     <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
       <span data-cy="currRotation-offset-value">
-        MiniMap Initial Rotation Offset:{" "}
-        {props.selectedNode &&
-          `${Math.round(radiansToDegrees(props.selectedNode.rotation))}\u00B0`}
+        Initial Minimap Rotation Offset: {`${initialRotationOffset}\u00B0`}
+        <Icon
+          className="fa fa-arrow-up"
+          style={{
+            opacity: "0.5",
+            color: "red",
+            marginLeft: "10px",
+            width: "20px",
+            transform: `rotate(${props.selectedNode ? props.selectedNode.rotation : 0}rad)`,
+          }}
+        />
       </span>
 
       <span data-cy="viewParam-currYaw-value">
-        Initial Yaw Parameters:{" "}
-        {props.selectedNode &&
-          `${yawRadToDeg(getInitialParams(props.selectedNode)?.yaw)}\u00B0`}
+        Initial Yaw Parameters: {props.selectedNode && `${yawInDeg}\u00B0`}
+        <Icon
+          className="fa fa-arrow-up"
+          style={{
+            color: "black",
+            marginLeft: "10px",
+            width: "20px",
+            transform: `rotate(${yawInDeg}deg)`,
+          }}
+        />
       </span>
       <span>
-        <label htmlFor={rotationInputConfig.label}>Orientation</label>
+        <label className="edit-form-label" htmlFor={rotationInputConfig.label}>
+          Rotation Offset
+        </label>
         <div>
           <EditNodePositionInput
             inputConfiguration={rotationInputConfig}
@@ -162,17 +188,21 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
       </span>
 
       <span>
-        <label htmlFor={xPositionInputConfig.label}>Coordinates</label>
-        {[xPositionInputConfig, yPositionInputConfig].map(
-          (inputConfig: EditNodeInput, idx: number) => (
-            <div className="coords" key={idx}>
-              <EditNodePositionInput
-                inputConfiguration={inputConfig}
-                handleInputChange={handleInputChange}
-              />
-            </div>
-          ),
-        )}
+        <label className="edit-form-label" htmlFor={xPositionInputConfig.label}>
+          Coordinates
+        </label>
+        <div className="coords-container">
+          {[xPositionInputConfig, yPositionInputConfig].map(
+            (inputConfig: EditNodeInput, idx: number) => (
+              <div className="coords" key={idx}>
+                <EditNodePositionInput
+                  inputConfiguration={inputConfig}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
+            ),
+          )}
+        </div>
       </span>
 
       <span>
