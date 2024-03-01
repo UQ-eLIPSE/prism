@@ -14,6 +14,26 @@ const radToDeg = (rad: number) => {
 };
 
 /**
+ * Converts rotation style to counter rotation style.
+ * Used to make the node look like it hasn't changed from the rotation.
+ * @param {string} rotationStyle - A CSS rotation style string (e.g., "rotate(45rad)")
+ * @returns {string} - A CSS rotation style string with the counter rotation (e.g., "rotate(-45rad)")
+ */
+export const getCounterRotationStyle = (rotationStyle: string): string => {
+  // Regex to extract rotation value
+  const rotationMatch = /rotate\(([^)]+)rad\)/.exec(rotationStyle);
+
+  if (!rotationMatch) return rotationStyle;
+  // rotation match e.g.
+  // ['rotate(1.8325956209839993rad)', '1.8325956209839993', index: 0, input:
+  // 'rotate(1.8325956209839993rad)', groups: undefined]
+  const rotationValueInRadians = parseFloat(rotationMatch[1]);
+  const counterRotationStyle = `rotate(${-rotationValueInRadians}rad)`;
+
+  return counterRotationStyle;
+};
+
+/**
  * NodeComponent renders a single node within the minimap, including its position,
  * selection state, and any special indicators like rotation or enlargement.
  * It also handles the click events to select a node.
@@ -61,8 +81,6 @@ const NodeComponent = ({
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
-  const yaw: number = getInitialParams(selectedNode)?.yaw ?? 0;
-
   return (
     <div
       key={index}
@@ -72,7 +90,7 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(yaw)}deg)`,
+          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0)}deg)`,
           zIndex: 2,
         }}
       >
@@ -86,18 +104,23 @@ const NodeComponent = ({
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
           }}
           iconProps={{
-            className: "arrow",
+            className: "arrow arrow-yaw",
             style: {
               transform: `scale(1.5)`,
             },
           }}
+          dataCy="yaw-arrow"
         />
       </div>
       <div
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${currRotation}deg)`,
+          // The current rotation is stored as the previous state of rotation.
+          // The current rotation is updated when the user clicks on the node, which is why this check is necessary.
+          transform: `rotate(${
+            !selectedNode ? radToDeg(node.rotation) : currRotation
+          }deg)`,
         }}
       >
         <ArrowIcon
@@ -118,6 +141,7 @@ const NodeComponent = ({
               opacity: 0.5,
             },
           }}
+          dataCy="rotation-offset-arrow"
         />
       </div>
       <div
@@ -131,7 +155,6 @@ const NodeComponent = ({
           )}
 
         {node == selectedNode && <div className="positionIndicator selected" />}
-
         <div
           className={classNames(MinimapStyles.node, {
             [MinimapStyles.selectedNode]:
@@ -148,6 +171,10 @@ const NodeComponent = ({
           data-cy={
             node.tiles_id === MinimapProps.currPanoId ? "selected-node" : "node"
           }
+          style={{
+            // needed to make the node look like it hasn't changed from the rotation
+            transform: getCounterRotationStyle(getNodeStyle().transform),
+          }}
         />
       </div>
       {isMapEnlarged && (
