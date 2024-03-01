@@ -13,17 +13,6 @@ const mockConfig: ISettings = {
     hotspots_nav: false,
     animations: false,
   },
-  minimap: {
-    image_url: "",
-    image_large_url: "",
-    x_pixel_offset: 0,
-    y_pixel_offset: 0,
-    x_scale: 1,
-    y_scale: 1,
-    img_width: 0,
-    img_height: 0,
-    xy_flipped: true,
-  },
   initial_settings: {
     date: "2021-11-16T00:00:00.000+10:00",
     floor: 1,
