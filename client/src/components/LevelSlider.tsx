@@ -79,6 +79,7 @@ function LevelSlider(props: Props) {
       radioList.push(
         <label
           key={i}
+          data-testid={`floor-select-${i}`} // Adding a data-testid attribute for testing
           className={`
                         ${i === Number(props.floor) ? "checked" : ""}
                         ${
