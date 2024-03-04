@@ -1,15 +1,15 @@
 # Overview:
-# Deploys React.js and Node.js/Express.js apps to 'uatzones' servers.
+# Deploys React.js and Node.js/Express.js apps to 'zones' servers.
 # Major Steps:
 # 1. Client Setup: Remove, build, and transfer React app.
 # 2. Server Setup: Build, transfer Node.js app, handle dependencies.
 # 3. Nginx: Configure and restart Nginx, start Node.js service.
 
 # To Run:
-# ansible-playbook -i </path/to/inventory> -l uatzones/<host>/<host1,host2..> <playbook>.yml
+# ansible-playbook -i </path/to/inventory> -l zones/<host>/<host1,host2..> <playbook>.yml
 
 - name: Deploy React.js and Node.js/Express.js applications
-  hosts: uatzones
+  hosts: zones
   any_errors_fatal: true
 
   tasks:
