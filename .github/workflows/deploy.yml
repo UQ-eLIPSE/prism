@@ -1,9 +1,10 @@
-name: Deploy to PROD
+name: Deploy
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
   push:
     branches:
+      - develop
       - main
 
 jobs:
@@ -37,7 +38,11 @@ jobs:
 
       - name: Set inventory
         run: |
-          echo "${{ vars.PROD_INVENTORY }}" > inventory/deploy/inventory.ini
+          if ["${{ github.ref}}" == "refs/heads/develop"]; then
+            echo "${{ vars.UAT_INVENTORY }}" > inventory/deploy/inventory.ini
+          elif ["${{ github.ref}}" == "refs/heads/main"]; then
+            echo "${{ vars.PROD_INVENTORY }}" > inventory/deploy/inventory.ini
+          fi
 
       - name: Display modified inventory file (for verification)
         run: cat inventory/deploy/inventory.ini
