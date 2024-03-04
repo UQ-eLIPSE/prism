@@ -38,9 +38,9 @@ jobs:
 
       - name: Set inventory
         run: |
-          if ["${{ github.ref}}" == "refs/heads/develop"]; then
+          if ["${{ github.ref }}" == "refs/heads/develop" ]; then
             echo "${{ vars.UAT_INVENTORY }}" > inventory/deploy/inventory.ini
-          elif ["${{ github.ref}}" == "refs/heads/main"]; then
+          elif ["${{ github.ref }}" == "refs/heads/main" ]; then
             echo "${{ vars.PROD_INVENTORY }}" > inventory/deploy/inventory.ini
           fi
 
