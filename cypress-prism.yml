@@ -10,7 +10,11 @@
   tasks:
     - name: MongoDB restore on the remote Server
       command: |
-        mongosh --eval "use prism_uat" --eval "db.dropDatabase()" && mongorestore "prism_uat_v0"
+        mongo prism_uat --eval "db.dropDatabase()"
+
+    - name: MongoDB restore
+      command: |
+        mongorestore "prism_uat_v0"
 
     - name: Run Cypress on Github repo/client folder on the github VM
       shell: |
