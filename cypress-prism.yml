@@ -16,11 +16,6 @@
       command: |
         mongorestore "prism_uat_v0"
 
-    - name: Install cypress on client
-      shell: |
-        cd {{ localdir_client }} && yarn
-      delegate_to: localhost
-
     - name: Run spec Cypress test
       shell: |
         cd {{ localdir_client }} && yarn cypress:run:uat --spec cypress/e2e/LogoTest.cy.ts
