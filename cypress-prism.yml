@@ -1,0 +1,19 @@
+# Overview:
+#
+# To Run:
+# ansible-playbook -i </path/to/inventory> <playbook>.yml
+
+- name: Restore test Database
+  hosts: zones
+  any_errors_fatal: true
+
+  tasks:
+    - name: MongoDB restore on the remote Server
+      command: |
+        mongosh --eval "use prism_uat" --eval "db.dropDatabase()" && mongorestore "prism_uat_v0"
+
+    - name: Run Cypress on Github repo/client folder on the github VM
+      shell: |
+        cd {{ localdir_client }} && \
+        yarn && \
+        yarn cypress:run:uat
