@@ -16,12 +16,12 @@
       command: |
         mongorestore "prism_uat_v0"
 
-    - name: Run Cypress on Github repo/client folder on the github VM
+    - name: Install cypress on client
       shell: |
         cd {{ localdir_client }} && yarn
       delegate_to: localhost
 
     - name: Run spec Cypress test
       shell: |
-        cd {{ localdir_client }} && yarn cypress:run:uat --spec cypress/e2e/DocumentationTest.cy.ts
+        cd {{ localdir_client }} && yarn cypress:run:uat --spec cypress/e2e/LogoTest.cy.ts
       delegate_to: localhost
