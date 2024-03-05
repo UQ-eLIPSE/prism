@@ -11,7 +11,8 @@ testEachZone((zone: Cypress.PrismZone) => {
           "MinimapFloorNamePatch",
         );
         cy.get('[data-cy="floor-name-input"]').should("exist").click();
-        cy.get('[data-cy="floor-name-input"]').type(" - test");
+        cy.get('[data-cy="floor-name-input"]').clear();
+        cy.get('[data-cy="floor-name-input"]').focus().type("floor");
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorNamePatch")
           .its("response.statusCode")

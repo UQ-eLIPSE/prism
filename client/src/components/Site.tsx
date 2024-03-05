@@ -543,7 +543,7 @@ function Site(props: SiteInterface) {
   }
 
   return (
-    <div id="sitePage">
+    <div data-testid="site-element" id="sitePage">
       <TitleCard
         firstLineName={
           marzipano.current
