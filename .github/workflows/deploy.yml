@@ -68,7 +68,7 @@ jobs:
 
       - name: Set up MongoDB script
         if: github.ref == 'refs/heads/develop'
-        run: echo "MONGO_COMMANDS=mongosh --eval \"use prism_uat\" --eval \"db.dropDatabase()\" && mongorestore \"prism_uat_v0\" >> $GITHUB_ENV
+        run: echo "MONGO_COMMANDS=mongosh --eval \"use prism_uat\" --eval \"db.dropDatabase()\" && mongorestore \"prism_uat_v0\"" >> $GITHUB_ENV
 
       - name: executing remote ssh commands using password
         if: github.ref == 'refs/heads/develop'
