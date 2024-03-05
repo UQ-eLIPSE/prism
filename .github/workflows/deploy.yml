@@ -62,7 +62,7 @@ jobs:
       - name: Run Ansible Playbook to cypress test
         if: github.ref == 'refs/heads/develop'
         run: |
-          ansible-playbook -i inventory/deploy/inventory.ini cypress-prism.yml
+          ansible-playbook -i inventory/deploy/inventory_uat.ini cypress-prism.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
           PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
