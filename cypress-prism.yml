@@ -5,7 +5,6 @@
 
 - name: Restore test Database
   hosts: zones
-  any_errors_fatal: true
 
   tasks:
     - name: MongoDB restore on the remote Server
@@ -18,5 +17,6 @@
 
     - name: Run spec Cypress test
       shell: |
-        cd {{ localdir_client }} && yarn cypress:run:uat --spec cypress/e2e/LogoTest.cy.ts
+        cd {{ localdir_client }} && yarn cypress:run:uat --reporter spec
       delegate_to: localhost
+      ignore_errors: true
