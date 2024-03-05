@@ -27,7 +27,7 @@
 
     - name: Run Cypress on Github repo/client folder on the github VM
       shell: |
+        cd {{ localdir_client }} && \
         yarn && \
         yarn cypress:run:uat
-      args:
-        chdir: "{{ localdir_client }}"
+      delegate_to: localhost
