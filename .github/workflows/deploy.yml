@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: action/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Set up MongoDB script
         if: github.ref == 'refs/heads/develop'
@@ -83,5 +83,5 @@ jobs:
       - name: Run Cypress SingleSite
         run: |
           if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
-            cd client && yarn && yarn cypress:run:uat
+            cd client && yarn cypress:run:uat
           fi
