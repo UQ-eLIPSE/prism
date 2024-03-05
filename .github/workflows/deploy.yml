@@ -58,3 +58,30 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: False # Disables SSH key host checking
           PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
+
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: action/checkout@v2
+
+      - name: Set up MongoDB script
+        if: github.ref == "refs/heads/develop"
+        run: echo "MONGO_COMMANDS=mongosh --eval \"use prism_uat\" --eval \"db.dropDatabase()\" && mongorestore \"prism_uat_v0\" >> $GITHUB_ENV
+
+      - name: executing remote ssh commands using password
+        if: github.ref == "refs/heads/develop"
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.UAT_HOST }}
+          username: ${{ secrets.UAT_USERNAME }}
+          proxy_jump: ${{ secrets.PROXY_JUMP_USER }}@${{ secrets.PROXY_JUMP_HOST }}
+          script: |
+            ${{ env.MONGO_COMMANDS }}
+
+      - name: Run Cypress SingleSite
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            cd client && yarn && yarn cypress:run:uat
+          fi
