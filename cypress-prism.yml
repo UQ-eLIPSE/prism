@@ -4,19 +4,42 @@
 # ansible-playbook -i </path/to/inventory> <playbook>.yml
 
 - name: Restore test Database
-  hosts: zones
+  hosts: uatzone
 
   tasks:
-    - name: MongoDB restore on the remote Server
+    - name: MongoDB restore test database - drop off
       command: |
         mongo prism_uat --eval "db.dropDatabase()"
 
-    - name: MongoDB restore
+    - name: MongoDB restore test database - restore
       command: |
         mongorestore "prism_uat_v0"
 
-    - name: Run spec Cypress test
+    - name: Run Cypress test
+      vars:
+        test_files:
+          - DocumentationTest.cy.ts
+          - EditNodePositionFormTest.cy.ts
+          - InfospotTest.cy.ts
+          - LogoTest.cy.ts
+          - MarzipanoTest.cy.ts
+          - NodeTest.cy.ts
+          - MinimapTest.cy.ts
+          - MinimapUpdateTest.cy.ts
+          - NodeArrowTest.cy.ts
+          - ScenenameTest.cy.ts
+          - TimelineUITest.cy.ts
+          - ToggleEditNodeButtonTest.cy
       shell: |
-        cd {{ localdir_client }} && yarn cypress:run:uat --reporter spec
+        cd {{ localdir_client }} && \
+        mkdir -p tmp/cypress-results && \
+        {% for test_file in test_files %} 
+        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml,toConsole=true" | grep -q "<failure"; then
+          echo "Test {{ test_file }} failed. Results saved."
+        else
+          rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml"
+          echo "Test {{ test_file }} passed. No results saved." >> ./tmp/cypress-results/passedTests.txt
+        fi
+        {% endfor %}
       delegate_to: localhost
       ignore_errors: true
