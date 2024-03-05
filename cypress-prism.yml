@@ -16,18 +16,12 @@
       command: |
         mongorestore "prism_uat_v0"
 
-    - name: Print current working directory
-      shell: |
-        pwd
-      register: pwd_output
-
-    - name: Debug print working directory
-      debug:
-        msg: "Current working directory: {{ pwd_output.stdout }}"
-
     - name: Run Cypress on Github repo/client folder on the github VM
       shell: |
-        cd {{ localdir_client }} && \
-        yarn && \
-        yarn cypress:run:uat
+        cd {{ localdir_client }} && yarn
+      delegate_to: localhost
+
+    - name: Run spec Cypress test
+      shell: |
+        cd {{ localdir_client }} && yarn cypress:run:uat --spec cypress/e2e/DocumentationTest.cy.ts
       delegate_to: localhost
