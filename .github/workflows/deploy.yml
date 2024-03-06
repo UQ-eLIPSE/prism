@@ -67,9 +67,6 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: False
           PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
 
-      - name: Print working directory
-        run: pwd
-
       - name: Upload Cypress Test Results
         if: github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v2
