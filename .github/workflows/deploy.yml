@@ -15,11 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check proxy agent name
-        shell: bash
-        run: |
-          echo "${{ secrets.PROXY_JUMP_USER }} - Need to verify"
-
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
