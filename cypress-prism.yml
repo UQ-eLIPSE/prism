@@ -3,7 +3,7 @@
 # To Run:
 # ansible-playbook -i </path/to/inventory> <playbook>.yml
 
-- name: Restore test Database
+- name: Run e2e Tests
   hosts: uatzone
 
   tasks:
