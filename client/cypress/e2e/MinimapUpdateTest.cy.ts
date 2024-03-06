@@ -10,8 +10,11 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.intercept("PATCH", "/api/site/*/sitemap").as(
           "MinimapFloorNamePatch",
         );
+        cy.get('[data-testid="floor-select-0"').should("exist").click();
         cy.get('[data-cy="floor-name-input"]').should("exist").click();
-        cy.get('[data-cy="floor-name-input"]').type(" - test");
+        cy.get('[data-cy="floor-name-input"]').type(
+          "{selectall}{backspace}TestfloorName",
+        );
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorNamePatch")
           .its("response.statusCode")

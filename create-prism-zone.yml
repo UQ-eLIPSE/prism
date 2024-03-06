@@ -34,8 +34,8 @@
     - name: SCP project dump to Triton instance
       shell: "scp -o StrictHostKeyChecking=no -r {{ mongodump }} root@{{ zone }}.zones.eait.uq.edu.au:~/"
 
-- name: UAT zone
-  hosts: newuatzone
+- name: New zone
+  hosts: newzone
   tasks:
     - name: Check if already deployed
       debug:

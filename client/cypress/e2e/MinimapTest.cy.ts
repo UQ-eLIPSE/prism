@@ -14,14 +14,66 @@ function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").type(String(rotation));
 }
 
-function checkStyleContains(styleString: string) {
-  cy.get("[data-cy='selected-node']")
-    .parent()
-    .should("have.attr", "style")
-    .should("contain", styleString);
+/**
+ * Extracts the rotation value from a rotation styled string.
+ * i.e. "rotate(0.523599rad)" -> 0.523599
+ * @param rotationStyle "rotate({value}rad)"
+ * @returns {number} The rotation value in radians.
+ */
+function extractRotationValue(rotationStyle: string): number {
+  const match = rotationStyle.match(/rotate\((.*?)rad\)/);
+  return match && match[1] ? parseFloat(match[1]) : 0;
 }
 
-const rotationValues = [
+function getRotationValue(selector: string): Cypress.Chainable<number> {
+  return cy
+    .get(selector)
+    .parent()
+    .should("exist")
+    .should("have.attr", "style")
+    .then((style: unknown) => {
+      return extractRotationValue(style as string);
+    });
+}
+
+/**
+ * Extracts a numeric value from a text based on a given label.
+ * @returns {number} The extracted numeric value, or 0 if no match is found.
+ */
+function extractNumberFromLabel(label: string, text: string): number {
+  // Use a regular expression to extract the numeric value
+  const regex = new RegExp(`${label}: ([\\d.]+)°`);
+  const match = regex.exec(text);
+  if (!match) return 0;
+
+  return parseFloat(match[1]);
+}
+
+/**
+ * Adds rotation to the given style string.
+ * i.e. "rotate(0.523599rad)" + 1.5708 = "rotate(2.09439rad)"
+ * @param rotationStyle - "rotate({value}rad)"
+ * @param rotationDegrees - rotation will be converted to radians
+ * @returns {string} The updated rotation style string.
+ */
+function addRotationToStyle(
+  rotationStyle: string,
+  rotationDegrees: number,
+): string {
+  // Extract the original rotation value in radians from the rotation style string
+  const rotationMatch = /rotate\(([^)]+)rad\)/.exec(rotationStyle);
+  if (!rotationMatch) return rotationStyle;
+  const originalRotationInRadians = parseFloat(rotationMatch[1]);
+
+  // degrees -> radians
+  const rotationInRadians = rotationDegrees * (Math.PI / 180);
+
+  const newRotationInRadians = originalRotationInRadians + rotationInRadians;
+
+  return `rotate(${newRotationInRadians}rad)`;
+}
+
+const rotationValues: { degrees: number; cssValue: string }[] = [
   { degrees: 30, cssValue: "rotate(0.523599rad)" }, // degrees / 57.2958 = rad
   { degrees: 60, cssValue: "rotate(1.0472rad)" },
   { degrees: 90, cssValue: "rotate(1.5708rad)" },
@@ -80,37 +132,71 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save node" button`, () => {
-      if (zone.adminUser && zone.rotation) {
-        const randTuple =
-          rotationValues[Math.floor(Math.random() * rotationValues.length)];
-        cy.wait(getReqAlias).then(() => {
-          typeRotation(randTuple.degrees);
-          cy.get("[data-cy='edit-save-button']").contains("Save").click();
-          cy.wait(patchReqAlias)
-            .wait(patchReqRotAlias)
-            .wait(getReqAlias)
-            .then(() => {
-              checkStyleContains(`transform: ${randTuple.cssValue}`);
-            });
-        });
-      }
+      if (!zone.adminUser || !zone.rotation) return;
+      const randTuple =
+        rotationValues[Math.floor(Math.random() * rotationValues.length)];
+      cy.wait(getReqAlias).then(() => {
+        cy.get("[data-cy='viewParam-currYaw-value']")
+          .should("exist")
+          .invoke("text")
+          .then((text) => {
+            const initialYawValue = extractNumberFromLabel(
+              text.split(":")[0],
+              text,
+            );
+            typeRotation(randTuple.degrees);
+            cy.get("[data-cy='edit-save-button']").contains("Save").click();
+            cy.wait(patchReqAlias)
+              .wait(patchReqRotAlias)
+              .wait(getReqAlias)
+              .then(() => {
+                const newRotationStyle = addRotationToStyle(
+                  randTuple.cssValue,
+                  initialYawValue,
+                );
+                getRotationValue("[data-cy='selected-node']").then((actual) => {
+                  expect(actual).to.be.closeTo(
+                    extractRotationValue(newRotationStyle),
+                    0.1,
+                  );
+                });
+              });
+          });
+      });
     });
 
     it(`Testing: user changes rotation coordinate input in the form, the targeted mininode rotation changes correctly when pressing the "Save" button`, () => {
-      if (zone.adminUser && zone.rotation) {
-        const randTuple =
-          rotationValues[Math.floor(Math.random() * rotationValues.length)];
-        cy.wait(getReqAlias).then(() => {
-          typeRotation(randTuple.degrees);
-          cy.get("[data-cy='submit-button']").contains("Save").click();
-          cy.wait(patchReqAlias)
-            .wait(patchReqRotAlias)
-            .wait(getReqAlias)
-            .then(() => {
-              checkStyleContains(`transform: ${randTuple.cssValue}`);
-            });
-        });
-      }
+      if (!zone.adminUser || !zone.rotation) return;
+      const randTuple =
+        rotationValues[Math.floor(Math.random() * rotationValues.length)];
+      cy.wait(getReqAlias).then(() => {
+        cy.get("[data-cy='viewParam-currYaw-value']")
+          .should("exist")
+          .invoke("text")
+          .then((text) => {
+            const initialYawValue = extractNumberFromLabel(
+              text.split(":")[0],
+              text,
+            );
+            typeRotation(randTuple.degrees);
+            cy.get("[data-cy='submit-button']").contains("Save").click();
+            cy.wait(patchReqAlias)
+              .wait(patchReqRotAlias)
+              .wait(getReqAlias)
+              .then(() => {
+                const newRotationStyle = addRotationToStyle(
+                  randTuple.cssValue,
+                  initialYawValue,
+                );
+                getRotationValue("[data-cy='selected-node']").then((actual) => {
+                  expect(actual).to.be.closeTo(
+                    extractRotationValue(newRotationStyle),
+                    0.1,
+                  );
+                });
+              });
+          });
+      });
     });
 
     it(`Testing: rotation coordinate should not change when user cancels form submission`, () => {
