@@ -10,10 +10,22 @@
     - name: MongoDB restore test database - drop off
       command: |
         mongo prism_uat --eval "db.dropDatabase()"
+      register: drop_result
+
+    - name: Fail if dropping database failed
+      fail:
+        msg: "Failed to drop database. Error: {{ drop_result.stderr }}"
+      when: drop_result.rc != 0
 
     - name: MongoDB restore test database - restore
       command: |
         mongorestore "prism_uat_v0"
+      register: restore_result
+
+    - name: Fail if restoring database failed
+      fail:
+        msg: "Failed to restore database. Error: {{ restore_result.stderr }}"
+      when: restore_result.rc != 0
 
     - name: Run Cypress test
       vars:
