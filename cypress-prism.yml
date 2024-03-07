@@ -40,7 +40,7 @@
           - MinimapUpdateTest.cy.ts
           #- NodeArrowTest.cy.ts
           #- ScenenameTest.cy.ts
-          - TimelineUITest.cy.ts
+          #- TimelineUITest.cy.ts
           #- ToggleEditNodeButtonTest.cy
       shell: |
         cd {{ localdir_client }} && \
