@@ -31,35 +31,25 @@
       vars:
         test_files:
           #- DocumentationTest.cy.ts
+          - MinimapUpdateTestA.cy.ts
+          - MinimapUpdateTestB.cy.ts
+          - TimelineUITest.cy.ts
           - EditNodePositionFormTest.cy.ts
           - InfospotTest.cy.ts
           - LogoTest.cy.ts
           - MarzipanoTest.cy.ts
           - NodeTest.cy.ts
           - MinimapTest.cy.ts
-          - MinimapUpdateTestA.cy.ts
-          - MinimapUpdateTestB.cy.ts
           - NodeArrowTestA.cy.ts
           - NodeArrowTestB.cy.ts
           - ScenenameTest.cy.ts
-          - TimelineUITest.cy.ts
           - ToggleEditNodeButtonTest.cy.ts
-        max_retries: 3
       shell: |
         cd {{ localdir_client }} && \
         mkdir -p tmp/cypress-results && \
         {% for test_file in test_files %} 
-        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml,toConsole=true" | grep -q "<failure"; then
-          echo "Test {{ test_file }} failed. Retrying..."
-          for retry in $(seq 1 {{ max_retries }}); do
-            if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml,toConsole=true" | grep -q "<failure"; then
-              echo "Retry $retry for test {{ test_file }} failed."
-            else
-              echo "Test {{ test_file }} passed on retry $retry. No results saved." >> ./tmp/cypress-results/passedTests.txt
-              rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml"
-              break
-            fi
-          done
+        if yarn cypress:run:uat --headed --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml,toConsole=true" | grep -q "<failure"; then
+          echo "Test {{ test_file }} failed."
         else
           rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml"
           echo "Test {{ test_file }} passed. No results saved." >> ./tmp/cypress-results/passedTests.txt

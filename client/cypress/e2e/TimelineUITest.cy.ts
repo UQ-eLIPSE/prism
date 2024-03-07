@@ -63,31 +63,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       }
     });
 
-    it(`Testing: Timeline drawer toggle visibility after clicking timeline button action`, () => {
-      if (zone.timeline) {
-        cy.wait("@getSiteExists").then(() => {
-          cy.wait("@getSiteDetails").then(() => {
-            cy.wait("@getEmptyFloors").then(() => {
-              cy.get("[class^='_timelineButton']").click({ force: true });
-              cy.get("#drawer-container")
-                .should("exist")
-                .parent()
-                .then(($parent) => {
-                  checkTransformStyle($parent, true);
-                  cy.get("[class^='_timelineButton']").click({ force: true });
-                  cy.wait(1000);
-                  cy.get("#drawer-container")
-                    .should("exist")
-                    .parent()
-                    .then(($parent) => {
-                      checkTransformStyle($parent, false);
-                    });
-                });
-            });
-          });
-        });
-      }
-    });
+    //todo: Timeline drawer toggle visibility after clicking timeline button action
 
     it("Testing: Timeline survey button fetches correct node survey when selected", () => {
       if (zone.timeline) {

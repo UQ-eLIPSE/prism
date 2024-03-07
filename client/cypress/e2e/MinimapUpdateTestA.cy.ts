@@ -1,4 +1,9 @@
 import { testEachZone } from "../testutils";
+import { updateAndVerifyInput } from "../support/minimapUtils";
+
+const floorSelect = '[data-testid="floor-select-0"]';
+const floorNameInput = '[data-cy="floor-name-input"]';
+const floorTagInput = '[data-cy="floor-tag-input"]';
 
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Minimap tag, floor name and image update should work", () => {
@@ -10,35 +15,17 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.intercept("PATCH", "/api/site/*/sitemap").as(
           "MinimapFloorNamePatch",
         );
-        cy.get('[data-testid="floor-select-0"').should("exist").click();
-        cy.get('[data-cy="floor-name-input"]')
-          .should("exist")
-          .click()
-          .clear()
-          .type("fName");
-        cy.get("[class^='submit-update']").should("exist").click();
-        cy.wait("@MinimapFloorNamePatch");
-        cy.get('[data-testid="floor-select-0"').should("exist").click();
-        cy.get('[data-cy="floor-name-input"]')
-          .invoke("val")
-          .then((val) => {
-            expect(val).to.equal("fName");
-          });
+        cy.get(floorSelect).should("exist").click();
+        cy.wait(500);
+        updateAndVerifyInput(floorNameInput, "fName", "@MinimapFloorNamePatch");
       }
     });
     it(`Testing: Minimap Floor Tag update works`, () => {
       if (zone.floors) {
         cy.intercept("PATCH", "/api/site/*/sitemap").as("MinimapFloorTagPatch");
-        cy.get('[data-testid="floor-select-0"').should("exist").click();
-        cy.get('[data-cy="floor-tag-input"]').click().clear().type("Tag");
-        cy.get("[class^='submit-update']").should("exist").click();
-        cy.wait("@MinimapFloorTagPatch");
-        cy.get('[data-testid="floor-select-0"').should("exist").click();
-        cy.get('[data-cy="floor-tag-input"]')
-          .invoke("val")
-          .then((val) => {
-            expect(val).to.equal("Tag");
-          });
+        cy.get(floorSelect).should("exist").click();
+        cy.wait(500);
+        updateAndVerifyInput(floorTagInput, "A", "@MinimapFloorTagPatch");
       }
     });
     it(`Testing: Minimap Image update works`, () => {
@@ -50,7 +37,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           "cypress/fixtures/minimap_test.png",
           { force: true },
         );
-        cy.get("[class^='submit-update']").should("exist").click();
+        cy.get(".submit-update").should("exist").click();
         cy.wait("@MinimapImagePost")
           .its("response.statusCode")
           .should("equal", 200);

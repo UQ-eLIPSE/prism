@@ -7,7 +7,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: Save button should be hidden at initial render`, () => {
-      cy.get("[class^='submit-update']").should("not.exist");
+      cy.get(".submit-update").should("not.exist");
     });
 
     it(`Testing: Save button should not appear if name or tag value didn't change`, () => {
@@ -20,7 +20,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           if (val !== "") {
             cy.get('[data-cy="floor-name-input"]').type(val as string);
           }
-          cy.get("[class^='submit-update']").should("not.exist");
+          cy.get(".submit-update").should("not.exist");
         });
 
       cy.get('[data-cy="floor-tag-input"]')
@@ -31,7 +31,7 @@ testEachZone((zone: Cypress.PrismZone) => {
             cy.get('[data-cy="floor-tag-input"]').type(val as string);
           }
 
-          cy.get("[class^='submit-update']").should("not.exist");
+          cy.get(".submit-update").should("not.exist");
         });
     });
 
@@ -43,10 +43,10 @@ testEachZone((zone: Cypress.PrismZone) => {
       // empty tag will show an alert
       cy.get('[data-testid="floor-select-0"').should("exist").click();
       cy.get('[data-cy="floor-tag-input"]').click().clear().type("TageA");
-      cy.get("[class^='submit-update']").should("exist").click();
+      cy.get(".submit-update").should("exist").click();
       cy.wait("@MinimapFloorNamePatch").then(() => {
         cy.get('[data-cy="floor-tag-input"]').click().clear();
-        cy.get("[class^='submit-update']").should("exist").click();
+        cy.get(".submit-update").should("exist").click();
         cy.wait("@MinimapFloorNamePatch");
         cy.on("uncaught:exception", (err) => {
           expect(err.message).to.include("Failed to Update Floor Details");
@@ -66,10 +66,10 @@ testEachZone((zone: Cypress.PrismZone) => {
       // empty tag will show an alert
       cy.get('[data-testid="floor-select-0"').should("exist").click();
       cy.get('[data-cy="floor-name-input"]').click().clear().type("fNameA");
-      cy.get("[class^='submit-update']").should("exist").click();
+      cy.get(".submit-update").should("exist").click();
       cy.wait("@MinimapFloorNamePatch").then(() => {
         cy.get('[data-cy="floor-name-input"]').click().clear();
-        cy.get("[class^='submit-update']").should("exist").click();
+        cy.get(".submit-update").should("exist").click();
         cy.wait("@MinimapFloorNamePatch");
         cy.on("uncaught:exception", (err) => {
           expect(err.message).to.include("Failed to Update Floor Details");
