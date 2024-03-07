@@ -32,16 +32,16 @@
         test_files:
           #- DocumentationTest.cy.ts
           - MinimapUpdateTestA.cy.ts
+          - NodeArrowTestA.cy.ts
           - MinimapUpdateTestB.cy.ts
           - TimelineUITest.cy.ts
+          - NodeArrowTestB.cy.ts
           - EditNodePositionFormTest.cy.ts
           - InfospotTest.cy.ts
           - LogoTest.cy.ts
           - MarzipanoTest.cy.ts
           - NodeTest.cy.ts
           - MinimapTest.cy.ts
-          - NodeArrowTestA.cy.ts
-          - NodeArrowTestB.cy.ts
           - ScenenameTest.cy.ts
           - ToggleEditNodeButtonTest.cy.ts
       shell: |

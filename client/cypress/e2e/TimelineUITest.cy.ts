@@ -35,35 +35,16 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.intercept("GET", "/api/site/*/emptyFloors").as("getEmptyFloors");
     });
 
-    const checkTransformStyle = (
-      element: JQuery<HTMLElement>,
-      shouldBeNone: boolean,
-    ) => {
-      const style = window.getComputedStyle(element[0]);
-      const { transform } = style;
-      shouldBeNone
-        ? expect(transform).to.be.equal("none")
-        : expect(transform).to.not.be.equal("none");
-    };
-
     it(`Testing: Timeline drawer should be hidden in initial page render`, () => {
       if (zone.timeline) {
-        cy.wait("@getSiteExists").then(() => {
-          cy.wait("@getSiteDetails").then(() => {
-            cy.wait("@getEmptyFloors").then(() => {
-              cy.get("#drawer-container")
-                .should("exist")
-                .parent()
-                .then(($parent) => {
-                  checkTransformStyle($parent, false);
-                });
-            });
-          });
-        });
+        cy.get("[data-cy='sb-home']").should("exist").click();
+
+        cy.get('[data-cy="sb-site"]').should("exist").click();
+        cy.get("#drawer-container").parent().should("exist").and("be.hidden");
+        cy.get("#drawer-container").click();
+        cy.get("#drawer-container").parent().should("be.visible");
       }
     });
-
-    //todo: Timeline drawer toggle visibility after clicking timeline button action
 
     it("Testing: Timeline survey button fetches correct node survey when selected", () => {
       if (zone.timeline) {
