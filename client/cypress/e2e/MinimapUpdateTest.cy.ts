@@ -102,10 +102,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.get('[data-cy="floor-tag-input"]').click().clear().type("TageA");
       cy.get("[class^='submit-update']").should("exist").click();
       cy.wait("@MinimapFloorNamePatch").then(() => {
-        cy.get('[data-cy="floor-tag-input"]')
-          .click()
-          .clear()
-          .type("{selectAll}{backspace}");
+        cy.get('[data-cy="floor-tag-input"]').click().clear();
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorNamePatch");
         cy.on("uncaught:exception", (err) => {
@@ -128,10 +125,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.get('[data-cy="floor-name-input"]').click().clear().type("fNameA");
       cy.get("[class^='submit-update']").should("exist").click();
       cy.wait("@MinimapFloorNamePatch").then(() => {
-        cy.get('[data-cy="floor-name-input"]')
-          .click()
-          .clear()
-          .type("{selectAll}{backspace}");
+        cy.get('[data-cy="floor-name-input"]').click().clear();
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorNamePatch");
         cy.on("uncaught:exception", (err) => {

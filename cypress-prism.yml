@@ -44,10 +44,9 @@
           - ToggleEditNodeButtonTest.cy
       shell: |
         cd {{ localdir_client }} && \
-        yarn && \
         mkdir -p tmp/cypress-results && \
         {% for test_file in test_files %} 
-        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml,toConsole=true" | grep -q "<failure"; then
+        if yarn cypress:run:uat --headed --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml,toConsole=true" | grep -q "<failure"; then
           echo "Test {{ test_file }} failed. Results saved."
         else
           rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml"
