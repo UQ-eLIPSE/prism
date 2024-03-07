@@ -69,7 +69,6 @@ testEachZone((zone: Cypress.PrismZone) => {
           cy.wait("@getSiteDetails").then(() => {
             cy.wait("@getEmptyFloors").then(() => {
               cy.get("[class^='_timelineButton']").click({ force: true });
-              cy.wait(1000);
               cy.get("#drawer-container")
                 .should("exist")
                 .parent()
@@ -116,15 +115,12 @@ testEachZone((zone: Cypress.PrismZone) => {
                       const expectedMonthYear = $button
                         .find("[data-cy='monthName_display']")
                         .text();
-                      console.log("Selected Month Year:", expectedMonthYear); // For debugging purposes
 
                       const [month, year] = expectedMonthYear.split(" ");
                       const monthNumber = new Date(`${month} 1`).getMonth() + 1;
                       const formattedDate = `${year}-${monthNumber
                         .toString()
                         .padStart(2, "0")}`; // Converts to "YYYY-MM"
-
-                      cy.wait(1000);
 
                       cy.wait("@getSurveyDate").then((interception) => {
                         expect(interception.request.url).to.include(

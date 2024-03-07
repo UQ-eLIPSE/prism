@@ -24,9 +24,12 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: Minimap Floor Tag update works`, () => {
       if (zone.floors) {
         cy.intercept("PATCH", "/api/site/*/sitemap").as("MinimapFloorTagPatch");
+        cy.get('[data-testid="floor-select-0"').should("exist").click();
         cy.get('[data-cy="floor-tag-input"]').click();
         cy.get('[data-cy="floor-tag-input"]').clear();
-        cy.get('[data-cy="floor-tag-input"]').type("test");
+        cy.get('[data-cy="floor-tag-input"]').type(
+          "{selectall}{backspace}testTag",
+        );
         cy.wait(200);
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorTagPatch")
@@ -62,7 +65,7 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing: Save button should not appear if name or tag value didn't change`, () => {
       if (!zone.floors) return;
-
+      cy.get('[data-testid="floor-select-0"').should("exist").click();
       cy.get('[data-cy="floor-name-input"]').click();
       cy.get('[data-cy="floor-name-input"]')
         .invoke("val")
@@ -93,9 +96,12 @@ testEachZone((zone: Cypress.PrismZone) => {
 
       // Need to type and submit first before checking if submitting with
       // empty tag will show an alert
+      cy.get('[data-testid="floor-select-0"').should("exist").click();
       cy.get('[data-cy="floor-tag-input"]').click();
       cy.get('[data-cy="floor-tag-input"]').clear();
-      cy.get('[data-cy="floor-tag-input"]').type(" - test");
+      cy.get('[data-cy="floor-tag-input"]').type(
+        "{selectall}{backspace}Alerttest",
+      );
       cy.get("[class^='submit-update']").should("exist").click();
       cy.wait("@MinimapFloorNamePatch").then(() => {
         cy.get('[data-cy="floor-tag-input"]').click();
@@ -120,9 +126,12 @@ testEachZone((zone: Cypress.PrismZone) => {
 
       // Need to type and submit first before checking if submitting with
       // empty tag will show an alert
+      cy.get('[data-testid="floor-select-0"').should("exist").click();
       cy.get('[data-cy="floor-name-input"]').click();
       cy.get('[data-cy="floor-name-input"]').clear();
-      cy.get('[data-cy="floor-name-input"]').type(" - test");
+      cy.get('[data-cy="floor-name-input"]').type(
+        "{selectall}{backspace}Alerttest",
+      );
       cy.get("[class^='submit-update']").should("exist").click();
       cy.wait("@MinimapFloorNamePatch").then(() => {
         cy.get('[data-cy="floor-name-input"]').click();
