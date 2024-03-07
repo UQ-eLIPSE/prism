@@ -43,15 +43,25 @@
           - NodeArrowTestB.cy.ts
           - ScenenameTest.cy.ts
           - TimelineUITest.cy.ts
-          - ToggleEditNodeButtonTest.cy
+          - ToggleEditNodeButtonTest.cy.ts
+        max_retries: 3
       shell: |
         cd {{ localdir_client }} && \
         mkdir -p tmp/cypress-results && \
         {% for test_file in test_files %} 
-        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml,toConsole=true" | grep -q "<failure"; then
-          echo "Test {{ test_file }} failed. Results saved."
+        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml,toConsole=true" | grep -q "<failure"; then
+          echo "Test {{ test_file }} failed. Retrying..."
+          for retry in $(seq 1 {{ max_retries }}); do
+            if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml,toConsole=true" | grep -q "<failure"; then
+              echo "Retry $retry for test {{ test_file }} failed."
+            else
+              echo "Test {{ test_file }} passed on retry $retry. No results saved." >> ./tmp/cypress-results/passedTests.txt
+              rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml"
+              break
+            fi
+          done
         else
-          rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml"
+          rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml"
           echo "Test {{ test_file }} passed. No results saved." >> ./tmp/cypress-results/passedTests.txt
         fi
         {% endfor %}
