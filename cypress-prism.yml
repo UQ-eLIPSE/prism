@@ -37,7 +37,8 @@
           - MarzipanoTest.cy.ts
           - NodeTest.cy.ts
           - MinimapTest.cy.ts
-          - MinimapUpdateTest.cy.ts
+          - MinimapUpdateTestA.cy.ts
+          - MinimapUpdateTestB.cy.ts
           - NodeArrowTest.cy.ts
           - ScenenameTest.cy.ts
           - TimelineUITest.cy.ts
