@@ -1,5 +1,21 @@
 import { testEachZone } from "../testutils";
 
+function setupFloorPatchInterceptor() {
+  cy.intercept("PATCH", "/api/site/*/sitemap").as("MinimapFloorNamePatch");
+}
+
+function submitUpdateAndVerifyAlert() {
+  cy.get(".submit-update").should("exist").click();
+  cy.wait("@MinimapFloorNamePatch");
+  cy.on("uncaught:exception", (err) => {
+    expect(err.message).to.include("Failed to Update Floor Details");
+    return false; // prevent the test from failing?
+  });
+  cy.on("window:alert", (str) => {
+    expect(str).to.contains("Failed to Update Floor Details");
+  });
+}
+
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Minimap UI update works as intended", () => {
     beforeEach(() => {
@@ -35,48 +51,34 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
     });
 
-    it(`Alert should be shown if user tries to submit empty tag`, () => {
-      if (!zone.floors) return;
-      cy.intercept("PATCH", "/api/site/*/sitemap").as("MinimapFloorNamePatch");
+    describe("Floor Details Update Tests", () => {
+      it(`Alert should be shown if user tries to submit empty tag`, () => {
+        if (!zone.floors) return;
+        setupFloorPatchInterceptor();
 
-      // Need to type and submit first before checking if submitting with
-      // empty tag will show an alert
-      cy.get('[data-testid="floor-select-0"').should("exist").click();
-      cy.get('[data-cy="floor-tag-input"]').click().clear().type("TageA");
-      cy.get(".submit-update").should("exist").click();
-      cy.wait("@MinimapFloorNamePatch").then(() => {
-        cy.get('[data-cy="floor-tag-input"]').click().clear();
+        // Need to type and submit first before checking if submitting with
+        // empty tag will show an alert
+        cy.get('[data-testid="floor-select-0"]').should("exist").click();
+        cy.get('[data-cy="floor-tag-input"]').click().clear().type("TagA");
         cy.get(".submit-update").should("exist").click();
-        cy.wait("@MinimapFloorNamePatch");
-        cy.on("uncaught:exception", (err) => {
-          expect(err.message).to.include("Failed to Update Floor Details");
-          return false; // prevent the test from failing
-        });
-        cy.on("window:alert", (str) => {
-          expect(str).to.contains("Failed to Update Floor Details");
+        cy.wait("@MinimapFloorNamePatch").then(() => {
+          cy.get('[data-cy="floor-tag-input"]').click().clear();
+          submitUpdateAndVerifyAlert();
         });
       });
-    });
 
-    it(`Testing: Alert should be shown if user tries to submit empty name`, () => {
-      if (!zone.floors) return;
-      cy.intercept("PATCH", "/api/site/*/sitemap").as("MinimapFloorNamePatch");
+      it(`Alert should be shown if user tries to submit empty name`, () => {
+        if (!zone.floors) return;
+        setupFloorPatchInterceptor();
 
-      // Need to type and submit first before checking if submitting with
-      // empty tag will show an alert
-      cy.get('[data-testid="floor-select-0"').should("exist").click();
-      cy.get('[data-cy="floor-name-input"]').click().clear().type("fNameA");
-      cy.get(".submit-update").should("exist").click();
-      cy.wait("@MinimapFloorNamePatch").then(() => {
-        cy.get('[data-cy="floor-name-input"]').click().clear();
+        // Need to type and submit first before checking if submitting with
+        // empty name will show an alert
+        cy.get('[data-testid="floor-select-0"]').should("exist").click();
+        cy.get('[data-cy="floor-name-input"]').click().clear().type("NameA");
         cy.get(".submit-update").should("exist").click();
-        cy.wait("@MinimapFloorNamePatch");
-        cy.on("uncaught:exception", (err) => {
-          expect(err.message).to.include("Failed to Update Floor Details");
-          return false; // prevent the test from failing
-        });
-        cy.on("window:alert", (str) => {
-          expect(str).to.contains("Failed to Update Floor Details");
+        cy.wait("@MinimapFloorNamePatch").then(() => {
+          cy.get('[data-cy="floor-name-input"]').click().clear();
+          submitUpdateAndVerifyAlert();
         });
       });
     });
