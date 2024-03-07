@@ -39,7 +39,8 @@
           - MinimapTest.cy.ts
           - MinimapUpdateTestA.cy.ts
           - MinimapUpdateTestB.cy.ts
-          - NodeArrowTest.cy.ts
+          - NodeArrowTestA.cy.ts
+          - NodeArrowTestB.cy.ts
           - ScenenameTest.cy.ts
           - TimelineUITest.cy.ts
           - ToggleEditNodeButtonTest.cy
