@@ -18,8 +18,6 @@ testEachZone((zone: Cypress.PrismZone) => {
           .type("fName");
         cy.get("[class^='submit-update']").should("exist").click();
         cy.wait("@MinimapFloorNamePatch");
-        // .its("response.statusCode")
-        // .should("equal", 200);
         cy.get('[data-testid="floor-select-0"').should("exist").click();
         cy.get('[data-cy="floor-name-input"]')
           .invoke("val")

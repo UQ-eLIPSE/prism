@@ -52,12 +52,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
 
-      #- name: Run Ansible Playbook to deploy
-      #  run: |
-      #    ansible-playbook -i inventory/deploy/inventory.ini deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'
-      #  env:
-      #    ANSIBLE_HOST_KEY_CHECKING: False
-      #    PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
+      - name: Run Ansible Playbook to deploy
+        run: |
+          ansible-playbook -i inventory/deploy/inventory.ini deploy-prism.yml -e 'update_prism=true generate_compressed_build=true'
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
+          PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
 
       - name: Run Ansible Playbook to cypress test
         if: github.ref == 'refs/heads/develop'
