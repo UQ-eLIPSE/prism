@@ -30,18 +30,18 @@
     - name: Run Cypress test
       vars:
         test_files:
-          #- DocumentationTest.cy.ts
-          #- EditNodePositionFormTest.cy.ts
-          #- InfospotTest.cy.ts
-          #- LogoTest.cy.ts
-          #- MarzipanoTest.cy.ts
-          #- NodeTest.cy.ts
-          #- MinimapTest.cy.ts
+          - DocumentationTest.cy.ts
+          - EditNodePositionFormTest.cy.ts
+          - InfospotTest.cy.ts
+          - LogoTest.cy.ts
+          - MarzipanoTest.cy.ts
+          - NodeTest.cy.ts
+          - MinimapTest.cy.ts
           - MinimapUpdateTest.cy.ts
-          #- NodeArrowTest.cy.ts
-          #- ScenenameTest.cy.ts
-          #- TimelineUITest.cy.ts
-          #- ToggleEditNodeButtonTest.cy
+          - NodeArrowTest.cy.ts
+          - ScenenameTest.cy.ts
+          - TimelineUITest.cy.ts
+          - ToggleEditNodeButtonTest.cy
       shell: |
         cd {{ localdir_client }} && \
         yarn && \
