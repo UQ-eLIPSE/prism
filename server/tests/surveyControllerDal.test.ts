@@ -48,7 +48,8 @@ describe("getIndividualSurveysDetails", () => {
 });
 
 describe("getSurveyExistence", () => {
-  it("siteCreated and sitePopulated should return true if surveys exist for a given floor and site", async () => {
+  it(`siteCreated and sitePopulated should return true if surveys exist for a
+given floor and site`, async () => {
     const req = {
       params: { siteId: "123" },
     } as Partial<Request>;
@@ -70,6 +71,30 @@ describe("getSurveyExistence", () => {
       message: "",
       success: true,
       payload: { site: "123", siteCreated: true, sitePopulated: true },
+    });
+  });
+
+  it(`siteCreated should return false if no map pins exist for a given floor
+    `, async () => {
+    const req = {
+      params: { siteId: "123" },
+    } as Partial<Request>;
+    const surveyController = new SurveyController();
+    const res = mockResponse() as Partial<Response>;
+
+    mocked(surveyNodesHandler.getDocumentCounts).mockResolvedValue(
+      mockSurveyNodes.length,
+    );
+
+    mocked(mapPinsHandler.getDocumentCounts).mockResolvedValue(0);
+
+    await surveyController.getSurveyExistence(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "",
+      success: true,
+      payload: { site: "123", siteCreated: false, sitePopulated: true },
     });
   });
 });
