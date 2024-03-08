@@ -14,6 +14,7 @@ import {
 } from "./sampleData/surveyControllerData";
 import surveyNodesHandler from "../src/dal/surveyNodesHandler";
 import mapPinsHandler from "../src/dal/mapPinsHandler";
+import * as httpMocks from "node-mocks-http";
 
 jest.mock("../src/dal/minimapConversionsHandler");
 jest.mock("../src/dal/surveyNodesHandler");
@@ -50,10 +51,12 @@ describe("getIndividualSurveysDetails", () => {
 describe("getSurveyExistence", () => {
   it(`siteCreated and sitePopulated should return true if surveys exist for a
 given floor and site`, async () => {
-    const req = {
+    const req: httpMocks.MockRequest<Request> = httpMocks.createRequest({
       params: { siteId: "123" },
-    } as Partial<Request>;
-    const res = mockResponse() as Partial<Response>;
+    });
+
+    // const res = mockResponse() as Partial<Response>;
+    const resp = httpMocks.createResponse();
 
     const surveyController = new SurveyController();
     mocked(surveyNodesHandler.getDocumentCounts).mockResolvedValue(
@@ -64,10 +67,13 @@ given floor and site`, async () => {
       mockMapPins.length,
     );
 
-    await surveyController.getSurveyExistence(req as Request, res as Response);
+    await surveyController.getSurveyExistence(req, resp);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
+    const data = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+    expect(statusCode).toBe(200);
+
+    expect(data).toStrictEqual({
       message: "",
       success: true,
       payload: { site: "123", siteCreated: true, sitePopulated: true },
