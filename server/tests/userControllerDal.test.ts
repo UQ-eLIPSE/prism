@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 import { AuthUtil } from "../src/utils/AuthUtil";
 import * as dataAccessFunction from "../src/dal/usersHandler";
 import { IUser } from "../src/models/UserModel";
 import { mocked } from "jest-mock";
+import { mockResponse } from "./testUtils";
 
 // Jest mock DAL function usersFindOne
 jest.mock("../src/dal/usersHandler");
@@ -18,13 +19,10 @@ describe("AuthUtil", () => {
   describe("getUserInfo", () => {
     it("should return user information", async () => {
       const req = {} as Request;
-      const res = {
-        locals: {
-          user: { user: "testUser" },
-        },
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-      } as unknown as Response;
+      const res = mockResponse();
+      res.locals = {
+        user: { user: "testUser" },
+      };
 
       // Call API method
       await AuthUtil.getUserInfo(req, res);
