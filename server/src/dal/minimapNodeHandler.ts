@@ -46,7 +46,9 @@ const deleteMinimapNode = async (
   });
 };
 
-const createMinimapNode = async (data: Partial<IMinimapNode>[]) => {
+const createMinimapNode = async (
+  data: IMinimapNode[],
+): Promise<IMinimapNode[]> => {
   return MinimapNode.create(data);
 };
 
