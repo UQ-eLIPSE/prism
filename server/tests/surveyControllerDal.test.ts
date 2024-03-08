@@ -74,8 +74,7 @@ given floor and site`, async () => {
     });
   });
 
-  it(`siteCreated should return false if no map pins exist for a given floor
-    `, async () => {
+  it(`siteCreated should return false if no map pins exist `, async () => {
     const req = {
       params: { siteId: "123" },
     } as Partial<Request>;
@@ -95,6 +94,29 @@ given floor and site`, async () => {
       message: "",
       success: true,
       payload: { site: "123", siteCreated: false, sitePopulated: true },
+    });
+  });
+
+  it(`sitePopulated should return false if no survey nodes exist `, async () => {
+    const req = {
+      params: { siteId: "123" },
+    } as Partial<Request>;
+    const surveyController = new SurveyController();
+    const res = mockResponse() as Partial<Response>;
+
+    mocked(surveyNodesHandler.getDocumentCounts).mockResolvedValue(0);
+
+    mocked(mapPinsHandler.getDocumentCounts).mockResolvedValue(
+      mockMapPins.length,
+    );
+
+    await surveyController.getSurveyExistence(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "",
+      success: true,
+      payload: { site: "123", siteCreated: true, sitePopulated: false },
     });
   });
 });
