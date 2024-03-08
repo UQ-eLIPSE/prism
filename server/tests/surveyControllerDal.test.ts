@@ -55,7 +55,6 @@ given floor and site`, async () => {
       params: { siteId: "123" },
     });
 
-    // const res = mockResponse() as Partial<Response>;
     const resp = httpMocks.createResponse();
 
     const surveyController = new SurveyController();
@@ -69,11 +68,12 @@ given floor and site`, async () => {
 
     await surveyController.getSurveyExistence(req, resp);
 
-    const data = resp._getJSONData();
+    const jsonData = resp._getJSONData();
     const statusCode = resp._getStatusCode();
+
     expect(statusCode).toBe(200);
 
-    expect(data).toStrictEqual({
+    expect(jsonData).toStrictEqual({
       message: "",
       success: true,
       payload: { site: "123", siteCreated: true, sitePopulated: true },
@@ -81,11 +81,12 @@ given floor and site`, async () => {
   });
 
   it(`siteCreated should return false if no map pins exist `, async () => {
-    const req = {
+    const req = httpMocks.createRequest({
       params: { siteId: "123" },
-    } as Partial<Request>;
+    });
+
     const surveyController = new SurveyController();
-    const res = mockResponse() as Partial<Response>;
+    const resp = httpMocks.createResponse();
 
     mocked(surveyNodesHandler.getDocumentCounts).mockResolvedValue(
       mockSurveyNodes.length,
@@ -93,10 +94,14 @@ given floor and site`, async () => {
 
     mocked(mapPinsHandler.getDocumentCounts).mockResolvedValue(0);
 
-    await surveyController.getSurveyExistence(req as Request, res as Response);
+    await surveyController.getSurveyExistence(req, resp);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+
+    expect(jsonData).toStrictEqual({
       message: "",
       success: true,
       payload: { site: "123", siteCreated: false, sitePopulated: true },
@@ -104,11 +109,12 @@ given floor and site`, async () => {
   });
 
   it(`sitePopulated should return false if no survey nodes exist `, async () => {
-    const req = {
+    const req = httpMocks.createRequest({
       params: { siteId: "123" },
-    } as Partial<Request>;
+    });
+
     const surveyController = new SurveyController();
-    const res = mockResponse() as Partial<Response>;
+    const resp = httpMocks.createResponse();
 
     mocked(surveyNodesHandler.getDocumentCounts).mockResolvedValue(0);
 
@@ -116,10 +122,13 @@ given floor and site`, async () => {
       mockMapPins.length,
     );
 
-    await surveyController.getSurveyExistence(req as Request, res as Response);
+    await surveyController.getSurveyExistence(req, resp);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+    expect(jsonData).toStrictEqual({
       message: "",
       success: true,
       payload: { site: "123", siteCreated: true, sitePopulated: false },
