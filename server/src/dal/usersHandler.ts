@@ -5,4 +5,4 @@ const findOne = async (data: Partial<IUser>): Promise<IUser | null> => {
     data,
   });
 };
-export { findOne };
+export default { findOne };

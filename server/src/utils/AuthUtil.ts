@@ -4,7 +4,7 @@ import * as jwt from "jsonwebtoken";
 
 import { CommonUtil } from "./CommonUtil";
 import { InvitedUser, IUser, User } from "../models/UserModel";
-import * as usersHandler from "../dal/usersHandler";
+import usersHandler from "../dal/usersHandler";
 export abstract class AuthUtil {
   /**
    * This function gets the EAIT_WEB cookie from the network request
