@@ -30,26 +30,28 @@
     - name: Run Cypress test
       vars:
         test_files:
-          - DocumentationTest.cy.ts
+          #- DocumentationTest.cy.ts
+          - MinimapUpdateTestA.cy.ts
+          - NodeArrowTestA.cy.ts
+          - MinimapUpdateTestB.cy.ts
+          - TimelineUITest.cy.ts
+          - NodeArrowTestB.cy.ts
           - EditNodePositionFormTest.cy.ts
           - InfospotTest.cy.ts
           - LogoTest.cy.ts
           - MarzipanoTest.cy.ts
           - NodeTest.cy.ts
           - MinimapTest.cy.ts
-          - MinimapUpdateTest.cy.ts
-          - NodeArrowTest.cy.ts
           - ScenenameTest.cy.ts
-          - TimelineUITest.cy.ts
-          - ToggleEditNodeButtonTest.cy
+          - ToggleEditNodeButtonTest.cy.ts
       shell: |
         cd {{ localdir_client }} && \
         mkdir -p tmp/cypress-results && \
         {% for test_file in test_files %} 
-        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml,toConsole=true" | grep -q "<failure"; then
-          echo "Test {{ test_file }} failed. Results saved."
+        if yarn cypress:run:uat --spec cypress/e2e/{{ test_file }} --reporter junit --reporter-options "mochaFile=./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml,toConsole=true" | grep -q "<failure"; then
+          echo "Test {{ test_file }} failed."
         else
-          rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}_results.xml"
+          rm "./tmp/cypress-results/{{ test_file | replace('.cy.ts', '') }}.xml"
           echo "Test {{ test_file }} passed. No results saved." >> ./tmp/cypress-results/passedTests.txt
         fi
         {% endfor %}

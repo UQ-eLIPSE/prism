@@ -13,7 +13,7 @@ package.lock
 tmp/
 /.vscode/settings.json
 /server/prism_mongodumps/*
-
+yarn.lock
 # Client
 .DS_Store
 node_modules
@@ -51,3 +51,4 @@ atdd/cypress/screenshots/
 client/yarn.lock
 client/build.tar.gz
 server/dist.tar.gz
+

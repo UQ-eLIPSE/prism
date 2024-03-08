@@ -4,7 +4,7 @@ import * as jwt from "jsonwebtoken";
 
 import { CommonUtil } from "./CommonUtil";
 import { InvitedUser, IUser, User } from "../models/UserModel";
-
+import usersHandler from "../dal/usersHandler";
 export abstract class AuthUtil {
   /**
    * This function gets the EAIT_WEB cookie from the network request
@@ -55,7 +55,8 @@ export abstract class AuthUtil {
    */
   static async getUserInfo(req: Request, res: Response) {
     const { user } = res.locals.user;
-    const payload = await User.findOne({ username: user });
+    const payload = await usersHandler.findOne({ username: user });
+
     return CommonUtil.successResponse(res, "", payload);
   }
 
@@ -125,7 +126,7 @@ export abstract class AuthUtil {
         async (err: any, decoded: any) => {
           if (err) return CommonUtil.failResponse(res, err);
           const username = decoded.username;
-          const isUserFound = await User.findOne({ username });
+          const isUserFound = await usersHandler.findOne(username);
 
           if (!isUserFound || userParams !== username)
             return CommonUtil.failResponse(
