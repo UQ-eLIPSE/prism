@@ -25,7 +25,7 @@ describe("getIndividualSurveysDetails", () => {
     const res = mockResponse() as Partial<Response>;
     const surveyController = new SurveyController();
 
-    // Mock the DAL functions
+    // Mock the repository functions
     mocked(findByFloorAndSite).mockResolvedValue(mockMiniconverions);
     mocked(findByDateAndSite).mockResolvedValue(mockSurveyNodes);
     mocked(findOneBySurveyNodeWithRelated).mockResolvedValue(

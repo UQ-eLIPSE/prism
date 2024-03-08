@@ -57,20 +57,3 @@ export const editNodePosition = (coordId: string, coordValue: string): void => {
   cy.get(`input[id='${coordId}']`).should("exist").clear();
   cy.get(`input[id='${coordId}']`).should("exist").type(coordValue);
 };
-
-const submitUpdateButton = ".submit-update";
-export const updateAndVerifyInput = (
-  inputSelector: string,
-  newValue: string,
-  interceptAlias: string,
-) => {
-  cy.get(inputSelector)
-    .should("exist")
-    .scrollIntoView()
-    .click()
-    .clear()
-    .type(newValue);
-  cy.get(submitUpdateButton).should("exist").click();
-  cy.wait(interceptAlias);
-  cy.get(inputSelector).invoke("val").should("equal", newValue);
-};
