@@ -24,5 +24,9 @@
   },
   "files": ["src/main.ts"],
   "exclude": ["node_modules/*"],
-  "include": ["./src/**/*.ts", "./tests/**/*.ts", "./src/db/util/*.ts"]
+  "include": [
+    "./src/**/*.ts",
+    //"./tests/**/*.ts",
+    "./src/db/util/*.ts"
+  ]
 }
