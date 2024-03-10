@@ -30,6 +30,14 @@ const findSurveyBySiteID = async (siteID: string): Promise<IMinimapNode[]> => {
   return result;
 };
 
+const findSurveyBySiteIDWithID = async (
+  siteID: string,
+): Promise<IMinimapNode[]> => {
+  return MinimapNode.find({
+    site: new ObjectId(siteID),
+  });
+};
+
 const findMinimapNodeBySurveyNode = async (
   surveyNode: ISurveyNode,
 ): Promise<IMinimapNode | null> => {
@@ -52,6 +60,15 @@ const createMinimapNode = async (
   return MinimapNode.create(data);
 };
 
+const countMinimapNodeDocuments = async (
+  siteID: string,
+  floorId: number,
+): Promise<number> => {
+  return MinimapNode.countDocuments({
+    $and: [{ site: new ObjectId(siteID) }, { floor: floorId }],
+  });
+};
+
 export default {
   findSurveysByFloor,
   findSurveyBySurveyNodeId,
@@ -59,4 +76,6 @@ export default {
   findMinimapNodeBySurveyNode,
   deleteMinimapNode,
   createMinimapNode,
+  countMinimapNodeDocuments,
+  findSurveyBySiteIDWithID,
 };

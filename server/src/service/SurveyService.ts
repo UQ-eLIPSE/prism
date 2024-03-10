@@ -4,7 +4,6 @@ import { Response } from "express-serve-static-core";
 import { ISite, SiteSettings } from "../components/Site/SiteModel";
 import {
   SurveyNode,
-  MinimapNode,
   Survey,
   MinimapImages,
   IMinimapConversion,
@@ -645,9 +644,10 @@ export abstract class SurveyService {
     floorId: number,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MinimapNode.countDocuments({
-        $and: [{ site: new ObjectId(siteId) }, { floor: floorId }],
-      });
+      const data = await minimapNodeHandler.countMinimapNodeDocuments(
+        siteId,
+        floorId,
+      );
 
       return { success: data ? true : false };
     } catch (e) {
@@ -668,9 +668,8 @@ export abstract class SurveyService {
         allFloors.push(floor.floor);
       }
 
-      const popFloorsObj = await MinimapNode.find({
-        site: new ObjectId(siteId),
-      });
+      const popFloorsObj =
+        await minimapNodeHandler.findSurveyBySiteIDWithID(siteId);
 
       for (const floor of popFloorsObj) {
         popFloors.push(floor.floor);
