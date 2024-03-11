@@ -21,12 +21,12 @@ import {
   findOneBySurveyNode,
   deleteOneMinimapCvs,
 } from "../dal/minimapConversionsHandler";
-import { findByDateAndSite } from "../dal/surveyNodesHandler";
 import { ObjectId } from "bson";
 import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { ParsedQs } from "qs";
 import { createMinimapImages } from "../service/SurveyService";
+import surveyNodesHandler from "../dal/surveyNodesHandler";
 
 // these packages use require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -213,7 +213,10 @@ export class SurveyController {
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await findByDateAndSite(date, siteId);
+        const surveyNode = await surveyNodesHandler.findByDateAndSite(
+          date,
+          siteId,
+        );
         for (const node of surveyNode) {
           const survey = await findOneBySurveyNodeWithRelated(node._id);
           survey && allSurveys.push(survey);

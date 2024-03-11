@@ -1,3 +1,4 @@
+import { IMapPins } from "../../src/components/MapPins/MapPinsModel";
 import { ISurveyNode, IMinimapConversion } from "../../src/models/SurveyModel";
 import mongoose from "mongoose";
 
@@ -204,4 +205,20 @@ const result = {
   success: true,
 };
 
-export { mockMiniconverions, mockSurveyNodes, result };
+const mockMapPins: Partial<IMapPins>[] = [
+  {
+    _id: new mongoose.Types.ObjectId(),
+    x: 10,
+    y: 20,
+    icon: "sample_icon",
+    cover_image: "sample_cover_image",
+    site: new mongoose.Types.ObjectId(),
+    name: "sample_name",
+    enabled: true,
+    site_name: "sample_site_name",
+    external_url: "www.sampleurl.com",
+    sitemap: "sample_sitemap",
+  },
+];
+
+export { mockMiniconverions, mockSurveyNodes, result, mockMapPins };
