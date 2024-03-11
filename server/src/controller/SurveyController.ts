@@ -382,7 +382,7 @@ export class SurveyController {
         }
       } else {
         surveysWithFloor = await minimapNodeHandler.findSurveyBySiteID(siteId);
-        if (!surveysWithFloor)
+        if (!surveysWithFloor || surveysWithFloor.length === 0)
           return CommonUtil.failResponse(res, "Surveys not found");
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.date.toString())) {
