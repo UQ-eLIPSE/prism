@@ -9,7 +9,6 @@ import {
   IMinimapConversion,
   IMinimapNode,
 } from "../models/SurveyModel";
-import { MapPins } from "../components/MapPins/MapPinsModel";
 import { CommonUtil } from "../utils/CommonUtil";
 import * as fs from "fs/promises";
 import csv = require("csvtojson");
@@ -24,6 +23,8 @@ import {
   updateOneMinimapConversion,
 } from "../dal/minimapConversionsHandler";
 import { Schema } from "mongoose";
+import mapPinsHandler from "../dal/mapPinsHandler";
+import surveyNodesHandler from "../dal/surveyNodesHandler";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
 
 /**
@@ -615,9 +616,7 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MapPins.countDocuments({
-        site: new ObjectId(site),
-      });
+      const data = await mapPinsHandler.getDocumentCounts(site);
 
       return { success: data ? true : false };
     } catch (e) {
@@ -629,9 +628,7 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await SurveyNode.countDocuments({
-        site: new ObjectId(site),
-      });
+      const data = await surveyNodesHandler.getDocumentCounts(site);
 
       return { success: data ? true : false };
     } catch (e) {
