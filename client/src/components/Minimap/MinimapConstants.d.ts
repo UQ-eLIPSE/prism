@@ -44,4 +44,9 @@ export enum MinimapConstants {
    * Adjusts the node's position when it reaches the lower limit to this value.
    */
   LOWER_ADJUST = minMapBoundary + nodeOffset,
+
+  /**
+   * Represent the offset of the pov
+   */
+  OFFSET = -0.785398,
 }

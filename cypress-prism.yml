@@ -30,7 +30,6 @@
     - name: Run Cypress test
       vars:
         test_files:
-          #- DocumentationTest.cy.ts
           - MinimapUpdateTestA.cy.ts
           - NodeArrowTestA.cy.ts
           - MinimapUpdateTestB.cy.ts
