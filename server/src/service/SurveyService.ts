@@ -4,12 +4,11 @@ import { Response } from "express-serve-static-core";
 import { ISite, SiteSettings } from "../components/Site/SiteModel";
 import {
   SurveyNode,
-  MinimapNode,
   Survey,
   MinimapImages,
   IMinimapConversion,
+  IMinimapNode,
 } from "../models/SurveyModel";
-import { MapPins } from "../components/MapPins/MapPinsModel";
 import { CommonUtil } from "../utils/CommonUtil";
 import * as fs from "fs/promises";
 import csv = require("csvtojson");
@@ -24,6 +23,9 @@ import {
   updateOneMinimapConversion,
 } from "../dal/minimapConversionsHandler";
 import { Schema } from "mongoose";
+import mapPinsHandler from "../dal/mapPinsHandler";
+import surveyNodesHandler from "../dal/surveyNodesHandler";
+import minimapNodeHandler from "../dal/minimapNodeHandler";
 
 /**
  * createMinimapImages
@@ -302,26 +304,28 @@ export abstract class SurveyService {
 
           if (!survey) reject("Survey couldn't be uploaded");
 
+          const floor = specElem.floor
+            ? Number(specElem.floor)
+            : Number(floorId);
+
           // Upload to minimap nodes
-          const minimapNode = await MinimapNode.create([
-            {
-              _id: new ObjectId(),
-              floor: specElem?.floor ? specElem.floor : floorId,
-              node_number: i,
-              survey_node: new ObjectId(survey[0]._id),
-              tiles_id: scene.id,
-              tiles_name: specElem?.title ? specElem?.title : scene.name,
-              site: new ObjectId(site._id),
-            },
+          const minimapNodeObj: IMinimapNode = {
+            _id: new ObjectId(),
+            floor,
+            node_number: i,
+            survey_node: new Schema.Types.ObjectId(survey[0]._id),
+            tiles_id: scene.id,
+            tiles_name: specElem?.title ? specElem?.title : scene.name,
+            site: new Schema.Types.ObjectId(site._id),
+          } as IMinimapNode;
+
+          const minimapNode = await minimapNodeHandler.createMinimapNode([
+            minimapNodeObj,
           ]);
 
           if (!minimapNode) reject("Minimap Node cannot be uploaded");
 
           // Upload Minimap conversions with the provided x/y coords from the CSV
-          const floor = specElem.floor
-            ? Number(specElem.floor)
-            : Number(floorId);
-
           const minimapConversionObj = {
             floor,
             minimap_node: new Schema.Types.ObjectId(minimapNode[0]._id),
@@ -612,9 +616,7 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MapPins.countDocuments({
-        site: new ObjectId(site),
-      });
+      const data = await mapPinsHandler.getDocumentCounts(site);
 
       return { success: data ? true : false };
     } catch (e) {
@@ -626,9 +628,7 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await SurveyNode.countDocuments({
-        site: new ObjectId(site),
-      });
+      const data = await surveyNodesHandler.getDocumentCounts(site);
 
       return { success: data ? true : false };
     } catch (e) {
@@ -641,9 +641,10 @@ export abstract class SurveyService {
     floorId: number,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await MinimapNode.countDocuments({
-        $and: [{ site: new ObjectId(siteId) }, { floor: floorId }],
-      });
+      const data = await minimapNodeHandler.countMinimapNodeDocuments(
+        siteId,
+        floorId,
+      );
 
       return { success: data ? true : false };
     } catch (e) {
@@ -664,9 +665,8 @@ export abstract class SurveyService {
         allFloors.push(floor.floor);
       }
 
-      const popFloorsObj = await MinimapNode.find({
-        site: new ObjectId(siteId),
-      });
+      const popFloorsObj =
+        await minimapNodeHandler.findSurveyBySiteIDWithID(siteId);
 
       for (const floor of popFloorsObj) {
         popFloors.push(floor.floor);

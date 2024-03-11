@@ -142,6 +142,7 @@ function Minimap(props: MinimapProps) {
         props.currRotation,
         config.initial_settings.rotation_offset,
         node.rotation,
+        MinimapConstants.OFFSET,
       ].reduce((a, b) => numOr0(a) + numOr0(b));
       return `rotate(${sum}rad)`;
     }

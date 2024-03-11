@@ -35,58 +35,14 @@ testEachZone((zone: Cypress.PrismZone) => {
       cy.intercept("GET", "/api/site/*/emptyFloors").as("getEmptyFloors");
     });
 
-    const checkTransformStyle = (
-      element: JQuery<HTMLElement>,
-      shouldBeNone: boolean,
-    ) => {
-      const style = window.getComputedStyle(element[0]);
-      const { transform } = style;
-      shouldBeNone
-        ? expect(transform).to.be.equal("none")
-        : expect(transform).to.not.be.equal("none");
-    };
-
     it(`Testing: Timeline drawer should be hidden in initial page render`, () => {
       if (zone.timeline) {
-        cy.wait("@getSiteExists").then(() => {
-          cy.wait("@getSiteDetails").then(() => {
-            cy.wait("@getEmptyFloors").then(() => {
-              cy.get("#drawer-container")
-                .should("exist")
-                .parent()
-                .then(($parent) => {
-                  checkTransformStyle($parent, false);
-                });
-            });
-          });
-        });
-      }
-    });
+        cy.get("[data-cy='sb-home']").should("exist").click();
 
-    it(`Testing: Timeline drawer toggle visibility after clicking timeline button action`, () => {
-      if (zone.timeline) {
-        cy.wait("@getSiteExists").then(() => {
-          cy.wait("@getSiteDetails").then(() => {
-            cy.wait("@getEmptyFloors").then(() => {
-              cy.get("[class^='_timelineButton']").click({ force: true });
-              cy.wait(1000);
-              cy.get("#drawer-container")
-                .should("exist")
-                .parent()
-                .then(($parent) => {
-                  checkTransformStyle($parent, true);
-                  cy.get("[class^='_timelineButton']").click({ force: true });
-                  cy.wait(1000);
-                  cy.get("#drawer-container")
-                    .should("exist")
-                    .parent()
-                    .then(($parent) => {
-                      checkTransformStyle($parent, false);
-                    });
-                });
-            });
-          });
-        });
+        cy.get('[data-cy="sb-site"]').should("exist").click();
+        cy.get("#drawer-container").parent().should("exist").and("be.hidden");
+        cy.get("#drawer-container").click();
+        cy.get("#drawer-container").parent().should("be.visible");
       }
     });
 
@@ -116,15 +72,12 @@ testEachZone((zone: Cypress.PrismZone) => {
                       const expectedMonthYear = $button
                         .find("[data-cy='monthName_display']")
                         .text();
-                      console.log("Selected Month Year:", expectedMonthYear); // For debugging purposes
 
                       const [month, year] = expectedMonthYear.split(" ");
                       const monthNumber = new Date(`${month} 1`).getMonth() + 1;
                       const formattedDate = `${year}-${monthNumber
                         .toString()
                         .padStart(2, "0")}`; // Converts to "YYYY-MM"
-
-                      cy.wait(1000);
 
                       cy.wait("@getSurveyDate").then((interception) => {
                         expect(interception.request.url).to.include(
