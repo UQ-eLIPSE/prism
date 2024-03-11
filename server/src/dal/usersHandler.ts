@@ -1,8 +1,6 @@
 import { IUser, User } from "../models/UserModel";
-
-const findOne = async (data: Partial<IUser>): Promise<IUser | null> => {
-  return User.findOne({
-    data,
-  });
+import { FilterQuery } from "mongoose";
+const findOne = async (data: FilterQuery<IUser>): Promise<IUser | null> => {
+  return User.findOne(data);
 };
 export default { findOne };
