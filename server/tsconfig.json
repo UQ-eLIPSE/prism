@@ -23,6 +23,6 @@
     "types": ["jest"]
   },
   "files": ["src/main.ts"],
-  "exclude": ["node_modules/*"],
+  "exclude": ["node_modules/*", "./tests/**/*.ts"],
   "include": ["./src/**/*.ts", "./tests/**/*.ts", "./src/db/util/*.ts"]
 }
