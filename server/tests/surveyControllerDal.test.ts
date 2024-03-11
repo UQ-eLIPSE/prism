@@ -17,7 +17,6 @@ import surveyNodesHandler from "../src/dal/surveyNodesHandler";
 import mapPinsHandler from "../src/dal/mapPinsHandler";
 import minimapNodeHandler from "../src/dal/minimapNodeHandler";
 import * as httpMocks from "node-mocks-http";
-import { describe } from "node:test";
 
 jest.mock("../src/dal/minimapConversionsHandler");
 jest.mock("../src/dal/surveyNodesHandler");
