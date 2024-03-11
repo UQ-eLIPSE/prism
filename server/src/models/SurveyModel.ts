@@ -17,9 +17,11 @@ export interface IMinimapNode extends Document {
   node_number: number;
   title: string;
   description: string;
-  survey_node: ISurveyNode;
+  survey_node: ISurveyNode & Schema.Types.ObjectId;
   floor: number;
-  site: number;
+  site: number & Schema.Types.ObjectId;
+  tiles_id?: string;
+  tiles_name?: string;
 }
 
 export interface IInitialParams extends Document {

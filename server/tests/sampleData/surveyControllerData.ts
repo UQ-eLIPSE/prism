@@ -1,5 +1,9 @@
 import { IMapPins } from "../../src/components/MapPins/MapPinsModel";
-import { ISurveyNode, IMinimapConversion } from "../../src/models/SurveyModel";
+import {
+  ISurveyNode,
+  IMinimapConversion,
+  IMinimapNode,
+} from "../../src/models/SurveyModel";
 import mongoose from "mongoose";
 
 const mockSurveyNodes: ISurveyNode[] = [
@@ -38,6 +42,89 @@ const mockSurveyNodes: ISurveyNode[] = [
     site: 123,
   },
 ] as ISurveyNode[];
+
+const mockMinimapNode: IMinimapNode[] = [
+  {
+    node_number: 1,
+    title: "Kitchen",
+    description: "Where the kitchen is",
+    survey_node: {
+      manta_link: "stringtest",
+      date: "2022-01-01",
+      node_number: 1,
+      survey_name: "Survey 1",
+      tiles_id: "tiles-123",
+      tiles_name: "Test Tiles",
+      initial_parameters: {
+        pitch: 0,
+        yaw: 0,
+        fov: 90,
+      },
+      link_hotspots: [
+        {
+          yaw: 0.2824,
+          pitch: 0.1177,
+          rotation: 0,
+          target: "1-prism_uat_level2",
+        },
+      ],
+      info_hotspots: [
+        {
+          yaw: 0.2824,
+          pitch: 0.1177,
+          rotation: 0,
+          target: "info-123",
+          info_id: "info-123",
+        },
+      ],
+      levels: [1],
+      face_size: 1024,
+      site: 123,
+    },
+    floor: 1,
+    site: 123,
+  },
+  {
+    node_number: 1,
+    title: "Kitchen",
+    description: "Where the kitchen is",
+    survey_node: {
+      manta_link: "stringtest",
+      date: "2023-01-01",
+      node_number: 1,
+      survey_name: "Survey 2",
+      tiles_id: "tiles-123",
+      tiles_name: "Test Tiles",
+      initial_parameters: {
+        pitch: 0,
+        yaw: 0,
+        fov: 90,
+      },
+      link_hotspots: [
+        {
+          yaw: 0.2824,
+          pitch: 0.1177,
+          rotation: 0,
+          target: "1-prism_uat_level2",
+        },
+      ],
+      info_hotspots: [
+        {
+          yaw: 0.2824,
+          pitch: 0.1177,
+          rotation: 0,
+          target: "info-123",
+          info_id: "info-123",
+        },
+      ],
+      levels: [1, 2],
+      face_size: 1024,
+      site: 123,
+    },
+    floor: 2,
+    site: 123,
+  },
+] as IMinimapNode[];
 
 const mockMiniconverions: IMinimapConversion[] = [
   {
@@ -221,4 +308,10 @@ const mockMapPins: Partial<IMapPins>[] = [
   },
 ];
 
-export { mockMiniconverions, mockSurveyNodes, result, mockMapPins };
+export {
+  mockMiniconverions,
+  mockSurveyNodes,
+  result,
+  mockMapPins,
+  mockMinimapNode,
+};

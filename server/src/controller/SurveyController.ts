@@ -7,7 +7,6 @@ import { SurveyService } from "../service/SurveyService";
 import {
   Survey,
   SurveyNode,
-  MinimapNode,
   HotspotDescription,
   MinimapImages,
   IMinimapNode,
@@ -27,6 +26,7 @@ import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { ParsedQs } from "qs";
 import { createMinimapImages } from "../service/SurveyService";
 import surveyNodesHandler from "../dal/surveyNodesHandler";
+import minimapNodeHandler from "../dal/minimapNodeHandler";
 
 // these packages use require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -305,7 +305,8 @@ export class SurveyController {
    * @param res
    */
   public async getSurveyCompactVersion(req: Request, res: Response) {
-    const { floor, date } = req.query;
+    const floor = req.query.floor as string;
+    const date = req.query.date as string;
     const { siteId } = req.params;
 
     let surveysWithFloor: IMinimapNode[] | null = null;
@@ -322,10 +323,10 @@ export class SurveyController {
 
     try {
       if (floor) {
-        surveysWithFloor = await MinimapNode.find(
-          { floor, site: new ObjectId(siteId) },
-          "-_id",
-        ).populate("survey_node", "-_id");
+        surveysWithFloor = await minimapNodeHandler.findSurveysByFloor(
+          floor,
+          siteId,
+        );
         if (!surveysWithFloor)
           return CommonUtil.failResponse(
             res,
@@ -355,10 +356,9 @@ export class SurveyController {
           );
 
         for (const survey of surveyWithDate) {
-          surveysWithFloor = await MinimapNode.find(
-            { survey_node: survey._id },
-            "-_id",
-          ).populate("survey_node", "-_id");
+          surveysWithFloor = await minimapNodeHandler.findSurveyBySurveyNodeId(
+            survey._id,
+          );
 
           if (!surveysWithFloor || !Array.isArray(surveysWithFloor))
             throw new Error("Unable to fetch the data");
@@ -381,10 +381,8 @@ export class SurveyController {
           });
         }
       } else {
-        surveysWithFloor = await MinimapNode.find({
-          site: new ObjectId(siteId),
-        }).populate("survey_node", "-_id");
-        if (!surveysWithFloor)
+        surveysWithFloor = await minimapNodeHandler.findSurveyBySiteID(siteId);
+        if (!surveysWithFloor || surveysWithFloor.length === 0)
           return CommonUtil.failResponse(res, "Surveys not found");
         surveysWithFloor.map((survey) => {
           if (!map.has(survey.survey_node.date.toString())) {
@@ -453,16 +451,15 @@ export class SurveyController {
       const relatedMiniMapConversion = await findOneBySurveyNode(
         surveyNode._id,
       );
-      const relatedMinimapNode = await MinimapNode.findOne({
-        survey_node: surveyNode,
-      });
+      const relatedMinimapNode =
+        await minimapNodeHandler.findMinimapNodeBySurveyNode(surveyNode);
 
       if (relatedMiniMapConversion) {
         await deleteOneMinimapCvs(surveyNode._id);
       }
 
       if (relatedMinimapNode) {
-        await MinimapNode.deleteOne({ survey_node: surveyNode });
+        await minimapNodeHandler.deleteMinimapNode(surveyNode);
       }
     }
 
