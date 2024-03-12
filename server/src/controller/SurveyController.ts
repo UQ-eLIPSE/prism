@@ -345,10 +345,10 @@ export class SurveyController {
           }
         });
       } else if (date) {
-        surveyWithDate = await SurveyNode.find({
+        surveyWithDate = await surveyNodesHandler.findByDateAndSite(
           date,
-          site: new ObjectId(siteId),
-        });
+          siteId,
+        );
         if (!surveyWithDate)
           return CommonUtil.failResponse(
             res,

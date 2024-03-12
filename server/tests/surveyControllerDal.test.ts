@@ -12,16 +12,19 @@ import {
   result,
   mockMapPins,
   mockMinimapNode,
+  mockMinimapImages,
 } from "./sampleData/surveyControllerData";
 import surveyNodesHandler from "../src/dal/surveyNodesHandler";
 import mapPinsHandler from "../src/dal/mapPinsHandler";
 import minimapNodeHandler from "../src/dal/minimapNodeHandler";
 import * as httpMocks from "node-mocks-http";
+import minimmapImagesHandler from "../src/dal/minimmapImagesHandler";
 
 jest.mock("../src/dal/minimapConversionsHandler");
 jest.mock("../src/dal/surveyNodesHandler");
 jest.mock("../src/dal/mapPinsHandler");
 jest.mock("../src/dal/minimapNodeHandler");
+jest.mock("../src/dal/minimmapImagesHandler");
 
 describe("getIndividualSurveysDetails", () => {
   it("should return surveys for a given floor and site", async () => {
@@ -166,6 +169,35 @@ describe("getSurveyCompactVersion", () => {
     });
   });
 
+  it(`findSurveyBySurveyNodeId should be executed since a query for date was provided `, async () => {
+    const req = httpMocks.createRequest({
+      params: { siteId: "123" },
+      query: { date: "2022-01-01" },
+    });
+
+    const surveyController = new SurveyController();
+    const resp = httpMocks.createResponse();
+
+    mocked(surveyNodesHandler.findByDateAndSite).mockResolvedValue(
+      mockSurveyNodes,
+    );
+    mocked(minimapNodeHandler.findSurveyBySurveyNodeId).mockResolvedValue([
+      mockMinimapNode[0],
+    ]);
+
+    await surveyController.getSurveyCompactVersion(req, resp);
+
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+    expect(jsonData).toStrictEqual({
+      message: "",
+      success: true,
+      payload: [{ survey_name: "Survey 1", date: "2022-01-01", floor: 1 }],
+    });
+  });
+
   it(`findSurveyBySiteID should be executed since no query was provided`, async () => {
     const req = httpMocks.createRequest({
       params: { siteId: "123" },
@@ -213,6 +245,66 @@ describe("getSurveyCompactVersion", () => {
     expect(jsonData).toStrictEqual({
       message: "Surveys not found",
       success: false,
+    });
+  });
+});
+
+describe("getEmptyFloors", () => {
+  it(`The response should result in a payload of one empty floor level 3 since no image was provided for it`, async () => {
+    const req = httpMocks.createRequest({
+      params: { siteId: "123" },
+    });
+
+    const surveyController = new SurveyController();
+    const resp = httpMocks.createResponse();
+
+    mocked(minimapNodeHandler.findSurveyBySiteIDWithID).mockResolvedValue(
+      mockMinimapNode,
+    );
+
+    mocked(minimmapImagesHandler.findMinimapImagesBySiteId).mockResolvedValue(
+      mockMinimapImages,
+    );
+
+    await surveyController.getEmptyFloors(req, resp);
+
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+    expect(jsonData).toStrictEqual({
+      message: "",
+      success: true,
+      payload: { emptyFloors: [3], success: true },
+    });
+  });
+});
+
+describe("getFloorSurveyExistence", () => {
+  it(`The response should result in a payload of one empty floor level 3 since no image was provided for it`, async () => {
+    const req = httpMocks.createRequest({
+      params: { siteId: "123", floorId: "1" },
+    });
+
+    const surveyController = new SurveyController();
+    const resp = httpMocks.createResponse();
+
+    mocked(minimapNodeHandler.countMinimapNodeDocuments).mockResolvedValue(1);
+
+    await surveyController.getFloorSurveyExistence(req, resp);
+
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+    expect(jsonData).toStrictEqual({
+      message: "",
+      success: true,
+      payload: {
+        site: "123",
+        floor: "1",
+        floorPopulated: true,
+      },
     });
   });
 });
