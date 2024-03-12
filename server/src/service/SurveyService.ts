@@ -26,6 +26,7 @@ import { Schema } from "mongoose";
 import mapPinsHandler from "../dal/mapPinsHandler";
 import surveyNodesHandler from "../dal/surveyNodesHandler";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
+import minimmapImagesHandler from "../dal/minimmapImagesHandler";
 
 /**
  * createMinimapImages
@@ -657,9 +658,8 @@ export abstract class SurveyService {
       const allFloors: number[] = [];
       const popFloors: number[] = [];
 
-      const allFloorsObj = await MinimapImages.find({
-        site: new ObjectId(siteId),
-      });
+      const allFloorsObj =
+        await minimmapImagesHandler.findMinimapImagesBySiteId(siteId);
 
       for (const floor of allFloorsObj) {
         allFloors.push(floor.floor);

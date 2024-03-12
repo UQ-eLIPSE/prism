@@ -3,6 +3,7 @@ import {
   ISurveyNode,
   IMinimapConversion,
   IMinimapNode,
+  IMinimapImages,
 } from "../../src/models/SurveyModel";
 import mongoose from "mongoose";
 
@@ -42,6 +43,54 @@ const mockSurveyNodes: ISurveyNode[] = [
     site: 123,
   },
 ] as ISurveyNode[];
+
+const mockMinimapImages: IMinimapImages[] = [
+  {
+    floor: 1,
+    floor_name: "Ground Floor",
+    floor_tag: "G",
+    image_url: "https://example.com/floor1.png",
+    image_large_url: "https://example.com/floor1_large.png",
+    x_pixel_offset: 50,
+    y_pixel_offset: 100,
+    x_scale: 0.5,
+    y_scale: 0.5,
+    img_width: 1024,
+    img_height: 768,
+    xy_flipped: false,
+    site: 123,
+  },
+  {
+    floor: 2,
+    floor_name: "First Floor",
+    floor_tag: "F1",
+    image_url: "https://example.com/floor2.png",
+    image_large_url: "https://example.com/floor2_large.png",
+    x_pixel_offset: 60,
+    y_pixel_offset: 110,
+    x_scale: 0.6,
+    y_scale: 0.6,
+    img_width: 1124,
+    img_height: 868,
+    xy_flipped: true,
+    site: 123,
+  },
+  {
+    floor: 3,
+    floor_name: "Second Floor",
+    floor_tag: "F2",
+    image_url: "https://example.com/floor3.png",
+    image_large_url: "https://example.com/floor3_large.png",
+    x_pixel_offset: 70,
+    y_pixel_offset: 120,
+    x_scale: 0.7,
+    y_scale: 0.7,
+    img_width: 1224,
+    img_height: 968,
+    xy_flipped: false,
+    site: 123,
+  },
+] as IMinimapImages[];
 
 const mockMinimapNode: IMinimapNode[] = [
   {
@@ -314,4 +363,5 @@ export {
   result,
   mockMapPins,
   mockMinimapNode,
+  mockMinimapImages,
 };

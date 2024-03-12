@@ -97,6 +97,7 @@ export interface IMinimapImages extends Document {
   img_width: number;
   img_height: number;
   xy_flipped: boolean;
+  site: number & Schema.Types.ObjectId;
 }
 
 const SurveySchema: Schema = new Schema({
