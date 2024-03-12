@@ -97,6 +97,7 @@ const SiteSettingSchema: Schema = new Schema({
       yaw: { type: Number },
       pitch: { type: Number },
       fov: { type: Number },
+      rotation_offset: { type: Number },
     },
   },
   animation: {
