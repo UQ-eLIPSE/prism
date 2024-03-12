@@ -9,6 +9,14 @@ const findMinimapImagesBySiteId = async (
   });
 };
 
+const findMinimapImageByFloorAndSiteId = async (
+  floor: string,
+  siteId: string,
+): Promise<IMinimapImages | null> => {
+  return MinimapImages.findOne({ floor, site: new ObjectId(siteId) }, "-_id");
+};
+
 export default {
   findMinimapImagesBySiteId,
+  findMinimapImageByFloorAndSiteId,
 };
