@@ -27,6 +27,7 @@ import { ParsedQs } from "qs";
 import { createMinimapImages } from "../service/SurveyService";
 import surveyNodesHandler from "../dal/surveyNodesHandler";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
+import minimmapImagesHandler from "../dal/minimmapImagesHandler";
 
 // these packages use require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -515,16 +516,17 @@ export class SurveyController {
    * @param res
    */
   public async getMinimapImage(req: Request, res: Response) {
-    const { floor } = req.query;
+    const floor = req.query.floor as string;
     const { siteId } = req.params;
 
     try {
       if (!floor) throw new Error("Floor not found.");
 
-      const minimapImageObject = await MinimapImages.findOne(
-        { floor, site: new ObjectId(siteId) },
-        "-_id",
-      );
+      const minimapImageObject =
+        await minimmapImagesHandler.findMinimapImageByFloorAndSiteId(
+          floor,
+          siteId,
+        );
 
       if (!minimapImageObject) throw new Error("minimapImageObject not found.");
 

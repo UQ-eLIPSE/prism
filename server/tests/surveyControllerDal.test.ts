@@ -308,3 +308,45 @@ describe("getFloorSurveyExistence", () => {
     });
   });
 });
+
+describe("getMinimapImages", () => {
+  it(`The response should result in a payload of one empty floor level 3 since no image was provided for it`, async () => {
+    const req = httpMocks.createRequest({
+      params: { siteId: "123" },
+      query: { floor: 2 },
+    });
+
+    const surveyController = new SurveyController();
+    const resp = httpMocks.createResponse();
+
+    mocked(
+      minimmapImagesHandler.findMinimapImageByFloorAndSiteId,
+    ).mockResolvedValue(mockMinimapImages[1]);
+
+    await surveyController.getMinimapImage(req, resp);
+
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+    expect(jsonData).toStrictEqual({
+      message: "",
+      success: true,
+      payload: {
+        floor: 2,
+        floor_name: "First Floor",
+        floor_tag: "F1",
+        image_url: "https://example.com/floor2.png",
+        image_large_url: "https://example.com/floor2_large.png",
+        x_pixel_offset: 60,
+        y_pixel_offset: 110,
+        x_scale: 0.6,
+        y_scale: 0.6,
+        img_width: 1124,
+        img_height: 868,
+        xy_flipped: true,
+        site: 123,
+      },
+    });
+  });
+});
