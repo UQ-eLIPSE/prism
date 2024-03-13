@@ -22,7 +22,6 @@ import {
   createMinimapConversion,
   updateOneMinimapConversion,
 } from "../dal/minimapConversionsHandler";
-import { Schema } from "mongoose";
 import mapPinsHandler from "../dal/mapPinsHandler";
 import surveyNodesHandler from "../dal/surveyNodesHandler";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
@@ -221,6 +220,7 @@ export abstract class SurveyService {
     floorId: string,
   ) {
     try {
+      console.log("start db uploading");
       const { zipFile, properties } = files;
       // Convert CSV to JSON
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
@@ -280,6 +280,7 @@ export abstract class SurveyService {
           }
 
           // Upload Survey Nodes from DataJS
+          console.log("survey node start ");
           const survey = await SurveyNode.create([
             {
               _id: new ObjectId(),
@@ -314,10 +315,10 @@ export abstract class SurveyService {
             _id: new ObjectId(),
             floor,
             node_number: i,
-            survey_node: new Schema.Types.ObjectId(survey[0]._id),
+            survey_node: new ObjectId(survey[0]._id),
             tiles_id: scene.id,
             tiles_name: specElem?.title ? specElem?.title : scene.name,
-            site: new Schema.Types.ObjectId(site._id),
+            site: new ObjectId(site._id),
           } as IMinimapNode;
 
           const minimapNode = await minimapNodeHandler.createMinimapNode([
@@ -325,20 +326,18 @@ export abstract class SurveyService {
           ]);
 
           if (!minimapNode) reject("Minimap Node cannot be uploaded");
-
           // Upload Minimap conversions with the provided x/y coords from the CSV
           const minimapConversionObj = {
             floor,
-            minimap_node: new Schema.Types.ObjectId(minimapNode[0]._id),
-            survey_node: new Schema.Types.ObjectId(survey[0]._id),
+            minimap_node: new ObjectId(minimapNode[0]._id),
+            survey_node: new ObjectId(survey[0]._id),
             x: isNaN(Number(specElem.x)) ? 0 : Number(specElem.x),
             x_scale: 1,
             y: isNaN(Number(specElem.y)) ? 0 : Number(specElem.y),
             y_scale: 1,
-            site: new Schema.Types.ObjectId(site._id),
+            site: new ObjectId(site._id),
             rotation: 0,
           } as IMinimapConversion;
-
           const minimapConversion =
             await createMinimapConversion(minimapConversionObj);
 
