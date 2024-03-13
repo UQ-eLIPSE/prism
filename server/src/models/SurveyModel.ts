@@ -7,10 +7,8 @@ export interface IMinimapConversion extends Document {
   y: number;
   x_scale: number;
   y_scale: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  survey_node: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  minimap_node: any;
+  survey_node: ISurveyNode;
+  minimap_node: IMinimapNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   site: any;
   rotation: number;
@@ -20,8 +18,7 @@ export interface IMinimapNode extends Document {
   node_number: number;
   title: string;
   description: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  survey_node: any;
+  survey_node: ISurveyNode;
   floor: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   site: any;
