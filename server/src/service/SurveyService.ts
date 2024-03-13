@@ -361,7 +361,6 @@ export abstract class SurveyService {
               yaw: 0,
               pitch: 0,
               fov: 0,
-              // Half of Pi
               rotation_offset: 0,
             },
             animation: {

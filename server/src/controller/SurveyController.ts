@@ -213,7 +213,7 @@ export class SurveyController {
     if (date) {
       if (!floor && !allSurveys.length) {
         const surveyNode = await SurveyNode.find({
-          date: date,
+          date,
           site: new ObjectId(siteId),
         });
         for (const node of surveyNode) {
