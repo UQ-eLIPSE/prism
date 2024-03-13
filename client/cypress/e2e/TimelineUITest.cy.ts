@@ -41,7 +41,7 @@ testEachZone((zone: Cypress.PrismZone) => {
 
         cy.get('[data-cy="sb-site"]').should("exist").click();
         cy.get("#drawer-container").parent().should("exist").and("be.hidden");
-        cy.get("#drawer-container").click();
+        cy.get('[data-cy= "timeline-button"]').click();
         cy.get("#drawer-container").parent().should("be.visible");
       }
     });
