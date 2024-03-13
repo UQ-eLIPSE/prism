@@ -6,7 +6,7 @@ services:
     tty: true
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     volumes:
       - ./client:/var/www/client
       - /var/www/client/node_modules
@@ -22,7 +22,7 @@ services:
     hostname: server
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     volumes:
       - ./server:/var/www/server
       - /var/www/server/node_modules
