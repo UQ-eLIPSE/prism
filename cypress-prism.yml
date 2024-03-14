@@ -43,6 +43,7 @@
           - MinimapTest.cy.ts
           - ScenenameTest.cy.ts
           - ToggleEditNodeButtonTest.cy.ts
+          - UploadFilesTest.cy.ts
       shell: |
         cd {{ localdir_client }} && \
         mkdir -p tmp/cypress-results && \
