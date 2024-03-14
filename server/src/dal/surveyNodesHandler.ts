@@ -18,4 +18,11 @@ const getDocumentCounts = (site: string) => {
   });
 };
 
-export default { getDocumentCounts, findByDateAndSite };
+const getOneSurveyNode = async (tilesId: string, site: ObjectId) => {
+  return SurveyNode.findOne({
+    tiles_id: tilesId,
+    site: site,
+  });
+};
+
+export default { getDocumentCounts, findByDateAndSite, getOneSurveyNode };

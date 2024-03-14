@@ -491,6 +491,12 @@ export class SurveyController {
         { tiles_id: tilesId, site: new ObjectId(siteId) },
         "-_id",
       );
+
+      // const hotspotObject = await surveyNodesHandler.getOneSurveyNode(
+      //   tilesId,
+      //   new ObjectId(siteId),
+      // );
+
       if (!hotspotObject) throw new Error("hotspotObject not found.");
 
       const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map(
