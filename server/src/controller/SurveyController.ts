@@ -25,7 +25,6 @@ import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { ParsedQs } from "qs";
 import { createMinimapImages } from "../service/SurveyService";
-import surveyNodesHandler from "../dal/surveyNodesHandler";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
 
 // these packages use require over import
@@ -213,10 +212,10 @@ export class SurveyController {
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await surveyNodesHandler.findByDateAndSite(
+        const surveyNode = await SurveyNode.find({
           date,
-          siteId,
-        );
+          site: new ObjectId(siteId),
+        });
         for (const node of surveyNode) {
           const survey = await findOneBySurveyNodeWithRelated(node._id);
           survey && allSurveys.push(survey);
@@ -236,6 +235,7 @@ export class SurveyController {
         }
       });
     }
+
     return CommonUtil.successResponse(res, "", results);
   }
 
@@ -286,7 +286,7 @@ export class SurveyController {
             x_scale: s.x_scale,
             y: s.y,
             y_scale: s.y_scale,
-            site: Number(s.site),
+            site: s.site,
             rotation: s.rotation,
             info_hotspots: s.survey_node.info_hotspots,
           });

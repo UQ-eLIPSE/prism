@@ -7,9 +7,10 @@ export interface IMinimapConversion extends Document {
   y: number;
   x_scale: number;
   y_scale: number;
-  survey_node: ISurveyNode & Schema.Types.ObjectId;
-  minimap_node: IMinimapNode & Schema.Types.ObjectId;
-  site: number & Schema.Types.ObjectId;
+  survey_node: ISurveyNode;
+  minimap_node: IMinimapNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  site: any;
   rotation: number;
 }
 
@@ -19,7 +20,8 @@ export interface IMinimapNode extends Document {
   description: string;
   survey_node: ISurveyNode & Schema.Types.ObjectId;
   floor: number;
-  site: number & Schema.Types.ObjectId;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  site: any;
   tiles_id?: string;
   tiles_name?: string;
 }
@@ -97,6 +99,8 @@ export interface IMinimapImages extends Document {
   img_width: number;
   img_height: number;
   xy_flipped: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  site: any;
 }
 
 const SurveySchema: Schema = new Schema({

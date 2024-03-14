@@ -46,7 +46,7 @@ export enum MinimapConstants {
   LOWER_ADJUST = minMapBoundary + nodeOffset,
 
   /**
-   * Represent the offset of the pov
+   * Represent the offset to correct render radar view around mininodes
    */
   OFFSET = -0.785398,
 }
