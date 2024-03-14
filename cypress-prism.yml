@@ -4,7 +4,7 @@
 # ansible-playbook -i </path/to/inventory> <playbook>.yml
 
 - name: Run e2e Tests
-  hosts: uatzone
+  hosts: zones
 
   tasks:
     - name: MongoDB restore test database - drop off
