@@ -7,15 +7,16 @@ on:
       - develop
 
 jobs:
+  call-setupAction:
+    uses: ./.github/workflows/setupAction.yml@develop
+
   deploy:
+    needs: call-setupAction
     runs-on: ubuntu-latest # The type of runner to use
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Call reusable workflow
-        uses: ./.github/workflows/setupAction.yml@develop
 
       - name: Set inventory
         run: |

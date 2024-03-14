@@ -7,7 +7,11 @@ on:
   #  - main
 
 jobs:
+  call-setupAction:
+    uses: ./.github/workflows/setupAction.yml@main
+
   deploy:
+    needs: call-setupAction
     runs-on: ubuntu-latest # The type of runner to use
 
     steps:
