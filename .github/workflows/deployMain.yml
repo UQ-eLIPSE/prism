@@ -8,7 +8,7 @@ on:
 
 jobs:
   call-setupAction:
-    uses: ./.github/workflows/setupAction.yml@main
+    uses: ./.github/workflows/setupAction.yml
 
   deploy:
     needs: call-setupAction
