@@ -1,5 +1,32 @@
 import { testEachZone } from "../testutils";
 
+// Helper function to check if DD/MM/YYYY date matches Month YYYY
+// i.e. 01/01/2021 -> Jan 2021
+function checkDateMatch(inputDate: string, expectedDate: string): boolean {
+  const dateParts: string[] = inputDate.split("/");
+  if (dateParts.length !== 3) return false;
+  const dateObject = new Date(+dateParts[2], +dateParts[1] - 1, +dateParts[0]);
+
+  const monthNames: string[] = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const convertedDate: string = `${monthNames[dateObject.getMonth()]} ${dateObject.getFullYear()}`;
+
+  return convertedDate === expectedDate;
+}
+
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: Timeline section with border less div UI", () => {
     beforeEach(() => {
@@ -28,78 +55,79 @@ testEachZone((zone: Cypress.PrismZone) => {
   });
 
   describe(`Test case: Visibility toggle of Timeline section UI`, () => {
-    beforeEach(() => {
+    beforeEach(function () {
       cy.accessZone(zone);
-      cy.intercept("GET", "/api/site/*/*/exists").as("getSiteExists");
-      cy.intercept("GET", "/api/site/*/survey/details/*").as("getSiteDetails");
-      cy.intercept("GET", "/api/site/*/emptyFloors").as("getEmptyFloors");
+      if (!zone.timeline) this.skip();
     });
 
     it(`Testing: Timeline drawer should be hidden in initial page render`, () => {
-      if (zone.timeline) {
-        cy.get("[data-cy='sb-home']").should("exist").click();
+      cy.get("[data-cy='sb-home']").should("exist").click();
 
-        cy.get('[data-cy="sb-site"]').should("exist").click();
-        cy.get("#drawer-container").parent().should("exist").and("be.hidden");
-        cy.get('[data-cy= "timeline-button"]').click();
-        cy.get("#drawer-container").parent().should("be.visible");
-      }
+      cy.get('[data-cy="sb-site"]').should("exist").click();
+      cy.get("#drawer-container").parent().should("exist").and("be.hidden");
+    });
+
+    it(`Testing: Timeline drawer should be visible when timeline button is clicked`, () => {
+      cy.get('[data-cy= "timeline-button"]').click();
+      cy.get("#drawer-container").parent().should("be.visible");
     });
 
     it("Testing: Timeline survey button fetches correct node survey when selected", () => {
-      if (zone.timeline) {
-        cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite?date=*").as(
-          "getSurveyDate",
-        );
+      cy.intercept("GET", "/api/site/*/*/survey/minimapSingleSite?date=*").as(
+        "getSurveyDate",
+      );
 
-        cy.wait("@getSiteExists").then(() => {
-          cy.wait("@getSiteDetails").then(() => {
-            cy.wait("@getEmptyFloors").then(() => {
-              cy.wait("@getSurveyDate").then(() => {
-                cy.get("[class^='_timelineButton']").click({ force: true });
+      cy.get("[data-cy='month_button']").then(($elements) => {
+        const randomIndex = Math.floor(Math.random() * $elements.length);
 
-                cy.get("[data-cy='month_button']").then(($elements) => {
-                  const randomIndex = Math.floor(
-                    Math.random() * $elements.length,
-                  );
+        // Click on the randomly selected month button
+        cy.wrap($elements)
+          .eq(randomIndex)
+          .click({ force: true })
+          .then(($button) => {
+            // Find the monthName_display within the clicked button
+            const expectedMonthYear = $button
+              .find("[data-cy='monthName_display']")
+              .text();
 
-                  // Click on the randomly selected month button
-                  cy.wrap($elements)
-                    .eq(randomIndex)
-                    .click()
-                    .then(($button) => {
-                      // Find the monthName_display within the clicked button
-                      const expectedMonthYear = $button
-                        .find("[data-cy='monthName_display']")
-                        .text();
+            const [month, year] = expectedMonthYear.split(" ");
+            const monthNumber = new Date(`${month} 1`).getMonth() + 1;
+            const formattedDate = `${year}-${monthNumber.toString().padStart(2, "0")}`; // Converts to "YYYY-MM"
 
-                      const [month, year] = expectedMonthYear.split(" ");
-                      const monthNumber = new Date(`${month} 1`).getMonth() + 1;
-                      const formattedDate = `${year}-${monthNumber
-                        .toString()
-                        .padStart(2, "0")}`; // Converts to "YYYY-MM"
-
-                      cy.wait("@getSurveyDate").then((interception) => {
-                        expect(interception.request.url).to.include(
-                          formattedDate,
-                        );
-
-                        // Further assertions or checks can go here, such as verifying the UI state
-                        cy.get("[class*='_timeline_selectedSurvey']").then(
-                          ($title) => {
-                            cy.get("[data-cy='Survey_Date']").then(($input) => {
-                              expect($title.text()).to.include($input.text());
-                            });
-                          },
-                        );
-                      });
-                    });
-                });
-              });
+            cy.wait("@getSurveyDate").then((interception) => {
+              expect(interception.request.url).to.include(formattedDate);
             });
           });
+      });
+    });
+  });
+  describe(`Test case: UI renders expected values for each timeline survey`, () => {
+    beforeEach(function () {
+      cy.accessZone(zone);
+      if (!zone.timeline) this.skip();
+    });
+
+    it(`Testing: Date title of selected survey should match date in survey node`, () => {
+      // Further assertions or checks can go here, such as verifying the UI state
+      cy.get("[class*='_timeline_selectedSurvey']").then(($title) => {
+        cy.get("[data-cy='Survey_Date']").then(($input) => {
+          expect($title.text()).to.include($input.text());
         });
-      }
+      });
+    });
+
+    it(`Testing: Header of selected survey should match header in survey node`, () => {
+      cy.get("[data-cy='Survey_Date']")
+        .invoke("text")
+        .then(($date) => {
+          cy.get("[data-cy='Survey_Date']")
+            .parent()
+            .prev()
+            .invoke("text")
+            .should(($header) => {
+              expect(checkDateMatch($date, $header)).to.be.true;
+            });
+        });
     });
   });
 });
