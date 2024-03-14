@@ -7,22 +7,10 @@ function checkDateMatch(inputDate: string, expectedDate: string): boolean {
   if (dateParts.length !== 3) return false;
   const dateObject = new Date(+dateParts[2], +dateParts[1] - 1, +dateParts[0]);
 
-  const monthNames: string[] = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  const convertedDate: string = `${monthNames[dateObject.getMonth()]} ${dateObject.getFullYear()}`;
+  // dateObject.toLocaleString() => March -> Mar
+  const convertedDate: string = `${dateObject.toLocaleString("default", {
+    month: "short",
+  })} ${dateObject.getFullYear()}`;
 
   return convertedDate === expectedDate;
 }
@@ -108,7 +96,6 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: Date title of selected survey should match date in survey node`, () => {
-      // Further assertions or checks can go here, such as verifying the UI state
       cy.get("[class*='_timeline_selectedSurvey']").then(($title) => {
         cy.get("[data-cy='Survey_Date']").then(($input) => {
           expect($title.text()).to.include($input.text());
