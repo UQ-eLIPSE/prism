@@ -1,11 +1,10 @@
-name: Deploy
+name: Deploy to Prod
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
-  push:
-    branches:
-      - develop
-      - main
+  #push:
+  #  branches:
+  #  - main
 
 jobs:
   deploy:
@@ -38,11 +37,7 @@ jobs:
 
       - name: Set inventory
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
-            echo "${{ vars.UAT_INVENTORY }}" > inventory/deploy/inventory.ini
-          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "${{ vars.PROD_INVENTORY }}" > inventory/deploy/inventory.ini
-          fi
+          echo "${{ vars.PROD_INVENTORY }}" > inventory/deploy/inventory.ini
 
       - name: Display modified inventory file (for verification)
         run: cat inventory/deploy/inventory.ini
@@ -58,18 +53,3 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
           PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
-
-      - name: Run Ansible Playbook to cypress test
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          ansible-playbook -i inventory/deploy/inventory_uat.ini cypress-prism.yml
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: False
-          PROXY_JUMP_USER: ${{ secrets.PROXY_JUMP_USER }}
-
-      - name: Upload Cypress Test Results
-        if: github.ref == 'refs/heads/develop'
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-results
-          path: ${{ github.workspace }}/client/tmp/cypress-results
