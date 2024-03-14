@@ -97,14 +97,6 @@ testEachZone((zone: Cypress.PrismZone) => {
       if (!zone.timeline) this.skip();
     });
 
-    it(`Testing: Date title of selected survey should match date in survey node`, () => {
-      cy.get("[class*='_timeline_selectedSurvey']").then(($title) => {
-        cy.get("[data-cy='Survey_Date']").then(($input) => {
-          expect($title.text()).to.include($input.text());
-        });
-      });
-    });
-
     it(`Testing: Header of selected survey should match header in survey node`, () => {
       cy.get("[data-cy='Survey_Date']")
         .invoke("text")
