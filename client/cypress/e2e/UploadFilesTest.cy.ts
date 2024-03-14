@@ -18,7 +18,7 @@ function uploadFileHelper(include: FileTypes) {
 }
 
 // Helper function to check if file size paragraph is empty or not
-function checkFileSize(isEmpty: boolean): void {
+function checkFileSizeEmpty(isEmpty: boolean): void {
   cy.get("p.fileSize")
     .should("exist")
     .invoke("text")
@@ -79,9 +79,9 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: upload functionality of Marzipano zip`, () => {
-      checkFileSize(true);
+      checkFileSizeEmpty(true);
       uploadFileHelper({ zip: true });
-      checkFileSize(false);
+      checkFileSizeEmpty(false);
 
       cy.get("i.fa-file-zipper")
         .next()
@@ -89,9 +89,9 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: upload functionality of CSV file`, () => {
-      checkFileSize(true);
+      checkFileSizeEmpty(true);
       uploadFileHelper({ csv: true });
-      checkFileSize(false);
+      checkFileSizeEmpty(false);
 
       cy.get("i.fa-file-csv").next().should("have.text", "prism_new_field.csv");
     });
@@ -121,7 +121,6 @@ testEachZone((zone: Cypress.PrismZone) => {
 
   describe(`Test case: Delete functionality of already uploaded Marzipano zip and csv`, () => {
     beforeEach(() => {
-      cy.wait(DELAY);
       cy.accessZone(zone);
       cy.get("[data-cy='sb-addScene']").should("exist").click();
       uploadFileHelper({ zip: true, csv: true });
