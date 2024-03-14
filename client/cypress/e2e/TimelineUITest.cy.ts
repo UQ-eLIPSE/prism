@@ -74,21 +74,23 @@ testEachZone((zone: Cypress.PrismZone) => {
           .click({ force: true })
           .then(($button) => {
             // Find the monthName_display within the clicked button
-            const expectedMonthYear = $button
+            const [month, year] = $button
               .find("[data-cy='monthName_display']")
-              .text();
-
-            const [month, year] = expectedMonthYear.split(" ");
+              .text()
+              .split(" ");
             const monthNumber = new Date(`${month} 1`).getMonth() + 1;
-            const formattedDate = `${year}-${monthNumber.toString().padStart(2, "0")}`; // Converts to "YYYY-MM"
+            const formattedDate = `${year}-${monthNumber
+              .toString()
+              .padStart(2, "0")}`; // Converts to "YYYY-MM"
 
-            cy.wait("@getSurveyDate").then((interception) => {
-              expect(interception.request.url).to.include(formattedDate);
-            });
+            cy.wait("@getSurveyDate")
+              .its("request.url")
+              .should("include", formattedDate);
           });
       });
     });
   });
+
   describe(`Test case: UI renders expected values for each timeline survey`, () => {
     beforeEach(function () {
       cy.accessZone(zone);
