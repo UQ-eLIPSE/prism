@@ -21,8 +21,12 @@ cd prism
 
 2. Execute the bash command:
 
+- Create ".env.prism_uat.example" in your `server/`, copy script from the url [get prism run on your local](https://elipse-uq.atlassian.net/wiki/spaces/URBAN/pages/2705358849/Run+Prism+on+your+local).
+- Download and create a bash script "run_project_docker.sh" under your prism root from the url above [get prism run on your local].
+
 ```
-./run_project_docker.sh (download from [get prism run on your local](https://elipse-uq.atlassian.net/wiki/spaces/URBAN/pages/2705358849/Run+Prism+on+your+local) )
+./chmod +x run_project_docker.sh
+./run_project_docker.sh
 ```
 
 **Note**: When you run this script, you'll see the following information:
@@ -48,3 +52,36 @@ cd prism
 - On the initial build, answer "y" when prompted to build the Docker images.
 - Docker container will run background use `docker logs -f CONTAINER_ID` to monitor
 - Test data DB output with `docker exec -it mongodb mongosh --eval 'db = db.getSiblingDB("agco360"); var cursor = db.sites.find().limit(1); while(cursor.hasNext()) { printjson(cursor.next()); }'`
+
+## Linting and Prettier
+
+It is always good practice to lint and prettier your code prior to review,
+use this command to check that all linting errors are fixed and the code
+is prettied
+`cd client && yarn lint:pretty`
+`cd server && yarn lint:pretty`
+
+## Running Cypress Tests
+
+1. navigate to test folder: `cd prism/client/`
+2. start tests:
+
+- for local test run:
+  `yarn cypress:run:local`: for single site project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:local-multi`: for multi sites project
+
+- for UAT test run:
+  `yarn cypress:run:uat`: for project: AEB, ANLB, Camphill, Kingston, UqLakes
+  `yarn cypress:run:uat-multi`: for project AGCO360
+
+3. trouble-shooting:
+   To watch cypress run on browser, you can use:
+
+- launch browsers: `-headed`, `-browser chrome`
+- with `no-exit`, you can stay on current test case in browsers to debug
+
+** Note ** : for some project, you may need run --spec if only one test failed, to just run this specific test case, you can use:
+
+- `--spec cypress/e2e/<testfilename>`
+
+(refer to https://docs.cypress.io/guides/guides/command-line)
