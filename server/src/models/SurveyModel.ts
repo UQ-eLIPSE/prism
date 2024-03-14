@@ -18,7 +18,7 @@ export interface IMinimapNode extends Document {
   node_number: number;
   title: string;
   description: string;
-  survey_node: ISurveyNode;
+  survey_node: ISurveyNode & Schema.Types.ObjectId;
   floor: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   site: any;
