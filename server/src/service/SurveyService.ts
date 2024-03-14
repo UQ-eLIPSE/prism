@@ -9,6 +9,7 @@ import {
   Survey,
   MinimapImages,
 } from "../models/SurveyModel";
+import { MapPins } from "../components/MapPins/MapPinsModel";
 import { CommonUtil } from "../utils/CommonUtil";
 import * as fs from "fs/promises";
 import csv = require("csvtojson");
@@ -295,23 +296,17 @@ export abstract class SurveyService {
 
           if (!survey) reject("Survey couldn't be uploaded");
 
-          const floor = specElem.floor
-            ? Number(specElem.floor)
-            : Number(floorId);
-
           // Upload to minimap nodes
-          const minimapNodeObj: IMinimapNode = {
-            _id: new ObjectId(),
-            floor,
-            node_number: i,
-            survey_node: new Schema.Types.ObjectId(survey[0]._id),
-            tiles_id: scene.id,
-            tiles_name: specElem?.title ? specElem?.title : scene.name,
-            site: new Schema.Types.ObjectId(site._id),
-          } as IMinimapNode;
-
-          const minimapNode = await minimapNodeHandler.createMinimapNode([
-            minimapNodeObj,
+          const minimapNode = await MinimapNode.create([
+            {
+              _id: new ObjectId(),
+              floor: specElem?.floor ? specElem.floor : floorId,
+              node_number: i,
+              survey_node: new ObjectId(survey[0]._id),
+              tiles_id: scene.id,
+              tiles_name: specElem?.title ? specElem?.title : scene.name,
+              site: new ObjectId(site._id),
+            },
           ]);
 
           if (!minimapNode) reject("Minimap Node cannot be uploaded");
@@ -696,7 +691,9 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await mapPinsHandler.getDocumentCounts(site);
+      const data = await MapPins.countDocuments({
+        site: new ObjectId(site),
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -708,7 +705,9 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await surveyNodesHandler.getDocumentCounts(site);
+      const data = await SurveyNode.countDocuments({
+        site: new ObjectId(site),
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -721,10 +720,9 @@ export abstract class SurveyService {
     floorId: number,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await minimapNodeHandler.countMinimapNodeDocuments(
-        siteId,
-        floorId,
-      );
+      const data = await MinimapNode.countDocuments({
+        $and: [{ site: new ObjectId(siteId) }, { floor: floorId }],
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -745,8 +743,9 @@ export abstract class SurveyService {
         allFloors.push(floor.floor);
       }
 
-      const popFloorsObj =
-        await minimapNodeHandler.findSurveyBySiteIDWithID(siteId);
+      const popFloorsObj = await MinimapNode.find({
+        site: new ObjectId(siteId),
+      });
 
       for (const floor of popFloorsObj) {
         popFloors.push(floor.floor);
