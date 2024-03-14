@@ -1,5 +1,4 @@
 import { testEachZone } from "../testutils";
-
 interface FileTypes {
   zip?: boolean;
   csv?: boolean;
@@ -18,6 +17,17 @@ function uploadFileHelper(include: FileTypes) {
   }
 }
 
+// Helper function to check if file size paragraph is empty or not
+function checkFileSize(isEmpty: boolean): void {
+  cy.get("p.fileSize")
+    .should("exist")
+    .invoke("text")
+    .should(isEmpty ? "be.empty" : "not.be.empty");
+}
+
+const DELAY: number = 250; // This is needed as sometimes, the submission
+// loading time mixed with the accessZone operations causes asynchronous issues
+
 testEachZone((zone: Cypress.PrismZone) => {
   const url =
     Cypress.env("testurl") === "local" ? zone.url.local : zone.url.uat;
@@ -32,33 +42,35 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     it(`Testing: Page exists when navigated to addScene page`, () => {
       cy.get("[data-cy='sb-addScene']").should("exist").click();
+      cy.url().should("include", "/addScene");
       cy.get(".site-title").should("exist");
       cy.get(".upload").should("exist");
     });
 
     it(`Testing: Upload marzipano zip and csv input should exist within page`, () => {
-      cy.get("#uploadZip").should("exist");
-      cy.get("#uploadCSV").should("exist");
+      ["uploadZip", "uploadCSV"].forEach((id) => {
+        cy.get(`#${id}`).should("exist");
+      });
     });
 
     it(`Testing: Labels and Icons for upload Marzipano zip and csv should exist`, () => {
-      cy.get("i.uploadIcons.fa-file-zipper")
-        .should("exist")
-        .next()
-        .should("exist")
-        .should("have.text", "Upload Marzipano ZIP");
-
-      cy.get("i.uploadIcons.fa-file-csv")
-        .should("exist")
-        .next()
-        .should("exist")
-        .should("have.text", "Upload CSV File");
+      [
+        { type: "zipper", text: "Marzipano ZIP" },
+        { type: "csv", text: "CSV File" },
+      ].forEach(({ type, text }) => {
+        cy.get(`i.uploadIcons.fa-file-${type}`)
+          .should("exist")
+          .next()
+          .should("exist")
+          .should("have.text", `Upload ${text}`);
+      });
     });
   });
 
   describe(`Test case: Upload functionality of Marzipano zip and csv`, () => {
     beforeEach(function () {
       cy.accessZone(zone);
+      cy.wait(DELAY);
       cy.get("[data-cy='sb-addScene']").should("exist").click();
     });
 
@@ -67,14 +79,9 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: upload functionality of Marzipano zip`, () => {
-      cy.get("p.fileSize").should("exist").invoke("text").should("be.empty");
-
+      checkFileSize(true);
       uploadFileHelper({ zip: true });
-
-      cy.get("p.fileSize")
-        .should("exist")
-        .invoke("text")
-        .should("not.be.empty");
+      checkFileSize(false);
 
       cy.get("i.fa-file-zipper")
         .next()
@@ -82,13 +89,9 @@ testEachZone((zone: Cypress.PrismZone) => {
     });
 
     it(`Testing: upload functionality of CSV file`, () => {
-      cy.get("p.fileSize").should("exist").invoke("text").should("be.empty");
-
+      checkFileSize(true);
       uploadFileHelper({ csv: true });
-      cy.get("p.fileSize")
-        .should("exist")
-        .invoke("text")
-        .should("not.be.empty");
+      checkFileSize(false);
 
       cy.get("i.fa-file-csv").next().should("have.text", "prism_new_field.csv");
     });
@@ -104,7 +107,7 @@ testEachZone((zone: Cypress.PrismZone) => {
         .and("not.have.class", "disabled");
     });
 
-    it(`Testing: Upon clicking submit after uploading files, it should navigate to site page`, () => {
+    it(`Testing: Upon clicking submit after uploading files, it should navigate to site page and send POST req`, () => {
       cy.intercept("POST", "/api/site/*/*/addScenes").as("addScenes");
       uploadFileHelper({ zip: true, csv: true });
 
@@ -118,6 +121,7 @@ testEachZone((zone: Cypress.PrismZone) => {
 
   describe(`Test case: Delete functionality of already uploaded Marzipano zip and csv`, () => {
     beforeEach(() => {
+      cy.wait(DELAY);
       cy.accessZone(zone);
       cy.get("[data-cy='sb-addScene']").should("exist").click();
       uploadFileHelper({ zip: true, csv: true });
