@@ -5,7 +5,7 @@ services:
     hostname: server
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     volumes:
       - ./:/var/www/server
       - /var/www/server/node_modules

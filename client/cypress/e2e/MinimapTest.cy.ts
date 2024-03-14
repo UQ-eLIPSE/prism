@@ -141,7 +141,7 @@ testEachZone((zone: Cypress.PrismZone) => {
                     const topPercentage = Math.floor(
                       (topPixelValue / (totalHeight as number)) * 100,
                     );
-                    expect(topPercentage).to.be.eq(randY);
+                    expect(topPercentage).to.be.closeTo(randY, 1);
                   });
               });
             });

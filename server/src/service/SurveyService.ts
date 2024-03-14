@@ -4,11 +4,12 @@ import { Response } from "express-serve-static-core";
 import { ISite, SiteSettings } from "../components/Site/SiteModel";
 import {
   SurveyNode,
+  MinimapConversion,
+  MinimapNode,
   Survey,
   MinimapImages,
-  IMinimapConversion,
-  IMinimapNode,
 } from "../models/SurveyModel";
+import { MapPins } from "../components/MapPins/MapPinsModel";
 import { CommonUtil } from "../utils/CommonUtil";
 import * as fs from "fs/promises";
 import csv = require("csvtojson");
@@ -18,14 +19,6 @@ import { execSync } from "child_process";
 import { ObjectId } from "bson";
 import { uploadZipManta } from "../utils/mantaUtil";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
-import {
-  createMinimapConversion,
-  updateOneMinimapConversion,
-} from "../dal/minimapConversionsHandler";
-import mapPinsHandler from "../dal/mapPinsHandler";
-import surveyNodesHandler from "../dal/surveyNodesHandler";
-import minimapNodeHandler from "../dal/minimapNodeHandler";
-import minimmapImagesHandler from "../dal/minimmapImagesHandler";
 
 /**
  * createMinimapImages
@@ -220,7 +213,6 @@ export abstract class SurveyService {
     floorId: string,
   ) {
     try {
-      console.log("start db uploading");
       const { zipFile, properties } = files;
       // Convert CSV to JSON
       const csvJSON: CSVProperties[] = await csv().fromFile(properties[0].path);
@@ -264,7 +256,6 @@ export abstract class SurveyService {
               el.title === scene.id ||
               el.title === scene.name,
           );
-          if (!specElem) return;
 
           // Reformat date per Australian standard
           if (specElem?.date) {
@@ -280,7 +271,6 @@ export abstract class SurveyService {
           }
 
           // Upload Survey Nodes from DataJS
-          console.log("survey node start ");
           const survey = await SurveyNode.create([
             {
               _id: new ObjectId(),
@@ -306,40 +296,36 @@ export abstract class SurveyService {
 
           if (!survey) reject("Survey couldn't be uploaded");
 
-          const floor = specElem.floor
-            ? Number(specElem.floor)
-            : Number(floorId);
-
           // Upload to minimap nodes
-          const minimapNodeObj: IMinimapNode = {
-            _id: new ObjectId(),
-            floor,
-            node_number: i,
-            survey_node: new ObjectId(survey[0]._id),
-            tiles_id: scene.id,
-            tiles_name: specElem?.title ? specElem?.title : scene.name,
-            site: new ObjectId(site._id),
-          } as IMinimapNode;
-
-          const minimapNode = await minimapNodeHandler.createMinimapNode([
-            minimapNodeObj,
+          const minimapNode = await MinimapNode.create([
+            {
+              _id: new ObjectId(),
+              floor: specElem?.floor ? specElem.floor : floorId,
+              node_number: i,
+              survey_node: new ObjectId(survey[0]._id),
+              tiles_id: scene.id,
+              tiles_name: specElem?.title ? specElem?.title : scene.name,
+              site: new ObjectId(site._id),
+            },
           ]);
 
           if (!minimapNode) reject("Minimap Node cannot be uploaded");
+
           // Upload Minimap conversions with the provided x/y coords from the CSV
-          const minimapConversionObj = {
-            floor,
-            minimap_node: new ObjectId(minimapNode[0]._id),
-            survey_node: new ObjectId(survey[0]._id),
-            x: isNaN(Number(specElem.x)) ? 0 : Number(specElem.x),
-            x_scale: 1,
-            y: isNaN(Number(specElem.y)) ? 0 : Number(specElem.y),
-            y_scale: 1,
-            site: new ObjectId(site._id),
-            rotation: 0,
-          } as IMinimapConversion;
-          const minimapConversion =
-            await createMinimapConversion(minimapConversionObj);
+          const minimapConversion = await MinimapConversion.create([
+            {
+              _id: new ObjectId(),
+              floor: specElem?.floor ? specElem.floor : floorId,
+              minimap_node: new ObjectId(minimapNode[0]._id),
+              survey_node: new ObjectId(survey[0]._id),
+              x: specElem?.x,
+              x_scale: 1,
+              y: specElem?.y,
+              y_scale: 1,
+              site: new ObjectId(site._id),
+              rotation: 0,
+            },
+          ]);
 
           if (!minimapConversion)
             reject("Minimap conversion cannot be uploaded.");
@@ -375,8 +361,7 @@ export abstract class SurveyService {
               yaw: 0,
               pitch: 0,
               fov: 0,
-              // Half of Pi
-              rotation_offset: 1.5707963267948966,
+              rotation_offset: 0,
             },
             animation: {
               url: "NA",
@@ -423,6 +408,90 @@ export abstract class SurveyService {
       ConsoleUtil.error(e.message);
       return false;
     }
+  }
+
+  static readFileData(userDetails: any, entries: any, zip: any) {
+    const dataJs = entries.filter((entry: any) =>
+      entry.name.endsWith("/data.js"),
+    );
+    let marzipanoData: any;
+    const surveyNodeIds = new Set();
+    const outputFile: any = [];
+
+    const { MANTA_ROOT_FOLDER, PROJECT_NAME, MANTA_USER, MANTA_HOST_NAME } =
+      process.env;
+    return new Promise((resolve, reject) => {
+      for (const data of dataJs) {
+        zip.stream((<any>data).name, (err: any, stream: any) => {
+          stream.on("data", (chunk: any) => {
+            outputFile.push(chunk);
+          });
+
+          stream.on("end", async () => {
+            marzipanoData = Buffer.concat(outputFile).toString("utf8");
+            if (marzipanoData) {
+              marzipanoData = marzipanoData.split("=")[1].replace(";", "");
+              marzipanoData = JSON.parse(marzipanoData);
+
+              const newSurvey = new Survey({
+                survey_name: marzipanoData.name,
+              });
+              await newSurvey.save();
+
+              for (let idx = 0; idx < marzipanoData.scenes.length; idx++) {
+                const date = new Date().getTime();
+                const newSurveyNode = new SurveyNode({
+                  survey_name: marzipanoData.name,
+                  uploadedAt: date,
+                  uploadedBy: userDetails["username"],
+                  mantaLink: `${MANTA_HOST_NAME}/${MANTA_USER}/${MANTA_ROOT_FOLDER}/${PROJECT_NAME}/${entries[0].name}`,
+                  nodeNumber: idx,
+                  tilesId: marzipanoData.scenes[idx].id,
+                  tilesName: marzipanoData.scenes[idx].name,
+                  initialParameters:
+                    marzipanoData.scenes[idx].initialViewParameters,
+                  linkHotspots: marzipanoData.scenes[idx].linkHotspots,
+                  infoHotspots: marzipanoData.scenes[idx].infoHotspots,
+                  levels: marzipanoData.scenes[idx].levels,
+                  faceSize: marzipanoData.scenes[idx].faceSize,
+                });
+
+                await newSurveyNode.save();
+                surveyNodeIds.add(newSurveyNode._id);
+
+                await Survey.findOneAndUpdate(
+                  { _id: newSurvey._id },
+                  {
+                    $push: {
+                      survey_nodes: newSurveyNode._id,
+                    },
+                  },
+                );
+
+                const newMinimapCoversion = new MinimapConversion({
+                  surveyNode: newSurveyNode._id,
+                });
+                await newMinimapCoversion.save();
+
+                const newMinimapNode = new MinimapNode({
+                  nodeNumber: idx,
+                  tilesId: marzipanoData.scenes[idx].id,
+                  tilesName: marzipanoData.scenes[idx].name,
+                  surveyNode: newSurveyNode._id,
+                });
+
+                await newMinimapNode.save();
+              }
+
+              resolve(surveyNodeIds);
+            }
+
+            zip.close();
+          });
+          stream.on("error", reject);
+        });
+      }
+    });
   }
 
   static readSurveyJson(entries: any, zip: any) {
@@ -492,20 +561,26 @@ export abstract class SurveyService {
     x: number,
     y: number,
   ) {
-    const result = await updateOneMinimapConversion(nodeId, {
-      x,
-      y,
-    } as IMinimapConversion);
+    const updateNodeCoords = await MinimapConversion.findOneAndUpdate(
+      { survey_node: new ObjectId(nodeId) },
+      {
+        x: x,
+        y: y,
+      },
+    );
 
-    return result ? true : false;
+    return updateNodeCoords ? true : false;
   }
 
   public static async updateNodeRotation(nodeId: string, rotation: number) {
-    const result = await updateOneMinimapConversion(nodeId, {
-      rotation: rotation,
-    } as IMinimapConversion);
+    const updateNodeRotation = await MinimapConversion.findOneAndUpdate(
+      { survey_node: new ObjectId(nodeId) },
+      {
+        rotation: rotation,
+      },
+    );
 
-    return result ? true : false;
+    return updateNodeRotation ? true : false;
   }
 
   /**
@@ -616,7 +691,9 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await mapPinsHandler.getDocumentCounts(site);
+      const data = await MapPins.countDocuments({
+        site: new ObjectId(site),
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -628,7 +705,9 @@ export abstract class SurveyService {
     site: string,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await surveyNodesHandler.getDocumentCounts(site);
+      const data = await SurveyNode.countDocuments({
+        site: new ObjectId(site),
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -641,10 +720,9 @@ export abstract class SurveyService {
     floorId: number,
   ): Promise<{ success: boolean }> {
     try {
-      const data = await minimapNodeHandler.countMinimapNodeDocuments(
-        siteId,
-        floorId,
-      );
+      const data = await MinimapNode.countDocuments({
+        $and: [{ site: new ObjectId(siteId) }, { floor: floorId }],
+      });
 
       return { success: data ? true : false };
     } catch (e) {
@@ -657,15 +735,17 @@ export abstract class SurveyService {
       const allFloors: number[] = [];
       const popFloors: number[] = [];
 
-      const allFloorsObj =
-        await minimmapImagesHandler.findMinimapImagesBySiteId(siteId);
+      const allFloorsObj = await MinimapImages.find({
+        site: new ObjectId(siteId),
+      });
 
       for (const floor of allFloorsObj) {
         allFloors.push(floor.floor);
       }
 
-      const popFloorsObj =
-        await minimapNodeHandler.findSurveyBySiteIDWithID(siteId);
+      const popFloorsObj = await MinimapNode.find({
+        site: new ObjectId(siteId),
+      });
 
       for (const floor of popFloorsObj) {
         popFloors.push(floor.floor);
