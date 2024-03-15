@@ -93,11 +93,6 @@ const NodeComponent = ({
       ? nodeRotationInDegrees
       : currRotationInDegrees;
 
-    console.log(
-      "initialrotationoffset",
-      config.initial_settings.rotation_offset,
-    );
-
     return (
       result +
       offset +
