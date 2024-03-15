@@ -91,10 +91,10 @@
 
 .largeMap {
   position: fixed;
-  top: 50%;
+  top: 53%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: auto;
+  width: 55vw;
 }
 
 .largeMap > h1 {
@@ -281,7 +281,7 @@
 .largeMapImg {
   opacity: 1;
   filter: none;
-  max-height: 80vh;
+  max-height: 90vh;
 }
 
 .node {
