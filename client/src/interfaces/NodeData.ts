@@ -1,5 +1,6 @@
 import { MinimapProps } from "./MiniMap/MinimapProps";
 import { NewNode } from "./MiniMap/NewNode";
+import { ISettings } from "../typings/settings";
 
 export interface NodeData {
   floor: number;
@@ -103,6 +104,7 @@ export interface NodeCollectionProps extends NodePropsBase {
   currViewParams: InitialViewParameters;
   nodesData: NodeData[];
   currRotation: number;
+  config: ISettings;
 }
 
 /**
@@ -132,6 +134,7 @@ export interface NodeComponentProps extends NodePropsBase {
   currViewParams: InitialViewParameters;
   nodesData: NodeData[];
   currRotation: number;
+  config: ISettings;
 }
 
 /**

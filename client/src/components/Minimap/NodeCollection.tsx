@@ -24,6 +24,7 @@ function NodeCollection({
   currViewParams,
   nodesData,
   currRotation,
+  config,
 }: NodeCollectionProps): JSX.Element {
   return (
     <div>
@@ -61,6 +62,7 @@ function NodeCollection({
             currViewParams={currViewParams}
             nodesData={nodesData}
             currRotation={currRotation}
+            config={config}
           />
         );
       })}
