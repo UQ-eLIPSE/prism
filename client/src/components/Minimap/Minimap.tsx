@@ -355,6 +355,7 @@ function Minimap(props: MinimapProps) {
                   currViewParams={props.currViewParams}
                   nodesData={props.nodeData}
                   currRotation={rotation}
+                  config={config}
                 />
               )}
             </div>

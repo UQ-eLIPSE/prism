@@ -13,6 +13,10 @@ const radToDeg = (rad: number) => {
   return (rad * 180) / Math.PI;
 };
 
+// There is a default offset for the node's RADAR VIEW on the minimap.
+// This defaults to point right side.
+const ROTATION_OFFSET = 90;
+
 /**
  * Converts rotation style to counter rotation style.
  * Used to make the node look like it hasn't changed from the rotation.
@@ -58,6 +62,7 @@ const NodeComponent = ({
   currViewParams, // TODO: NEED FOR LATER
   nodesData,
   currRotation,
+  config,
 }: NodeComponentProps): JSX.Element => {
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
@@ -88,7 +93,18 @@ const NodeComponent = ({
       ? nodeRotationInDegrees
       : currRotationInDegrees;
 
-    return result + offset;
+    console.log(
+      "initialrotationoffset",
+      config.initial_settings.rotation_offset,
+    );
+
+    return (
+      result +
+      offset +
+      (isNaN(radToDeg(config.initial_settings.rotation_offset))
+        ? 0
+        : radToDeg(config.initial_settings.rotation_offset))
+    );
   };
 
   const getInitialParams = (
@@ -114,7 +130,7 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0) + getInitialPOVRotationDegrees(90)}deg)`,
+          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0) + getInitialPOVRotationDegrees(ROTATION_OFFSET)}deg)`,
           zIndex: 2,
         }}
       >
@@ -142,7 +158,7 @@ const NodeComponent = ({
           ...getNodeStyle(false),
           // The current rotation is stored as the previous state of rotation.
           // The current rotation is updated when the user clicks on the node, which is why this check is necessary.
-          transform: `rotate(${getInitialPOVRotationDegrees(90)}deg)`,
+          transform: `rotate(${getInitialPOVRotationDegrees(ROTATION_OFFSET)}deg)`,
         }}
       >
         <ArrowIcon
@@ -170,6 +186,9 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={getNodeStyle()}
         key={node.tiles_id}
+        data-cy={
+          node == selectedNode ? "node-container-selected" : "node-container"
+        }
       >
         {node.tiles_id === MinimapProps.currPanoId &&
           MinimapProps.config.enable.rotation && (
