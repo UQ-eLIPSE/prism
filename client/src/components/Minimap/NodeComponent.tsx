@@ -68,6 +68,29 @@ const NodeComponent = ({
     };
   };
 
+  /**
+   * Used to rotate the red and black arrows in the minimap.
+   * @returns {number} - The initial POV rotation in degrees.
+   */
+  const getInitialPOVRotationDegrees = (offset: number = 0): number => {
+    // isNaN checks needed because sometimes, the node rotation value is being read as
+    // undefined...
+
+    // This is the initial node rotation read from the db
+    const nodeRotationInDegrees = isNaN(radToDeg(node.rotation))
+      ? 0
+      : radToDeg(node.rotation);
+
+    // This is the current rotation set by the user through the popup form.
+    const currRotationInDegrees = isNaN(currRotation) ? 0 : currRotation;
+
+    const result = !selectedNode
+      ? nodeRotationInDegrees
+      : currRotationInDegrees;
+
+    return result + offset;
+  };
+
   const getInitialParams = (
     node: NewNode | null,
   ): InitialViewParameters | null => {
@@ -77,6 +100,7 @@ const NodeComponent = ({
     const selectedNodeData = nodesData.find(
       (node) => node.survey_node.tiles_id === tile_id,
     );
+
     const initialParams = selectedNodeData?.survey_node.initial_parameters;
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
@@ -90,7 +114,7 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0)}deg)`,
+          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0) + getInitialPOVRotationDegrees(90)}deg)`,
           zIndex: 2,
         }}
       >
@@ -118,9 +142,7 @@ const NodeComponent = ({
           ...getNodeStyle(false),
           // The current rotation is stored as the previous state of rotation.
           // The current rotation is updated when the user clicks on the node, which is why this check is necessary.
-          transform: `rotate(${
-            !selectedNode ? radToDeg(node.rotation) : currRotation
-          }deg)`,
+          transform: `rotate(${getInitialPOVRotationDegrees(90)}deg)`,
         }}
       >
         <ArrowIcon
