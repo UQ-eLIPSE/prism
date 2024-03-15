@@ -2,9 +2,9 @@ name: Deploy to Prod
 
 on:
   workflow_dispatch: # This allows manual triggering of the workflow
-  push:
-    branches:
-      - main
+  #push:
+  #  branches:
+  #  - main
 
 jobs:
   deploy:
