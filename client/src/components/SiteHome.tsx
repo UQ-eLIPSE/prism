@@ -72,8 +72,6 @@ const SiteHome = ({ onButtonClick }: SiteSelectorProps) => {
       fetchSettings();
     }
   }, [allSites]);
-  console.log(config);
-  console.log(siteId);
   return (
     <div>
       <div className="App" style={{ display: "flex" }}>
