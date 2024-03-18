@@ -7,6 +7,7 @@ import {
 } from "../../interfaces/NodeData";
 import ArrowIcon from "./../ArrowIcon";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import { useUserContext } from "../../context/UserContext";
 
 // Helper
 const radToDeg = (rad: number) => {
@@ -57,13 +58,13 @@ const NodeComponent = ({
   isMapEnlarged,
   configureRotation,
   handleNodeClick,
-  isEditing,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   currViewParams, // TODO: NEED FOR LATER
   nodesData,
   currRotation,
   config,
 }: NodeComponentProps): JSX.Element => {
+  const [user] = useUserContext();
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
     return {
@@ -133,7 +134,8 @@ const NodeComponent = ({
           showArrow={
             node.tiles_id === MinimapProps.currPanoId &&
             MinimapProps.config.enable.rotation &&
-            isEditing
+            user?.isAdmin &&
+            isMapEnlarged
           }
           containerProps={{
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
@@ -160,7 +162,8 @@ const NodeComponent = ({
           showArrow={
             node.tiles_id === MinimapProps.currPanoId &&
             MinimapProps.config.enable.rotation &&
-            isEditing
+            user?.isAdmin &&
+            isMapEnlarged
           }
           containerProps={{
             className: `${MinimapStyles.nodeArrowContainer} default-arrow`,

@@ -351,7 +351,6 @@ function Minimap(props: MinimapProps) {
                   x={x}
                   y={y}
                   handleNodeClick={handleNodeClick}
-                  isEditing={editing}
                   currViewParams={props.currViewParams}
                   nodesData={props.nodeData}
                   currRotation={rotation}
