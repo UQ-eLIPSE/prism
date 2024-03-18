@@ -552,9 +552,11 @@ function Site(props: SiteInterface) {
         }
         timelineOpen={timelineOpen}
       />
-      <div className="marzipano-info">
-        <MarzipanoDisplayInfo viewParams={currViewParams} />
-      </div>
+      {user?.isAdmin && (
+        <div className="marzipano-info">
+          <MarzipanoDisplayInfo viewParams={currViewParams} />
+        </div>
+      )}
       <div
         className={`linkButton ${!config.enable.hotspots_nav && "disabled"}`}
         onClick={(e): void => handleDropdownClick(e, !linkNodeListOpen)}
