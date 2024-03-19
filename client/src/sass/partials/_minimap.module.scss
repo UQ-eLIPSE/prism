@@ -253,16 +253,16 @@
   border: none;
   cursor: pointer;
   transition: left ease-out 0.19s;
-  color: black;
+  color: $prismPrimary;
   &:hover {
-    color: $prismPrimary;
+    color: black;
   }
 }
 
 .closeShow {
   position: absolute;
-  margin-top: 4px;
-  margin-right: 6px;
+  margin-top: -16px;
+  margin-right: -18px;
   padding: 3px 4px 2px 4px;
   font-size: 1em;
   z-index: 12;
