@@ -117,6 +117,15 @@ const NodeComponent = ({
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
 
+  const isCurrentNode = node.tiles_id === MinimapProps.currPanoId;
+  const shouldShowArrow =
+    isCurrentNode &&
+    MinimapProps.config.enable.rotation &&
+    user?.isAdmin &&
+    isMapEnlarged;
+  const commonArrowScale = `scale(1.5)`;
+  const arrowContainerClass = `${MinimapStyles.nodeArrowContainer} default-arrow`;
+
   return (
     <div
       key={index}
@@ -131,19 +140,14 @@ const NodeComponent = ({
         }}
       >
         <ArrowIcon
-          showArrow={
-            node.tiles_id === MinimapProps.currPanoId &&
-            MinimapProps.config.enable.rotation &&
-            user?.isAdmin &&
-            isMapEnlarged
-          }
+          showArrow={shouldShowArrow}
           containerProps={{
-            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            className: arrowContainerClass,
           }}
           iconProps={{
             className: "arrow arrow-yaw",
             style: {
-              transform: `scale(1.5)`,
+              transform: commonArrowScale,
             },
           }}
           dataCy="yaw-arrow"
@@ -159,20 +163,15 @@ const NodeComponent = ({
         }}
       >
         <ArrowIcon
-          showArrow={
-            node.tiles_id === MinimapProps.currPanoId &&
-            MinimapProps.config.enable.rotation &&
-            user?.isAdmin &&
-            isMapEnlarged
-          }
+          showArrow={shouldShowArrow}
           containerProps={{
-            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            className: arrowContainerClass,
             style: { transform: `scaleY(1.5)` },
           }}
           iconProps={{
             className: "arrow",
             style: {
-              transform: `scale(1.5)`,
+              transform: commonArrowScale,
               color: "red",
               opacity: 0.5,
             },
