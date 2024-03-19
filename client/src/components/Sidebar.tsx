@@ -3,6 +3,8 @@ import { NavLink } from "../elements/NavLink";
 import { useLocation } from "react-router";
 import NetworkCalls from "../utils/NetworkCalls";
 import prism_logo from "../img/prism-logo.svg";
+import uw_logo from "../img/uwLogo.png";
+import uq_logo from "../img/uq_logo.png";
 import { useUserContext } from "../context/UserContext";
 import { useSettingsContext } from "../context/SettingsContext";
 import { ISettings } from "../typings/settings";
@@ -10,7 +12,7 @@ import ModuleWindow, { MEDIA_TYPES, ModuleWindowProps } from "./ModuleWindow";
 
 export interface ISidebarLink {
   link: string;
-  icon: string;
+  icon: string | React.JSX.Element;
   text: string;
   dataCy: string;
 }
@@ -64,16 +66,15 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
   useEffect(() => {
     const siteLink = {
       link: `site`,
-      icon: "fas fa-object-group fa-2x",
+      icon:
+        props.config?.display.title == "Urban Water" ? (
+          <img src={uw_logo} alt="Image Logo" />
+        ) : (
+          "fas fa-object-group fa-2x"
+        ),
       text: props.config ? "Site" : "Add Scenes",
       dataCy: "sb-site",
     };
-    // const mediaLink = {
-    //   link: "/media",
-    //   icon: "fas fa-compact-disc fa-2x",
-    //   text: "Media",
-    //   dataCy: "sb-media",
-    // };
     const homeLink = {
       link: "/",
       icon: prism_logo,
@@ -144,6 +145,7 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
         setPath(value.link);
     }
   };
+
   const enableModuleWindow: React.MouseEventHandler<HTMLElement> = (e) => {
     console.log(e);
     if (moduleWindowOpen) {
@@ -237,6 +239,15 @@ const Sidebar: React.FC<ISidebarProps> = (props) => {
       </div>
       <div className="prism-label">
         <a onClick={() => window.open("https://www.elipse.uq.edu.au/")}>
+          <img
+            className="prismLogo"
+            style={{
+              height: "4.5em",
+              width: "4.5em",
+            }}
+            src={uq_logo}
+            alt="UQ Logo"
+          />
           <h3 className="prism-subtitle">Prism</h3>
           <h5 className="prism-subheading">by eLIPSE</h5>
         </a>

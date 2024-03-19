@@ -22,19 +22,32 @@ export const NavLink = (props: Props): React.ReactElement => {
       })}
     >
       <div className="nav-icon-container">
-        {props.value.text === "" && (
+        {typeof props.value.icon === "string" && props.value.text === "" && (
           <img className="prismLogo" src={props.value.icon} alt="" />
         )}
-        <span
-          className="nav-icon"
-          data-title={props.value.text}
-          data-cy="sb-icon"
-        >
-          <i className={props.value.icon} />
-        </span>
-        <span className={"nav-text"} data-cy="sb-text">
-          {props.value.text}
-        </span>
+        {React.isValidElement(props.value.icon) && (
+          <span
+            className="nav-icon"
+            data-title={props.value.text}
+            data-cy="sb-icon"
+          >
+            {props.value.icon}
+          </span>
+        )}
+        {typeof props.value.icon === "string" && (
+          <>
+            <span
+              className="nav-icon"
+              data-title={props.value.text}
+              data-cy="sb-icon"
+            >
+              <i className={props.value.icon} />
+            </span>
+            <span className={"nav-text"} data-cy="sb-text">
+              {props.value.text}
+            </span>
+          </>
+        )}
       </div>
     </Link>
   );

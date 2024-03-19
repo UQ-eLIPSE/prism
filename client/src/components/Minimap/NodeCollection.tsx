@@ -20,7 +20,6 @@ function NodeCollection({
   x,
   y,
   handleNodeClick,
-  isEditing,
   currViewParams,
   nodesData,
   currRotation,
@@ -58,7 +57,6 @@ function NodeCollection({
             isMapEnlarged={MinimapProps.minimapEnlarged}
             configureRotation={configureRotation}
             handleNodeClick={handleNodeClick}
-            isEditing={isEditing}
             currViewParams={currViewParams}
             nodesData={nodesData}
             currRotation={currRotation}
