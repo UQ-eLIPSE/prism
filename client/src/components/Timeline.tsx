@@ -143,19 +143,22 @@ function Timeline(props: Props) {
           <Accordion
             elevation={0}
             expanded={expandedAccordian === month.monthName}
-            onChange={() => {
-              setExpandedAccordian(
-                expandedAccordian === month.monthName ? "" : month.monthName,
-              );
-              setIsExpanded(expandedAccordian !== month.monthName);
-            }}
           >
             <AccordionSummary
               expandIcon={<i className={"fa fa-chevron-down fa-2x"} />}
             >
               <button
                 data-cy="month_button"
-                onClick={(event): void => showLatestSurveyInMonth(month, event)}
+                onClick={(event): void => {
+                  event.stopPropagation();
+                  showLatestSurveyInMonth(month, event);
+                  setExpandedAccordian(
+                    expandedAccordian === month.monthName
+                      ? ""
+                      : month.monthName,
+                  );
+                  setIsExpanded(expandedAccordian !== month.monthName);
+                }}
                 onFocus={(event) => event.stopPropagation()}
                 className={classNames(TimelineStyles.monthName, {
                   [TimelineStyles.currentMonth]:
