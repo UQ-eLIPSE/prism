@@ -1,5 +1,8 @@
+run_project_docker.sh
+get_mongodumps.sh
 node_modules/
 client/node_modules/
+.env.prism_uat.example
 
 server/node_modules/
 

@@ -7,11 +7,16 @@ import {
 } from "../../interfaces/NodeData";
 import ArrowIcon from "./../ArrowIcon";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
+import { useUserContext } from "../../context/UserContext";
 
 // Helper
 const radToDeg = (rad: number) => {
   return (rad * 180) / Math.PI;
 };
+
+// There is a default offset for the node's RADAR VIEW on the minimap.
+// This defaults to point right side.
+const ROTATION_OFFSET = 90;
 
 /**
  * Converts rotation style to counter rotation style.
@@ -53,12 +58,13 @@ const NodeComponent = ({
   isMapEnlarged,
   configureRotation,
   handleNodeClick,
-  isEditing,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   currViewParams, // TODO: NEED FOR LATER
   nodesData,
   currRotation,
+  config,
 }: NodeComponentProps): JSX.Element => {
+  const [user] = useUserContext();
   const getNodeStyle = (includeTransform = true) => {
     const isSelectedNode = node === selectedNode;
     return {
@@ -66,6 +72,35 @@ const NodeComponent = ({
       left: `${isSelectedNode ? x : xPosition}%`,
       transform: includeTransform ? configureRotation(node) : "none",
     };
+  };
+
+  /**
+   * Used to rotate the red and black arrows in the minimap.
+   * @returns {number} - The initial POV rotation in degrees.
+   */
+  const getInitialPOVRotationDegrees = (offset: number = 0): number => {
+    // isNaN checks needed because sometimes, the node rotation value is being read as
+    // undefined...
+
+    // This is the initial node rotation read from the db
+    const nodeRotationInDegrees = isNaN(radToDeg(node.rotation))
+      ? 0
+      : radToDeg(node.rotation);
+
+    // This is the current rotation set by the user through the popup form.
+    const currRotationInDegrees = isNaN(currRotation) ? 0 : currRotation;
+
+    const result = !selectedNode
+      ? nodeRotationInDegrees
+      : currRotationInDegrees;
+
+    return (
+      result +
+      offset +
+      (isNaN(radToDeg(config.initial_settings.rotation_offset))
+        ? 0
+        : radToDeg(config.initial_settings.rotation_offset))
+    );
   };
 
   const getInitialParams = (
@@ -77,9 +112,19 @@ const NodeComponent = ({
     const selectedNodeData = nodesData.find(
       (node) => node.survey_node.tiles_id === tile_id,
     );
+
     const initialParams = selectedNodeData?.survey_node.initial_parameters;
     return !initialParams ? { yaw: 0, pitch: 0, fov: 0 } : initialParams;
   };
+
+  const isCurrentNode = node.tiles_id === MinimapProps.currPanoId;
+  const shouldShowArrow =
+    isCurrentNode &&
+    MinimapProps.config.enable.rotation &&
+    user?.isAdmin &&
+    isMapEnlarged;
+  const commonArrowScale = `scale(1.5)`;
+  const arrowContainerClass = `${MinimapStyles.nodeArrowContainer} default-arrow`;
 
   return (
     <div
@@ -90,23 +135,19 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={{
           ...getNodeStyle(false),
-          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0)}deg)`,
+          transform: `rotate(${radToDeg(getInitialParams(node)?.yaw ?? 0) + getInitialPOVRotationDegrees(ROTATION_OFFSET)}deg)`,
           zIndex: 2,
         }}
       >
         <ArrowIcon
-          showArrow={
-            node.tiles_id === MinimapProps.currPanoId &&
-            MinimapProps.config.enable.rotation &&
-            isEditing
-          }
+          showArrow={shouldShowArrow}
           containerProps={{
-            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            className: arrowContainerClass,
           }}
           iconProps={{
             className: "arrow arrow-yaw",
             style: {
-              transform: `scale(1.5)`,
+              transform: commonArrowScale,
             },
           }}
           dataCy="yaw-arrow"
@@ -118,25 +159,19 @@ const NodeComponent = ({
           ...getNodeStyle(false),
           // The current rotation is stored as the previous state of rotation.
           // The current rotation is updated when the user clicks on the node, which is why this check is necessary.
-          transform: `rotate(${
-            !selectedNode ? radToDeg(node.rotation) : currRotation
-          }deg)`,
+          transform: `rotate(${getInitialPOVRotationDegrees(ROTATION_OFFSET)}deg)`,
         }}
       >
         <ArrowIcon
-          showArrow={
-            node.tiles_id === MinimapProps.currPanoId &&
-            MinimapProps.config.enable.rotation &&
-            isEditing
-          }
+          showArrow={shouldShowArrow}
           containerProps={{
-            className: `${MinimapStyles.nodeArrowContainer} default-arrow`,
+            className: arrowContainerClass,
             style: { transform: `scaleY(1.5)` },
           }}
           iconProps={{
             className: "arrow",
             style: {
-              transform: `scale(1.5)`,
+              transform: commonArrowScale,
               color: "red",
               opacity: 0.5,
             },
@@ -148,6 +183,9 @@ const NodeComponent = ({
         className={MinimapStyles.nodeContainer}
         style={getNodeStyle()}
         key={node.tiles_id}
+        data-cy={
+          node == selectedNode ? "node-container-selected" : "node-container"
+        }
       >
         {node.tiles_id === MinimapProps.currPanoId &&
           MinimapProps.config.enable.rotation && (

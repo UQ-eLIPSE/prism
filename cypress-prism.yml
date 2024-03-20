@@ -4,7 +4,7 @@
 # ansible-playbook -i </path/to/inventory> <playbook>.yml
 
 - name: Run e2e Tests
-  hosts: uatzone
+  hosts: zones
 
   tasks:
     - name: MongoDB restore test database - drop off
@@ -43,6 +43,7 @@
           - MinimapTest.cy.ts
           - ScenenameTest.cy.ts
           - ToggleEditNodeButtonTest.cy.ts
+          - UploadFilesTest.cy.ts
       shell: |
         cd {{ localdir_client }} && \
         mkdir -p tmp/cypress-results && \

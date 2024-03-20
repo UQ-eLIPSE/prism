@@ -103,7 +103,9 @@ function Minimap(props: MinimapProps) {
         setRotation,
       );
     } else if (!editing && !selectedNode) {
-      props.updateMinimapEnlarged(false);
+      if (!user?.isAdmin) {
+        props.updateMinimapEnlarged(false);
+      }
       props.onClickNode(node.tiles_id);
       props.setNodeState({
         x_position: node.x,
@@ -351,10 +353,10 @@ function Minimap(props: MinimapProps) {
                   x={x}
                   y={y}
                   handleNodeClick={handleNodeClick}
-                  isEditing={editing}
                   currViewParams={props.currViewParams}
                   nodesData={props.nodeData}
                   currRotation={rotation}
+                  config={config}
                 />
               )}
             </div>

@@ -138,6 +138,18 @@ function Timeline(props: Props) {
     allSurveys: SurveyMonth[],
   ): React.ReactElement[] => {
     return allSurveys.map((month: SurveyMonth) => {
+      const handleButtonClick = (
+        month: SurveyMonth,
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      ) => {
+        event.stopPropagation();
+        showLatestSurveyInMonth(month, event);
+        setExpandedAccordian(
+          expandedAccordian === month.monthName ? "" : month.monthName,
+        );
+        setIsExpanded(expandedAccordian !== month.monthName);
+      };
+
       return (
         <div className={TimelineStyles.monthContainer} key={month.monthName}>
           <Accordion
@@ -147,7 +159,6 @@ function Timeline(props: Props) {
               setExpandedAccordian(
                 expandedAccordian === month.monthName ? "" : month.monthName,
               );
-              setIsExpanded(expandedAccordian !== month.monthName);
             }}
           >
             <AccordionSummary
@@ -155,7 +166,7 @@ function Timeline(props: Props) {
             >
               <button
                 data-cy="month_button"
-                onClick={(event): void => showLatestSurveyInMonth(month, event)}
+                onClick={(event) => handleButtonClick(month, event)}
                 onFocus={(event) => event.stopPropagation()}
                 className={classNames(TimelineStyles.monthName, {
                   [TimelineStyles.currentMonth]:

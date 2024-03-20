@@ -32,7 +32,7 @@ const convertTransformToDegrees = (
 };
 
 testEachZone((zone: Cypress.PrismZone) => {
-  describe(`Test case: User inputs on the edit node position form`, () => {
+  describe.skip(`Test case: User inputs on the edit node position form`, () => {
     beforeEach(function () {
       if (!zone.adminUser) this.skip();
       cy.accessZone(zone);

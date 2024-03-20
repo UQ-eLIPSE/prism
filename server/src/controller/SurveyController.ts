@@ -25,9 +25,7 @@ import { Site } from "../components/Site/SiteModel";
 import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { ParsedQs } from "qs";
 import { createMinimapImages } from "../service/SurveyService";
-import surveyNodesHandler from "../dal/surveyNodesHandler";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
-import minimmapImagesHandler from "../dal/minimmapImagesHandler";
 
 // these packages use require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -214,10 +212,10 @@ export class SurveyController {
 
     if (date) {
       if (!floor && !allSurveys.length) {
-        const surveyNode = await surveyNodesHandler.findByDateAndSite(
+        const surveyNode = await SurveyNode.find({
           date,
-          siteId,
-        );
+          site: new ObjectId(siteId),
+        });
         for (const node of surveyNode) {
           const survey = await findOneBySurveyNodeWithRelated(node._id);
           survey && allSurveys.push(survey);
@@ -237,6 +235,7 @@ export class SurveyController {
         }
       });
     }
+
     return CommonUtil.successResponse(res, "", results);
   }
 
@@ -287,7 +286,7 @@ export class SurveyController {
             x_scale: s.x_scale,
             y: s.y,
             y_scale: s.y_scale,
-            site: Number(s.site),
+            site: s.site,
             rotation: s.rotation,
             info_hotspots: s.survey_node.info_hotspots,
           });
@@ -346,10 +345,10 @@ export class SurveyController {
           }
         });
       } else if (date) {
-        surveyWithDate = await surveyNodesHandler.findByDateAndSite(
+        surveyWithDate = await SurveyNode.find({
           date,
-          siteId,
-        );
+          site: new ObjectId(siteId),
+        });
         if (!surveyWithDate)
           return CommonUtil.failResponse(
             res,
@@ -522,17 +521,16 @@ export class SurveyController {
    * @param res
    */
   public async getMinimapImage(req: Request, res: Response) {
-    const floor = req.query.floor as string;
+    const { floor } = req.query;
     const { siteId } = req.params;
 
     try {
       if (!floor) throw new Error("Floor not found.");
 
-      const minimapImageObject =
-        await minimmapImagesHandler.findMinimapImageByFloorAndSiteId(
-          floor,
-          siteId,
-        );
+      const minimapImageObject = await MinimapImages.findOne(
+        { floor, site: new ObjectId(siteId) },
+        "-_id",
+      );
 
       if (!minimapImageObject) throw new Error("minimapImageObject not found.");
 
