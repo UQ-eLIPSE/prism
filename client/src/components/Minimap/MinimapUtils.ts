@@ -206,6 +206,8 @@ const updateNodeRotationAPI = async (
   newRotation: number,
   windowAlertMessage: string,
 ): Promise<void> => {
+  console.log("TRYIG TO UPDATE selected node: ", selectedNode);
+  console.log("TRYING TO UPDATE new rotation: ", newRotation);
   try {
     // Dividing rotation by 57.2958 will convert it from degrees (0 - 360) to radians to be stored in the db.
     await NetworkCalls.updateNodeRotation(

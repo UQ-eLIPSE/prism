@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import MinimapStyles from "../../sass/partials/_minimap.module.scss";
@@ -16,6 +17,7 @@ import ToggleEditNodeButton from "../ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
 import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
 import MinimapUpdate from "./MinimapUpload";
+// import { NodeData, SurveyNode } from "../../interfaces/NodeData";
 
 function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
@@ -87,15 +89,18 @@ function Minimap(props: MinimapProps) {
       resetSelectedNode();
     }
   }, [props.minimapEnlarged]);
-  console.log("selected node rotation:", rotation);
+
+  // console.log("node rotation: ", rotation);
+  // console.log("selected node: ", selectedNode);
+  // console.log("curr rotation", props.currRotation);
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     node: NewNode,
   ): void {
     e.stopPropagation();
-    console.log("is editing", editing);
-    console.log("selected node", selectedNode);
     // if (editing && !selectedNode) {
+    console.log("clicking on node: ", node);
+
     if (editing) {
       MinimapUtils.setNodeSelected(
         node,
@@ -123,7 +128,27 @@ function Minimap(props: MinimapProps) {
         rotation: 0,
       });
     }
+    console.log("selected node:", selectedNode);
+    console.log("node:", node);
   }
+
+  const handleEditNode = (node: NewNode) => {
+    console.log("ABBOUT TO EDIT NODE:", node);
+    MinimapUtils.setNodeSelected(
+      node,
+      props.minimapData,
+      setSelectedNode,
+      setX,
+      setY,
+      setRotation,
+    );
+    props.onClickNode(node.tiles_id);
+    props.setNodeState({
+      x_position: node.x,
+      y_position: node.y,
+      rotation: 0,
+    });
+  };
 
   async function performMinimapUpload(): Promise<void> {
     try {
@@ -190,6 +215,11 @@ function Minimap(props: MinimapProps) {
       props.minimapData.y_scale,
     );
 
+    console.log("newX: ", newX);
+    console.log("newY: ", newY);
+    console.log("rotation: ", rotation);
+    console.log("selected node: ", selectedNode);
+
     await MinimapUtils.updateNodeCoordinateAPI(
       selectedNode,
       newX,
@@ -254,6 +284,11 @@ function Minimap(props: MinimapProps) {
           isEditingState={{ value: editing, setFn: setEditing }}
           selectedNodeState={{ value: selectedNode, setFn: setSelectedNode }}
           updateNodeInfo={updateNodeInfo}
+          currPanoId={props.currPanoId}
+          nodesData={props.nodeData}
+          handleEditCurrentViewedNode={(node: NewNode) => {
+            handleEditNode(node);
+          }}
         />
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
