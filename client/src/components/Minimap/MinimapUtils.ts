@@ -127,6 +127,7 @@ const setNodeSelected = (
   handleSetYCoordinate: (value: React.SetStateAction<number>) => void,
   handleSetRotation: (value: React.SetStateAction<number>) => void,
 ): void => {
+  console.log("setting node selected");
   handleSetSelectedNode(newNode);
 
   const { nodeXScaledCoordinate, nodeYScaledCoordinate } =

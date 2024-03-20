@@ -87,13 +87,16 @@ function Minimap(props: MinimapProps) {
       resetSelectedNode();
     }
   }, [props.minimapEnlarged]);
-
+  console.log("selected node rotation:", rotation);
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     node: NewNode,
   ): void {
     e.stopPropagation();
-    if (editing && !selectedNode) {
+    console.log("is editing", editing);
+    console.log("selected node", selectedNode);
+    // if (editing && !selectedNode) {
+    if (editing) {
       MinimapUtils.setNodeSelected(
         node,
         props.minimapData,
@@ -102,7 +105,14 @@ function Minimap(props: MinimapProps) {
         setY,
         setRotation,
       );
+      props.onClickNode(node.tiles_id);
+      props.setNodeState({
+        x_position: node.x,
+        y_position: node.y,
+        rotation: 0,
+      });
     } else if (!editing && !selectedNode) {
+      // console.log("!editing && !selectedNode", node.tiles_id);
       if (!user?.isAdmin) {
         props.updateMinimapEnlarged(false);
       }
@@ -133,23 +143,37 @@ function Minimap(props: MinimapProps) {
       return "";
     }
 
-    if (node == selectedNode) {
-      return `rotate(${
-        props.currViewParams.yaw + // include intial yaw from db
-        MinimapConstants.OFFSET +
-        config.initial_settings.rotation_offset +
-        rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION
-      }rad)`;
-    } else {
-      const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
-      const sum = [
-        props.currRotation,
-        config.initial_settings.rotation_offset,
-        node.rotation,
-        MinimapConstants.OFFSET,
-      ].reduce((a, b) => numOr0(a) + numOr0(b));
-      return `rotate(${sum}rad)`;
-    }
+    const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
+    const initialConfigRotationOffset = numOr0(
+      config.initial_settings.rotation_offset,
+    );
+
+    const getSum = (...rotationValues: number[]) => {
+      return rotationValues.reduce(
+        (total, currRotationVal) => total + numOr0(currRotationVal),
+      );
+    };
+
+    const sum =
+      node == selectedNode
+        ? getSum(
+            // When node is at selectedNode, the user should be able to rotate
+            // the node and the styling should reflect that.
+            initialConfigRotationOffset,
+            MinimapConstants.OFFSET,
+            props.currViewParams.yaw,
+            rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION,
+          )
+        : getSum(
+            // When node is not selected, the node should rotate based on the
+            // initial rotation value.
+            initialConfigRotationOffset,
+            MinimapConstants.OFFSET,
+            props.currRotation,
+            node.rotation,
+          );
+
+    return `rotate(${sum}rad)`;
   }
 
   async function updateNodeInfo(): Promise<void> {
