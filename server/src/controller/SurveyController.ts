@@ -26,6 +26,8 @@ import { ConsoleUtil } from "../utils/ConsoleUtil";
 import { ParsedQs } from "qs";
 import { createMinimapImages } from "../service/SurveyService";
 import minimapNodeHandler from "../dal/minimapNodeHandler";
+import surveyNodesHandler from "../dal/surveyNodesHandler";
+import hotspotDescriptionHandler from "../dal/hotspotDescriptionHandler";
 
 // these packages use require over import
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -486,24 +488,24 @@ export class SurveyController {
       if (!tilesId) throw new Error("TilesId not found.");
       if (!siteId) throw new Error("Site ID has not been provided");
 
-      const hotspotObject = await SurveyNode.findOne(
-        { tiles_id: tilesId, site: new ObjectId(siteId) },
-        "-_id",
+      const hotspotObject = await surveyNodesHandler.getOneSurveyNode(
+        tilesId as string,
+        new ObjectId(siteId),
       );
-
-      // const hotspotObject = await surveyNodesHandler.getOneSurveyNode(
-      //   tilesId,
-      //   new ObjectId(siteId),
-      // );
 
       if (!hotspotObject) throw new Error("hotspotObject not found.");
 
       const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map(
         (e) => e.info_id,
       );
-      const hotspotDescs = await HotspotDescription.find({
-        info_id: { $in: hotspotDescriptionInfoIds },
-      });
+      // const hotspotDescs = await HotspotDescription.find({
+      //   info_id: { $in: hotspotDescriptionInfoIds },
+      // });
+
+      const hotspotDescs =
+        await hotspotDescriptionHandler.findHotspotDescriptionsByInfoIds(
+          hotspotDescriptionInfoIds,
+        );
 
       if (hotspotDescs) allHotspotDescriptions = hotspotDescs;
 

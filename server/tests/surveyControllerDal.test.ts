@@ -13,18 +13,23 @@ import {
   mockMapPins,
   mockMinimapNode,
   mockMinimapImages,
+  mockHotSpotDescription,
 } from "./sampleData/surveyControllerData";
 import surveyNodesHandler from "../src/dal/surveyNodesHandler";
 import mapPinsHandler from "../src/dal/mapPinsHandler";
 import minimapNodeHandler from "../src/dal/minimapNodeHandler";
 import * as httpMocks from "node-mocks-http";
 import minimmapImagesHandler from "../src/dal/minimmapImagesHandler";
+import { IHotspotDescription, ISurveyNode } from "../src/models/SurveyModel";
+import { ObjectId } from "mongodb";
+import hotspotDescriptionHandler from "../src/dal/hotspotDescriptionHandler";
 
 jest.mock("../src/dal/minimapConversionsHandler");
 jest.mock("../src/dal/surveyNodesHandler");
 jest.mock("../src/dal/mapPinsHandler");
 jest.mock("../src/dal/minimapNodeHandler");
 jest.mock("../src/dal/minimmapImagesHandler");
+jest.mock("../src/dal/hotspotDescriptionHandler");
 
 describe("getIndividualSurveysDetails", () => {
   it("should return surveys for a given floor and site", async () => {
@@ -58,7 +63,7 @@ describe("getSurveyExistence", () => {
   it(`siteCreated and sitePopulated should return true if surveys exist for a
 given floor and site`, async () => {
     const req: httpMocks.MockRequest<Request> = httpMocks.createRequest({
-      params: { siteId: "123" },
+      params: { siteId: "60d6ec5a4ef0b2c8c7ec5958" },
     });
 
     const resp = httpMocks.createResponse();
@@ -347,6 +352,47 @@ describe("getMinimapImages", () => {
         xy_flipped: true,
         site: 123,
       },
+    });
+  });
+});
+
+describe("getIndividualHotSpotDescription test case", () => {
+  it("should return the hotspot description for a given info id", async () => {
+    const req = httpMocks.createRequest({
+      query: { tilesId: "exampleTilesId" },
+      params: { siteId: "60d6ec5a4ef0b2c8c7ec5958" },
+    });
+
+    const surveyController = new SurveyController();
+    const resp = httpMocks.createResponse();
+
+    mocked(surveyNodesHandler.getOneSurveyNode).mockResolvedValue({
+      ...mockSurveyNodes[0],
+      _id: new ObjectId("60d6ec5a4ef0b2c8c7ec5958"), // Mock MongoDB ObjectId
+    } as ISurveyNode & { _id: ObjectId });
+
+    mocked(
+      hotspotDescriptionHandler.findHotspotDescriptionsByInfoIds,
+    ).mockResolvedValue(
+      mockHotSpotDescription.map((description) => ({
+        ...description,
+        _id: new ObjectId("60d6ec5a4ef0b2c8c7ec5958"), // Mock MongoDB ObjectId
+      })) as (IHotspotDescription & {
+        _id: ObjectId;
+      })[],
+    );
+
+    await surveyController.getIndividualHotspotDescription(req, resp);
+
+    const jsonData = resp._getJSONData();
+    const statusCode = resp._getStatusCode();
+
+    expect(statusCode).toBe(200);
+
+    expect(jsonData).toStrictEqual({
+      message: "",
+      payload: mockHotSpotDescription,
+      success: true,
     });
   });
 });

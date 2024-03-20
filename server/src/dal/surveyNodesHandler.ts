@@ -21,7 +21,7 @@ const getDocumentCounts = (site: string) => {
 const getOneSurveyNode = async (tilesId: string, site: ObjectId) => {
   return SurveyNode.findOne({
     tiles_id: tilesId,
-    site: site,
+    site,
   });
 };
 
