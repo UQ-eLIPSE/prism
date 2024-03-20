@@ -497,9 +497,6 @@ export class SurveyController {
       const hotspotDescriptionInfoIds = hotspotObject.info_hotspots.map(
         (e) => e.info_id,
       );
-      // const hotspotDescs = await HotspotDescription.find({
-      //   info_id: { $in: hotspotDescriptionInfoIds },
-      // });
 
       const hotspotDescs =
         await hotspotDescriptionHandler.findHotspotDescriptionsByInfoIds(
