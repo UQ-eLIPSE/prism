@@ -14,6 +14,7 @@
     display: flex;
     flex-direction: row;
     gap: 0.5em;
+    // margin-bottom: 1.25rem;
   }
 
   .nameInput {
@@ -261,8 +262,8 @@
 
 .closeShow {
   position: absolute;
-  margin-top: -16px;
-  margin-right: -18px;
+  margin-top: -26px;
+  margin-right: 6px;
   padding: 3px 4px 2px 4px;
   font-size: 1em;
   z-index: 12;
@@ -272,6 +273,36 @@
   &:hover {
     transform: scale(1.2);
   }
+  // TEMP
+  display: none;
+}
+
+.expandMinimapBtn {
+  display: flex;
+  gap: 0.5em;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  padding: 0.3em;
+  border-radius: 10px;
+  background-color: $prismPrimary;
+  border: $prismPrimary;
+  color: #fff;
+  font-size: 1em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.9;
+  cursor: pointer;
+  transition: 0.3s background-color ease;
+}
+
+.expandMinimapBtn:hover {
+  // ? TBD
+  background-color: #161a71;
+}
+
+.hide {
+  display: none;
 }
 
 .smallMapImg {

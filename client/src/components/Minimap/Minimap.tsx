@@ -360,6 +360,16 @@ function Minimap(props: MinimapProps) {
               )}
             </div>
 
+            <button
+              className={`expandMinimapBtn ${props.minimapEnlarged && "hide"}`}
+              onClick={(): void => {
+                props.updateMinimapEnlarged(!props.minimapEnlarged);
+              }}
+            >
+              <span>Expand Minimap</span>
+              <i className="fas fa-expand-arrows-alt" />
+            </button>
+
             <div className="minimapButtons">
               {!pendingUpload && !props.minimapEnlarged && user?.isAdmin && (
                 <div
