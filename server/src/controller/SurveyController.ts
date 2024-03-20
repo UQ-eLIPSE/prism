@@ -7,7 +7,6 @@ import { SurveyService } from "../service/SurveyService";
 import {
   Survey,
   SurveyNode,
-  HotspotDescription,
   MinimapImages,
   IMinimapNode,
   IMinimapConversion,
