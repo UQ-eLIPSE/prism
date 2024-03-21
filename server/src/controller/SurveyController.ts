@@ -477,6 +477,8 @@ export class SurveyController {
    * @param res
    */
   public async getIndividualHotspotDescription(req: Request, res: Response) {
+    // TODO: Change tilesId to tiles_id as shown in the db for consistency
+    // of naming
     const { tilesId } = req.query;
     const { siteId } = req.params;
 
