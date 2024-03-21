@@ -19,7 +19,7 @@ interface ArrowIconProps {
  * Deafault arrow icon is an up arrow.
  */
 const ArrowIcon = ({
-  showArrow = true,
+  showArrow,
   containerProps,
   iconProps,
   dataCy,
