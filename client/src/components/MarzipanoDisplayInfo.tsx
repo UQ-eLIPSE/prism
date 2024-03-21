@@ -8,11 +8,11 @@ interface MarzipanoDisplayInfoProps {
 const MarzipanoDisplayInfo = ({ viewParams }: MarzipanoDisplayInfoProps) => {
   const { yaw, pitch, fov } = viewParams;
   return (
-    <>
+    <div className="marzipano-info">
       <p>{`Pitch (Tilt): ${pitchToDeg(pitch)}\u00B0`}</p>
       <p>{`Yaw (Rotation): ${radToDeg(yaw)}\u00B0`}</p>
       <p>{`Fov (Zoom): ${fovToPercent(fov, { min: 0.73, max: 1.2 })}%`}</p>
-    </>
+    </div>
   );
 };
 

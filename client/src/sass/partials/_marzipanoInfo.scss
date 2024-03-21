@@ -1,25 +1,55 @@
 @import "./variables.scss";
 
-.marzipano-info {
+.marzipano-info-container {
   position: absolute;
-  right: 8rem;
-  top: 5rem;
+  left: 6rem;
+  top: 1.125rem;
   margin-left: 1.5em;
-  margin-top: 1.5em;
   z-index: 2;
   display: flex;
-  align-items: center;
+  gap: 0.25rem;
+  flex-direction: column;
 
   line-height: 1em;
-  gap: 1em;
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 0.5em 2em;
+  padding: 0em 2em;
   color: #fff;
-  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-family: "Lexend Deca", "Lato", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+}
 
-  p {
-    font-size: 1.25rem;
-    font-family: "Lexend Deca", "Lato", "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+.marzipano-info {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 0.25em 1em;
+  border-radius: 0.5rem;
+  display: flex;
+  gap: 1rem;
+  width: 0;
+  overflow: hidden;
+  animation: elongate 0.8s ease-out forwards;
+
+  @keyframes elongate {
+    to {
+      width: 100%;
+    }
   }
+}
+
+.show-marzipano-info-btn {
+  padding: 0.5em 1em;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.45em;
+  font-size: 1em;
+  border-radius: 0.5rem;
+  transition: transform 0.3s ease;
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.show-marzipano-info-btn > label {
+  cursor: pointer;
+  margin-left: 0.5rem;
 }
