@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useEffect, useRef, useState } from "react";
 import { EditNodeInput } from "../../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
 import { StateObject } from "../../interfaces/StateObject";
@@ -33,6 +34,39 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     xPositionState: { value: xPositionValue, setFn: setXPositionValue },
     yPositionState: { value: yPositionValue, setFn: setYPositionValue },
   } = props;
+  // keeps track of whether any of the form values has been changed
+  const [isChanged, setIsChanged] = useState(false);
+
+  console.log("selected node: ", props.selectedNode);
+
+  const initialValues = useRef({
+    rotation: rotationValue,
+    xPosition: xPositionValue,
+    yPosition: yPositionValue,
+  });
+
+  console.log("initial values", initialValues);
+  console.log("current values", rotationValue, xPositionValue, yPositionValue);
+
+  useEffect(() => {
+    initialValues.current = {
+      rotation: rotationValue,
+      xPosition: xPositionValue,
+      yPosition: yPositionValue,
+    };
+  }, [props.selectedNode]);
+
+  useEffect(() => {
+    if (
+      rotationValue !== initialValues.current.rotation ||
+      xPositionValue !== initialValues.current.xPosition ||
+      yPositionValue !== initialValues.current.yPosition
+    ) {
+      setIsChanged(true);
+    } else {
+      setIsChanged(false);
+    }
+  }, [rotationValue, xPositionValue, yPositionValue]);
 
   // Input configurations for the form. Please note that the label
   // for each must be unique since it is used as the input's id.
@@ -201,7 +235,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
           <button type="button" onClick={handleCancelClick}>
             Cancel
           </button>
-          <button type="submit" data-cy="submit-button">
+          <button type="submit" data-cy="submit-button" hidden={!isChanged}>
             Save
           </button>
         </div>
