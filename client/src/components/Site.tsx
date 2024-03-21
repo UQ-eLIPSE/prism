@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import "../sass/App.scss";
 import "../utils/Marzipano/Marzipano.scss";
