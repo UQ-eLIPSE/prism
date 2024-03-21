@@ -14,6 +14,7 @@
     display: flex;
     flex-direction: row;
     gap: 0.5em;
+    margin-bottom: 1.25rem;
   }
 
   .nameInput {
@@ -253,15 +254,15 @@
   border: none;
   cursor: pointer;
   transition: left ease-out 0.19s;
-  color: black;
+  color: $prismPrimary;
   &:hover {
-    color: $prismPrimary;
+    color: black;
   }
 }
 
 .closeShow {
   position: absolute;
-  margin-top: 4px;
+  margin-top: -26px;
   margin-right: 6px;
   padding: 3px 4px 2px 4px;
   font-size: 1em;
