@@ -248,7 +248,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
           <button type="button" onClick={handleCancelClick}>
             Cancel
           </button>
-          <button type="submit" data-cy="submit-button" hidden={!hasChanged}>
+          <button
+            type="submit"
+            data-cy="submit-button"
+            disabled={!hasChanged}
+            className={!hasChanged ? "disabled" : ""}
+          >
             Save
           </button>
         </div>
