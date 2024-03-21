@@ -26,7 +26,7 @@ export default defineConfig({
           uat: "https://prism-uat.uqcloud.net",
         },
         singleSite: true,
-        hotspots: true,
+        hotspots: false, // * CHANGE THIS ACCORDINGLY BASED ON THE PROJECT
         timeline: true,
         floors: true,
         adminUser: true,

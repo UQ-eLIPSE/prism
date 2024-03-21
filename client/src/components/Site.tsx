@@ -556,7 +556,7 @@ function Site(props: SiteInterface) {
         <MarzipanoDisplayInfo viewParams={currViewParams} />
       </div>
       <div
-        className={`linkButton ${!config.enable.hotspots_nav && "disabled"}`}
+        className={`linkButton ${!config.enable.hotspots_nav && "hide"}`}
         onClick={(e): void => handleDropdownClick(e, !linkNodeListOpen)}
         style={{ zIndex: 9 }}
       >
