@@ -631,6 +631,8 @@ h1 {
         display: flex;
 
         button {
+          max-width: 45%; // * change this accordingly depending on the number of
+          // * buttons in the parent container
           flex-grow: 1;
           margin: 0.25em;
           padding: 0.5em;
@@ -657,6 +659,11 @@ h1 {
 
             &:hover {
               background-color: #161a71;
+            }
+
+            &.disabled {
+              cursor: not-allowed;
+              background: #666666;
             }
           }
         }
