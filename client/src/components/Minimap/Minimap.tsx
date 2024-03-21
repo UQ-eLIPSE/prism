@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import MinimapStyles from "../../sass/partials/_minimap.module.scss";
@@ -17,7 +16,6 @@ import ToggleEditNodeButton from "../ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
 import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
 import MinimapUpdate from "./MinimapUpload";
-// import { NodeData, SurveyNode } from "../../interfaces/NodeData";
 
 function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
@@ -107,7 +105,7 @@ function Minimap(props: MinimapProps) {
 
   /**
    * This function is used to switch the scene to the selected node.
-   * @param node The node to be switched to
+   * @param {NewNode} node The node to be switched to
    */
   function switchSceneToNode(node: NewNode) {
     props.onClickNode(node.tiles_id);
