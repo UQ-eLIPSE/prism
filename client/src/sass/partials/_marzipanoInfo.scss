@@ -11,18 +11,19 @@
   flex-direction: column;
 
   line-height: 1em;
-  padding: 0.5em 2em;
+  padding: 0em 2em;
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-family: "Lexend Deca", "Lato", "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    sans-serif;
 }
 
 .marzipano-info {
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 0.5em 2em;
+  padding: 0.25em 1em;
   border-radius: 0.5rem;
   display: flex;
+  gap: 1rem;
 }
 
 .show-marzipano-info-btn {
@@ -32,13 +33,11 @@
   padding: 0.45em;
   font-size: 1em;
   border-radius: 0.5rem;
-  cursor: pointer;
   transition: transform 0.3s ease;
   font-weight: 800;
-
-  &:hover {
-    transform: scale(1.1);
-  }
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
 }
 
 .show-marzipano-info-btn > label {
