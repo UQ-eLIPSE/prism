@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import "../sass/App.scss";
 import "../utils/Marzipano/Marzipano.scss";
@@ -125,6 +126,7 @@ function Site(props: SiteInterface) {
     y_position: parseFloat(currPanoId.split("_")[4]),
     rotation: 0,
   });
+  const [marzipanoInfoVisibility, setMarzipanoInfoVisibility] = useState(false);
 
   // Used to detect if page is being rendered for the first time (not switching floors).
   const [initialRender, setInitialRender] = useState<boolean>(true);
@@ -552,8 +554,19 @@ function Site(props: SiteInterface) {
         }
         timelineOpen={timelineOpen}
       />
-      <div className="marzipano-info">
-        <MarzipanoDisplayInfo viewParams={currViewParams} />
+      <div className="marzipano-info-container">
+        {marzipanoInfoVisibility && (
+          <MarzipanoDisplayInfo viewParams={currViewParams} />
+        )}
+        <div className="show-marzipano-info-btn">
+          <input
+            id="show-marzipano-info"
+            type="checkbox"
+            checked={marzipanoInfoVisibility}
+            onChange={(e) => setMarzipanoInfoVisibility(e.target.checked)}
+          />
+          <label htmlFor="show-marzipano-info">Show Camera Info</label>
+        </div>
       </div>
       <div
         className={`linkButton ${!config.enable.hotspots_nav && "hide"}`}
