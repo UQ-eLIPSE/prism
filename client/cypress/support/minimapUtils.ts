@@ -49,8 +49,6 @@ export const expandMiniMap = (): void => {
 
 export const editSelectedNode = (): void => {
   cy.get("p").contains("Edit Node").should("exist").click({ force: true });
-  cy.get("h2").contains("Select a Node to Edit");
-  cy.get("[data-cy='selected-node']").as("btn-select").click({ force: true });
 };
 
 export const editNodePosition = (coordId: string, coordValue: string): void => {

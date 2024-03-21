@@ -484,9 +484,9 @@ h1 {
   display: none;
   z-index: 500;
   position: absolute;
-  right: 0em;
+  right: 23.5rem;
   position: absolute;
-  top: calc(-100vh + 1.125em + 61.344px + 2.25em);
+  top: calc(-100vh + 1.125em + 0.6rem);
 
   &.visible {
     display: flex;

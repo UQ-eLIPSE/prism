@@ -16,6 +16,7 @@ import ToggleEditNodeButton from "../ToggleEditNodeButton";
 import MinimapImage from "./MiniMapImage";
 import SubmitOrCancelButtons from "../SubmitOrCancelButtons";
 import MinimapUpdate from "./MinimapUpload";
+import { NodeData } from "../../interfaces/NodeData";
 
 function Minimap(props: MinimapProps) {
   const config: ISettings = props.config;
@@ -93,26 +94,44 @@ function Minimap(props: MinimapProps) {
     node: NewNode,
   ): void {
     e.stopPropagation();
-    if (editing && !selectedNode) {
-      MinimapUtils.setNodeSelected(
-        node,
-        props.minimapData,
-        setSelectedNode,
-        setX,
-        setY,
-        setRotation,
-      );
+    if (editing) {
+      handleToEditCurrentViewedNode(node);
     } else if (!editing && !selectedNode) {
       if (!user?.isAdmin) {
         props.updateMinimapEnlarged(false);
       }
-      props.onClickNode(node.tiles_id);
-      props.setNodeState({
-        x_position: node.x,
-        y_position: node.y,
-        rotation: 0,
-      });
+      switchSceneToNode(node);
     }
+  }
+
+  /**
+   * This function is used to switch the scene to the selected node.
+   * @param {NewNode} node The node to be switched to
+   */
+  function switchSceneToNode(node: NewNode) {
+    props.onClickNode(node.tiles_id);
+    props.setNodeState({
+      x_position: node.x,
+      y_position: node.y,
+      rotation: 0,
+    });
+  }
+
+  /**
+   * Helper function to help handle the editing of the current viewed node.
+   * @param {NewNode} node The node to be edited
+   */
+  function handleToEditCurrentViewedNode(node: NewNode) {
+    MinimapUtils.setNodeSelected(
+      node,
+      props.minimapData,
+      setSelectedNode,
+      setX,
+      setY,
+      setRotation,
+    );
+
+    switchSceneToNode(node);
   }
 
   async function performMinimapUpload(): Promise<void> {
@@ -133,23 +152,37 @@ function Minimap(props: MinimapProps) {
       return "";
     }
 
-    if (node == selectedNode) {
-      return `rotate(${
-        props.currViewParams.yaw + // include intial yaw from db
-        MinimapConstants.OFFSET +
-        config.initial_settings.rotation_offset +
-        rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION
-      }rad)`;
-    } else {
-      const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
-      const sum = [
-        props.currRotation,
-        config.initial_settings.rotation_offset,
-        node.rotation,
-        MinimapConstants.OFFSET,
-      ].reduce((a, b) => numOr0(a) + numOr0(b));
-      return `rotate(${sum}rad)`;
-    }
+    const numOr0 = (n: number) => (isNaN(n) ? 0 : n);
+    const initialConfigRotationOffset = numOr0(
+      config.initial_settings.rotation_offset,
+    );
+
+    const getSum = (...rotationValues: number[]) => {
+      return rotationValues.reduce(
+        (total, currRotationVal) => total + numOr0(currRotationVal),
+      );
+    };
+
+    const sum =
+      node == selectedNode
+        ? getSum(
+            // When node is at selectedNode, the user should be able to rotate
+            // the node and the styling should reflect that.
+            initialConfigRotationOffset,
+            MinimapConstants.OFFSET,
+            props.currViewParams.yaw,
+            rotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION,
+          )
+        : getSum(
+            // When node is not selected, the node should rotate based on the
+            // initial rotation value.
+            initialConfigRotationOffset,
+            MinimapConstants.OFFSET,
+            props.currRotation,
+            node.rotation,
+          );
+
+    return `rotate(${sum}rad)`;
   }
 
   async function updateNodeInfo(): Promise<void> {
@@ -178,6 +211,31 @@ function Minimap(props: MinimapProps) {
       rotation,
       "Error! \n\n Failed to Update Node Rotation",
     );
+
+    const convertDegreesToRadians = (degrees: number): number => {
+      return degrees / MinimapConstants.DEGREES_TO_RADIANS_ROTATION;
+    };
+
+    // This should always be a length of one since there's only one node to be edited a time
+    // but this is just incase if there are duplicate nodes with the same tiles_id
+    // (Should never happen but just in case)
+    const selectedNodesToEdit: NodeData[] = props.nodeData.filter(
+      (node: NodeData) => node.survey_node.tiles_id === selectedNode?.tiles_id,
+    );
+
+    // This updates the UI state so the STATE remains conssitent with the updated db.
+    selectedNodesToEdit.forEach((nodeToEdit: NodeData) => {
+      nodeToEdit.x = newX;
+      nodeToEdit.y = newY;
+      nodeToEdit.rotation = convertDegreesToRadians(rotation);
+    });
+
+    if (selectedNodesToEdit.length > 1)
+      console.warn("Multiple nodes being updated...");
+    if (!selectedNodesToEdit.length)
+      console.error(
+        "No nodes found to update in UI state...\nPlease check the selected nodes tiles_id",
+      );
 
     resetSelectedNode(); // reset selected node and toggle edit state to false
   }
@@ -230,6 +288,9 @@ function Minimap(props: MinimapProps) {
           isEditingState={{ value: editing, setFn: setEditing }}
           selectedNodeState={{ value: selectedNode, setFn: setSelectedNode }}
           updateNodeInfo={updateNodeInfo}
+          currPanoId={props.currPanoId}
+          nodesData={props.nodeData}
+          handleEditCurrentViewedNode={handleToEditCurrentViewedNode}
         />
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>

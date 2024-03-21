@@ -9,6 +9,8 @@ import {
   actions,
 } from "../support/minimapUtils";
 
+const DELAY: number = 500; // to prevent async issues that sometimes happen causing multiple retries
+
 testEachZone((zone: Cypress.PrismZone) => {
   describe(`Test case: Form should disappear upon submission or cancellation`, () => {
     beforeEach(() => {
@@ -111,6 +113,7 @@ testEachZone((zone: Cypress.PrismZone) => {
 
     beforeEach(() => {
       cy.accessZone(zone);
+      cy.wait(DELAY);
 
       if (!zone.adminUser) return;
 
@@ -137,8 +140,10 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("x", String(randX));
 
             cy.get("button").contains("Save").click({ force: true });
+            cy.wait(DELAY);
             cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
+                editSelectedNode(); // to open form again
                 cy.get("input[id='x']").should(($input) => {
                   expect($input.val()).to.eq(String(randX));
                 });
@@ -163,8 +168,10 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("y", String(randY));
 
             cy.get("button").contains("Save").click({ force: true });
+            cy.wait(DELAY);
             cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
+                editSelectedNode();
                 cy.get("input[id='y']").should(($input) => {
                   expect($input.val()).to.eq(String(randY));
                 });
@@ -195,8 +202,10 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("y", String(randY));
 
             cy.get("button").contains("Save").click({ force: true });
+            cy.wait(DELAY);
             cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
+                editSelectedNode();
                 cy.get("input[id='x']").should(($input) => {
                   expect($input.val()).to.eq(String(randX));
                 });
