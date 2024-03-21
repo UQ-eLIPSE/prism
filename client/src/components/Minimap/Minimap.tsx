@@ -96,34 +96,33 @@ function Minimap(props: MinimapProps) {
   ): void {
     e.stopPropagation();
     if (editing) {
-      MinimapUtils.setNodeSelected(
-        node,
-        props.minimapData,
-        setSelectedNode,
-        setX,
-        setY,
-        setRotation,
-      );
-      props.onClickNode(node.tiles_id);
-      props.setNodeState({
-        x_position: node.x,
-        y_position: node.y,
-        rotation: 0,
-      });
+      handleToEditCurrentViewedNode(node);
     } else if (!editing && !selectedNode) {
       if (!user?.isAdmin) {
         props.updateMinimapEnlarged(false);
       }
-      props.onClickNode(node.tiles_id);
-      props.setNodeState({
-        x_position: node.x,
-        y_position: node.y,
-        rotation: 0,
-      });
+      switchSceneToNode(node);
     }
   }
 
-  const handleEditNode = (node: NewNode) => {
+  /**
+   * This function is used to switch the scene to the selected node.
+   * @param node The node to be switched to
+   */
+  function switchSceneToNode(node: NewNode) {
+    props.onClickNode(node.tiles_id);
+    props.setNodeState({
+      x_position: node.x,
+      y_position: node.y,
+      rotation: 0,
+    });
+  }
+
+  /**
+   * Helper function to help handle the editing of the current viewed node.
+   * @param {NewNode} node The node to be edited
+   */
+  function handleToEditCurrentViewedNode(node: NewNode) {
     MinimapUtils.setNodeSelected(
       node,
       props.minimapData,
@@ -132,13 +131,9 @@ function Minimap(props: MinimapProps) {
       setY,
       setRotation,
     );
-    props.onClickNode(node.tiles_id);
-    props.setNodeState({
-      x_position: node.x,
-      y_position: node.y,
-      rotation: 0,
-    });
-  };
+
+    switchSceneToNode(node);
+  }
 
   async function performMinimapUpload(): Promise<void> {
     try {
@@ -271,9 +266,7 @@ function Minimap(props: MinimapProps) {
           updateNodeInfo={updateNodeInfo}
           currPanoId={props.currPanoId}
           nodesData={props.nodeData}
-          handleEditCurrentViewedNode={(node: NewNode) => {
-            handleEditNode(node);
-          }}
+          handleEditCurrentViewedNode={handleToEditCurrentViewedNode}
         />
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>

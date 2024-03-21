@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { NewNode } from "../interfaces/MiniMap/NewNode";
 import { StateObject } from "../interfaces/StateObject";
@@ -11,7 +9,7 @@ interface ToggleEditNodeButtonProps {
   updateNodeInfo: () => Promise<void>;
   currPanoId: string;
   nodesData: NodeData[];
-  handleEditCurrentViewedNode: (node: any) => void;
+  handleEditCurrentViewedNode: (node: NewNode) => void;
 }
 
 /**
@@ -30,10 +28,8 @@ const ToggleEditNodeButton: React.FC<ToggleEditNodeButtonProps> = ({
     isEditingState.value,
     isEditingState.setFn,
   ];
-  const [selectedNode, setSelectedNode] = [
-    selectedNodeState.value,
-    selectedNodeState.setFn,
-  ];
+
+  const selectedNode = selectedNodeState.value;
 
   const getNode = (panoId: string, nodes: NodeData[]): NodeData => {
     const node = nodes.find(
