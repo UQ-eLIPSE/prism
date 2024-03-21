@@ -126,7 +126,7 @@ function Site(props: SiteInterface) {
     y_position: parseFloat(currPanoId.split("_")[4]),
     rotation: 0,
   });
-  const [marzipanoInfoVisibility, setMarzipanoInfoVisibility] = useState(false);
+  const [marzipanoInfoVisibility, setMarzipanoInfoVisibility] = useState(true);
 
   // Used to detect if page is being rendered for the first time (not switching floors).
   const [initialRender, setInitialRender] = useState<boolean>(true);
