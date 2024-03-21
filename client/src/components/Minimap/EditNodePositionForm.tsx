@@ -178,7 +178,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     : 0;
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
+    <form
+      onSubmit={(e) => {
+        handleSubmit(e, props.updateNode);
+        setIsChanged(false);
+      }}
+    >
       <span data-cy="currRotation-offset-value">
         Initial Minimap Rotation Offset: {`${initialRotationOffset}\u00B0`}
         <Icon
