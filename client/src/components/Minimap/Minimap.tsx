@@ -212,10 +212,6 @@ function Minimap(props: MinimapProps) {
       "Error! \n\n Failed to Update Node Rotation",
     );
 
-    // const node = props.nodeData.find(
-    //   (node) => node.survey_node.tiles_id === selectedNode?.tiles_id,
-    // );
-
     const convertDegreesToRadians = (degrees: number): number => {
       return degrees / MinimapConstants.DEGREES_TO_RADIANS_ROTATION;
     };
