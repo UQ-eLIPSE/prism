@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { EditNodeInput } from "../../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
@@ -10,7 +9,6 @@ import {
   NodeData,
 } from "../../interfaces/NodeData";
 import { Icon } from "@material-ui/core";
-import { get } from "http";
 
 // * To be changed to use a Position type in future refactor.
 interface EditNodeFormProps {
