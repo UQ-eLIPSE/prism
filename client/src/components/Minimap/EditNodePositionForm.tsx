@@ -48,7 +48,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
   const validXPositionValue = getValidNumber(xPositionValue);
   const validYPositionValue = getValidNumber(yPositionValue);
   // keeps track of whether any of the form values has been changed
-  const [isChanged, setIsChanged] = useState(false);
+  const [hasChanged, setHasChanged] = useState(false);
 
   const initialValues = useRef<NodeConfiguration>({
     rotation: validRotationValue,
@@ -65,12 +65,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
   }, [props.selectedNode]);
 
   useEffect(() => {
-    const hasChanged =
+    const isChanged =
       validRotationValue !== initialValues.current.rotation ||
       validXPositionValue !== initialValues.current.x_position ||
       validYPositionValue !== initialValues.current.y_position;
 
-    setIsChanged(hasChanged);
+    setHasChanged(isChanged);
   }, [validRotationValue, validXPositionValue, validYPositionValue]);
 
   // Input configurations for the form. Please note that the label
@@ -181,7 +181,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     <form
       onSubmit={(e) => {
         handleSubmit(e, props.updateNode);
-        setIsChanged(false);
+        setHasChanged(false);
       }}
     >
       <span data-cy="currRotation-offset-value">
@@ -245,7 +245,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
           <button type="button" onClick={handleCancelClick}>
             Cancel
           </button>
-          <button type="submit" data-cy="submit-button" hidden={!isChanged}>
+          <button type="submit" data-cy="submit-button" hidden={!hasChanged}>
             Save
           </button>
         </div>
