@@ -168,6 +168,7 @@ testEachZone((zone: Cypress.PrismZone) => {
             editNodePosition("y", String(randY));
 
             cy.get("button").contains("Save").click({ force: true });
+            cy.wait(DELAY);
             cy.wait(patchReqCoordinatesAlias).then(() => {
               cy.wait(getReqAlias).then(() => {
                 editSelectedNode();
