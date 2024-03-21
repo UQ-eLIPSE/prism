@@ -28,20 +28,11 @@ const [POSITION_MIN, POSITION_MAX] = [0, 100];
  * @returns {JSX.Element}
  */
 const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
-  const [rotationValue, setRotationValue] = [
-    props.rotationState.value,
-    props.rotationState.setFn,
-  ];
-
-  const [xPositionValue, setXPositionValue] = [
-    props.xPositionState.value,
-    props.xPositionState.setFn,
-  ];
-
-  const [yPositionValue, setYPositionValue] = [
-    props.yPositionState.value,
-    props.yPositionState.setFn,
-  ];
+  const {
+    rotationState: { value: rotationValue, setFn: setRotationValue },
+    xPositionState: { value: xPositionValue, setFn: setXPositionValue },
+    yPositionState: { value: yPositionValue, setFn: setYPositionValue },
+  } = props;
 
   // Input configurations for the form. Please note that the label
   // for each must be unique since it is used as the input's id.
