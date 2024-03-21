@@ -24,6 +24,15 @@
   border-radius: 0.5rem;
   display: flex;
   gap: 1rem;
+  width: 0;
+  overflow: hidden;
+  animation: elongate 0.8s ease-out forwards;
+
+  @keyframes elongate {
+    to {
+      width: 100%;
+    }
+  }
 }
 
 .show-marzipano-info-btn {
