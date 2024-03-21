@@ -81,7 +81,6 @@ const NodeComponent = ({
   const getInitialPOVRotationDegrees = (offset: number = 0): number => {
     // isNaN checks needed because sometimes, the node rotation value is being read as
     // undefined...
-    // console.log("current selected node", selectedNode);
 
     // This is the initial node rotation read from the db
     const nodeRotationInDegrees = isNaN(radToDeg(node.rotation))

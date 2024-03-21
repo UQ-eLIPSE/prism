@@ -69,11 +69,6 @@ const ToggleEditNodeButton: React.FC<ToggleEditNodeButtonProps> = ({
     };
 
     handleEditCurrentViewedNode(newNode);
-    console.log("nodes data: ", nodesData);
-
-    console.log("node to be edited: ", getNode(currPanoId, nodesData));
-
-    // if (!isEditing) setSelectedNode(null);
 
     canEdit && updateNodeInfo();
   };

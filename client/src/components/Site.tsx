@@ -87,7 +87,6 @@ function Site(props: SiteInterface) {
   const [currPanoId, setCurrPanoId] = useState<string>(
     config.initial_settings.pano_id,
   );
-  console.log("currPanoId", currPanoId);
   const [currRotation, setCurrRotation] = useState<number>(0);
 
   const [lastRotation, setLastRotation] = useState<number>(0);
@@ -273,8 +272,6 @@ function Site(props: SiteInterface) {
     // Open info panel
     getInfoHotspot(info_id);
   }
-
-  console.log("marzipano", marzipano.current);
 
   function minimapClick(panoId: string): void {
     if (marzipano.current) {

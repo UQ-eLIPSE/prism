@@ -90,17 +90,11 @@ function Minimap(props: MinimapProps) {
     }
   }, [props.minimapEnlarged]);
 
-  // console.log("node rotation: ", rotation);
-  // console.log("selected node: ", selectedNode);
-  // console.log("curr rotation", props.currRotation);
   function handleNodeClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     node: NewNode,
   ): void {
     e.stopPropagation();
-    // if (editing && !selectedNode) {
-    console.log("clicking on node: ", node);
-
     if (editing) {
       MinimapUtils.setNodeSelected(
         node,
@@ -117,7 +111,6 @@ function Minimap(props: MinimapProps) {
         rotation: 0,
       });
     } else if (!editing && !selectedNode) {
-      // console.log("!editing && !selectedNode", node.tiles_id);
       if (!user?.isAdmin) {
         props.updateMinimapEnlarged(false);
       }
@@ -128,12 +121,9 @@ function Minimap(props: MinimapProps) {
         rotation: 0,
       });
     }
-    console.log("selected node:", selectedNode);
-    console.log("node:", node);
   }
 
   const handleEditNode = (node: NewNode) => {
-    console.log("ABBOUT TO EDIT NODE:", node);
     MinimapUtils.setNodeSelected(
       node,
       props.minimapData,
@@ -214,11 +204,6 @@ function Minimap(props: MinimapProps) {
       props.minimapData.y_pixel_offset,
       props.minimapData.y_scale,
     );
-
-    console.log("newX: ", newX);
-    console.log("newY: ", newY);
-    console.log("rotation: ", rotation);
-    console.log("selected node: ", selectedNode);
 
     await MinimapUtils.updateNodeCoordinateAPI(
       selectedNode,
