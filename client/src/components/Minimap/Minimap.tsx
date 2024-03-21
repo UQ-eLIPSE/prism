@@ -230,7 +230,6 @@ function Minimap(props: MinimapProps) {
       nodeToEdit.rotation = convertDegreesToRadians(rotation);
     });
 
-    console.log(selectedNodesToEdit);
     if (selectedNodesToEdit.length > 1)
       console.warn("Multiple nodes being updated...");
     if (!selectedNodesToEdit.length)
