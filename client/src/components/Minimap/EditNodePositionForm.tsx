@@ -26,8 +26,9 @@ interface EditNodeFormProps {
 // The minimum and maximum values for the rotation and position inputs.
 const [ROTATION_MIN, ROTATION_MAX] = [0, 360];
 const [POSITION_MIN, POSITION_MAX] = [0, 100];
+const ROTATION_STEP: number = 15;
 
-const getValidNumber = (value: number, defaultValue: number = 0) => {
+const getValidNumber = (value: number, defaultValue: number = 0): number => {
   return isNaN(value) ? defaultValue : value;
 };
 
@@ -44,9 +45,13 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     yPositionState: { value: yPositionValue, setFn: setYPositionValue },
   } = props;
 
-  const validRotationValue = getValidNumber(rotationValue);
-  const validXPositionValue = getValidNumber(xPositionValue);
-  const validYPositionValue = getValidNumber(yPositionValue);
+  // Needed since the form values are possible initially undefined.
+  // When this happens the comparison between the initial and current values
+  // will always be true, causing the form to be marked as changed.
+  // Also, the input values are validated to be number 0.
+  const validRotationValue: number = getValidNumber(rotationValue);
+  const validXPositionValue: number = getValidNumber(xPositionValue);
+  const validYPositionValue: number = getValidNumber(yPositionValue);
   // keeps track of whether any of the form values has been changed
   const [hasChanged, setHasChanged] = useState(false);
 
@@ -65,12 +70,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
   }, [props.selectedNode]);
 
   useEffect(() => {
-    const isChanged =
+    // If any of the form values has changed, the hasChanged state will be set to true
+    setHasChanged(
       validRotationValue !== initialValues.current.rotation ||
-      validXPositionValue !== initialValues.current.x_position ||
-      validYPositionValue !== initialValues.current.y_position;
-
-    setHasChanged(isChanged);
+        validXPositionValue !== initialValues.current.x_position ||
+        validYPositionValue !== initialValues.current.y_position,
+    );
   }, [validRotationValue, validXPositionValue, validYPositionValue]);
 
   // Input configurations for the form. Please note that the label
@@ -79,7 +84,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     label: "orientation",
     value: validRotationValue,
     setValue: setRotationValue,
-    step: 15,
+    step: ROTATION_STEP,
     symbol: <i className="fa-solid fa-rotate-right"></i>,
     bounds: {
       min: ROTATION_MIN,
