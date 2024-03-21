@@ -1,5 +1,9 @@
 import { testEachZone, hotspotsDropdownConsistencyCheck } from "../testutils";
 
+// Please change hotspots property in cypress.config.ts depending on the project.
+// A good way to do this is to look at the project localhost:3000/site and check
+// if there's a dropdown menu top-right corner.
+// If no dropdown menu, set hotspots to false, otherwise set it to true.
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: InforLinknode in Expanded Left Top Bar should match linkNode in 3D view", () => {
     beforeEach(() => {

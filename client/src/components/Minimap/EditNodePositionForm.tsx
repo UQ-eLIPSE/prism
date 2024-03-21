@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EditNodeInput } from "../../interfaces/MiniMap/EditNodeInput";
 import EditNodePositionInput from "./EditNodePositionInput";
 import { StateObject } from "../../interfaces/StateObject";
 import { NewNode } from "../../interfaces/MiniMap/NewNode";
-import { InitialViewParameters, NodeData } from "../../interfaces/NodeData";
+import {
+  InitialViewParameters,
+  NodeConfiguration,
+  NodeData,
+} from "../../interfaces/NodeData";
 import { Icon } from "@material-ui/core";
 
 // * To be changed to use a Position type in future refactor.
@@ -20,6 +24,11 @@ interface EditNodeFormProps {
 // The minimum and maximum values for the rotation and position inputs.
 const [ROTATION_MIN, ROTATION_MAX] = [0, 360];
 const [POSITION_MIN, POSITION_MAX] = [0, 100];
+const ROTATION_STEP: number = 15;
+
+const getValidNumber = (value: number, defaultValue: number = 0): number => {
+  return isNaN(value) ? defaultValue : value;
+};
 
 /**
  * Form component for editing the position of a node.
@@ -28,28 +37,52 @@ const [POSITION_MIN, POSITION_MAX] = [0, 100];
  * @returns {JSX.Element}
  */
 const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
-  const [rotationValue, setRotationValue] = [
-    props.rotationState.value,
-    props.rotationState.setFn,
-  ];
+  const {
+    rotationState: { value: rotationValue, setFn: setRotationValue },
+    xPositionState: { value: xPositionValue, setFn: setXPositionValue },
+    yPositionState: { value: yPositionValue, setFn: setYPositionValue },
+  } = props;
 
-  const [xPositionValue, setXPositionValue] = [
-    props.xPositionState.value,
-    props.xPositionState.setFn,
-  ];
+  // Needed since the form values are possible initially undefined.
+  // When this happens the comparison between the initial and current values
+  // will always be true, causing the form to be marked as changed.
+  // Also, the input values are validated to be number 0.
+  const validRotationValue: number = getValidNumber(rotationValue);
+  const validXPositionValue: number = getValidNumber(xPositionValue);
+  const validYPositionValue: number = getValidNumber(yPositionValue);
+  // keeps track of whether any of the form values has been changed
+  const [hasChanged, setHasChanged] = useState(false);
 
-  const [yPositionValue, setYPositionValue] = [
-    props.yPositionState.value,
-    props.yPositionState.setFn,
-  ];
+  const initialValues = useRef<NodeConfiguration>({
+    rotation: validRotationValue,
+    x_position: validXPositionValue,
+    y_position: validYPositionValue,
+  });
+
+  useEffect(() => {
+    initialValues.current = {
+      rotation: validRotationValue,
+      x_position: validXPositionValue,
+      y_position: validYPositionValue,
+    };
+  }, [props.selectedNode]);
+
+  useEffect(() => {
+    // If any of the form values has changed, the hasChanged state will be set to true
+    setHasChanged(
+      validRotationValue !== initialValues.current.rotation ||
+        validXPositionValue !== initialValues.current.x_position ||
+        validYPositionValue !== initialValues.current.y_position,
+    );
+  }, [validRotationValue, validXPositionValue, validYPositionValue]);
 
   // Input configurations for the form. Please note that the label
   // for each must be unique since it is used as the input's id.
   const rotationInputConfig: EditNodeInput = {
     label: "orientation",
-    value: rotationValue,
+    value: validRotationValue,
     setValue: setRotationValue,
-    step: 15,
+    step: ROTATION_STEP,
     symbol: <i className="fa-solid fa-rotate-right"></i>,
     bounds: {
       min: ROTATION_MIN,
@@ -59,7 +92,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
   const xPositionInputConfig: EditNodeInput = {
     label: "x",
-    value: xPositionValue,
+    value: validXPositionValue,
     setValue: setXPositionValue,
     symbol: <i className="fa-solid fa-arrows-left-right"></i>,
     bounds: {
@@ -70,7 +103,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
 
   const yPositionInputConfig: EditNodeInput = {
     label: "y",
-    value: yPositionValue,
+    value: validYPositionValue,
     setValue: setYPositionValue,
     symbol: <i className="fa-solid fa-arrows-up-down"></i>,
     bounds: {
@@ -148,7 +181,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     : 0;
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, props.updateNode)}>
+    <form
+      onSubmit={(e) => {
+        handleSubmit(e, props.updateNode);
+        setHasChanged(false);
+      }}
+    >
       <span data-cy="currRotation-offset-value">
         Initial Minimap Rotation Offset: {`${initialRotationOffset}\u00B0`}
         <Icon
@@ -210,7 +248,12 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
           <button type="button" onClick={handleCancelClick}>
             Cancel
           </button>
-          <button type="submit" data-cy="submit-button">
+          <button
+            type="submit"
+            data-cy="submit-button"
+            disabled={!hasChanged}
+            className={!hasChanged ? "disabled" : ""}
+          >
             Save
           </button>
         </div>

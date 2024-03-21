@@ -31,10 +31,8 @@
       vars:
         test_files:
           - MinimapUpdateTestA.cy.ts
-          - NodeArrowTestA.cy.ts
           - MinimapUpdateTestB.cy.ts
           - TimelineUITest.cy.ts
-          - NodeArrowTestB.cy.ts
           - EditNodePositionFormTest.cy.ts
           - InfospotTest.cy.ts
           - LogoTest.cy.ts

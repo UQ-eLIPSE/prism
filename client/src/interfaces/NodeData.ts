@@ -8,6 +8,9 @@ export interface NodeData {
   minimap_node: MinimapNode;
   x: number;
   y: number;
+  x_scale: number;
+  y_scale: number;
+  rotation?: number;
 }
 
 export interface SurveyNode {
@@ -38,6 +41,7 @@ export interface MinimapNode {
   tiles_id: string;
   floor_id: string;
   floor: number;
+  site?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   survey_node: any;
 }
