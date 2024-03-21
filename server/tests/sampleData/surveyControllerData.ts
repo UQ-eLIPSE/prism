@@ -4,6 +4,9 @@ import {
   IMinimapConversion,
   IMinimapNode,
   IMinimapImages,
+  IHotspotDescription,
+  IContentSection,
+  IHeaderInfo,
 } from "../../src/models/SurveyModel";
 import mongoose from "mongoose";
 
@@ -357,6 +360,31 @@ const mockMapPins: Partial<IMapPins>[] = [
   },
 ];
 
+const mockHotSpotDescription: IHotspotDescription[] = [
+  {
+    _id: "60d6ec5a4ef0b2c8c7ec5958", // Mock MongoDB ObjectId
+    header: {
+      _id: "60d6ec5a4ef0b2c8c7ec5957", // Mock MongoDB ObjectId
+      main_img_url: "https://example.com/image.jpg",
+      label_title: "Example Title",
+    } as IHeaderInfo,
+    contents: [
+      {
+        _id: "60d6ec5a4ef0b2c8c7ec5956", // Mock MongoDB ObjectId
+        title: "Example Content Title",
+        content: "Example content text",
+      },
+      {
+        _id: "60d6ec5a4ef0b2c8c7ec5955", // Mock MongoDB ObjectId
+        title: "Another Content Title",
+        content: "Another example content text",
+      },
+    ] as IContentSection[],
+    tiles_id: "exampleTilesId",
+    info_id: "exampleInfoId",
+  } as IHotspotDescription,
+];
+
 export {
   mockMiniconverions,
   mockSurveyNodes,
@@ -364,4 +392,5 @@ export {
   mockMapPins,
   mockMinimapNode,
   mockMinimapImages,
+  mockHotSpotDescription,
 };
