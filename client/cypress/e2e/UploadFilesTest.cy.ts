@@ -122,6 +122,7 @@ testEachZone((zone: Cypress.PrismZone) => {
   describe(`Test case: Delete functionality of already uploaded Marzipano zip and csv`, () => {
     beforeEach(() => {
       cy.accessZone(zone);
+      cy.wait(DELAY);
       cy.get("[data-cy='sb-addScene']").should("exist").click();
       uploadFileHelper({ zip: true, csv: true });
     });
