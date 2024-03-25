@@ -9,6 +9,8 @@ import {
   actions,
 } from "../support/minimapUtils";
 
+const DELAY: number = 500;
+
 function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").clear();
   cy.get("input[id='orientation']").should("exist").type(String(rotation));
@@ -46,8 +48,8 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.wait(getReqAlias).then(() => {
           const randX = Math.floor(Math.random() * 9) * 10 + 10;
           editNodePosition("x", String(randX));
-
-          cy.get("button").contains("Save").click({ force: true }); // submit to save
+          cy.wait(DELAY);
+          cy.get("button").contains("Save").click({ force: true });
           cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
             const totalWidth = $img.width();
             cy.wrap(totalWidth).should("not.be.undefined");
