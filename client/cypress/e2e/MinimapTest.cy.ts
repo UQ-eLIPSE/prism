@@ -44,7 +44,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: user changes x coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
-          const randX = Math.floor(Math.random() * 9) * 10 + 10;
+          const randX = 50;
           editNodePosition("x", String(randX));
 
           cy.get("button").contains("Save").click({ force: true }); // submit to save
@@ -54,7 +54,7 @@ testEachZone((zone: Cypress.PrismZone) => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalWidth = $img.width();
                 cy.wrap(totalWidth).should("not.be.undefined");
-                cy.get("@btn-select")
+                cy.get("[data-cy='selected-node']")
                   .should("exist")
                   .parent()
                   .should(($parent) => {
@@ -62,7 +62,7 @@ testEachZone((zone: Cypress.PrismZone) => {
                     const leftPercentage = Math.floor(
                       (leftPixelValue / (totalWidth as number)) * 100,
                     );
-                    expect(leftPercentage).to.be.closeTo(randX, 1);
+                    expect(leftPercentage).to.be.closeTo(50, 1);
                   });
               });
             });
@@ -82,7 +82,7 @@ testEachZone((zone: Cypress.PrismZone) => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='submit-button']").contains("Save").click();
           cy.get(buttonSelector).should("exist").click();
-          cy.get("@btn-select").should("exist").click();
+          cy.get("[data-cy='selected-node']").should("exist").click();
           cy.get("#orientation")
             .should("exist")
             .invoke("val")
@@ -123,7 +123,7 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
-          const randY = Math.floor(Math.random() * 9) * 10 + 10;
+          const randY = 1;
           editNodePosition("y", String(randY));
 
           cy.get("button").contains("Save").click({ force: true }); // submit to save
@@ -133,7 +133,7 @@ testEachZone((zone: Cypress.PrismZone) => {
               cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
                 const totalHeight = $img.height();
                 cy.wrap(totalHeight).should("not.be.undefined");
-                cy.get("@btn-select")
+                cy.get("[data-cy='selected-node']")
                   .should("exist")
                   .parent()
                   .should(($parent) => {
