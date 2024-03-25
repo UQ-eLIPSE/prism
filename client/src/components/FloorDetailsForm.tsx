@@ -33,8 +33,10 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
   submitVisibilityState,
 }): JSX.Element => {
   const [user] = useUserContext();
-  if (!showForm && user?.isAdmin) showForm = true;
-  if (!showForm) return <></>;
+  if (!showForm) {
+    showForm = user?.isAdmin;
+    return <></>;
+  }
   const [floorName, setFloorName] = [
     floorNameState.value,
     floorNameState.setFn,
