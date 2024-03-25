@@ -26,7 +26,7 @@ const rotationValues: { degrees: number; cssValue: string }[] = [
   { degrees: 210, cssValue: "rotate(3.66519rad)" },
   { degrees: 240, cssValue: "rotate(4.18879rad)" },
 ];
-
+const coordianateArray = [10, 20, 30, 40, 50, 60, 70, 85, 95];
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: When user has selected a mininode on the minimap, should be able to update coordinates via input form", () => {
     let getReqAlias: string;
@@ -46,7 +46,10 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: user changes x coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
-          const randX = Math.floor(Math.random() * 9) * 10 + 10;
+          const randX =
+            coordianateArray[
+              Math.floor(Math.random() * coordianateArray.length)
+            ];
           editNodePosition("x", String(randX));
           cy.wait(DELAY);
           cy.get("button").contains("Save").click({ force: true });
@@ -119,7 +122,10 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
-          const randY = Math.floor(Math.random() * 9) * 10 + 10;
+          const randY =
+            coordianateArray[
+              Math.floor(Math.random() * coordianateArray.length)
+            ];
           editNodePosition("y", String(randY));
 
           cy.get("button").contains("Save").click({ force: true }); // submit to save
