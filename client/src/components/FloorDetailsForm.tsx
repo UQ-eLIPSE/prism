@@ -4,7 +4,7 @@ import {
   FloorTagOrNameInputConfig,
   TagOrNameIdentifier,
 } from "../interfaces/MiniMap/FloorTagOrNameInputConfig";
-
+import { useUserContext } from "../context/UserContext";
 interface FloorDetailsFormProps {
   showForm?: boolean;
   minimapShown: boolean;
@@ -32,9 +32,11 @@ const FloorDetailsForm: React.FC<FloorDetailsFormProps> = ({
   floorTagState,
   submitVisibilityState,
 }): JSX.Element => {
-  if (showForm === undefined) showForm = true;
-  if (!showForm) return <></>;
-
+  const [user] = useUserContext();
+  if (!showForm) {
+    showForm = user?.isAdmin;
+    return <></>;
+  }
   const [floorName, setFloorName] = [
     floorNameState.value,
     floorNameState.setFn,

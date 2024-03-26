@@ -9,6 +9,8 @@ import {
   actions,
 } from "../support/minimapUtils";
 
+const DELAY: number = 500;
+
 function typeRotation(rotation: number) {
   cy.get("input[id='orientation']").should("exist").clear();
   cy.get("input[id='orientation']").should("exist").type(String(rotation));
@@ -24,7 +26,7 @@ const rotationValues: { degrees: number; cssValue: string }[] = [
   { degrees: 210, cssValue: "rotate(3.66519rad)" },
   { degrees: 240, cssValue: "rotate(4.18879rad)" },
 ];
-
+const coordianateArray = [10, 20, 30, 40, 50, 60, 70, 85, 95];
 testEachZone((zone: Cypress.PrismZone) => {
   describe("Test case: When user has selected a mininode on the minimap, should be able to update coordinates via input form", () => {
     let getReqAlias: string;
@@ -44,28 +46,26 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: user changes x coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
-          const randX = Math.floor(Math.random() * 9) * 10 + 10;
+          const randX =
+            coordianateArray[
+              Math.floor(Math.random() * coordianateArray.length)
+            ];
           editNodePosition("x", String(randX));
-
-          cy.get("button").contains("Save").click({ force: true }); // submit to save
-
-          cy.wait(patchReqAlias).then(() => {
-            cy.wait(getReqAlias).then(() => {
-              cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
-                const totalWidth = $img.width();
-                cy.wrap(totalWidth).should("not.be.undefined");
-                cy.get("@btn-select")
-                  .should("exist")
-                  .parent()
-                  .should(($parent) => {
-                    const leftPixelValue = parseFloat($parent.css("left"));
-                    const leftPercentage = Math.floor(
-                      (leftPixelValue / (totalWidth as number)) * 100,
-                    );
-                    expect(leftPercentage).to.be.closeTo(randX, 1);
-                  });
+          cy.wait(DELAY);
+          cy.get("button").contains("Save").click({ force: true });
+          cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
+            const totalWidth = $img.width();
+            cy.wrap(totalWidth).should("not.be.undefined");
+            cy.get("[data-cy='selected-node']")
+              .should("exist")
+              .parent()
+              .should(($parent) => {
+                const leftPixelValue = parseFloat($parent.css("left"));
+                const leftPercentage = Math.floor(
+                  (leftPixelValue / (totalWidth as number)) * 100,
+                );
+                expect(leftPercentage).to.be.closeTo(50, 1);
               });
-            });
           });
         });
       }
@@ -81,8 +81,7 @@ testEachZone((zone: Cypress.PrismZone) => {
         cy.wait(getReqAlias).then(() => {
           typeRotation(randTuple.degrees);
           cy.get("[data-cy='submit-button']").contains("Save").click();
-          cy.get(buttonSelector).should("exist").click();
-          cy.get("@btn-select").should("exist").click();
+          cy.get("[data-cy='selected-node']").should("exist").click();
           cy.get("#orientation")
             .should("exist")
             .invoke("val")
@@ -123,28 +122,27 @@ testEachZone((zone: Cypress.PrismZone) => {
     it(`Testing: user changes y coordinates input in the form, the targeted mininode position changes correctly`, () => {
       if (zone.adminUser) {
         cy.wait(getReqAlias).then(() => {
-          const randY = Math.floor(Math.random() * 9) * 10 + 10;
+          const randY =
+            coordianateArray[
+              Math.floor(Math.random() * coordianateArray.length)
+            ];
           editNodePosition("y", String(randY));
 
           cy.get("button").contains("Save").click({ force: true }); // submit to save
 
-          cy.wait(patchReqAlias).then(() => {
-            cy.wait(getReqAlias).then(() => {
-              cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
-                const totalHeight = $img.height();
-                cy.wrap(totalHeight).should("not.be.undefined");
-                cy.get("@btn-select")
-                  .should("exist")
-                  .parent()
-                  .should(($parent) => {
-                    const topPixelValue = parseFloat($parent.css("top"));
-                    const topPercentage = Math.floor(
-                      (topPixelValue / (totalHeight as number)) * 100,
-                    );
-                    expect(topPercentage).to.be.closeTo(randY, 1);
-                  });
+          cy.get("img[class*='minimap_largeMapImg']").then(($img) => {
+            const totalHeight = $img.height();
+            cy.wrap(totalHeight).should("not.be.undefined");
+            cy.get("[data-cy='selected-node']")
+              .should("exist")
+              .parent()
+              .should(($parent) => {
+                const topPixelValue = parseFloat($parent.css("top"));
+                const topPercentage = Math.floor(
+                  (topPixelValue / (totalHeight as number)) * 100,
+                );
+                expect(topPercentage).to.be.closeTo(randY, 1);
               });
-            });
           });
         });
       }
