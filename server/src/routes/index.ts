@@ -279,6 +279,12 @@ export class Routes {
       this.surveyController.updateNodeRotation,
     );
 
+    // edit the node tile name
+    router.patch(
+      "/node/tileName/:nodeId",
+      this.surveyController.updateTileName,
+    );
+
     // settings
     router.get("/site/:siteId/settings", this.siteController.getSettings);
 

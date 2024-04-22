@@ -583,6 +583,15 @@ export abstract class SurveyService {
     return updateNodeRotation ? true : false;
   }
 
+  public static async updateTileName(nodeId: string, tileName: string) {
+    const updateTileName = await SurveyNode.findOneAndUpdate(
+      { _id: new ObjectId(nodeId) },
+      {
+        tiles_name: tileName,
+      },
+    );
+    return updateTileName ? true : false;
+  }
   /**
    * createMinimap - - Inserts Mini Map in to site Settings and upload
    * to Manta.

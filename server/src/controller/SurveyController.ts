@@ -812,6 +812,30 @@ export class SurveyController {
     }
   }
 
+  public async updateTileName(req: Request, res: Response) {
+    try {
+      const { nodeId } = req.params;
+      const { tiles_name } = req.body;
+
+      const findNodeId = await findOneBySurveyNode(nodeId);
+      if (!findNodeId) throw new Error("Node does not exist in databae");
+
+      const updateTileName = await SurveyService.updateTileName(
+        nodeId,
+        tiles_name,
+      );
+      if (!updateTileName) throw new Error("Node tile name cannot be updated");
+
+      return CommonUtil.successResponse(
+        res,
+        "Minimap node tile name has been updated",
+      );
+    } catch (e) {
+      ConsoleUtil.log(e);
+      return CommonUtil.failResponse(res, e.message);
+    }
+  }
+
   /**
    * returns the list of empty floors per a site ID
    * @param req
