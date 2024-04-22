@@ -15,6 +15,7 @@ interface EditNodeFormProps {
   rotationState: StateObject<number>;
   xPositionState: StateObject<number>;
   yPositionState: StateObject<number>;
+  tileNameState: StateObject<string>;
   resetSelectedNode: () => void; // Clears selected node and sets editing to false.
   updateNode: () => Promise<void>;
   selectedNode: NewNode | null;
@@ -41,6 +42,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     rotationState: { value: rotationValue, setFn: setRotationValue },
     xPositionState: { value: xPositionValue, setFn: setXPositionValue },
     yPositionState: { value: yPositionValue, setFn: setYPositionValue },
+    tileNameState: { value: tileNameValue, setFn: setTileNameValue },
   } = props;
 
   // Needed since the form values are possible initially undefined.
@@ -57,6 +59,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     rotation: validRotationValue,
     x_position: validXPositionValue,
     y_position: validYPositionValue,
+    tileName: tileNameValue,
   });
 
   useEffect(() => {
@@ -64,6 +67,7 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
       rotation: validRotationValue,
       x_position: validXPositionValue,
       y_position: validYPositionValue,
+      tileName: tileNameValue,
     };
   }, [props.selectedNode]);
 
@@ -72,9 +76,15 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
     setHasChanged(
       validRotationValue !== initialValues.current.rotation ||
         validXPositionValue !== initialValues.current.x_position ||
-        validYPositionValue !== initialValues.current.y_position,
+        validYPositionValue !== initialValues.current.y_position ||
+        tileNameValue !== initialValues.current.tileName,
     );
-  }, [validRotationValue, validXPositionValue, validYPositionValue]);
+  }, [
+    validRotationValue,
+    validXPositionValue,
+    validYPositionValue,
+    tileNameValue,
+  ]);
 
   // Input configurations for the form. Please note that the label
   // for each must be unique since it is used as the input's id.
@@ -187,6 +197,16 @@ const EditNodeForm = (props: EditNodeFormProps): JSX.Element => {
         setHasChanged(false);
       }}
     >
+      <span>
+        <input
+          id="tileName"
+          name="tileName"
+          type="text"
+          value={tileNameValue}
+          onChange={(e) => setTileNameValue(e.target.value)}
+          className="nodeEditTitle"
+        />
+      </span>
       <span data-cy="currRotation-offset-value">
         Initial Minimap Rotation Offset: {`${initialRotationOffset}\u00B0`}
         <Icon

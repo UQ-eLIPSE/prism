@@ -105,11 +105,38 @@ testEachZone((zone: Cypress.PrismZone) => {
         });
       });
     });
+
+    it(`Testing: tile Name should not change when user cancels form submission`, () => {
+      if (!zone.adminUser) return;
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='tileName']").then(($input) => {
+          const original = $input.val();
+          expect(original).to.not.be.undefined;
+
+          // Generate a random value for x
+          const newValue = "Kitchen";
+          editNodePosition("tileName", newValue);
+
+          cy.wait(getReqAlias).then(() => {
+            cy.get("button").contains("Cancel").click({ force: true });
+            editSelectedNode();
+
+            cy.get("input[id='tileName']").should(($input) => {
+              expect($input.val()).to.eq(original);
+            });
+          });
+        });
+      });
+    });
   });
+
+  
 
   describe(`Test case: Value should be changed and saved when user submits a different value, and reopens the same form`, () => {
     let getReqAlias: string;
     let patchReqCoordinatesAlias: string;
+    let patchTileNameAlias: string;
 
     beforeEach(() => {
       cy.accessZone(zone);
@@ -117,9 +144,10 @@ testEachZone((zone: Cypress.PrismZone) => {
 
       if (!zone.adminUser) return;
 
-      [getReqAlias, patchReqCoordinatesAlias] = interceptMinimapData(
+      [getReqAlias, patchReqCoordinatesAlias, patchTileNameAlias] = interceptMinimapData(
         actions.getRequest,
         actions.patchCoordinatesRequest,
+        actions.patchTileNameRequest,
       );
       expandMiniMap();
       editSelectedNode();
@@ -174,6 +202,34 @@ testEachZone((zone: Cypress.PrismZone) => {
                 editSelectedNode();
                 cy.get("input[id='y']").should(($input) => {
                   expect($input.val()).to.eq(String(randY));
+                });
+              });
+            });
+          });
+      });
+    });
+
+    it.only(`Testing: Tile Name should be saved when user submits a different value`, () => {
+      if (!zone.adminUser) return;
+
+      cy.wait(getReqAlias).then(() => {
+        cy.get("input[id='tileName']")
+          .should("exist")
+          .then(($input) => {
+            const original = $input.val();
+            expect(original).to.not.be.undefined;
+
+            // Generate a random value for y
+            const newValue = "Theater";
+            editNodePosition("tileName", newValue);
+
+            cy.get("button").contains("Save").click({ force: true });
+            cy.wait(DELAY);
+            cy.wait(patchTileNameAlias).then(() => {
+              cy.wait(getReqAlias).then(() => {
+                editSelectedNode();
+                cy.get("input[id='tileName']").should(($input) => {
+                  expect($input.val()).to.eq(newValue);
                 });
               });
             });

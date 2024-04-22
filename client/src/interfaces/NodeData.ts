@@ -151,6 +151,7 @@ export interface NodeConfiguration {
   x_position: number;
   y_position: number;
   rotation: number;
+  tileName: string;
 }
 
 export interface NearestNode {

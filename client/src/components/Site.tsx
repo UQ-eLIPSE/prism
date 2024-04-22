@@ -124,8 +124,10 @@ function Site(props: SiteInterface) {
     x_position: parseFloat(currPanoId.split("_")[3]),
     y_position: parseFloat(currPanoId.split("_")[4]),
     rotation: 0,
+    tileName: "",
   });
   const [marzipanoInfoVisibility, setMarzipanoInfoVisibility] = useState(true);
+  const [tileName, setTileName] = useState<string | undefined>("");
 
   // Used to detect if page is being rendered for the first time (not switching floors).
   const [initialRender, setInitialRender] = useState<boolean>(true);
@@ -158,6 +160,11 @@ function Site(props: SiteInterface) {
   }, []);
 
   useEffect(() => {
+    setTileName(
+      marzipano.current
+        ? marzipano.current.findNameById(currPanoId)
+        : config.display.title,
+    );
     if (!lastViewParams) return;
     if (marzipano.current && marzipano.current.findSceneById(currPanoId)) {
       marzipano.current.updateCurrView(
@@ -545,14 +552,7 @@ function Site(props: SiteInterface) {
 
   return (
     <div data-testid="site-element" id="sitePage">
-      <TitleCard
-        firstLineName={
-          marzipano.current
-            ? marzipano.current.findNameById(currPanoId)
-            : config.display.title
-        }
-        timelineOpen={timelineOpen}
-      />
+      <TitleCard firstLineName={tileName} timelineOpen={timelineOpen} />
       <div className="marzipano-info-container">
         {marzipanoInfoVisibility && (
           <MarzipanoDisplayInfo viewParams={currViewParams} />
@@ -643,6 +643,7 @@ function Site(props: SiteInterface) {
           currDate={currDate}
           setNodeState={updateNodeState}
           currViewParams={currViewParams}
+          setTileName={setTileName}
         />
         {config.enable.floors && !minimapEnlarged && (
           <LevelSlider
