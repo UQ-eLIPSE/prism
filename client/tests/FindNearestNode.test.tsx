@@ -26,13 +26,17 @@ const createMockNodeData = (overrides: Partial<NodeData> = {}): NodeData => {
     },
     x: 0,
     y: 0,
+    x_scale: 1, 
+    y_scale: 1,
+    rotation: 0, 
+
     ...overrides,
   };
 };
 
 describe("findNearestNode", () => {
   it("should accurately find the nearest node based on x and y coordinates", () => {
-    const mockNodeState = { x_position: 100, y_position: 100, rotation: 0 };
+    const mockNodeState = { x_position: 100, y_position: 100, rotation: 0, tileName: "Kitchen" };
     const nodesData = [
       createMockNodeData({
         minimap_node: {
