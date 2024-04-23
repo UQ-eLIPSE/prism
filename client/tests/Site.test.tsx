@@ -92,7 +92,7 @@ const renderWithIntl = (
   component: React.ReactElement,
   {
     locale = "en",
-    messages = { seeMoreFarms: "See More Farms" },
+    messages = { seeMoreFarms: "See More Farms", uploadCSVFile: "Upload CSV File", browse: "Browse", uploadMarzipanoZIP: "Upload Marzipano ZIP", submit: "Submit" },
   }: { locale?: string; messages?: Record<string, string> } = {},
 ) => {
   return render(
