@@ -209,7 +209,7 @@ testEachZone((zone: Cypress.PrismZone) => {
       });
     });
 
-    it.only(`Testing: Tile Name should be saved when user submits a different value`, () => {
+    it(`Testing: Tile Name should be saved when user submits a different value`, () => {
       if (!zone.adminUser) return;
 
       cy.wait(getReqAlias).then(() => {
