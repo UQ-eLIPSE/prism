@@ -214,6 +214,31 @@ export default class NetworkCalls {
     return res;
   }
 
+  public static async updateTileName(
+    surveyNode: any,
+    tilesName: string,
+  ): Promise<any[]> {
+    const req = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+
+      body: JSON.stringify({
+        tiles_name: tilesName,
+      }),
+    };
+
+    const resRaw = await fetchWithCredentials(
+      `${this.window_api_url}/api/node/tileName/${surveyNode}`,
+      req,
+    );
+    const res = await resRaw.json();
+
+    if (!res.success) {
+      throw new Error(res.message);
+    }
+    return res;
+  }
+
   /**
    * Patch request to update the minimap node field of view
    * @param minimapNode id of node to be updated

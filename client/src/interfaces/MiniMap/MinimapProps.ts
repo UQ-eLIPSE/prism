@@ -27,4 +27,5 @@ export interface MinimapProps {
   currDate: Date;
   setNodeState: (nodeState: NodeConfiguration) => void;
   currViewParams: InitialViewParameters;
+  setTileName: (tileName: string) => void;
 }

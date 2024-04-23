@@ -126,6 +126,7 @@ const setNodeSelected = (
   handleSetXCoordinate: (value: React.SetStateAction<number>) => void,
   handleSetYCoordinate: (value: React.SetStateAction<number>) => void,
   handleSetRotation: (value: React.SetStateAction<number>) => void,
+  handleSetTileName: (value: React.SetStateAction<string>) => void,
 ): void => {
   handleSetSelectedNode(newNode);
 
@@ -138,6 +139,7 @@ const setNodeSelected = (
 
   const rotationInRadians = convertDegreesToRadians(newNode.rotation);
   handleSetRotation(rotationInRadians);
+  handleSetTileName(newNode.tiles_name);
 };
 
 /**
@@ -211,6 +213,18 @@ const updateNodeRotationAPI = async (
       selectedNode?.survey_node,
       newRotation / MinimapConstants.DEGREES_TO_RADIANS_ROTATION, //api takes in radians
     );
+  } catch (error) {
+    window.alert(`${windowAlertMessage}: ${error}`);
+  }
+};
+
+const updateTileNameAPI = async (
+  selectedNode: NewNode | null,
+  newTileName: string,
+  windowAlertMessage: string,
+): Promise<void> => {
+  try {
+    await NetworkCalls.updateTileName(selectedNode?.survey_node, newTileName);
   } catch (error) {
     window.alert(`${windowAlertMessage}: ${error}`);
   }
@@ -292,4 +306,5 @@ export default {
   updateNodeRotationAPI,
   updateFloorTagAndNameAPI,
   findNearestNode,
+  updateTileNameAPI,
 };

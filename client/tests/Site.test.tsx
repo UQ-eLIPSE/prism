@@ -1,11 +1,25 @@
 // Site.test.tsx
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import "@testing-library/react/dont-cleanup-after-each";
 import Site from "../src/components/Site";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mockSiteProps } from "./utils/sampleData/siteSampleData";
+import { UserRoles } from "../src/interfaces/User";
+import { IntlProvider } from "react-intl";
+import { UserContextProvider } from "../src/context/UserContext";
+
+const admin = {
+  id: 'user1',
+  username: 'adminuser',
+  isAdmin: true,
+  role: UserRoles.SUPERADMIN,
+};
+
+jest.mock("../src/context/UserContext", () => ({
+  useUserContext: () => [admin, jest.fn()]
+}));
 
 jest.mock("../src/utils/NetworkCalls", () => ({
   getEmptyFloors: jest.fn().mockResolvedValue({
@@ -74,9 +88,23 @@ jest.mock("../src/utils/NetworkCalls", () => ({
   }),
 }));
 
+const renderWithIntl = (
+  component: React.ReactElement,
+  {
+    locale = "en",
+    messages = { seeMoreFarms: "See More Farms", uploadCSVFile: "Upload CSV File", browse: "Browse", uploadMarzipanoZIP: "Upload Marzipano ZIP", submit: "Submit" },
+  }: { locale?: string; messages?: Record<string, string> } = {},
+) => {
+  return render(
+    <IntlProvider locale={locale} messages={messages}>
+      {component}
+    </IntlProvider>,
+  );
+};
+
 describe("Site Component", () => {
   test("renders without crashing", async () => {
-    render(
+    renderWithIntl(
       <Router>
         <Site {...mockSiteProps} />
       </Router>,
@@ -88,9 +116,14 @@ describe("Site Component", () => {
     const floorDataText = await screen.findByText("Jun 2021");
     expect(floorDataText).toBeInTheDocument();
 
+    
     fireEvent.click(screen.getByTestId("floor-select-3"));
-    const floorInput = screen.getByTestId("floor-tag-input");
+  
+    screen.debug();
+
     await waitFor(() => {
+      const floorInput = screen.getByTestId("floor-tag-input");
+      expect(floorInput).toBeInTheDocument();
       expect(floorInput).toHaveValue("3");
     });
   });

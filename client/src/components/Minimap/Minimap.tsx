@@ -44,6 +44,7 @@ function Minimap(props: MinimapProps) {
   const [rotation, setRotation] = useState<number>(0);
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
+  const [tileName, setTileName] = useState<string>("");
 
   const [nodes, editNodes] = useState<NewNode[]>([]);
   const payload = selectedNode ? [...nodes, selectedNode] : nodes;
@@ -114,6 +115,7 @@ function Minimap(props: MinimapProps) {
       x_position: node.x,
       y_position: node.y,
       rotation: 0,
+      tileName: node.tiles_name,
     });
   }
 
@@ -129,6 +131,7 @@ function Minimap(props: MinimapProps) {
       setX,
       setY,
       setRotation,
+      setTileName,
     );
 
     switchSceneToNode(node);
@@ -211,6 +214,11 @@ function Minimap(props: MinimapProps) {
       rotation,
       "Error! \n\n Failed to Update Node Rotation",
     );
+    await MinimapUtils.updateTileNameAPI(
+      selectedNode,
+      tileName,
+      "Error! \n\n Failed to Update Node tile name",
+    );
 
     const convertDegreesToRadians = (degrees: number): number => {
       return degrees / MinimapConstants.DEGREES_TO_RADIANS_ROTATION;
@@ -228,8 +236,10 @@ function Minimap(props: MinimapProps) {
       nodeToEdit.x = newX;
       nodeToEdit.y = newY;
       nodeToEdit.rotation = convertDegreesToRadians(rotation);
+      nodeToEdit.survey_node.tiles_name = tileName;
     });
 
+    props.setTileName(tileName);
     if (selectedNodesToEdit.length > 1)
       console.warn("Multiple nodes being updated...");
     if (!selectedNodesToEdit.length)
@@ -294,11 +304,11 @@ function Minimap(props: MinimapProps) {
         />
 
         <div className={`controls ${selectedNode && editing ? "visible" : ""}`}>
-          <p className="nodeEditTitle">{selectedNode?.tiles_name}</p>
           <EditNodePositionForm
             rotationState={{ value: rotation, setFn: setRotation }}
             xPositionState={{ value: x, setFn: setX }}
             yPositionState={{ value: y, setFn: setY }}
+            tileNameState={{ value: tileName, setFn: setTileName }}
             resetSelectedNode={resetSelectedNode}
             updateNode={updateNodeInfo}
             selectedNode={selectedNode}
